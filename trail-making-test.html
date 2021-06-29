@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+  TODO: Terminar de armar este ejemplo
+        La guía está en https://www.jspsych.org/overview/eye-tracking/
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="vendor/jspsych-6.3.1/jspsych.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-preload.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-webgazer-init-camera.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-webgazer-calibrate.js"></script>
+    <script src="vendor/jspsych-6.3.1/plugins/jspsych-webgazer-validate.js"></script>
+    <script src="vendor/webgazer-jspsych-6.3.1/webgazer.js"></script>
+    <script src="vendor/jspsych-6.3.1/extensions/jspsych-ext-webgazer.js"></script>
+    <link  href="vendor/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
+
+    <title> Trail making test </title>
+  </head>
+  <body>
+    <script>
+      const preload = {
+        type: 'preload',
+        images: ['images/foto.jpg']
+      }
+
+      const init_camera = {
+        type: 'webgazer-init-camera'
+      };
+      
+      const calibration = {
+        type: 'webgazer-calibrate'
+      };
+      
+      const validation = {
+        type: 'webgazer-validate'
+      };
+      
+      const start = {
+        type: 'html-keyboard-response',
+        stimulus: 'Press any key to start.'
+      };
+      
+      const trial = {
+        type: 'image-keyboard-response',
+        stimulus: 'images/foto.jpg',
+        choices: jsPsych.NO_KEYS,
+        extensions: [
+          {
+            type: 'webgazer', 
+            params: {targets: ['#jspsych-image-keyboard-response-stimulus']}
+          }
+        ]
+      };
+      jsPsych.init({
+        timeline: [
+          init_camera,
+          calibration,
+          validation,
+          start,
+          trial,
+        ],
+        preload_images: ['images/foto.jpg'],
+        extensions: [
+          {type: 'webgazer'}
+        ]
+      });
+    </script>
+  </body>
+</html>
