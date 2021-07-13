@@ -26,12 +26,12 @@
           {
             type: 'webgazer-init-camera'
           },
-          // {
-          //   type: 'webgazer-calibrate',
-          // },
+          {
+            type: 'webgazer-calibrate',
+            calibration_points: [[50, 50]],
+          },
           {
             type: 'start-eye-tracking',
-            showPrediction: true,
           },
           {
             type: 'image-keyboard-response',
@@ -46,7 +46,6 @@
           },
           {
             type: 'finish-eye-tracking',
-            showPrediction: true,
           },
           {
             type: 'html-keyboard-response',
