@@ -11,6 +11,7 @@ jsPsych.plugins['finish-eye-tracking'] = (function(){
       }).json())[0];
       document.getElementById(eyeTrackingData.visualizationElementId).remove();
       clearInterval(eyeTrackingData.loopCallbackIntervalId);
+      jsPsych.data.get().localSave('json','webgazer-sample-data.json');
       jsPsych.finishTrial();
     },
   }
