@@ -15,6 +15,7 @@
     <link  href="../vendor/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
 
     <script src="../plugins/jspsych-start-eye-tracking.js"></script>
+    <script src="../plugins/jspsych-finish-eye-tracking.js"></script>
 
     <title> Mirada en foto </title>
   </head>
@@ -35,13 +36,17 @@
           {
             type: 'image-keyboard-response',
             stimulus: '../images/foto.jpg',
-            choices: jsPsych.NO_KEYS,
+            choices: [" "],
             extensions: [
               {
                 type: 'webgazer', 
                 params: {targets: ['#jspsych-image-keyboard-response-stimulus']}
               }
             ]
+          },
+          {
+            type: 'finish-eye-tracking',
+            showPrediction: true,
           },
           {
             type: 'html-keyboard-response',
