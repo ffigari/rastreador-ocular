@@ -8,6 +8,7 @@
     <script src="../vendor/jspsych-6.3.1/plugins/jspsych-preload.js"></script>
     <script src="../vendor/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="../vendor/jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="../vendor/jspsych-6.3.1/plugins/jspsych-fullscreen.js"></script>
     <script src="../vendor/jspsych-6.3.1/plugins/jspsych-webgazer-init-camera.js"></script>
     <script src="../vendor/jspsych-6.3.1/plugins/jspsych-webgazer-calibrate.js"></script>
     <script src="../vendor/webgazer-jspsych-6.3.1/webgazer.js"></script>
@@ -24,14 +25,25 @@
       jsPsych.init({
         timeline: [
           {
-            type: 'webgazer-init-camera'
+            type: 'webgazer-init-camera',
           },
-          // {
-          //   type: 'webgazer-calibrate',
-          // },
+          {
+            type: 'fullscreen',
+          },
+          {
+            type: 'webgazer-calibrate',
+          },
+          {
+            type: 'html-keyboard-response',
+            stimulus: `
+              <p>
+                A continuación se le mostrará una imagen. Presioné cualquier
+                tecla para comenzar y luego \'Espacio\' para terminar.
+              </p>`,
+            choices: jsPsych.ALL_KEYS,
+          },
           {
             type: 'start-eye-tracking',
-            showPrediction: true,
           },
           {
             type: 'image-keyboard-response',
@@ -46,11 +58,11 @@
           },
           {
             type: 'finish-eye-tracking',
-            showPrediction: true,
           },
           {
             type: 'html-keyboard-response',
-            stimulus: 'Fin'
+            stimulus: '<p>Fin</p>',
+            choices: jsPsych.NO_KEYS,
           },
         ],
         preload_images: ['../images/foto.jpg'],
