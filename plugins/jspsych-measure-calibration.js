@@ -19,11 +19,12 @@ jsPsych.plugins['measure-calibration'] = (function(){
       ];
 
       for (const [xPercentage, yPercentage] of validationSectionsCenters) {
-        // TODO: Create point
-        // TODO: Durante N segundos
-        //         depertar cada M milisegundos
-        //         guardar donde estoy mirando y la predicción del eye tracker
-        await console.log(xPercentage, yPercentage)
+        const validationPoint = drawer.appendValidationVisualization();
+        drawer.moveToPercentages(validationPoint, xPercentage, yPercentage);
+        await utils.runRegularly(5000, 100, () => {
+          console.log(xPercentage, yPercentage, "TODO: Store gaze prediction and point coordinates");
+        })
+        drawer.erasePoint(validationPoint);
       }
       jsPsych.finishTrial();
     },

@@ -22,15 +22,36 @@ const drawer = (function() {
     appendValidationVisualization() {
       return this._appendPoint('calibration-measurment-visualization', 'black', 30);
     },
-    moveToPixels(point, x, y) {
-      point.style.transform =
-        `translate(${currentPrediction.x}px, ${currentPrediction.y}px)`;
-    }
+    moveToPixels(point, xPixel, yPixel) {
+      point.style.transform = `translate(${xPixel}px, ${yPixel}px)`;
+    },
+    moveToPercentages(point, xPercentage, yPercentage) {
+      this.moveToPixels(
+        point,
+        window.innerWidth  * xPercentage / 100,
+        window.innerHeight * yPercentage / 100
+      );
+    },
+    erasePoint(point) {
+      document.getElementById(point.id).remove();
+    },
   };
 })();
 
 const utils = (function() {
   return {
-    sleep: async ms => new Promise(res => setTimeout(res, ms)),
+    async sleep(ms ) {
+      return new Promise(res => setTimeout(res, ms));
+    },
+    async runRegularly(maximumDuration, delta, cb) {
+      const startingTimestamp = new Date;
+      while (true) {
+        cb();
+        if (new Date - startingTimestamp + delta >= maximumDuration) {
+          break;
+        }
+        await this.sleep(delta);
+      }
+    }
   };
 })();
