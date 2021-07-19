@@ -21,9 +21,11 @@ jsPsych.plugins['measure-calibration'] = (function(){
       for (const [xPercentage, yPercentage] of validationSectionsCenters) {
         const validationPoint = drawer.appendValidationVisualization();
         drawer.moveToPercentages(validationPoint, xPercentage, yPercentage);
+        const center = drawer.getCenterInPixels(validationPoint);
         await utils.runRegularly(5000, 100, () => {
-          console.log(xPercentage, yPercentage, "TODO: Store gaze prediction and point coordinates");
-        })
+          // TODO: Store gaze prediction
+          // prediction = await eyeTracking.currentPrediction();
+        });
         drawer.erasePoint(validationPoint);
       }
       jsPsych.finishTrial();

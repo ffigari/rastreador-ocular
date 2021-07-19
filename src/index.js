@@ -38,6 +38,13 @@ const drawer = (function() {
     appendValidationVisualization() {
       return this._appendPoint('calibration-measurment-visualization', 'black', 30);
     },
+    getCenterInPixels(point) {
+      const bbox = point.getBoundingClientRect();
+      return {
+        x: (bbox.right + bbox.left) / 2,
+        y: (bbox.bottom + bbox.top) / 2,
+      };
+    },
     moveToPixels(point, xPixel, yPixel) {
       point.style.transform = `translate(${xPixel}px, ${yPixel}px)`;
     },
