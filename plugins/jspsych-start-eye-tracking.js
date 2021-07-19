@@ -1,21 +1,10 @@
 jsPsych.plugins['start-eye-tracking'] = (function(){
   const startGazePredictionVisualization = () => {
-    let errorWasInformed = false;
     const visualizationElement = drawer.appendGazeVisualization();
     return [
       visualizationElement.id,
       setInterval(async () => {
-        const currentPrediction =
-          await jsPsych.extensions.webgazer.getCurrentPrediction();
-        if (currentPrediction === null) {
-          if (!errorWasInformed) {
-            errorWasInformed = true;
-            throw new Error(
-              `'jsPsych.extensions.webgazer.getCurrentPrediction()' retornó 'null'. Fijate de haber llamado al trial 'webgazer-calibrate'.`
-            );
-          }
-          return;
-        }
+        const currentPrediction = await eyeTracking.currentPrediction();
         drawer.moveToPixels(
           visualizationElement,
           currentPrediction.x,

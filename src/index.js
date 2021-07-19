@@ -1,3 +1,18 @@
+const eyeTracking = (function() {
+  return {
+    async currentPrediction() {
+      const current =
+        await jsPsych.extensions.webgazer.getCurrentPrediction();
+      if (current === null) {
+        throw new Error(
+          `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
+        );
+      }
+      return current;
+    },
+  };
+})();
+
 const drawer = (function() {
   return {
     _appendPoint: (id, color, sizeInPixels) => {
