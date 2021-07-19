@@ -15,9 +15,10 @@ const eyeTracking = (function() {
 
 const drawer = (function() {
   return {
-    _appendPoint: (id, color, sizeInPixels) => {
+    _counter: 1,
+    _appendPoint(id, color, sizeInPixels) {
       const point = document.createElement('div');
-      point.id = id;
+      point.id = `${id}-${this._counter++}`;
       point.style.display = 'block';
       point.style.position = 'fixed';
       point.style.zIndex = 99999;
