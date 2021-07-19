@@ -8,7 +8,7 @@ const eyeTracking = (function() {
           `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
         );
       }
-      return current;
+      return { x: current.x, y: current.y, };
     },
   };
 })();
@@ -69,7 +69,7 @@ const utils = (function() {
     async runRegularly(maximumDuration, delta, cb) {
       const startingTimestamp = new Date;
       while (true) {
-        cb();
+        await cb();
         if (new Date - startingTimestamp + delta >= maximumDuration) {
           break;
         }

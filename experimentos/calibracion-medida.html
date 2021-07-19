@@ -22,15 +22,16 @@
     <script>
       jsPsych.init({
         timeline: [
-          // {
-          //   type: 'webgazer-init-camera',
-          // },
-          // {
-          //   type: 'fullscreen',
-          // },
-          // {
-          //   type: 'webgazer-calibrate',
-          // },
+          {
+            type: 'webgazer-init-camera',
+          },
+          {
+            type: 'fullscreen',
+          },
+          {
+            type: 'webgazer-calibrate',
+            calibration_points: [ [50, 50] ],
+          },
           {
             type: 'html-keyboard-response',
             stimulus: `
