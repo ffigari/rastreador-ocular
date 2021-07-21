@@ -82,6 +82,29 @@ const drawer = (function() {
         window.innerHeight * yPercentage / 100
       );
     },
+    async moveInCircleAround(
+      point, xPer, yPer, maximumDurationInMs, deltaInMs, cb
+    ) {
+      const radiusInPer = 5;
+      const parametrization = (ms) => {
+        const angle = 2 * Math.PI * ms / maximumDurationInMs;
+        return {
+          x: xPer + radiusInPer * Math.cos(angle),
+          y: yPer + radiusInPer * Math.sin(angle),
+        };
+      };
+      const updatePoint = (ms) => {
+        const positionInCircle = parametrization(ms);
+        drawer.moveToPercentages(point, positionInCircle.x, positionInCircle.y);
+      };
+      updatePoint(0);
+      await utils.runRegularly(maximumDurationInMs, deltaInMs, async (
+        elapsedTimeInMs
+      ) => {
+        await cb(point);
+        updatePoint(elapsedTimeInMs);
+      });
+    },
     erasePoint(point) {
       document.getElementById(point.id).remove();
     },
@@ -90,17 +113,20 @@ const drawer = (function() {
 
 const utils = (function() {
   return {
-    async sleep(ms ) {
+    async sleep(ms) {
       return new Promise(res => setTimeout(res, ms));
     },
-    async runRegularly(maximumDuration, delta, cb) {
+    async runRegularly(maximumDurationInMs, deltaInMs, cb) {
       const startingTimestamp = new Date;
       while (true) {
-        await cb();
-        if (new Date - startingTimestamp + delta >= maximumDuration) {
+        const currentElapsedTimeInMs = new Date - startingTimestamp;
+        await cb(currentElapsedTimeInMs);
+
+        const nextElapsedTime = currentElapsedTimeInMs + deltaInMs;
+        if (nextElapsedTime >= maximumDurationInMs) {
           break;
         }
-        await this.sleep(delta);
+        await this.sleep(deltaInMs);
       }
     }
   };

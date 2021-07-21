@@ -22,20 +22,24 @@ jsPsych.plugins['measure-calibration'] = (function(){
       for (const [xPercentage, yPercentage] of validationSectionsCenters) {
         const validationPointMeasurements = [];
         const validationPoint = drawer.appendValidationVisualization();
-        drawer.moveToPercentages(validationPoint, xPercentage, yPercentage);
-        const real = drawer.getCenterInPixels(validationPoint);
-        await utils.runRegularly(5000, 100, async () => {
-          validationPointMeasurements.push({
+        await drawer.moveInCircleAround(
+          validationPoint,
+          xPercentage,
+          yPercentage,
+          5000,
+          1000 / 24,
+          async (stimulusPoint) => validationPointMeasurements.push({
             prediction: await eyeTracking.currentPrediction(),
-            real,
-          });
-        });
+            real: drawer.getCenterInPixels(stimulusPoint),
+          })
+        );
         drawer.erasePoint(validationPoint);
         measurements.push(validationPointMeasurements);
       }
       const individualResults = measurements.map((validationMeasurements) => {
-        const distances = validationMeasurements
-          .map(({ prediction, real }) => math.distance(prediction, real));
+        const distances = validationMeasurements.map(({
+          prediction, real
+        }) => math.distance(prediction, real));
         return {
           distances,
           mean: math.mean(distances),
