@@ -123,6 +123,8 @@ calibración por defecto (sólo puntos abajo)
 Promedio del promedio de las distancias
     250.79464008376345
 
+---
+
 calibración por defecto
   + sentado con la notebook en las piernas
   + luz exterior adelante
@@ -140,3 +142,35 @@ calibración por defecto (sólo puntos abajo)
   + luz exterior adelante
 Promedio del promedio de las distancias
     256.4103332738459
+
+---
+
+calibración por defecto
+  + sentado con la notebook en las piernas
+  + luz interior 16:00 poco contraste
+Promedio del promedio de las distancias
+    262.47881839164313
+    257.
+    166.51550886248347 esforzandome en mantener la cabeza completamente quieta
+                       sin siquiera orientar la cabeza hacia donde están los
+                       puntos
+    365.6171562645751  manteniendo fija la cabeza durante la calibración (mirada
+                       paralela al lente) pero relajando luego
+
+calibración por defecto (sólo puntos arriba)
+  + sentado con la notebook en las piernas
+  + luz interior 16:00 poco contraste
+Promedio del promedio de las distancias
+    193.82623365703986
+    261.99
+    245.79102499838
+
+calibración por defecto (sólo puntos abajo)
+  + sentado con la notebook en las piernas
+  + luz interior 16:00 poco contraste
+Promedio del promedio de las distancias
+    201.97760804047783
+
+
+En los resultados parece ser más determinante no mover absolutamente nada la
+cabeza que la luz o la posición de la notebook
