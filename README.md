@@ -102,3 +102,41 @@ del código.
 De momento nomás voy a andar probando con webgazer pero como librería no me da
 mucha confianza y como eye tracker no parece tener un buen algoritmo de
 calibración.
+
+### Experimentación
+
+calibración por defecto
+  + sentado con la notebook en las piernas
+  + luz exterior adelante tapada por un árbol
+Promedio del promedio de las distancias
+    211.1747628836328
+
+calibración por defecto (sólo puntos arriba)
+  + sentado con la notebook en las piernas
+  + luz exterior adelante tapada por un árbol
+Promedio del promedio de las distancias
+    259.9857896805032
+
+calibración por defecto (sólo puntos abajo)
+  + sentado con la notebook en las piernas
+  + luz exterior adelante tapada por un árbol
+Promedio del promedio de las distancias
+    250.79464008376345
+
+calibración por defecto
+  + sentado con la notebook en las piernas
+  + luz exterior adelante
+Promedio del promedio de las distancias
+    204.65808096527138
+
+calibración por defecto (sólo puntos arriba)
+  + sentado con la notebook en las piernas
+  + luz exterior adelante
+Promedio del promedio de las distancias
+    277.41676057654166
+
+calibración por defecto (sólo puntos abajo)
+  + sentado con la notebook en las piernas
+  + luz exterior adelante
+Promedio del promedio de las distancias
+    256.4103332738459

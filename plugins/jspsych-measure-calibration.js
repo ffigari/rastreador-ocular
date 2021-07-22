@@ -11,11 +11,11 @@ jsPsych.plugins['measure-calibration'] = (function(){
       // De momento lo dejo hardcodeado pero se podría ver de armar algo más
       // inteligente para generar las distintas secciones
       const validationSectionsCenters = [
-        // [25, 25],
-        // [25, 75],
+        [25, 25],
+        [25, 75],
         [50, 50],
         [75, 25],
-        // [75, 75],
+        [75, 75],
       ];
 
       const measurements = [];
