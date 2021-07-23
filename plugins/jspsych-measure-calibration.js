@@ -3,6 +3,8 @@ jsPsych.plugins['measure-calibration'] = (function(){
     info: {
       name: 'measure-calibration',
       parameters: {
+        // TODO: Agregar un parámetro para activar que se vea el punto que está
+        //       siendo predicho
       },
     },
     trial: async function(display_element, trial){

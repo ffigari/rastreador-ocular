@@ -174,3 +174,42 @@ Promedio del promedio de las distancias
 
 En los resultados parece ser más determinante no mover absolutamente nada la
 cabeza que la luz o la posición de la notebook
+
+---
+
+calibración por defecto; contraluz; notebook en mesa
+
+cabeza paralela
+->
+se inclina la cabeza para que la mirada sea directa hacia la webcam  
+cabeza relajada
+->
+cuello relajado mirando hacia adelante
+
+cabeza paralela (calibración + validación):
+192.40
+
+cabeza relajada (calibración + validación):
+198.73
+
+cabeza paralela en calibración + cabeza relajada en validación:
+597.22
+
+cabeza relajada en calibración + cabeza paralela en validación:
+403.15
+
+cabeza paralela levemente rotada (calibración + validación):
+252.00
+
+cabeza paralela levemente rotada calibración + cabeza paralela validación:
+324.00
+
+cabeza paralela rotando a lo largo del experimento (calibración + validación):
+233.55
+
+cabeza inclinándose entre relajada y paralela (calibración + validación):
+177.33
+
+La calibración por defecto no parece generalizar bien para ninguna posición que
+no haya visto.
+Mover un poco la cabeza durante la calibración parece ayudar.
