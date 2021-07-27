@@ -27,6 +27,48 @@ const math = (function() {
 
 const eyeTracking = (function() {
   return {
+    _predictionVis: {
+      isOn: false,
+      visualizationElementId: null,
+      loopCallbackIntervalId: null,
+    },
+    startPredictionVisualization() {
+      if (this._predictionVis.isOn) {
+        throw new Error('La visualización de la predicción ya está activada.');
+      }
+
+      const visualizationElement = drawer.appendGazeVisualization();
+      const intervalId = setInterval(async () => {
+        const currentPrediction = await this.currentPrediction();
+        drawer.moveToPixels(
+          visualizationElement,
+          currentPrediction.x,
+          currentPrediction.y
+        );
+      }, 100)
+
+      Object.assign(this._predictionVis, {
+        isOn: true,
+        visualizationElementId: visualizationElement.id,
+        loopCallbackIntervalId: intervalId,
+      });
+    },
+    stopPredictionVisualization() {
+      if (!this._predictionVis.isOn) {
+        throw new Error('La visualización de la predicción no está activada.');
+      }
+
+      document
+        .getElementById(this._predictionVis.visualizationElementId)
+        .remove();
+      clearInterval(this._predictionVis.loopCallbackIntervalId);
+
+      Object.assign(this._predictionVis, {
+        isOn: false,
+        visualizationElementId: null,
+        loopCallbackIntervalId: null,
+      });
+    },
     async currentPrediction() {
       const current =
         await jsPsych.extensions.webgazer.getCurrentPrediction();

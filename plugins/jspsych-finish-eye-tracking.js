@@ -2,15 +2,10 @@ jsPsych.plugins['finish-eye-tracking'] = (function(){
   return {
     info: {
       name: 'finish-eye-tracking',
-      parameters: {
-      },
+      parameters: {},
     },
     trial: function(display_element, trial){
-      const eyeTrackingData = JSON.parse(jsPsych.data.get().filter({
-        trial_type: 'start-eye-tracking'
-      }).json())[0];
-      document.getElementById(eyeTrackingData.visualizationElementId).remove();
-      clearInterval(eyeTrackingData.loopCallbackIntervalId);
+      eyeTracking.stopPredictionVisualization();
       jsPsych.data.get().localSave('json','webgazer-sample-data.json');
       jsPsych.finishTrial();
     },
