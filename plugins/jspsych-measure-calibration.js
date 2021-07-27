@@ -3,11 +3,15 @@ jsPsych.plugins['measure-calibration'] = (function(){
     info: {
       name: 'measure-calibration',
       parameters: {
-        // TODO: Agregar un parámetro para activar que se vea el punto que está
-        //       siendo predicho
+        showPrediction: {
+          type: jsPsych.plugins.parameterType.BOOL,
+          default: false,
+          description: 'si mostrar o no la predicción del eye tracker',
+        }
       },
     },
-    trial: async function(display_element, trial){
+    trial: async function(display_element, trial) {
+      trial.showPrediction && eyeTracking.startPredictionVisualization();
       // Una lista de los puntos a usar para la validación en formato <x, y>
       // correspodiente al centro de la sección en porcentaje de la pantalla
       // De momento lo dejo hardcodeado pero se podría ver de armar algo más
@@ -84,6 +88,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
             }) => `<dd>${median}</dd>`).join("")}
           </dl>
       `
+      trial.showPrediction && eyeTracking.stopPredictionVisualization();
       jsPsych.finishTrial();
     },
   }
