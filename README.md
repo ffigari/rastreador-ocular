@@ -129,3 +129,16 @@ del código.
 De momento nomás voy a andar probando con webgazer pero como librería no me da
 mucha confianza y como eye tracker no parece tener un buen algoritmo de
 calibración.
+
+### Librerías que hay dando vueltas
+
+[WebGazer](https://webgazer.cs.brown.edu/) parece ser la única librería abierta
+que efectivamente provee eyetracking en el browser.
+Está tmb [SeeSo](https://seeso.io/) pero es paga y cerrada (proveen un SDK).
+Después hay otro set que son herramientas proveen eyetracking como un servicio
+más que como librería ([GazeRecorder](https://app.gazerecorder.com/), 
+[RealEye](https://www.realeye.io/); tmb pagas).
+Hay algunas librerías que proveen tracking (face tracking, feature detection)
+pero no eye tracking ([headtrackr](https://github.com/auduno/headtrackr),
+[tracking.js](https://github.com/eduardolundgren/tracking.js/)) ni están
+mantenidas.
