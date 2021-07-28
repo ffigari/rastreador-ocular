@@ -50,6 +50,8 @@ Cómo afecta el ángulo de la cámara? Puede detectarse ese ángulo?
 
 ### Experimentación
 
+#### Cómo medir la calidad de los resultados?
+
 Lo que tengo en la cabeza es armar un programa que:
 - calibra
 - muestra unos estímulos controlados
@@ -95,6 +97,31 @@ empiezo a tomar datos?
 O puedo ir modificando el experimento más adelante?
 Si modifico el experimento pierdo la data anterior, queda incompleta?
 
+#### Observaciones preliminares de webgazer
+
+La calidad de las predicciones parece verse principalmente afectada por el
+movimiento relativo entre los ojos y el lente.
+Esto incluye al menos distancia a la cámara, ángulo de la mirada, rotación de la
+cabeza.
+Distintos niveles de luz o la posición de la notebook parecen afectar menos.
+La variación de luz entre calibración y experimento sí parecieron afectar la
+calidad de los resultados.
+
+El empeoramiento de las predicciones debido al movimiento de la cabeza se
+arrancá a ver casi de inmediato:
+mantener la cabeza fija durante la calibración para luego relajarla durante el
+experimento de validación duplicaba el error promedio en píxeles de predicción
+frente al caso en el cual se mantenía siempre fija la cabeza o siempre relajada.
+
+Mover o rotar la cabeza durante la calibración mejoraban las predicciones luego,
+lo cual da lugar a preguntarse cómo conviene hacer la calibración.
+Herramientas online como
+[https://app.gazerecorder.com/](https://app.gazerecorder.com/)
+explícitamente piden mover la cabeza durante la calibración.
+
+También entra en duda si para distintas categorías de experimentos tendría
+sentido realizar distintas calibraciones.
+
 ### Implementación
 
 Voy a apuntar a crear alguna capa lógica entre el eyetracker que use y el resto
@@ -102,114 +129,3 @@ del código.
 De momento nomás voy a andar probando con webgazer pero como librería no me da
 mucha confianza y como eye tracker no parece tener un buen algoritmo de
 calibración.
-
-### Experimentación
-
-calibración por defecto
-  + sentado con la notebook en las piernas
-  + luz exterior adelante tapada por un árbol
-Promedio del promedio de las distancias
-    211.1747628836328
-
-calibración por defecto (sólo puntos arriba)
-  + sentado con la notebook en las piernas
-  + luz exterior adelante tapada por un árbol
-Promedio del promedio de las distancias
-    259.9857896805032
-
-calibración por defecto (sólo puntos abajo)
-  + sentado con la notebook en las piernas
-  + luz exterior adelante tapada por un árbol
-Promedio del promedio de las distancias
-    250.79464008376345
-
----
-
-calibración por defecto
-  + sentado con la notebook en las piernas
-  + luz exterior adelante
-Promedio del promedio de las distancias
-    204.65808096527138
-
-calibración por defecto (sólo puntos arriba)
-  + sentado con la notebook en las piernas
-  + luz exterior adelante
-Promedio del promedio de las distancias
-    277.41676057654166
-
-calibración por defecto (sólo puntos abajo)
-  + sentado con la notebook en las piernas
-  + luz exterior adelante
-Promedio del promedio de las distancias
-    256.4103332738459
-
----
-
-calibración por defecto
-  + sentado con la notebook en las piernas
-  + luz interior 16:00 poco contraste
-Promedio del promedio de las distancias
-    262.47881839164313
-    257.
-    166.51550886248347 esforzandome en mantener la cabeza completamente quieta
-                       sin siquiera orientar la cabeza hacia donde están los
-                       puntos
-    365.6171562645751  manteniendo fija la cabeza durante la calibración (mirada
-                       paralela al lente) pero relajando luego
-
-calibración por defecto (sólo puntos arriba)
-  + sentado con la notebook en las piernas
-  + luz interior 16:00 poco contraste
-Promedio del promedio de las distancias
-    193.82623365703986
-    261.99
-    245.79102499838
-
-calibración por defecto (sólo puntos abajo)
-  + sentado con la notebook en las piernas
-  + luz interior 16:00 poco contraste
-Promedio del promedio de las distancias
-    201.97760804047783
-
-
-En los resultados parece ser más determinante no mover absolutamente nada la
-cabeza que la luz o la posición de la notebook
-
----
-
-calibración por defecto; contraluz; notebook en mesa
-
-cabeza paralela
-->
-se inclina la cabeza para que la mirada sea directa hacia la webcam  
-cabeza relajada
-->
-cuello relajado mirando hacia adelante
-
-cabeza paralela (calibración + validación):
-192.40
-
-cabeza relajada (calibración + validación):
-198.73
-
-cabeza paralela en calibración + cabeza relajada en validación:
-597.22
-
-cabeza relajada en calibración + cabeza paralela en validación:
-403.15
-
-cabeza paralela levemente rotada (calibración + validación):
-252.00
-
-cabeza paralela levemente rotada calibración + cabeza paralela validación:
-324.00
-
-cabeza paralela rotando a lo largo del experimento (calibración + validación):
-233.55
-
-cabeza inclinándose entre relajada y paralela (calibración + validación):
-177.33
-
-La calibración por defecto no parece generalizar bien para ninguna posición que
-no haya visto.
-Mover un poco la cabeza durante la calibración parece ayudar.
