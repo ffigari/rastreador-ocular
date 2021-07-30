@@ -11,6 +11,18 @@ Se puede hacer `firefox index.html` por ejemplo.
 Dado un eye tracker basado en webcam quiero medir la calidad de sus
 predicciones.
 
+### Papers
+
+apuntes de los leídos:
+- [PupilEXT: Flexible Open-Source Platform for High-Resolution Pupillometry in Vision Research](/papers/pupilext-flexible-open-source-platform-for-high-resolution-pupillometry-in-vision-research.md)
+
+otros que podría ser interestante leer, en ningún orden particular:
+- Zhang, Z. (2000). A flexible new technique for camera calibration. IEEE Trans. Pattern Anal. Mach. Intell. 22, 1330–1334. doi: 10.1109/34.888718
+- Holmqvist, K., Nyström, M., and Mulvey, F. (2012). “Eye tracker data quality: what it is and how to measure it,” in Proceedings of the Symposium on Eye Tracking Research and Applications ETRA ‘12, (New York, NY: ACM Press), 45. doi: 10.1145/2168556.2168563
+- Arvin, S., Rasmussen, R., and Yonehara, K. (2020). EyeLoop: an open-source, high-speed eye-tracker designed for dynamic experiments. bioRxiv [Preprint]. doi: 10.1101/2020.07.03.186387
+- Santini, T., Fuhl, W., Geisler, D., and Kasneci, E. (2017). “EyeRecToo: open-source software for real-time pervasive head-mounted eye tracking,” in VISIGRAPP 2017 Proceedings of the 12th International Joint Conference on Computer Vision, Imaging and Computer Graphics Theory and Applications, (Setúbal: SciTePress), 96–101. doi: 10.5220/0006224700960101
+- Santini, T., Fuhl, W., and Kasneci, E. (2018a). PuRe: robust pupil detection for real-time pervasive eye tracking. Comput. Vis. Image Underst. 170, 40–50. doi: 10.1016/j.cviu.2018.02.002
+
 ### Variables
 
 #### Algoritmo de calibración

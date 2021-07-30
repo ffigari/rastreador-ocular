@@ -149,3 +149,82 @@ reprojection error" (zhang 2000)
 (Stereo Camera Calibration)
 
 (Demonstration of a Measurement Pipeline With PupilExt)
+
+el uso que muestran para el setup incluye las condiciones de labortorio
+respecto del control sobre la cabeza (chin rest, "a subject looked into a 700
+mm × 700 mm sized homogeneously illuminated observation chamber")
+
+(Pre-processing the Measured Raw Data)
+
+recomiendan descartar las medidas cuyo "confidence measure" esté por debajo de
+1 y aquellas cuyo "axis ratio" haya variado mucho (debería mantenerse más o
+menos constante)
+
+(Comparison of the Pupil Detection Approaches)
+
+los algoritmos distintos algoritmos disponibles se evalúan según su capacidad
+de estimar el centro de la pupila
+
+explican un poco cómo anduvo cada algoritmo y comparan la cantidad de
+parámetros requeridos
+
+(Validation of the Pupil Detection Algorithms)
+
+el diámetro de la pupila debería ser más o menos constante durante todo el
+experimento.  eliminar los valores con poca confianza ayuda a lograr esto, en
+particular evitando imprecisiones causadas por los pestañeos
+
+"The proposed technique for detecting eye blinks based on an outline confidence
+is highly affected by the detection rate. For example, it is no longer possible
+to distinguish between a false pupil fit or a closed eyelid at a higher rate of
+pupil detection artifactsx"
+
+menor cantidad de parámeteros libres son preferibles porque hay menos chance de
+pifiarle y obtener malos resultados
+
+los algoritmos que fallan menos del 10% y que tienen pocos parámetros son
+comparados luego según su capacidad de reportar un valor estable para el
+diámetro de pupila. la media de las diferencias puede diferir 0.001 mm según qué
+algoritmo se elija.
+
+(Determining the Pupil Measurement Accuracy)
+
+en la validacion stereo se reporta el MAE de las reproyecciones que se calculan
+al calibrar la cámara pero esto no incluye las inexactitudes del algoritmo de
+deteción de pupila. para medir esto un poco miden un objeto circular de 5mm
+puesto frente al ojo del sujeto. obtienen un MAE de 0.014mm inicialmente y de
+0.0059 cuando aplican los filtros mencionados arriba. hubo picos de 0.1mm. hay
+que notar tmb que esa validación se hace con un objeto estático
+
+(Limitations of the Proposed Pupillometry Toolbox)
+
+el algoritmo este funciona par aun único ojo. usando ROI en la GUI se puede
+limitar qué va a mirar el algoritmo.
+
+lo que dan armado está listo sólo para una marca de cámaras, aunque la interfaz
+provista permitiría agregar otras cámaras. Además se puede grabar offline con
+cualquier cámara y dsp proveer las imágenes al software
+
+usan sólo CPU cuando se podría usar GPU. el frame rate está limitado por el poder
+de cómputo de la máquina que estén usando.
+
+(Discussion)
+
+hay otros trabajos empujando para lograr herramientas open source. La confianza
+de las métricas sobre la pupila no suelen ser reportadas porque no son
+exportadas por las herramienta, al margén de que existen métricas que pueden
+reportarse
+
+la bibliografía actual no suele dar atención a los posibles errores técnicos o de
+software. en sistemas cerrados se hace imposible hacer validaciones. este trabajo muestra
+además que para la misma data y distintos algoritmos pueden ocurrir errores de hasta
+0.05mm.
+
+Las especificiaciones del setup o el reporte del centro de la pupila no serían
+suficiente para lograr que los resultados de distintos trabajos sean
+comparables, o para garantizar la reproducibilidad de los experimentos.
+Idealmente se podría unificar el mecanismo con el cual se captura la
+información de la pupila, reduciendo así la brecha entre distintos algoritmos.
+"From our perspective, a uniform measurement platform is essential for
+pupillometry, ensuring comparability and reproducibility." Reportar el error
+sobre un objeto de referencia permitiría comparar los distintos trabajos.
