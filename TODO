@@ -1,0 +1,52 @@
+
+  . entender webgazer en detalle
+    . utiliza la posición de la cara a lo largo del tiempo? o sólo al principio
+      para detectar dónde están los ojos?
+    . cómo se realizan las estimaciones? se ajusta de alguna manera al
+      movimiento de la cara? cómo? en qué afecta que mueva la cabeza? distintos
+      tipos de movimientos afectan de distinta manera?
+    . para esto voy a tener que mirar tanto el paper como el código
+    . respecto del código, qué datos se pueden extraer? puedo hacer que siempre
+      muestre el recuadro con la cara? hay algún valor dando vueltas ahí dentro
+      que tenga sentido exportar?
+  . ver si se puede usar TurkerGaze
+    . puede usarse en el navegador? o anda en desktop nomás?
+    . https://github.com/PrincetonVision/TurkerGaze
+  . ver de usar https://www.cognition.run
+
+  . estudiar la degradación de las estimaciones
+    . armar código para hacer una calibración nuestra
+      . ir pensando
+        - cómo hacer para en el futuro
+          poder ofrecer distintas calibraciones
+          según qué experimento se quiera correr
+        - algún protocolo respecto de cómo calibrar
+          . cada cierto tiempo?
+          . cuando detecto degradación? cómo detecto degradación?
+    . armar dos experimentos
+      - validación de los mismos puntos de calibración
+        . mostrar sucesivamente los mismos puntos que se usaron para la
+          calibración pero ahora validando la estimación al momento del click
+        . luego de cada validación
+          - reportar el error para cada punto
+          - preguntar si terminar y descargar
+            o si validar de vuelta
+        . mostrar el recuadro de webgazer
+      - seguimiento de un estímulo
+        . nomás mostrar algún estímulo para fijaciones
+        . recolectar cómo evoluciona la calidad de la estimación a lo largo del
+          tiempo
+
+  . agregar validación post calibración
+    . mostrar los mismos puntos que se muestran al calibrar
+    . implica agregar una función que vaya moviendo los puntos y espere los
+      clicks tanto para validar como para calibrar
+    . reportar el error para cada punto únicamente al momento de hacer click
+
+  . leer un cachín de neurocienca más en general
+    - http://scholarpedia.org/article/Saccade
+    - http://www.scholarpedia.org/article/Eye_movements
+    - ojear Kandel, Principles of Neural Science, a ver qué puedo encontrar ahí
+  . ojear https://github.com/cvlab-uob/Awesome-Gaze-Estimation y ver cuales de
+    los recursos podría mirar
+  . ojear eyelink https://gru.stanford.edu/doku.php/mgl/taskreferenceeyelink
