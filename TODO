@@ -5,7 +5,6 @@
     . cómo se realizan las estimaciones? se ajusta de alguna manera al
       movimiento de la cara? cómo? en qué afecta que mueva la cabeza? distintos
       tipos de movimientos afectan de distinta manera?
-    . para esto voy a tener que mirar tanto el paper como el código
     . respecto del código, qué datos se pueden extraer? puedo hacer que siempre
       muestre el recuadro con la cara? hay algún valor dando vueltas ahí dentro
       que tenga sentido exportar?

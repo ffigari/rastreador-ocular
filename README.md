@@ -8,15 +8,39 @@ Se puede hacer `firefox index.html` por ejemplo.
 
 ## Notas
 
-Dado un eye tracker basado en webcam quiero medir la calidad de sus
-predicciones.
+Estimación de mirada en experimentos en navegador y sin interacción continua
+por parte del usuario.
 
-### Papers
+### Trabajo relacionado
 
-apuntes de los leídos:
-- [PupilEXT: Flexible Open-Source Platform for High-Resolution Pupillometry in Vision Research](/papers/pupilext-flexible-open-source-platform-for-high-resolution-pupillometry-in-vision-research.md)
+Puipl ext como libería que busca estandarizar cómo se mide la pupila.
 
-otros que podría ser interestante leer, en ningún orden particular:
+Webgazer como librería que corre en el navegador. Toma muchas ideas de
+TurkerGaze. En lugar de centrarse en una calibración inicial buscan calibrar a
+medida que el usuario interactúa con la página web. No utilizan ningún modelado
+3D. Simplifican el problema asumiendo que el lugar del click se corresponde
+exactamente al lugar de la mirada. No me queda claro como alimentan al modelo
+cuando ocurre algún click. Creo que hacen algo similar a agregar las features
+capturadas en los 500ms anteriores, pero no entiendo a qué posición mapean esas
+features (el ojo, o la predicción que estaban realizando?). Tampoco me queda
+aclaran si van descartando datos viejos o si los mantienen dentro del modelo.
+
+#### apuntes de los leídos:
+
+- [
+  [1] PupilEXT: Flexible Open-Source Platform for High-Resolution Pupillometry in Vision Research
+](
+  /papers/pupilext-flexible-open-source-platform-for-high-resolution-pupillometry-in-vision-research.md
+)
+- [
+  [2] WebGazer: Scalable Webcam Eye Tracking Using User Interactions
+](
+  /papers/webgazer_scalable-webcam-eye-tracking-using-user-interactions.md
+)
+
+### otros que podría ser interestante leer, en ningún orden particular:
+
+- Dan Witzner Hansen and Qiang Ji. In the eye of the beholder: A survey of models for eyes and gaze. IEEE TPAMI, 32(3):478—500, 2010.
 - Zhang, Z. (2000). A flexible new technique for camera calibration. IEEE Trans. Pattern Anal. Mach. Intell. 22, 1330–1334. doi: 10.1109/34.888718
 - Holmqvist, K., Nyström, M., and Mulvey, F. (2012). “Eye tracker data quality: what it is and how to measure it,” in Proceedings of the Symposium on Eye Tracking Research and Applications ETRA ‘12, (New York, NY: ACM Press), 45. doi: 10.1145/2168556.2168563
 - Arvin, S., Rasmussen, R., and Yonehara, K. (2020). EyeLoop: an open-source, high-speed eye-tracker designed for dynamic experiments. bioRxiv [Preprint]. doi: 10.1101/2020.07.03.186387
