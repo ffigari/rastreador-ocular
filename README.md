@@ -38,8 +38,15 @@ aclaran si van descartando datos viejos o si los mantienen dentro del modelo.
   /papers/webgazer_scalable-webcam-eye-tracking-using-user-interactions.md
 )
 
+- [
+  [3] TurkerGaze: Crowdsourcing Saliency with Webcam based Eye Tracking
+](
+  /papers/turkergaze_crowdsourcing-saliency-with-webcam-based-eye-tracking.md
+)
+
 ### otros que podría ser interestante leer, en ningún orden particular:
 
+- Y. Sugano, Y. Matsushita, Y. Sato, and H. Koike. An incre- mental learning method for unconstrained gaze estimation. ECCV, 2008
 - Dan Witzner Hansen and Qiang Ji. In the eye of the beholder: A survey of models for eyes and gaze. IEEE TPAMI, 32(3):478—500, 2010.
 - Zhang, Z. (2000). A flexible new technique for camera calibration. IEEE Trans. Pattern Anal. Mach. Intell. 22, 1330–1334. doi: 10.1109/34.888718
 - Holmqvist, K., Nyström, M., and Mulvey, F. (2012). “Eye tracker data quality: what it is and how to measure it,” in Proceedings of the Symposium on Eye Tracking Research and Applications ETRA ‘12, (New York, NY: ACM Press), 45. doi: 10.1145/2168556.2168563
