@@ -13,8 +13,6 @@
     . https://github.com/PrincetonVision/TurkerGaze
   . ver de usar https://www.cognition.run
 
-  . retrabajar la sección de related works
-
   . estudiar la degradación de las estimaciones
     . armar código para hacer una calibración nuestra
       . ir pensando
