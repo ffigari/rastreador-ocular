@@ -1,13 +1,5 @@
 
-  . entender webgazer en detalle
-    . utiliza la posición de la cara a lo largo del tiempo? o sólo al principio
-      para detectar dónde están los ojos?
-    . cómo se realizan las estimaciones? se ajusta de alguna manera al
-      movimiento de la cara? cómo? en qué afecta que mueva la cabeza? distintos
-      tipos de movimientos afectan de distinta manera?
-    . respecto del código, qué datos se pueden extraer? puedo hacer que siempre
-      muestre el recuadro con la cara? hay algún valor dando vueltas ahí dentro
-      que tenga sentido exportar?
+  . mostrar siempre el face overlay con WG
   . ver si se puede usar TurkerGaze
     . puede usarse en el navegador? o anda en desktop nomás?
     . https://github.com/PrincetonVision/TurkerGaze

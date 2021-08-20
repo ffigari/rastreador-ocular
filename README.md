@@ -47,6 +47,24 @@ evita que se les de un uso general. Librerías como
 detection o feature detection pero ninguna ofrece detección de pupilas o
 estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.
 
+#### Algoritmo de WebGazer
+
+WG calibra el sistema con cada click y con movimientos del mouse cada a lo sumo
+50ms. Simplifican el problema asumiendo que la mirada y estos eventos se
+alinean perfectamente por más que otros trabajos hayan mostrado que no es
+cierto. Hay correspondencia entre mirada y eventos [cita?] pero existe también
+un delay que depende de cada evento [4]. Los datos se agregan al modelo a
+medida que ocurren. Los pares [imagen de los ojos, coordenada] se utilizan para
+entrenar el modelo.
+
+En cada frame se realiza una predicción nueva. Para ello recuperan la imagen de
+los ojos y predicen luego la coordenada mirada en la pantalla. Opcionalmente
+para la predicción se puede aplicar un filtro Kalman.
+
+No se realiza ningún ajuste ante movimiento de la cabeza, pues se asume que el
+sistema se va a ir recalibrando a lo largo del tiempo con los eventos de los
+usuarios.
+
 ### Dificultades propias de estimación de mirada via webcam
 
 #### Entorno no controlado
