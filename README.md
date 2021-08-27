@@ -47,7 +47,9 @@ evita que se les de un uso general. Librerías como
 detection o feature detection pero ninguna ofrece detección de pupilas o
 estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.
 
-#### Algoritmo de WebGazer
+#### Soluciones existentes
+
+##### WebGazer
 
 WG calibra el sistema con cada click y con movimientos del mouse cada a lo sumo
 50ms. Simplifican el problema asumiendo que la mirada y estos eventos se
@@ -64,6 +66,15 @@ para la predicción se puede aplicar un filtro Kalman.
 No se realiza ningún ajuste ante movimiento de la cabeza, pues se asume que el
 sistema se va a ir recalibrando a lo largo del tiempo con los eventos de los
 usuarios.
+
+##### TurkerGaze
+
+Actualmente [TG no está mantenido](
+https://github.com/PrincetonVision/TurkerGaze/issues/13). Siguiendo las
+instrucciones del proyecto no se logra arrancar la app y tampoco hay respuetas
+a los tickets abiertos por otra gente en la misma situación. Tampoco parece
+haber alguna instancia disponible online como para jugar con la app y darse una
+mejor idea de qué representa el código.
 
 ### Dificultades propias de estimación de mirada via webcam
 

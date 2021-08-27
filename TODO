@@ -1,8 +1,4 @@
-
-  . ver si se puede usar TurkerGaze
-    . puede usarse en el navegador? o anda en desktop nomás?
-    . https://github.com/PrincetonVision/TurkerGaze
-
+  . mirar el código de TG
   . estudiar la degradación de las estimaciones
     . armar código para hacer una calibración nuestra
       . ir pensando
