@@ -4,8 +4,10 @@ jsPsych.plugins['start-eye-tracking'] = (function(){
       name: 'start-eye-tracking',
       parameters: {},
     },
-    trial: function(display_element, trial){
-      eyeTracking.startPredictionVisualization();
+    trial: async function(display_element, trial){
+      const estimator = await eyeTracking.switchTo.estimating()
+
+      estimator.showVisualization();
       jsPsych.finishTrial();
     },
   };

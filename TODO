@@ -1,32 +1,24 @@
-  . mirar el código de TG
-  . estudiar la degradación de las estimaciones
-    . armar código para hacer una calibración nuestra
-      . ir pensando
-        - cómo hacer para en el futuro
-          poder ofrecer distintas calibraciones
-          según qué experimento se quiera correr
-        - algún protocolo respecto de cómo calibrar
-          . cada cierto tiempo?
-          . cuando detecto degradación? cómo detecto degradación?
-    . armar dos experimentos
-      - validación de los mismos puntos de calibración
-        . mostrar sucesivamente los mismos puntos que se usaron para la
-          calibración pero ahora validando la estimación al momento del click
-        . luego de cada validación
-          - reportar el error para cada punto
-          - preguntar si terminar y descargar
-            o si validar de vuelta
-        . mostrar el recuadro de webgazer
-      - seguimiento de un estímulo
-        . nomás mostrar algún estímulo para fijaciones
-        . recolectar cómo evoluciona la calidad de la estimación a lo largo del
-          tiempo
-
-  . agregar validación post calibración
+  . armar un experimento de validación post calibración
     . mostrar los mismos puntos que se muestran al calibrar
-    . implica agregar una función que vaya moviendo los puntos y espere los
-      clicks tanto para validar como para calibrar
     . reportar el error para cada punto únicamente al momento de hacer click
+
+  . estudiar la degradación de las estimaciones
+    - degradación de seguimiento de un estímulo
+      . nomás mostrar algún estímulo para fijaciones
+      . recolectar cómo evoluciona la calidad de la estimación a lo largo del
+        tiempo
+    - validar continuamente
+      . mostrar sucesivamente los mismos puntos que se usaron para la
+        calibración pero ahora validando la estimación al momento del click
+      . luego de cada validación
+        - reportar el error para cada punto
+        - preguntar si terminar y descargar
+          o si validar de vuelta
+
+  . ir pensando
+    - algún protocolo respecto de cómo calibrar
+      . cada cierto tiempo?
+      . cuando detecto degradación? cómo detecto degradación?
 
   . leer un cachín de neurocienca más en general
     - http://scholarpedia.org/article/Saccade
@@ -35,3 +27,5 @@
   . ojear https://github.com/cvlab-uob/Awesome-Gaze-Estimation y ver cuales de
     los recursos podría mirar
   . ojear eyelink https://gru.stanford.edu/doku.php/mgl/taskreferenceeyelink
+
+  . mirar el código de TG

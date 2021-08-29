@@ -11,7 +11,8 @@ jsPsych.plugins['measure-calibration'] = (function(){
       },
     },
     trial: async function(display_element, trial) {
-      trial.showPrediction && eyeTracking.startPredictionVisualization();
+      const estimator = await eyeTracking.switchTo.estimating()
+      trial.showPrediction && estimator.showVisualization();
       // Una lista de los puntos a usar para la validación en formato <x, y>
       // correspodiente al centro de la sección en porcentaje de la pantalla
       // De momento lo dejo hardcodeado pero se podría ver de armar algo más
@@ -35,7 +36,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
           5000,
           1000 / 24,
           async (stimulusPoint) => validationPointMeasurements.push({
-            prediction: await eyeTracking.currentPrediction(),
+            prediction: await estimator.currentPrediction(),
             real: drawer.getCenterInPixels(stimulusPoint),
           })
         );
@@ -88,7 +89,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
             }) => `<dd>${median}</dd>`).join("")}
           </dl>
       `
-      trial.showPrediction && eyeTracking.stopPredictionVisualization();
+      trial.showPrediction && estimator.hideVisualization();
       jsPsych.finishTrial();
     },
   }

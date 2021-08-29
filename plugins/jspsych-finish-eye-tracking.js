@@ -5,9 +5,13 @@ jsPsych.plugins['finish-eye-tracking'] = (function(){
       parameters: {},
     },
     trial: function(display_element, trial){
-      eyeTracking.stopPredictionVisualization();
+      const estimator = eyeTracking.continueTo.estimate()
+
+      estimator.hideVisualization();
       jsPsych.data.get().localSave('json','webgazer-sample-data.json');
       jsPsych.finishTrial();
+
+      eyeTracking.switchTo.idle()
     },
   }
 })();

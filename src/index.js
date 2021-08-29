@@ -25,16 +25,37 @@ const math = (function() {
   };
 })();
 
-const eyeTracking = (function() {
+const wgExt = jsPsych.extensions.webgazer
+
+const calibrator = (function () {
   return {
-    _predictionVis: {
-      isOn: false,
-      visualizationElementId: null,
-      loopCallbackIntervalId: null,
+    extendCalibrationWith(e) {
+      wgExt.calibratePoint(e.clientX, e.clientY);
     },
-    startPredictionVisualization() {
-      if (this._predictionVis.isOn) {
-        throw new Error('La visualización de la predicción ya está activada.');
+  }
+})()
+
+const estimator = (function () {
+  const state = {
+    visualization: {
+      isOn: false,
+      elementId: null,
+      loopCallbackIntervalId: null,
+    }
+  }
+  return {
+    async currentPrediction() {
+      const current = await wgExt.getCurrentPrediction();
+      if (current === null) {
+        throw new Error(
+          `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
+        );
+      }
+      return { x: current.x, y: current.y, };
+    },
+    showVisualization () {
+      if (state.visualization.isOn) {
+        throw new Error('La visualización de la estimación ya está activada.');
       }
 
       const visualizationElement = drawer.appendGazeVisualization();
@@ -47,37 +68,67 @@ const eyeTracking = (function() {
         );
       }, 100)
 
-      Object.assign(this._predictionVis, {
+      Object.assign(state.visualization, {
         isOn: true,
-        visualizationElementId: visualizationElement.id,
+        elementId: visualizationElement.id,
         loopCallbackIntervalId: intervalId,
       });
     },
-    stopPredictionVisualization() {
-      if (!this._predictionVis.isOn) {
+    hideVisualization() {
+      if (!state.visualization.isOn) {
         throw new Error('La visualización de la predicción no está activada.');
       }
 
       document
-        .getElementById(this._predictionVis.visualizationElementId)
+        .getElementById(state.visualization.elementId)
         .remove();
-      clearInterval(this._predictionVis.loopCallbackIntervalId);
+      clearInterval(state.visualization.loopCallbackIntervalId);
 
-      Object.assign(this._predictionVis, {
+      Object.assign(state.visualization, {
         isOn: false,
-        visualizationElementId: null,
+        elementId: null,
         loopCallbackIntervalId: null,
       });
-    },
-    async currentPrediction() {
-      const current =
-        await jsPsych.extensions.webgazer.getCurrentPrediction();
-      if (current === null) {
-        throw new Error(
-          `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
-        );
+    }
+  }
+})()
+
+const eyeTracking = (function() {
+  const state = {
+    phase: 'idle',
+  }
+  return {
+    get continueTo() {
+      return {
+        estimate() {
+          if (state.phase !== 'estimating') {
+            throw new Error(`No se puede continuar estimando por que la fase actual es '${state.phase}'`)
+          }
+          return estimator
+        }
       }
-      return { x: current.x, y: current.y, };
+    },
+    get switchTo () {
+      return {
+        idle() {
+          state.phase = 'idle'
+          wgExt.pause();
+
+          return null
+        },
+        async calibrating() {
+          state.phase = 'calibrating'
+          await wgExt.resume();
+
+          return calibrator
+        },
+        async estimating() {
+          state.phase = 'estimating'
+          await wgExt.resume();
+
+          return estimator
+        },
+      }
     },
   };
 })();
@@ -106,6 +157,12 @@ const drawer = (function() {
     },
     appendValidationVisualization() {
       return this._appendPoint('calibration-measurment-visualization', 'black', 30);
+    },
+    appendCalibrationStimulus() {
+      const stimulus = this._appendPoint(
+        'calibration-stiumulus-visualization', 'blue', 30)
+      stimulus.style.cursor = 'pointer'
+      return stimulus;
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();

@@ -67,6 +67,9 @@ No se realiza ningún ajuste ante movimiento de la cabeza, pues se asume que el
 sistema se va a ir recalibrando a lo largo del tiempo con los eventos de los
 usuarios.
 
+La calibración provista por la extención de JSPsych junta puntos para calibrar
+mientras se mueve el mouse
+
 ##### TurkerGaze
 
 Actualmente [TG no está mantenido](
