@@ -7,6 +7,9 @@ jsPsych.plugins['calibrate-eye-tracker'] = (function(){
       const calibrator = await eyeTracking.switchTo.calibrating()
 
       const stimulus = drawer.appendCalibrationStimulus()
+      // TODO: Randomize the order of the points
+      // TODO: Store information about which calibration was performed
+      //        - history of the shown stimulus
       for (const [xPercentage, yPercentage] of [
         [10,10], [10,50], [10,90],
         [50,10], [50,50], [50,90],
