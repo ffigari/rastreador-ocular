@@ -90,6 +90,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
           </dl>
       `
       trial.showPrediction && estimator.hideVisualization();
+      eyeTracking.switchTo.idle()
       jsPsych.finishTrial();
     },
   }

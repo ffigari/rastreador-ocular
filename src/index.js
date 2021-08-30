@@ -111,18 +111,27 @@ const eyeTracking = (function() {
     get switchTo () {
       return {
         idle() {
+          if (state.phase === 'idle') {
+            throw new Error(`Sólo se puede cambiar a 'calibrating' si previamente se estaba en fase 'idle'.`)
+          }
           state.phase = 'idle'
           wgExt.pause();
 
           return null
         },
         async calibrating() {
+          if (state.phase !== 'idle') {
+            throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
+          }
           state.phase = 'calibrating'
           await wgExt.resume();
 
           return calibrator
         },
         async estimating() {
+          if (state.phase !== 'idle') {
+            throw new Error(`No se pudo cambiar a 'validating' porque la fase actual no es 'idle'.`)
+          }
           state.phase = 'estimating'
           await wgExt.resume();
 
