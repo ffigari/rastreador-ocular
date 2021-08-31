@@ -1,17 +1,27 @@
-  . estudiar la degradación de las estimaciones
-    - degradación de seguimiento de un estímulo
-      . nomás mostrar algún estímulo para fijaciones
-      . recolectar cómo evoluciona la calidad de la estimación a lo largo del
-        tiempo
-    - validar continuamente
-      . mostrar sucesivamente los mismos puntos que se usaron para la
-        calibración pero ahora validando la estimación al momento del click
-      . luego de cada validación
-        - reportar el error para cada punto
-        - preguntar si terminar y descargar
-          o si validar de vuelta
+  . que tanto la validación como la calibración se triggereen con la barra de
+    espacio
+  . armar un experimento con validación infinita
+    que luego de una calibración se muestre infinitamente el plugin de
+    validación, guardando y mostrando métricas que permitan ver cuan bien o mal
+    fue dando
 
-  . ir pensando
-    - algún protocolo respecto de cómo calibrar
-      . cada cierto tiempo?
-      . cuando detecto degradación? cómo detecto degradación?
+  . pensar y organizar mejor las interfaces
+    hay que mirar bien qué módulos se necesitan y a para qué usuario van. por un
+    lado están los plugins pero tmb hay que pensar en la detección de caras, la
+    detección del movimiento de la cara
+
+  . pasar a usar https://jspsychophysics.hes.kyushu-u.ac.jp para dibujar los
+    estímulos
+  . armar experimento de antisacadas
+  . leer "In the Eye of the Beholder: A Survey of Models for Eyes and Gaze"
+    https://sci-hub.st/https://doi.org/10.1109/TPAMI.2009.30
+
+  . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
+
+  . armar plugin para drift detection
+    un plugin que cuando lo corrés te muestra un único punto y si pifia la
+    estimación entonces te manda a calibrar
+
+  . detección de movimiento de la cara
+    al momento de calibrar guardar info de dónde está la cara y usar eso para
+    saber cuando se movió el sujeto

@@ -1,3 +1,10 @@
+  . priorizar encontrar algun set de condiciones tal que la estimación ande y de
+    ahí arrancar a mejorar. para esto se puede
+    - armar una lista de sugerencias / herramientas respecto de como obtener
+      mejores resultados
+    - agregar reestricciones al sistema tal que eviten caer en condiciones que
+      dan malos resultados
+
   . usuarios
     - quien usa únicamente los plugins para reportar donde se está mirando
     - quien arma sus propios plugins
@@ -5,13 +12,11 @@
     
     . asique hay que distinguir esas interfaces
     
-  . se puede armar el código tal que tanto webgazer como su extension puedan
-    reemplazarse
-    todos los llamados que haga a ambas librerías tendrían que pasar por una
-    capa nuestra
-    de esta manera estaríamos construyendo la API requerida por nosotros en
-    lugar de usar las APIs que nos son ofrecidas
-    logramos además aislar cada bloque que usemos
+  . encapsular código ajeno
+    se puede armar el código tal que tanto webgazer como su extension puedan
+    reemplazarse. todos los llamados que haga a ambas librerías tendrían que
+    pasar por una capa nuestra. de esta manera estaríamos construyendo la API
+    requerida por nosotros en lugar de usar las APIs que nos son ofrecidas.
     
   . validar calibración durante la calibración en sí
     en ese momento se pueden realizar hipótesis sobre dónde está mirando el
