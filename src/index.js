@@ -22,16 +22,55 @@ const math = (function() {
     norm(p) {
       return Math.sqrt(p.x * p.x + p.y * p.y);
     },
-  };
+    // https://stackoverflow.com/a/2450976/2923526
+    shuffle(array) {
+      let currentIndex = array.length
+      let randomIndex
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [
+          array[currentIndex], array[randomIndex]
+        ] = [
+          array[randomIndex], array[currentIndex]
+        ];
+      }
+      return array;
+    }
+  }
 })();
 
 const wgExt = jsPsych.extensions.webgazer
 
 const calibrator = (function () {
+  const state = {
+    lastCalibrationCoordinates: null
+  }
   return {
-    extendCalibrationWith(e) {
-      wgExt.calibratePoint(e.clientX, e.clientY);
+    get lastCalibrationCoordinates() {
+      return state.lastCalibrationCoordinates
     },
+    async runExplicitCalibration(
+      stimulusDrawer,
+      calibrationExtender
+    ) {
+      let coordinates = [
+        [10,10], [10,50], [10,90],
+        [50,10], [50,50], [50,90],
+        [90,10], [90,50], [90,90],
+      ]
+      math.shuffle(coordinates)
+      state.lastCalibrationCoordinates = [];
+      for (const [xGroundTruth, yGroundTruth] of coordinates) {
+        // Draw this ground truth coordinate...
+        stimulusDrawer(xGroundTruth, yGroundTruth);
+        // ...and collect points to map to it
+        await calibrationExtender((xEstimated, yEstimated) => {
+          wgExt.calibratePoint(xEstimated, yEstimated)
+          state.lastCalibrationCoordinates.push([xGroundTruth, yGroundTruth])
+        })
+      }
+    }
   }
 })()
 
@@ -124,6 +163,8 @@ const eyeTracking = (function() {
           return null
         },
         async calibrating() {
+          // TODO: Acá y en estimating habría que agregar un check de que se
+          //       haya llamado al plugin que inicializa webgazer
           if (state.phase !== 'idle') {
             throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
           }
