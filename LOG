@@ -1,0 +1,21 @@
+  . usuarios
+    - quien usa únicamente los plugins para reportar donde se está mirando
+    - quien arma sus propios plugins
+    - quien quiera utilizar el eyetracker en otro contexto
+    
+    . asique hay que distinguir esas interfaces
+    
+  . se puede armar el código tal que tanto webgazer como su extension puedan
+    reemplazarse
+    todos los llamados que haga a ambas librerías tendrían que pasar por una
+    capa nuestra
+    de esta manera estaríamos construyendo la API requerida por nosotros en
+    lugar de usar las APIs que nos son ofrecidas
+    logramos además aislar cada bloque que usemos
+    
+  . validar calibración durante la calibración en sí
+    en ese momento se pueden realizar hipótesis sobre dónde está mirando el
+    usuario en qué momento. en los momentos anteriores al click hay muchas
+    chances de que el usuario esté mirando ahí. hay que chequear bien con la
+    bibliografía (TG creo que usaba los últimos 0.5 segundos de los 1.5 segundos
+    que mostraba el estímulo al usuario)

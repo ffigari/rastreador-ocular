@@ -22,16 +22,58 @@ const math = (function() {
     norm(p) {
       return Math.sqrt(p.x * p.x + p.y * p.y);
     },
-  };
+    // https://stackoverflow.com/a/2450976/2923526
+    shuffle(array) {
+      let currentIndex = array.length
+      let randomIndex
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [
+          array[currentIndex], array[randomIndex]
+        ] = [
+          array[randomIndex], array[currentIndex]
+        ];
+      }
+      return array;
+    }
+  }
 })();
 
 const wgExt = jsPsych.extensions.webgazer
 
 const calibrator = (function () {
+  const state = {
+    lastCalibrationCoordinates: null
+  }
   return {
-    extendCalibrationWith(e) {
-      wgExt.calibratePoint(e.clientX, e.clientY);
+    get lastCalibrationCoordinates() {
+      if (!state.lastCalibrationCoordinates) {
+        throw new Error('No se detectó una calibración previa.')
+      }
+      return state.lastCalibrationCoordinates
     },
+    async runExplicitCalibration(
+      stimulusDrawer,
+      calibrationExtender
+    ) {
+      let coordinates = [
+        [10,10], [10,50], [10,90],
+        [50,10], [50,50], [50,90],
+        [90,10], [90,50], [90,90],
+      ]
+      math.shuffle(coordinates)
+      state.lastCalibrationCoordinates = [];
+      for (const [xGroundTruth, yGroundTruth] of coordinates) {
+        // Draw this ground truth coordinate...
+        stimulusDrawer(xGroundTruth, yGroundTruth);
+        // ...and collect points to map to it
+        await calibrationExtender((xEstimated, yEstimated) => {
+          wgExt.calibratePoint(xEstimated, yEstimated)
+          state.lastCalibrationCoordinates.push([xGroundTruth, yGroundTruth])
+        })
+      }
+    }
   }
 })()
 
@@ -51,7 +93,7 @@ const estimator = (function () {
           `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
         );
       }
-      return { x: current.x, y: current.y, };
+      return [current.x, current.y];
     },
     showVisualization () {
       if (state.visualization.isOn) {
@@ -60,11 +102,11 @@ const estimator = (function () {
 
       const visualizationElement = drawer.appendGazeVisualization();
       const intervalId = setInterval(async () => {
-        const currentPrediction = await this.currentPrediction();
+        const [x, y] = await this.currentPrediction();
         drawer.moveToPixels(
           visualizationElement,
-          currentPrediction.x,
-          currentPrediction.y
+          x,
+          y
         );
       }, 100)
 
@@ -89,7 +131,37 @@ const estimator = (function () {
         elementId: null,
         loopCallbackIntervalId: null,
       });
-    }
+    },
+    async runValidationRound(stimulusDrawer, stimulusCleaner) {
+      const measurements = []
+
+      const stimulusCoordinates = [...calibrator.lastCalibrationCoordinates]
+      math.shuffle(stimulusCoordinates)
+      for (const [xGroundTruth, yGroundTruth] of stimulusCoordinates) {
+        const stimulusMeasurements = {
+          groundTruthPercentages: [xGroundTruth, yGroundTruth],
+          groundTruthPixels: stimulusDrawer(xGroundTruth, yGroundTruth),
+          start: new Date,
+          end: null,
+          estimations: [],
+        }
+        const intervalId = setInterval(async () => {
+          stimulusMeasurements.estimations.push({
+            coordinate: await this.currentPrediction(),
+            ts: new Date,
+          })
+        }, 1000 / 24)
+        await new Promise((resolve) => setTimeout(() => {
+          clearInterval(intervalId)
+          stimulusMeasurements.end = new Date
+          measurements.push(stimulusMeasurements)
+          stimulusCleaner()
+          resolve()
+        }, 1500))
+      }
+
+      return measurements
+    },
   }
 })()
 
@@ -112,27 +184,41 @@ const eyeTracking = (function() {
       return {
         idle() {
           if (state.phase === 'idle') {
-            throw new Error(`Sólo se puede cambiar a 'calibrating' si previamente se estaba en fase 'idle'.`)
+            throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
           }
-          state.phase = 'idle'
+
+          Object.assign(state, {
+            phase: 'idle',
+          })
           wgExt.pause();
 
           return null
         },
         async calibrating() {
+          // TODO: Acá y en estimating habría que agregar un check de que se
+          //       haya llamado al plugin que inicializa webgazer
           if (state.phase !== 'idle') {
             throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
           }
-          state.phase = 'calibrating'
+
+          Object.assign(state, {
+            phase: 'calibrating',
+          })
           await wgExt.resume();
 
           return calibrator
         },
         async estimating() {
+          const msg = (
+            reason
+          ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
           if (state.phase !== 'idle') {
-            throw new Error(`No se pudo cambiar a 'validating' porque la fase actual no es 'idle'.`)
+            throw new Error(msg(`la fase actual no es 'idle'`))
           }
-          state.phase = 'estimating'
+
+          Object.assign(state, {
+            phase: 'estimating',
+          })
           await wgExt.resume();
 
           return estimator
@@ -175,10 +261,10 @@ const drawer = (function() {
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
-      return {
-        x: (bbox.right + bbox.left) / 2,
-        y: (bbox.bottom + bbox.top) / 2,
-      };
+      return [
+        (bbox.right + bbox.left) / 2,
+        (bbox.bottom + bbox.top) / 2,
+      ];
     },
     moveToPixels(point, xPixel, yPixel) {
       point.style.transform = `translate(${xPixel}px, ${yPixel}px)`;

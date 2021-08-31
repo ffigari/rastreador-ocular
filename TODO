@@ -1,7 +1,3 @@
-  . armar un experimento de validación post calibración
-    . mostrar los mismos puntos que se muestran al calibrar
-    . reportar el error para cada punto únicamente al momento de hacer click
-
   . estudiar la degradación de las estimaciones
     - degradación de seguimiento de un estímulo
       . nomás mostrar algún estímulo para fijaciones
@@ -19,13 +15,3 @@
     - algún protocolo respecto de cómo calibrar
       . cada cierto tiempo?
       . cuando detecto degradación? cómo detecto degradación?
-
-  . leer un cachín de neurocienca más en general
-    - http://scholarpedia.org/article/Saccade
-    - http://www.scholarpedia.org/article/Eye_movements
-    - ojear Kandel, Principles of Neural Science, a ver qué puedo encontrar ahí
-  . ojear https://github.com/cvlab-uob/Awesome-Gaze-Estimation y ver cuales de
-    los recursos podría mirar
-  . ojear eyelink https://gru.stanford.edu/doku.php/mgl/taskreferenceeyelink
-
-  . mirar el código de TG
