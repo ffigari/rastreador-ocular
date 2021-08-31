@@ -43,8 +43,8 @@ jsPsych.plugins['measure-calibration'] = (function(){
               xPixelsCenter, yPixelsCenter
             ] = drawer.getCenterInPixels(stimulusPoint)
             validationPointMeasurements.push({
-              prediction: { xPixelsEstimated, yPixelsEstimated },
-              real: { xPixelsCenter, yPixelsCenter },
+              prediction: { x: xPixelsEstimated, y: yPixelsEstimated },
+              real: { x: xPixelsCenter, y: yPixelsCenter },
             })
           }
         );
