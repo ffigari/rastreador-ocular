@@ -96,6 +96,7 @@ const estimator = (function () {
 const eyeTracking = (function() {
   const state = {
     phase: 'idle',
+    isSurelyUncalibrated: true,
   }
   return {
     get continueTo() {
@@ -112,9 +113,12 @@ const eyeTracking = (function() {
       return {
         idle() {
           if (state.phase === 'idle') {
-            throw new Error(`Sólo se puede cambiar a 'calibrating' si previamente se estaba en fase 'idle'.`)
+            throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
           }
-          state.phase = 'idle'
+
+          Object.assign(state, {
+            phase: 'idle',
+          })
           wgExt.pause();
 
           return null
@@ -123,16 +127,29 @@ const eyeTracking = (function() {
           if (state.phase !== 'idle') {
             throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
           }
-          state.phase = 'calibrating'
+
+          Object.assign(state, {
+            phase: 'calibrating',
+            isSurelyUncalibrated: false,
+          })
           await wgExt.resume();
 
           return calibrator
         },
         async estimating() {
+          const msg = (
+            reason
+          ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
           if (state.phase !== 'idle') {
-            throw new Error(`No se pudo cambiar a 'validating' porque la fase actual no es 'idle'.`)
+            throw new Error(msg(`la fase actual no es 'idle'`))
           }
-          state.phase = 'estimating'
+          if (state.isSurelyUncalibrated) {
+            throw new Error(msg(`el sistema no fue calibrado ninguna vez`))
+          }
+
+          Object.assign(state, {
+            phase: 'estimating',
+          })
           await wgExt.resume();
 
           return estimator
