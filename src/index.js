@@ -48,6 +48,9 @@ const calibrator = (function () {
   }
   return {
     get lastCalibrationCoordinates() {
+      if (!state.lastCalibrationCoordinates) {
+        throw new Error('No se detectó una calibración previa.')
+      }
       return state.lastCalibrationCoordinates
     },
     async runExplicitCalibration(
@@ -90,7 +93,7 @@ const estimator = (function () {
           `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
         );
       }
-      return { x: current.x, y: current.y, };
+      return [current.x, current.y];
     },
     showVisualization () {
       if (state.visualization.isOn) {
@@ -99,11 +102,11 @@ const estimator = (function () {
 
       const visualizationElement = drawer.appendGazeVisualization();
       const intervalId = setInterval(async () => {
-        const currentPrediction = await this.currentPrediction();
+        const [x, y] = await this.currentPrediction();
         drawer.moveToPixels(
           visualizationElement,
-          currentPrediction.x,
-          currentPrediction.y
+          x,
+          y
         );
       }, 100)
 
@@ -128,14 +131,43 @@ const estimator = (function () {
         elementId: null,
         loopCallbackIntervalId: null,
       });
-    }
+    },
+    async runValidationRound(stimulusDrawer, stimulusCleaner) {
+      const measurements = []
+
+      const stimulusCoordinates = [...calibrator.lastCalibrationCoordinates]
+      math.shuffle(stimulusCoordinates)
+      for (const [xGroundTruth, yGroundTruth] of stimulusCoordinates) {
+        const stimulusMeasurements = {
+          groundTruthPercentages: [xGroundTruth, yGroundTruth],
+          groundTruthPixels: stimulusDrawer(xGroundTruth, yGroundTruth),
+          start: new Date,
+          end: null,
+          estimations: [],
+        }
+        const intervalId = setInterval(async () => {
+          stimulusMeasurements.estimations.push({
+            coordinate: await this.currentPrediction(),
+            ts: new Date,
+          })
+        }, 1000 / 24)
+        await new Promise((resolve) => setTimeout(() => {
+          clearInterval(intervalId)
+          stimulusMeasurements.end = new Date
+          measurements.push(stimulusMeasurements)
+          stimulusCleaner()
+          resolve()
+        }, 1500))
+      }
+
+      return measurements
+    },
   }
 })()
 
 const eyeTracking = (function() {
   const state = {
     phase: 'idle',
-    isSurelyUncalibrated: true,
   }
   return {
     get continueTo() {
@@ -171,7 +203,6 @@ const eyeTracking = (function() {
 
           Object.assign(state, {
             phase: 'calibrating',
-            isSurelyUncalibrated: false,
           })
           await wgExt.resume();
 
@@ -183,9 +214,6 @@ const eyeTracking = (function() {
           ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
           if (state.phase !== 'idle') {
             throw new Error(msg(`la fase actual no es 'idle'`))
-          }
-          if (state.isSurelyUncalibrated) {
-            throw new Error(msg(`el sistema no fue calibrado ninguna vez`))
           }
 
           Object.assign(state, {
@@ -233,10 +261,10 @@ const drawer = (function() {
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
-      return {
-        x: (bbox.right + bbox.left) / 2,
-        y: (bbox.bottom + bbox.top) / 2,
-      };
+      return [
+        (bbox.right + bbox.left) / 2,
+        (bbox.bottom + bbox.top) / 2,
+      ];
     },
     moveToPixels(point, xPixel, yPixel) {
       point.style.transform = `translate(${xPixel}px, ${yPixel}px)`;

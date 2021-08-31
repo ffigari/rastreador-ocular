@@ -35,10 +35,18 @@ jsPsych.plugins['measure-calibration'] = (function(){
           yPercentage,
           5000,
           1000 / 24,
-          async (stimulusPoint) => validationPointMeasurements.push({
-            prediction: await estimator.currentPrediction(),
-            real: drawer.getCenterInPixels(stimulusPoint),
-          })
+          async (stimulusPoint) => {
+            const [
+              xPixelsEstimated, yPixelsEstimated
+            ] = await estimator.currentPrediction()
+            const [
+              xPixelsCenter, yPixelsCenter
+            ] = drawer.getCenterInPixels(stimulusPoint)
+            validationPointMeasurements.push({
+              prediction: { xPixelsEstimated, yPixelsEstimated },
+              real: { xPixelsCenter, yPixelsCenter },
+            })
+          }
         );
         drawer.erasePoint(validationPoint);
         measurements.push(validationPointMeasurements);
