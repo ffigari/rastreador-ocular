@@ -1,5 +1,8 @@
-  . que tanto la validación como la calibración se triggereen con la barra de
+  . modificar las instrucciones para la calibración y la validación
+  . mirar un cachito el tema del delay de WG
+  . ver porque se triggerea antes la calibración si arranco con la barra de
     espacio
+
   . armar un experimento con validación infinita
     que luego de una calibración se muestre infinitamente el plugin de
     validación, guardando y mostrando métricas que permitan ver cuan bien o mal

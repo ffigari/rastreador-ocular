@@ -8,17 +8,15 @@ jsPsych.plugins['validate-last-calibration'] = (function(){
 
       estimator.showVisualization()
 
-      let stimulus
+      let stimulus = drawer.appendValidationVisualization()
       const measurements = await estimator.runValidationRound(
         (xPercentage, yPercentage) => {
-          stimulus = drawer.appendValidationVisualization();
           drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
           return drawer.getCenterInPixels(stimulus)
-        },
-        () => {
-          drawer.erasePoint(stimulus)
         }
       )
+      drawer.erasePoint(stimulus)
+
       const metrics = measurements.map(({
         groundTruthPercentages, groundTruthPixels: [xGTPix, yGTPix], estimations
       }) => {

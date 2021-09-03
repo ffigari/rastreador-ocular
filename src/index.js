@@ -147,7 +147,7 @@ const estimator = (function () {
         loopCallbackIntervalId: null,
       });
     },
-    async runValidationRound(stimulusUpdater, stimulusCleaner) {
+    async runValidationRound(stimulusUpdater) {
       const measurements = []
 
       const stimulusCoordinates = [...calibrator.lastPercentagesCalibrationCoordinates]
@@ -156,23 +156,17 @@ const estimator = (function () {
         const stimulusMeasurements = {
           groundTruthPercentages: [xPerGroundTruth, yPerGroundTruth],
           groundTruthPixels: stimulusUpdater(xPerGroundTruth, yPerGroundTruth),
-          start: new Date,
-          end: null,
+          startedAt: new Date,
+          endedAt: null,
           estimations: [],
         }
-        const intervalId = setInterval(async () => {
-          stimulusMeasurements.estimations.push({
-            coordinate: await this.currentPrediction(),
-            ts: new Date,
-          })
-        }, 1000 / 24)
-        await new Promise((resolve) => setTimeout(() => {
-          clearInterval(intervalId)
-          stimulusMeasurements.end = new Date
-          measurements.push(stimulusMeasurements)
-          stimulusCleaner()
-          resolve()
-        }, 1500))
+        await forSingleSpaceBarOn(document)
+        stimulusMeasurements.estimations.push({
+          coordinate: await this.currentPrediction(),
+          ts: new Date,
+        })
+        stimulusMeasurements.endedAt = new Date
+        measurements.push(stimulusMeasurements)
       }
 
       return measurements
@@ -210,8 +204,6 @@ const eyeTracking = (function() {
           return null
         },
         async calibrating() {
-          // TODO: Acá y en estimating habría que agregar un check de que se
-          //       haya llamado al plugin que inicializa webgazer
           if (state.phase !== 'idle') {
             throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
           }
