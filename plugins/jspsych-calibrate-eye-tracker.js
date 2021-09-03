@@ -6,19 +6,12 @@ jsPsych.plugins['calibrate-eye-tracker'] = (function(){
     trial: async function(display_element, trial) {
       const calibrator = await eyeTracking.switchTo.calibrating()
 
-      const stimulus = drawer.appendCalibrationStimulus()
+      let stimulus = drawer.appendCalibrationStimulus()
       await calibrator.runExplicitCalibration(
         (xPercentage, yPercentage) => {
           drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
-        },
-        async (extendCalibrationWith) => {
-          await new Promise((resolve) => {
-            stimulus.addEventListener('click', (e) => {
-              extendCalibrationWith(e.clientX, e.clientY)
-              resolve()
-            }, { once: true, })
-          })
-        },
+          return drawer.getCenterInPixels(stimulus)
+        }
       )
       drawer.erasePoint(stimulus)
 
