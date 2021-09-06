@@ -18,7 +18,7 @@
     <script src="../plugins/jspsych-start-eye-tracking.js"></script>
     <script src="../plugins/jspsych-finish-eye-tracking.js"></script>
 
-    <title> Calibración propia </title>
+    <title> Calibración propia validada </title>
   </head>
   <body>
     <script>
@@ -31,25 +31,7 @@
             type: 'fullscreen',
           },
           {
-            type: 'html-keyboard-response',
-            stimulus: `
-              <p>
-                Vamos a calibrar el sistema. <br>
-                Para comenzar presioná cualquier tecla.
-              </p>`,
-            choices: jsPsych.ALL_KEYS,
-          },
-          {
             type: 'calibrate-eye-tracker',
-          },
-          {
-            type: 'html-keyboard-response',
-            stimulus: `
-              <p>
-                Ahora vamos a correr una ronda de validación para ver cómo salió la calibración. <br>
-                Presioná cualquier tecla para continuar.
-              </p>`,
-            choices: jsPsych.ALL_KEYS,
           },
           {
             type: 'validate-last-calibration',

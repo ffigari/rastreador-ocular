@@ -1,5 +1,5 @@
-  . que tanto la validación como la calibración se triggereen con la barra de
-    espacio
+  . mirar un cachito el tema del delay de WG
+
   . armar un experimento con validación infinita
     que luego de una calibración se muestre infinitamente el plugin de
     validación, guardando y mostrando métricas que permitan ver cuan bien o mal
@@ -9,6 +9,7 @@
     hay que mirar bien qué módulos se necesitan y a para qué usuario van. por un
     lado están los plugins pero tmb hay que pensar en la detección de caras, la
     detección del movimiento de la cara
+  . renombrar modulo principal a 'rastoc'
 
   . pasar a usar https://jspsychophysics.hes.kyushu-u.ac.jp para dibujar los
     estímulos

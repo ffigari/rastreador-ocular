@@ -42,36 +42,59 @@ const math = (function() {
 
 const wgExt = jsPsych.extensions.webgazer
 
+const forAnyKeyOn = async (eventTarget) => {
+  await new Promise((res) => {
+    eventTarget.addEventListener('keydown', () => {
+      res()
+    })
+  })
+}
+
+const forSingleSpaceBarOn = async (eventTarget) => {
+  const handlerResolvedWith = (res) => {
+    function handler(e) {
+      if (e.code === "Space") {
+        eventTarget.removeEventListener('keydown', handler)
+        res()
+      }
+    }
+    return handler
+  }
+  await new Promise((res) => {
+    eventTarget.addEventListener('keydown', handlerResolvedWith(res))
+  })
+}
+
 const calibrator = (function () {
   const state = {
-    lastCalibrationCoordinates: null
+    lastPercentagesCalibrationCoordinates: null
   }
   return {
-    get lastCalibrationCoordinates() {
-      if (!state.lastCalibrationCoordinates) {
+    get lastPercentagesCalibrationCoordinates() {
+      if (!state.lastPercentagesCalibrationCoordinates) {
         throw new Error('No se detectó una calibración previa.')
       }
-      return state.lastCalibrationCoordinates
+      return state.lastPercentagesCalibrationCoordinates
     },
-    async runExplicitCalibration(
-      stimulusDrawer,
-      calibrationExtender
-    ) {
-      let coordinates = [
+    async runExplicitCalibration(stimulusUpdater) {
+      let pixCoordinates = [
         [10,10], [10,50], [10,90],
         [50,10], [50,50], [50,90],
         [90,10], [90,50], [90,90],
       ]
-      math.shuffle(coordinates)
-      state.lastCalibrationCoordinates = [];
-      for (const [xGroundTruth, yGroundTruth] of coordinates) {
+      math.shuffle(pixCoordinates)
+      state.lastPercentagesCalibrationCoordinates = [];
+      for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
-        stimulusDrawer(xGroundTruth, yGroundTruth);
-        // ...and collect points to map to it
-        await calibrationExtender((xEstimated, yEstimated) => {
-          wgExt.calibratePoint(xEstimated, yEstimated)
-          state.lastCalibrationCoordinates.push([xGroundTruth, yGroundTruth])
-        })
+        const [
+          xPixGT, yPixGT
+        ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
+        // ...and map the coordiante once the user presses the space bar
+        await forSingleSpaceBarOn(document)
+        wgExt.calibratePoint(xPixGT, yPixGT)
+        state.lastPercentagesCalibrationCoordinates.push([
+          xPerGroundTruth, yPerGroundTruth
+        ])
       }
     }
   }
@@ -132,32 +155,26 @@ const estimator = (function () {
         loopCallbackIntervalId: null,
       });
     },
-    async runValidationRound(stimulusDrawer, stimulusCleaner) {
+    async runValidationRound(stimulusUpdater) {
       const measurements = []
 
-      const stimulusCoordinates = [...calibrator.lastCalibrationCoordinates]
+      const stimulusCoordinates = [...calibrator.lastPercentagesCalibrationCoordinates]
       math.shuffle(stimulusCoordinates)
-      for (const [xGroundTruth, yGroundTruth] of stimulusCoordinates) {
+      for (const [xPerGroundTruth, yPerGroundTruth] of stimulusCoordinates) {
         const stimulusMeasurements = {
-          groundTruthPercentages: [xGroundTruth, yGroundTruth],
-          groundTruthPixels: stimulusDrawer(xGroundTruth, yGroundTruth),
-          start: new Date,
-          end: null,
+          groundTruthPercentages: [xPerGroundTruth, yPerGroundTruth],
+          groundTruthPixels: stimulusUpdater(xPerGroundTruth, yPerGroundTruth),
+          startedAt: new Date,
+          endedAt: null,
           estimations: [],
         }
-        const intervalId = setInterval(async () => {
-          stimulusMeasurements.estimations.push({
-            coordinate: await this.currentPrediction(),
-            ts: new Date,
-          })
-        }, 1000 / 24)
-        await new Promise((resolve) => setTimeout(() => {
-          clearInterval(intervalId)
-          stimulusMeasurements.end = new Date
-          measurements.push(stimulusMeasurements)
-          stimulusCleaner()
-          resolve()
-        }, 1500))
+        await forSingleSpaceBarOn(document)
+        stimulusMeasurements.estimations.push({
+          coordinate: await this.currentPrediction(),
+          ts: new Date,
+        })
+        stimulusMeasurements.endedAt = new Date
+        measurements.push(stimulusMeasurements)
       }
 
       return measurements
@@ -195,8 +212,6 @@ const eyeTracking = (function() {
           return null
         },
         async calibrating() {
-          // TODO: Acá y en estimating habría que agregar un check de que se
-          //       haya llamado al plugin que inicializa webgazer
           if (state.phase !== 'idle') {
             throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
           }

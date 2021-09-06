@@ -1,0 +1,5 @@
+  . cambia algo usar 'keyup' o 'keydown' para identificar la barra de espacio?
+
+  . para calcular el error de validación estoy tomando únicamente un dato
+    correspondiente al momento de la barra de espacio. tendría sentido tomar un
+    rango de tiempo?
