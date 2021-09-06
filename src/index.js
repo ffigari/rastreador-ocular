@@ -42,6 +42,14 @@ const math = (function() {
 
 const wgExt = jsPsych.extensions.webgazer
 
+const forAnyKeyOn = async (eventTarget) => {
+  await new Promise((res) => {
+    eventTarget.addEventListener('keydown', () => {
+      res()
+    })
+  })
+}
+
 const forSingleSpaceBarOn = async (eventTarget) => {
   const handlerResolvedWith = (res) => {
     function handler(e) {
