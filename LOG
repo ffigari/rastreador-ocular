@@ -17,6 +17,9 @@
     reemplazarse. todos los llamados que haga a ambas librerías tendrían que
     pasar por una capa nuestra. de esta manera estaríamos construyendo la API
     requerida por nosotros en lugar de usar las APIs que nos son ofrecidas.
+  . esto nos va a permitir diversos problemas que van apareciendo con WG en sí.
+    Se podría por ejemplo evitar el delay que hay entre el pedido de la última
+    estimación y su respuesta
     
   . validar calibración durante la calibración en sí
     en ese momento se pueden realizar hipótesis sobre dónde está mirando el

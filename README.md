@@ -70,6 +70,10 @@ usuarios.
 La calibración provista por la extención de JSPsych junta puntos para calibrar
 mientras se mueve el mouse
 
+Experimentos informales muestran que el método `getCurrentPrediction` de la
+extensión JSPsych de WG toma ~100 +- 15 milisegundos en responder. Esto se deba
+probablemente a que tal método es asincrónico.
+
 ##### TurkerGaze
 
 Actualmente [TG no está mantenido](

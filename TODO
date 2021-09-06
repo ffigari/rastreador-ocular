@@ -1,5 +1,3 @@
-  . mirar un cachito el tema del delay de WG
-
   . armar un experimento con validación infinita
     que luego de una calibración se muestre infinitamente el plugin de
     validación, guardando y mostrando métricas que permitan ver cuan bien o mal
