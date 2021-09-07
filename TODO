@@ -26,3 +26,6 @@
   . detección de movimiento de la cara
     al momento de calibrar guardar info de dónde está la cara y usar eso para
     saber cuando se movió el sujeto
+
+  . en `showVisualization` usar `requestAnimationFrame` en lugar de `setInterval`
+  . tmb ver de parar a WG si ocurre algún error

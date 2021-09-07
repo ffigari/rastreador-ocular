@@ -82,14 +82,14 @@ const forSingleSpaceBarOn = async (eventTarget) => {
 
 const calibrator = (function () {
   const state = {
-    lastPercentagesCalibrationCoordinates: null
+    lastCalibrationPercentageCoordinates: null
   }
   return {
-    get lastPercentagesCalibrationCoordinates() {
-      if (!state.lastPercentagesCalibrationCoordinates) {
+    get lastCalibrationPercentageCoordinates() {
+      if (!state.lastCalibrationPercentageCoordinates) {
         throw new Error('No se detectó una calibración previa.')
       }
-      return state.lastPercentagesCalibrationCoordinates
+      return state.lastCalibrationPercentageCoordinates
     },
     async runExplicitCalibration(stimulusUpdater) {
       let pixCoordinates = [
@@ -98,7 +98,7 @@ const calibrator = (function () {
         [90,10], [90,50], [90,90],
       ]
       math.shuffle(pixCoordinates)
-      state.lastPercentagesCalibrationCoordinates = [];
+      state.lastCalibrationPercentageCoordinates = [];
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
         const [
@@ -107,7 +107,7 @@ const calibrator = (function () {
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
         wgExt.calibratePoint(xPixGT, yPixGT)
-        state.lastPercentagesCalibrationCoordinates.push([
+        state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
         ])
       }
@@ -170,29 +170,51 @@ const estimator = (function () {
         loopCallbackIntervalId: null,
       });
     },
-    async runValidationRound(stimulusUpdater) {
+    async runValidationRound(drawer) {
+      let stimulus = drawer.appendValidationVisualization()
+      const stimulusUpdater = (xPercentage, yPercentage) => {
+        drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
+        return drawer.getCenterInPixels(stimulus)
+      }
       const measurements = []
-
-      const stimulusCoordinates = [...calibrator.lastPercentagesCalibrationCoordinates]
+      const stimulusCoordinates = [
+        ...calibrator.lastCalibrationPercentageCoordinates
+      ]
       math.shuffle(stimulusCoordinates)
+
       for (const [xPerGroundTruth, yPerGroundTruth] of stimulusCoordinates) {
         const stimulusMeasurements = {
           groundTruthPercentages: [xPerGroundTruth, yPerGroundTruth],
           groundTruthPixels: stimulusUpdater(xPerGroundTruth, yPerGroundTruth),
           startedAt: new Date,
           endedAt: null,
-          estimations: [],
+          estimation: null,
         }
         await forSingleSpaceBarOn(document)
-        stimulusMeasurements.estimations.push({
+        stimulusMeasurements.estimation = {
           coordinate: await this.currentPrediction(),
           ts: new Date,
-        })
+        }
         stimulusMeasurements.endedAt = new Date
         measurements.push(stimulusMeasurements)
       }
+      drawer.erasePoint(stimulus)
 
-      return measurements
+      return measurements.map(({
+        groundTruthPercentages, groundTruthPixels: [xGTPix, yGTPix], estimation
+      }) => ({
+        groundTruthPercentages,
+        linearError: (({ coordinate: [x, y] }) => {
+          const xErr = Math.abs(x - xGTPix)
+          const yErr = Math.abs(y - yGTPix)
+          return xErr + yErr
+        })(estimation),
+        squareError: (({ coordinate: [x, y] }) => {
+          const xErr = Math.abs(x - xGTPix)
+          const yErr = Math.abs(y - yGTPix)
+          return xErr * xErr + yErr * yErr
+        })(estimation),
+      }))
     },
   }
 })()
