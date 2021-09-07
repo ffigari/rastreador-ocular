@@ -48,21 +48,17 @@ const displayHTML = (html) => {
       return {
         async untilAnyKeyIsPressed() {
           element.innerHTML = html
-          await forAnyKeyOn(document)
+          const spaceWasPressed = await new Promise((res) => {
+            document.addEventListener('keydown', (e) => {
+              res(e.code === 'Space')
+            })
+          })
           element.innerHTML = ''
+          return spaceWasPressed
         }
       }
     }
   }
-}
-
-// TODO: Acá usar directo 'document' en lugar del parámetro
-const forAnyKeyOn = async (eventTarget) => {
-  await new Promise((res) => {
-    eventTarget.addEventListener('keydown', () => {
-      res()
-    })
-  })
 }
 
 const forSingleSpaceBarOn = async (eventTarget) => {
