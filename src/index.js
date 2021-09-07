@@ -231,7 +231,7 @@ const estimator = (function () {
                 return _avged(rawResults.map(({ linearError }) => linearError))
               },
               squareError() {
-                return _avged(rawResults.map(({ squareError }) => linearError))
+                return _avged(rawResults.map(({ squareError }) => squareError))
               }
             }
           },
