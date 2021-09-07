@@ -329,13 +329,12 @@ const drawer = (function() {
       return this._appendPoint('gaze-prediction-visualization', 'red', 10);
     },
     appendValidationVisualization() {
-      return this._appendPoint('calibration-measurment-visualization', 'black', 30);
+      return this._appendPoint(
+        'calibration-measurment-visualization', 'black', 30);
     },
     appendCalibrationStimulus() {
-      const stimulus = this._appendPoint(
-        'calibration-stiumulus-visualization', 'blue', 30)
-      stimulus.style.cursor = 'pointer'
-      return stimulus;
+      return this._appendPoint(
+        'calibration-stiumulus-visualization', 'blue', 30);
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
