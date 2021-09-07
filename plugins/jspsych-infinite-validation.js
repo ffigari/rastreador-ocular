@@ -21,14 +21,22 @@ jsPsych.plugins['infinite-validation'] = (function(){
         collectedMetrics.push(await estimator.runValidationRound(drawer))
 
         const spaceWasPressed = await displayHTML(`
-          <div>
-            Resultados obtenidos hasta ahora:
-            <ul>
-              ${collectedMetrics.map((metrics) => {
-                return `<li>${metrics.average.linearError()}</li>`
-              }).join('')}
-            </ul>
-          </div>
+          <p>
+            Se reportan los promedios de los errores sobre los nueve estímulos
+            mostrados.
+          </p>
+          <table>
+            <tr>
+              <th> ronda </th>
+              <th> promedio de los errores lineales (px) </th>
+              <th> promedio de los errores cuadrados (px<sup>2</sup>) </th>
+            </tr>
+            ${collectedMetrics.map((metrics, index) => `<tr>
+              <th> ${index} </th>
+              <th> ${metrics.average.linearError().toFixed(2)} </th>
+              <th> ${metrics.average.squareError().toFixed(2)} </th>
+            </tr>`).join('')}
+          </table>
           <p>
             Para realizar otra ronda de validación presioná la barra de espacio.
             <br>
