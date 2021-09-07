@@ -4,13 +4,50 @@
     <meta charset="utf-8">
   </head>
   <body>
-    <h1> Experimentos disponibles </h1>
+    <h1> Rastoc </h1>
+
+    <h2> Experimentos disponibles </h2>
 
     <ul>
-      <li> <a href="experimentos/mirada-en-foto.html">Mirada en foto</a> </li> 
-      <li> <a href="experimentos/calibracion-wg-medida.html">Calibración JSPsych + WebGazer medida</a> </li> 
-      <li> <a href="experimentos/calibracion-propia.html">Calibración propia</a> </li> 
-      <li> <a href="experimentos/calibracion-propia-validada.html">Calibración propia validada</a> </li> 
+      <li>
+        <a href="experimentos/calibracion-propia-validada.html">
+          Calibración propia validada
+        </a>
+        <p>
+          Ronda de validación luego de la calibración. La validación se realiza
+          sobre el mismo set de puntos que la calibración. El orden de los
+          estímulos es aleatorizado independientemente en ambos casos.
+        </p>
+      </li>
+      <li>
+        <a href="experimentos/calibracion-propia.html">
+          Calibración propia
+        </a>
+        <p>
+          Reemplazo de calibración de WG por calibración manual propia.
+          Implementada recolectando a mano el apriete de la barra de espacio por
+          parte del usuario, para luego pasarle la coordenada del estímulo a
+          WG. El orden de los estímulos se aleatoriza con el fin de evitar
+          acostumbramiento.
+        </p>
+      </li>
+      <li>
+        <a href="experimentos/calibracion-wg-medida.html">
+          Calibración JSPsych + WebGazer medida
+        </a>
+        <p>
+          Análisis de los resultados de las estimaciones obtenidas utilizando la
+          calibración provista por la extensión de JSPSych para WG.
+        </p>
+      </li>
+      <li>
+        <a href="experimentos/mirada-en-foto.html">
+          Mirada en foto
+        </a>
+        <p>
+          Experimento básico usando lo provisto por defecto por WG.
+        </p>
+      </li>
     </ul>
   </body>
 </html>
