@@ -68,7 +68,10 @@ sistema se va a ir recalibrando a lo largo del tiempo con los eventos de los
 usuarios.
 
 La calibración provista por la extención de JSPsych junta puntos para calibrar
-mientras se mueve el mouse
+mientras se mueve el mouse. Si se comparan los resultados del experimento
+"Calibración JSPsych + WebGazer medida" contra aquellos de "Calibración propia"
+parece convenir tomar datos únicamente al interactuar explícitamente con los
+estímulos presentados.
 
 Experimentos informales muestran que el método `getCurrentPrediction` de la
 extensión JSPsych de WG toma ~100 +- 15 milisegundos en responder. Esto se deba
@@ -116,7 +119,7 @@ experimentos deben verificarse las características del setup del sujeto.
 Previamente deben establecerse criterios mínimos para permitir el inicio del
 experimento.
 
-### Algoritmo de estimación de mirada
+### Elementos de un algoritmo de estimación de mirada
 
 #### Captura de datos
 
@@ -193,8 +196,6 @@ no es posible en nuestro contexto remoto. Ante las dificultades de permitir
 movimiento libre de la cabeza surge la necesidad de indicar al usuario de
 posicionarse en alguna posición que facilite quedarse quieto [3].
 
-[ Hay que medir el drifting ]
-
 Nuestro contexto no garantiza interacciones (eg, clicks) por parte del sujeto
 por lo que intentar mapear interacciones con la mirada no sería una solución.
 Otra alternativa común es realizar recalibraciones a medida que ocurren los
@@ -204,6 +205,48 @@ validación previo al experimento [3].
 Una forma de reducir el efecto del drifting es realizar experimentos cortos
 seguidos de recalibraciones. No es evidente qué tan cortos deban ser los
 experimentos.
+
+### Implementación
+
+#### Búsqueda de condiciones mínimas
+
+En una primera instancia se busca encontrar condiciones tales que el sistema dé
+resultados mínimamente aceptables. Estas condiciones agrupan tanto sugerencias
+al usuario como herramientas provistas y reestricciones al sistema.
+
+Sugerencias
+- Apoyar la computadora sobre una mesa y sentarse cómodamente en una silla.
+- Durante la calibración, evitar pestañear al mismo tiempo que se interactúa con
+los estímulos. Puede por ejemplo descansarse la vista luego de presionar la
+barra de espacio.
+- Evitar mover la cabeza una vez calibrado el sistema
+
+#### Decisiones de diseño
+
+Para modularizar internamente el código, la implementación busca considerar tres
+tipos de usuarios:
+- quien use únicamente los plugins de JSPsych provistos directamente, sobre
+experimentos existentes
+- quien implemente sus propios plugins que requieran utilizar eyetracking
+- quien desee utilizar el eyetracker fuera del contexto JSPsych
+
+Se busca también encapsular el uso de WG y su extensión de JSPsych. Como se
+detalla en la sección "Soluciones existentes", la calibración por defecto
+provista por la extensión puede ser mejorada y la interfaz de WG presenta 
+algunos problemas. Idealmente los usuarios de esta implementación no tendrían
+que necesitar incluir ni la extensión ni los plugins que se utilizan para
+interactuar con WG.
+
+Estas consideraciones permitirían ir construyendo progresivamente la interfaz
+que más nos convenga para el uso que le damos.
+
+#### Algunas ideas a explorar
+
+- **Validar la calibración durante la calibración en sí**. En ese momento se
+  pueden realizar hipótesis sobre dónde está mirando el usuario en qué momento.
+En los momentos anteriores al click hay muchas chances de que el usuario esté
+mirando ahí. Hay que chequear bien con la bibliografía (TG creo que usaba los
+últimos 0.5 segundos de los 1.5 segundos que mostraba el estímulo al usuario)
 
 ### Referencias
 
