@@ -42,12 +42,23 @@ const math = (function() {
 
 const wgExt = jsPsych.extensions.webgazer
 
-const forAnyKeyOn = async (eventTarget) => {
-  await new Promise((res) => {
-    eventTarget.addEventListener('keydown', () => {
-      res()
-    })
-  })
+const displayHTML = (html) => {
+  return {
+    at: (element) => {
+      return {
+        async untilAnyKeyIsPressed() {
+          element.innerHTML = html
+          const spaceWasPressed = await new Promise((res) => {
+            document.addEventListener('keydown', (e) => {
+              res(e.code === 'Space')
+            })
+          })
+          element.innerHTML = ''
+          return spaceWasPressed
+        }
+      }
+    }
+  }
 }
 
 const forSingleSpaceBarOn = async (eventTarget) => {
@@ -67,14 +78,14 @@ const forSingleSpaceBarOn = async (eventTarget) => {
 
 const calibrator = (function () {
   const state = {
-    lastPercentagesCalibrationCoordinates: null
+    lastCalibrationPercentageCoordinates: null
   }
   return {
-    get lastPercentagesCalibrationCoordinates() {
-      if (!state.lastPercentagesCalibrationCoordinates) {
+    get lastCalibrationPercentageCoordinates() {
+      if (!state.lastCalibrationPercentageCoordinates) {
         throw new Error('No se detectó una calibración previa.')
       }
-      return state.lastPercentagesCalibrationCoordinates
+      return state.lastCalibrationPercentageCoordinates
     },
     async runExplicitCalibration(stimulusUpdater) {
       let pixCoordinates = [
@@ -83,7 +94,7 @@ const calibrator = (function () {
         [90,10], [90,50], [90,90],
       ]
       math.shuffle(pixCoordinates)
-      state.lastPercentagesCalibrationCoordinates = [];
+      state.lastCalibrationPercentageCoordinates = [];
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
         const [
@@ -92,7 +103,7 @@ const calibrator = (function () {
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
         wgExt.calibratePoint(xPixGT, yPixGT)
-        state.lastPercentagesCalibrationCoordinates.push([
+        state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
         ])
       }
@@ -155,29 +166,77 @@ const estimator = (function () {
         loopCallbackIntervalId: null,
       });
     },
-    async runValidationRound(stimulusUpdater) {
+    async runValidationRound(drawer) {
+      let stimulus = drawer.appendValidationVisualization()
+      const stimulusUpdater = (xPercentage, yPercentage) => {
+        drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
+        return drawer.getCenterInPixels(stimulus)
+      }
       const measurements = []
-
-      const stimulusCoordinates = [...calibrator.lastPercentagesCalibrationCoordinates]
+      const stimulusCoordinates = [
+        ...calibrator.lastCalibrationPercentageCoordinates
+      ]
       math.shuffle(stimulusCoordinates)
+
       for (const [xPerGroundTruth, yPerGroundTruth] of stimulusCoordinates) {
         const stimulusMeasurements = {
           groundTruthPercentages: [xPerGroundTruth, yPerGroundTruth],
           groundTruthPixels: stimulusUpdater(xPerGroundTruth, yPerGroundTruth),
           startedAt: new Date,
           endedAt: null,
-          estimations: [],
+          estimation: null,
         }
         await forSingleSpaceBarOn(document)
-        stimulusMeasurements.estimations.push({
+        stimulusMeasurements.estimation = {
           coordinate: await this.currentPrediction(),
           ts: new Date,
-        })
+        }
         stimulusMeasurements.endedAt = new Date
         measurements.push(stimulusMeasurements)
       }
+      drawer.erasePoint(stimulus)
 
-      return measurements
+      return new function() {
+        const rawResults = measurements.map(({
+          groundTruthPercentages, groundTruthPixels: [xGTPix, yGTPix], estimation
+        }) => ({
+          groundTruthPercentages,
+          estimation,
+          get linearError() {
+            const [x, y] = this.estimation.coordinate
+            const xErr = Math.abs(x - xGTPix)
+            const yErr = Math.abs(y - yGTPix)
+            return xErr + yErr
+          },
+          get squareError() {
+            const [x, y] = this.estimation.coordinate
+            const xErr = Math.abs(x - xGTPix)
+            const yErr = Math.abs(y - yGTPix)
+            return xErr * xErr + yErr * yErr
+          },
+        }))
+        Object.assign(this, {
+          rawResults,
+          get average() {
+            const _avged = (arr) => {
+              if (arr.length === 0) {
+                throw new Error(
+                  'No se puede realizar el promedio de un arreglo vacío.'
+                )
+              }
+              return arr.reduce((acc, cur) => acc + cur, 0) / arr.length
+            }
+            return {
+              linearError() {
+                return _avged(rawResults.map(({ linearError }) => linearError))
+              },
+              squareError() {
+                return _avged(rawResults.map(({ squareError }) => squareError))
+              }
+            }
+          },
+        })
+      }
     },
   }
 })()
@@ -266,13 +325,12 @@ const drawer = (function() {
       return this._appendPoint('gaze-prediction-visualization', 'red', 10);
     },
     appendValidationVisualization() {
-      return this._appendPoint('calibration-measurment-visualization', 'black', 30);
+      return this._appendPoint(
+        'calibration-measurment-visualization', 'black', 30);
     },
     appendCalibrationStimulus() {
-      const stimulus = this._appendPoint(
-        'calibration-stiumulus-visualization', 'blue', 30)
-      stimulus.style.cursor = 'pointer'
-      return stimulus;
+      return this._appendPoint(
+        'calibration-stiumulus-visualization', 'blue', 30);
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
