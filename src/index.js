@@ -42,6 +42,21 @@ const math = (function() {
 
 const wgExt = jsPsych.extensions.webgazer
 
+const displayHTML = (html) => {
+  return {
+    at: (element) => {
+      return {
+        async untilAnyKeyIsPressed() {
+          element.innerHTML = html
+          await forAnyKeyOn(document)
+          element.innerHTML = ''
+        }
+      }
+    }
+  }
+}
+
+// TODO: Acá usar directo 'document' en lugar del parámetro
 const forAnyKeyOn = async (eventTarget) => {
   await new Promise((res) => {
     eventTarget.addEventListener('keydown', () => {

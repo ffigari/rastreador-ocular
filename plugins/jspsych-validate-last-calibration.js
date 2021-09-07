@@ -6,17 +6,15 @@ jsPsych.plugins['validate-last-calibration'] = (function(){
     trial: async function(display_element, trial) {
       const estimator = await eyeTracking.switchTo.estimating()
 
-      display_element.innerHTML = `
-      <p>
-        Ahora vamos a correr una ronda de validación para ver cómo salió la
-        calibración. <br>
-        Al igual que con la calibración, tenés que presionar la barra de
-        espacio a medida que aparecen estímulos y los mirás. <br>
-        Presioná cualquier tecla para continuar.
-      </p>
-      `
-      await forAnyKeyOn(document)
-      display_element.innerHTML = ``
+      await displayHTML(`
+        <p>
+          Ahora vamos a correr una ronda de validación para ver cómo salió la
+          calibración. <br>
+          Al igual que con la calibración, tenés que presionar la barra de
+          espacio a medida que aparecen estímulos y los mirás. <br>
+          Presioná cualquier tecla para continuar.
+        </p>
+      `).at(display_element).untilAnyKeyIsPressed()
 
       estimator.showVisualization()
 
