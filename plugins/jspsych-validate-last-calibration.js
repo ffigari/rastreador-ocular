@@ -27,7 +27,7 @@ jsPsych.plugins['validate-last-calibration'] = (function(){
             <th> error cuadrádo (en píxeles cuadrados) </th>
             <th> error lineal (en píxeles) </th>
           </tr>
-          ${metrics.map(({
+          ${metrics.rawResults.map(({
             groundTruthPercentages: [x, y], squareError, linearError
           }) => `<tr>
             <td> (${x}, ${y}) </td>

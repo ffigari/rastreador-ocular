@@ -200,21 +200,47 @@ const estimator = (function () {
       }
       drawer.erasePoint(stimulus)
 
-      return measurements.map(({
-        groundTruthPercentages, groundTruthPixels: [xGTPix, yGTPix], estimation
-      }) => ({
-        groundTruthPercentages,
-        linearError: (({ coordinate: [x, y] }) => {
-          const xErr = Math.abs(x - xGTPix)
-          const yErr = Math.abs(y - yGTPix)
-          return xErr + yErr
-        })(estimation),
-        squareError: (({ coordinate: [x, y] }) => {
-          const xErr = Math.abs(x - xGTPix)
-          const yErr = Math.abs(y - yGTPix)
-          return xErr * xErr + yErr * yErr
-        })(estimation),
-      }))
+      return new function() {
+        const rawResults = measurements.map(({
+          groundTruthPercentages, groundTruthPixels: [xGTPix, yGTPix], estimation
+        }) => ({
+          groundTruthPercentages,
+          estimation,
+          get linearError() {
+            const [x, y] = this.estimation.coordinate
+            const xErr = Math.abs(x - xGTPix)
+            const yErr = Math.abs(y - yGTPix)
+            return xErr + yErr
+          },
+          get squareError() {
+            const [x, y] = this.estimation.coordinate
+            const xErr = Math.abs(x - xGTPix)
+            const yErr = Math.abs(y - yGTPix)
+            return xErr * xErr + yErr * yErr
+          },
+        }))
+        Object.assign(this, {
+          rawResults,
+          get average() {
+            const _avged = (arr) => {
+              if (arr.length === 0) {
+                throw new Error(
+                  'No se puede realizar el promedio de un arreglo vacío.'
+                )
+              }
+              return arr.reduce((acc, cur) => acc + cur, 0) / arr.length
+            }
+            return {
+              linearError() {
+                return _avged(rawResults.map(({ linearError }) => linearError))
+              },
+              squareError() {
+                return _avged(rawResults.map(({ squareError }) => linearError))
+              }
+            }
+          },
+        })
+      }
     },
   }
 })()
