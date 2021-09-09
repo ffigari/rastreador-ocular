@@ -4,7 +4,7 @@ jsPsych.plugins['calibrate-eye-tracker'] = (function(){
       name: 'calibrate-eye-tracker',
     },
     trial: async function(display_element, trial) {
-      const calibrator = await eyeTracking.switchTo.calibrating()
+      const calibrator = await rastoc.switchTo.calibrating()
 
       await displayHTML(`
         <p>
@@ -25,7 +25,7 @@ jsPsych.plugins['calibrate-eye-tracker'] = (function(){
       )
       drawer.erasePoint(stimulus)
 
-      eyeTracking.switchTo.idle()
+      rastoc.switchTo.idle()
       jsPsych.finishTrial();
     },
   }

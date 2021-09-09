@@ -5,12 +5,12 @@ jsPsych.plugins['finish-gaze-estimation-visualization'] = (function(){
       parameters: {},
     },
     trial: function(display_element, trial){
-      const estimator = eyeTracking.continueTo.estimate()
+      const estimator = rastoc.continueTo.estimate()
 
       estimator.hideVisualization();
 
       jsPsych.finishTrial();
-      eyeTracking.switchTo.idle()
+      rastoc.switchTo.idle()
     },
   }
 })();

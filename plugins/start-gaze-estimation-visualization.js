@@ -5,7 +5,7 @@ jsPsych.plugins['start-gaze-estimation-visualization'] = (function(){
       parameters: {},
     },
     trial: async function(display_element, trial){
-      const estimator = await eyeTracking.switchTo.estimating()
+      const estimator = await rastoc.switchTo.estimating()
 
       estimator.showVisualization();
       jsPsych.finishTrial();

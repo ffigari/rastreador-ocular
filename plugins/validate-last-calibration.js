@@ -4,7 +4,7 @@ jsPsych.plugins['validate-last-calibration'] = (function(){
       name: 'validate-last-calibration',
     },
     trial: async function(display_element, trial) {
-      const estimator = await eyeTracking.switchTo.estimating()
+      const estimator = await rastoc.switchTo.estimating()
 
       await displayHTML(`
         <p>
@@ -41,7 +41,7 @@ jsPsych.plugins['validate-last-calibration'] = (function(){
       `).at(display_element).untilAnyKeyIsPressed()
 
       estimator.hideVisualization()
-      eyeTracking.switchTo.idle()
+      rastoc.switchTo.idle()
       jsPsych.finishTrial();
     },
   }
