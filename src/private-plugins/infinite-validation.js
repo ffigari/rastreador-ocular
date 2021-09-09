@@ -4,7 +4,7 @@ jsPsych.plugins['infinite-validation'] = (function(){
       name: 'infinite-validation',
     },
     trial: async function(display_element, trial) {
-      const estimator = await eyeTracking.switchTo.estimating()
+      const estimator = await rastoc.switchTo.estimating()
 
       estimator.showVisualization()
 
@@ -49,7 +49,7 @@ jsPsych.plugins['infinite-validation'] = (function(){
       }
 
       estimator.hideVisualization()
-      eyeTracking.switchTo.idle()
+      rastoc.switchTo.idle()
       jsPsych.finishTrial();
     },
   }
