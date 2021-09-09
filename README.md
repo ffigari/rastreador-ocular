@@ -251,6 +251,21 @@ En los momentos anteriores al click hay muchas chances de que el usuario esté
 mirando ahí. Hay que chequear bien con la bibliografía (TG creo que usaba los
 últimos 0.5 segundos de los 1.5 segundos que mostraba el estímulo al usuario)
 
+### Experimento de antisacadas
+
+En la tarea de antisacada [5] el sujeto debe mirar para el lado contrario al
+cual se presenta el estímulo. Un experimento completo alrededor de antisacadas
+incluye intercalamientos con tareas de prosacada (ie, el sujeto debe mirar hacia
+el estímulo). Existe vasto estudio sobre las implicaciones de los resultados de
+esta tarea.
+
+Quedan abiertas algunas preguntas de diseño del experimento:
+- cuánto tiempo se muestra el fixation mark antes de mostrar el estímulo target
+  a mirar o esquivar
+- cuánto tiempo se muestra el target
+- cómo se señala anti vs pro sacada
+- cuántas iteraciones se realizan
+ 
 ### Referencias
 
 - [
@@ -271,6 +286,12 @@ mirando ahí. Hay que chequear bien con la bibliografía (TG creo que usaba los
 )
 
 - [4] PACE: Building a Personalized, Auto-Calibrating Eye Tracker from User Interactions
+
+- [
+  [5] Look away: The anti-saccade task and the voluntary control of eye movement
+](
+  /papers/look-away_the-anti-saccade-task-and-the-voluntary-control-of-eye-movement.md
+)
 
 #### otros que podría ser interestante leer, en ningún orden particular:
 
