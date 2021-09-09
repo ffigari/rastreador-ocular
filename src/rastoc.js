@@ -9,7 +9,12 @@ const calibrator = (function () {
       }
       return state.lastCalibrationPercentageCoordinates
     },
-    async runExplicitCalibration(stimulusUpdater) {
+    async runExplicitCalibration(drawer) {
+      let stimulus = drawer.appendCalibrationStimulus()
+      const stimulusUpdater = (xPercentage, yPercentage) => {
+        drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
+        return drawer.getCenterInPixels(stimulus)
+      }
       let pixCoordinates = [
         [10,10], [10,50], [10,90],
         [50,10], [50,50], [50,90],
@@ -29,6 +34,7 @@ const calibrator = (function () {
           xPerGroundTruth, yPerGroundTruth
         ])
       }
+      drawer.erasePoint(stimulus)
     }
   }
 })()

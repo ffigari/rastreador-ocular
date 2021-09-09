@@ -16,14 +16,7 @@ jsPsych.plugins['calibrate-eye-tracker'] = (function(){
         </p>
       `).at(display_element).untilAnyKeyIsPressed()
 
-      let stimulus = drawer.appendCalibrationStimulus()
-      await calibrator.runExplicitCalibration(
-        (xPercentage, yPercentage) => {
-          drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
-          return drawer.getCenterInPixels(stimulus)
-        }
-      )
-      drawer.erasePoint(stimulus)
+      await calibrator.runExplicitCalibration(drawer)
 
       rastoc.switchTo.idle()
       jsPsych.finishTrial();
