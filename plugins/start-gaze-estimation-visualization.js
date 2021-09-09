@@ -1,7 +1,7 @@
-jsPsych.plugins['start-eye-tracking'] = (function(){
+jsPsych.plugins['start-gaze-estimation-visualization'] = (function(){
   return {
     info: {
-      name: 'start-eye-tracking',
+      name: 'start-gaze-estimation-visualization',
       parameters: {},
     },
     trial: async function(display_element, trial){
