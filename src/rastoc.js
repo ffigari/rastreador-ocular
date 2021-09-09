@@ -1,3 +1,5 @@
+const wgExt = jsPsych.extensions.webgazer
+
 const calibrator = (function () {
   const state = {
     lastCalibrationPercentageCoordinates: null

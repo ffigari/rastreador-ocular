@@ -40,8 +40,6 @@ const math = (function() {
   }
 })();
 
-const wgExt = jsPsych.extensions.webgazer
-
 const displayHTML = (html) => {
   return {
     at: (element) => {
@@ -74,6 +72,24 @@ const forSingleSpaceBarOn = async (eventTarget) => {
   await new Promise((res) => {
     eventTarget.addEventListener('keydown', handlerResolvedWith(res))
   })
+}
+
+const sleep = async (ms) => {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+const runRegularly = async (maximumDurationInMs, deltaInMs, cb) => {
+  const startingTimestamp = new Date;
+  while (true) {
+    const currentElapsedTimeInMs = new Date - startingTimestamp;
+    await cb(currentElapsedTimeInMs);
+
+    const nextElapsedTime = currentElapsedTimeInMs + deltaInMs;
+    if (nextElapsedTime >= maximumDurationInMs) {
+      break;
+    }
+    await sleep(deltaInMs);
+  }
 }
 
 
@@ -140,7 +156,7 @@ const drawer = (function() {
         drawer.moveToPercentages(point, positionInCircle.x, positionInCircle.y);
       };
       updatePoint(0);
-      await utils.runRegularly(maximumDurationInMs, deltaInMs, async (
+      await runRegularly(maximumDurationInMs, deltaInMs, async (
         elapsedTimeInMs
       ) => {
         await cb(point);
@@ -150,26 +166,5 @@ const drawer = (function() {
     erasePoint(point) {
       document.getElementById(point.id).remove();
     },
-  };
-})();
-
-const utils = (function() {
-  return {
-    async sleep(ms) {
-      return new Promise(res => setTimeout(res, ms));
-    },
-    async runRegularly(maximumDurationInMs, deltaInMs, cb) {
-      const startingTimestamp = new Date;
-      while (true) {
-        const currentElapsedTimeInMs = new Date - startingTimestamp;
-        await cb(currentElapsedTimeInMs);
-
-        const nextElapsedTime = currentElapsedTimeInMs + deltaInMs;
-        if (nextElapsedTime >= maximumDurationInMs) {
-          break;
-        }
-        await this.sleep(deltaInMs);
-      }
-    }
   };
 })();
