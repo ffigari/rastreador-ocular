@@ -1,10 +1,9 @@
-  . pensar y organizar mejor las interfaces
-    hay que mirar bien qué módulos se necesitan y a para qué usuario van. por un
-    lado están los plugins pero tmb hay que pensar en la detección de caras, la
-    detección del movimiento de la cara
-  . separar los plugins "públicos" de los plugins propios
+  . renombrar los de mostrar la vis de estimacion + sacarles lo de descargar
+    los datos
   . renombrar modulo principal a 'rastoc'
   . agregar un plugin propio para la incialización
+  . en el `index.html` explicar como se podría usar en experimentos propios y 
+    agregar link al repo en GH. más adelante podría hacer releases desde GH
 
   . pasar a usar https://jspsychophysics.hes.kyushu-u.ac.jp para dibujar los
     estímulos
