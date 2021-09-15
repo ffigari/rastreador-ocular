@@ -11,6 +11,7 @@
   . detección de movimiento de la cara
     al momento de calibrar guardar info de dónde está la cara y usar eso para
     saber cuando se movió el sujeto
+  . handlear el caso en el cual desaparezca la cara
 
   . en `showVisualization` usar `requestAnimationFrame` en lugar de `setInterval`
   . ver un poco el tema de handlear los errores mejor
