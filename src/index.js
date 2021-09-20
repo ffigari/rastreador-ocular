@@ -94,34 +94,34 @@ const runRegularly = async (maximumDurationInMs, deltaInMs, cb) => {
 
 
 const drawer = (function() {
+  let _counter = 1
+  let _appendPoint = (id, color, sizeInPixels) => {
+    const point = document.createElement('div');
+    point.id = `${id}-${_counter++}`;
+    point.style.display = 'block';
+    point.style.position = 'fixed';
+    point.style.zIndex = 99999;
+    point.style.left = `-${sizeInPixels / 2}px`;
+    point.style.top  = `-${sizeInPixels / 2}px`;
+    point.style.background = color;
+    point.style.borderRadius = '100%';
+    point.style.opacity = '0.7';
+    point.style.width = `${sizeInPixels}px`;
+    point.style.height = `${sizeInPixels}px`;
+    document.body.appendChild(point);
+    return point;
+  }
   return {
-    _counter: 1,
-    _appendPoint(id, color, sizeInPixels) {
-      const point = document.createElement('div');
-      point.id = `${id}-${this._counter++}`;
-      point.style.display = 'block';
-      point.style.position = 'fixed';
-      point.style.zIndex = 99999;
-      point.style.left = `-${sizeInPixels / 2}px`;
-      point.style.top  = `-${sizeInPixels / 2}px`;
-      point.style.background = color;
-      point.style.borderRadius = '100%';
-      point.style.opacity = '0.7';
-      point.style.width = `${sizeInPixels}px`;
-      point.style.height = `${sizeInPixels}px`;
-      document.body.appendChild(point);
-      return point;
-    },
-    appendGazeVisualization() {
-      return this._appendPoint('gaze-prediction-visualization', 'red', 10);
-    },
-    appendValidationVisualization() {
-      return this._appendPoint(
-        'calibration-measurment-visualization', 'black', 30);
-    },
-    appendCalibrationStimulus() {
-      return this._appendPoint(
-        'calibration-stiumulus-visualization', 'blue', 30);
+    appendMarkerFor: {
+      centerFixation: () => _appendPoint('fixation-marker', 'black', 10),
+      antisaccade: {
+        target: () => _appendPoint('antisaccade-target', 'black', 30),
+        antiSignal: () => _appendPoint('antisaccade-anti-signal', 'red', 30),
+        proSignal: () => _appendPoint('antisaccade-pro-signal', 'green', 30),
+      },
+      gaze: () => _appendPoint('gaze-prediction-visualization', 'red', 10),
+      calibration: () => _appendPoint('calibration-stiumulus-visualization', 'blue', 30),
+      validation: () => _appendPoint('calibration-measurment-visualization', 'black', 30),
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
