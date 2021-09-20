@@ -35,6 +35,9 @@
             type: 'infinite-validation',
           },
         ],
+        on_finish: function() {
+          jsPsych.data.get().localSave('json','infinite-validation.json');
+        },
         extensions: [
           {type: 'webgazer'}
         ]
