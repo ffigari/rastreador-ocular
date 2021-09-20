@@ -1,9 +1,3 @@
-  . armar plugins para inicializar / terminar experimentos
-    en el contexto de definir interfaces simples, debería haber un plugin único
-    que permita exportar los datos al final de un experimento. Para ser
-    consistente debería haber tmb un plugin para inicializar lo que haga falta y
-    no tener que hacer assumptions previas.
-
   . detección de movimiento de la cara
     al momento de calibrar guardar info de dónde está la cara y usar eso para
     saber cuando se movió el sujeto

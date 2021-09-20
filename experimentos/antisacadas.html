@@ -35,6 +35,9 @@
             type: 'antisaccades',
           },
         ],
+        on_finish: function() {
+          jsPsych.data.get().localSave('json','antisaccades-experiment.json');
+        },
         extensions: [
           {type: 'webgazer'}
         ]
