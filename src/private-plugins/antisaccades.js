@@ -56,7 +56,7 @@ const drawRandomSaccadeTask = async () => {
     targetAppearsInRightSide ? 80 : 20,
     50
   )
-  Object.assign(data.timestamps.typeSignal, {
+  Object.assign(data.timestamps.target, {
     coordinates: drawer.getCenterInPixels(targetMarker),
     appeareance: new Date,
   })
