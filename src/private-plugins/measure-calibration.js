@@ -11,7 +11,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
       },
     },
     trial: async function(display_element, trial) {
-      const estimator = await eyeTracking.switchTo.estimating()
+      const estimator = await rastoc.switchTo.estimating()
       trial.showPrediction && estimator.showVisualization();
       // Una lista de los puntos a usar para la validación en formato <x, y>
       // correspodiente al centro de la sección en porcentaje de la pantalla
@@ -28,7 +28,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
       const measurements = [];
       for (const [xPercentage, yPercentage] of validationSectionsCenters) {
         const validationPointMeasurements = [];
-        const validationPoint = drawer.appendValidationVisualization();
+        const validationPoint = drawer.appendMarkerFor.validation();
         await drawer.moveInCircleAround(
           validationPoint,
           xPercentage,
@@ -98,7 +98,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
           </dl>
       `
       trial.showPrediction && estimator.hideVisualization();
-      eyeTracking.switchTo.idle()
+      rastoc.switchTo.idle()
       jsPsych.finishTrial();
     },
   }

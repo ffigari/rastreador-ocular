@@ -40,14 +40,23 @@ const math = (function() {
   }
 })();
 
-const wgExt = jsPsych.extensions.webgazer
-
-const forAnyKeyOn = async (eventTarget) => {
-  await new Promise((res) => {
-    eventTarget.addEventListener('keydown', () => {
-      res()
-    })
-  })
+const displayHTML = (html) => {
+  return {
+    at: (element) => {
+      return {
+        async untilAnyKeyIsPressed() {
+          element.innerHTML = html
+          const spaceWasPressed = await new Promise((res) => {
+            document.addEventListener('keydown', (e) => {
+              res(e.code === 'Space')
+            })
+          })
+          element.innerHTML = ''
+          return spaceWasPressed
+        }
+      }
+    }
+  }
 }
 
 const forSingleSpaceBarOn = async (eventTarget) => {
@@ -65,214 +74,54 @@ const forSingleSpaceBarOn = async (eventTarget) => {
   })
 }
 
-const calibrator = (function () {
-  const state = {
-    lastPercentagesCalibrationCoordinates: null
-  }
-  return {
-    get lastPercentagesCalibrationCoordinates() {
-      if (!state.lastPercentagesCalibrationCoordinates) {
-        throw new Error('No se detectó una calibración previa.')
-      }
-      return state.lastPercentagesCalibrationCoordinates
-    },
-    async runExplicitCalibration(stimulusUpdater) {
-      let pixCoordinates = [
-        [10,10], [10,50], [10,90],
-        [50,10], [50,50], [50,90],
-        [90,10], [90,50], [90,90],
-      ]
-      math.shuffle(pixCoordinates)
-      state.lastPercentagesCalibrationCoordinates = [];
-      for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
-        // Draw this ground truth coordinate...
-        const [
-          xPixGT, yPixGT
-        ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
-        // ...and map the coordiante once the user presses the space bar
-        await forSingleSpaceBarOn(document)
-        wgExt.calibratePoint(xPixGT, yPixGT)
-        state.lastPercentagesCalibrationCoordinates.push([
-          xPerGroundTruth, yPerGroundTruth
-        ])
-      }
+const sleep = async (ms) => {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+const runRegularly = async (maximumDurationInMs, deltaInMs, cb) => {
+  const startingTimestamp = new Date;
+  while (true) {
+    const currentElapsedTimeInMs = new Date - startingTimestamp;
+    await cb(currentElapsedTimeInMs);
+
+    const nextElapsedTime = currentElapsedTimeInMs + deltaInMs;
+    if (nextElapsedTime >= maximumDurationInMs) {
+      break;
     }
+    await sleep(deltaInMs);
   }
-})()
+}
 
-const estimator = (function () {
-  const state = {
-    visualization: {
-      isOn: false,
-      elementId: null,
-      loopCallbackIntervalId: null,
-    }
-  }
-  return {
-    async currentPrediction() {
-      const current = await wgExt.getCurrentPrediction();
-      if (current === null) {
-        throw new Error(
-          `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
-        );
-      }
-      return [current.x, current.y];
-    },
-    showVisualization () {
-      if (state.visualization.isOn) {
-        throw new Error('La visualización de la estimación ya está activada.');
-      }
-
-      const visualizationElement = drawer.appendGazeVisualization();
-      const intervalId = setInterval(async () => {
-        const [x, y] = await this.currentPrediction();
-        drawer.moveToPixels(
-          visualizationElement,
-          x,
-          y
-        );
-      }, 100)
-
-      Object.assign(state.visualization, {
-        isOn: true,
-        elementId: visualizationElement.id,
-        loopCallbackIntervalId: intervalId,
-      });
-    },
-    hideVisualization() {
-      if (!state.visualization.isOn) {
-        throw new Error('La visualización de la predicción no está activada.');
-      }
-
-      document
-        .getElementById(state.visualization.elementId)
-        .remove();
-      clearInterval(state.visualization.loopCallbackIntervalId);
-
-      Object.assign(state.visualization, {
-        isOn: false,
-        elementId: null,
-        loopCallbackIntervalId: null,
-      });
-    },
-    async runValidationRound(stimulusUpdater) {
-      const measurements = []
-
-      const stimulusCoordinates = [...calibrator.lastPercentagesCalibrationCoordinates]
-      math.shuffle(stimulusCoordinates)
-      for (const [xPerGroundTruth, yPerGroundTruth] of stimulusCoordinates) {
-        const stimulusMeasurements = {
-          groundTruthPercentages: [xPerGroundTruth, yPerGroundTruth],
-          groundTruthPixels: stimulusUpdater(xPerGroundTruth, yPerGroundTruth),
-          startedAt: new Date,
-          endedAt: null,
-          estimations: [],
-        }
-        await forSingleSpaceBarOn(document)
-        stimulusMeasurements.estimations.push({
-          coordinate: await this.currentPrediction(),
-          ts: new Date,
-        })
-        stimulusMeasurements.endedAt = new Date
-        measurements.push(stimulusMeasurements)
-      }
-
-      return measurements
-    },
-  }
-})()
-
-const eyeTracking = (function() {
-  const state = {
-    phase: 'idle',
-  }
-  return {
-    get continueTo() {
-      return {
-        estimate() {
-          if (state.phase !== 'estimating') {
-            throw new Error(`No se puede continuar estimando por que la fase actual es '${state.phase}'`)
-          }
-          return estimator
-        }
-      }
-    },
-    get switchTo () {
-      return {
-        idle() {
-          if (state.phase === 'idle') {
-            throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
-          }
-
-          Object.assign(state, {
-            phase: 'idle',
-          })
-          wgExt.pause();
-
-          return null
-        },
-        async calibrating() {
-          if (state.phase !== 'idle') {
-            throw new Error(`No se pudo cambiar a 'calibrating' porque la fase actual no es 'idle'.`)
-          }
-
-          Object.assign(state, {
-            phase: 'calibrating',
-          })
-          await wgExt.resume();
-
-          return calibrator
-        },
-        async estimating() {
-          const msg = (
-            reason
-          ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
-          if (state.phase !== 'idle') {
-            throw new Error(msg(`la fase actual no es 'idle'`))
-          }
-
-          Object.assign(state, {
-            phase: 'estimating',
-          })
-          await wgExt.resume();
-
-          return estimator
-        },
-      }
-    },
-  };
-})();
 
 const drawer = (function() {
+  let _counter = 1
+  let _appendPoint = (id, color, sizeInPixels) => {
+    const point = document.createElement('div');
+    point.id = `${id}-${_counter++}`;
+    point.style.display = 'block';
+    point.style.position = 'fixed';
+    point.style.zIndex = 99999;
+    point.style.left = `-${sizeInPixels / 2}px`;
+    point.style.top  = `-${sizeInPixels / 2}px`;
+    point.style.background = color;
+    point.style.borderRadius = '100%';
+    point.style.opacity = '0.7';
+    point.style.width = `${sizeInPixels}px`;
+    point.style.height = `${sizeInPixels}px`;
+    document.body.appendChild(point);
+    return point;
+  }
   return {
-    _counter: 1,
-    _appendPoint(id, color, sizeInPixels) {
-      const point = document.createElement('div');
-      point.id = `${id}-${this._counter++}`;
-      point.style.display = 'block';
-      point.style.position = 'fixed';
-      point.style.zIndex = 99999;
-      point.style.left = `-${sizeInPixels / 2}px`;
-      point.style.top  = `-${sizeInPixels / 2}px`;
-      point.style.background = color;
-      point.style.borderRadius = '100%';
-      point.style.opacity = '0.7';
-      point.style.width = `${sizeInPixels}px`;
-      point.style.height = `${sizeInPixels}px`;
-      document.body.appendChild(point);
-      return point;
-    },
-    appendGazeVisualization() {
-      return this._appendPoint('gaze-prediction-visualization', 'red', 10);
-    },
-    appendValidationVisualization() {
-      return this._appendPoint('calibration-measurment-visualization', 'black', 30);
-    },
-    appendCalibrationStimulus() {
-      const stimulus = this._appendPoint(
-        'calibration-stiumulus-visualization', 'blue', 30)
-      stimulus.style.cursor = 'pointer'
-      return stimulus;
+    appendMarkerFor: {
+      centerFixation: () => _appendPoint('fixation-marker', 'black', 10),
+      antisaccade: {
+        target: () => _appendPoint('antisaccade-target', 'black', 30),
+        antiSignal: () => _appendPoint('antisaccade-anti-signal', 'red', 30),
+        proSignal: () => _appendPoint('antisaccade-pro-signal', 'green', 30),
+      },
+      gaze: () => _appendPoint('gaze-prediction-visualization', 'red', 10),
+      calibration: () => _appendPoint('calibration-stiumulus-visualization', 'blue', 30),
+      validation: () => _appendPoint('calibration-measurment-visualization', 'black', 30),
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();
@@ -307,7 +156,7 @@ const drawer = (function() {
         drawer.moveToPercentages(point, positionInCircle.x, positionInCircle.y);
       };
       updatePoint(0);
-      await utils.runRegularly(maximumDurationInMs, deltaInMs, async (
+      await runRegularly(maximumDurationInMs, deltaInMs, async (
         elapsedTimeInMs
       ) => {
         await cb(point);
@@ -317,26 +166,5 @@ const drawer = (function() {
     erasePoint(point) {
       document.getElementById(point.id).remove();
     },
-  };
-})();
-
-const utils = (function() {
-  return {
-    async sleep(ms) {
-      return new Promise(res => setTimeout(res, ms));
-    },
-    async runRegularly(maximumDurationInMs, deltaInMs, cb) {
-      const startingTimestamp = new Date;
-      while (true) {
-        const currentElapsedTimeInMs = new Date - startingTimestamp;
-        await cb(currentElapsedTimeInMs);
-
-        const nextElapsedTime = currentElapsedTimeInMs + deltaInMs;
-        if (nextElapsedTime >= maximumDurationInMs) {
-          break;
-        }
-        await this.sleep(deltaInMs);
-      }
-    }
   };
 })();
