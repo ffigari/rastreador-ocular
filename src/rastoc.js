@@ -198,6 +198,7 @@ const rastoc = (function() {
           })
           wgExt.pause();
 
+          // TODO: Desactivar el guardado de las estimaciones
           return null
         },
         async calibrating() {
@@ -213,6 +214,7 @@ const rastoc = (function() {
           return calibrator
         },
         async estimating() {
+          // TODO: Activar el guardado de las estimaciones
           const msg = (
             reason
           ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
