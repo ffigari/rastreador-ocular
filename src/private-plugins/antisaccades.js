@@ -5,6 +5,7 @@ jsPsych.plugins['antisaccades'] = (function(){
     },
     trial: async function(display_element, trial) {
       const estimator = await rastoc.switchTo.estimating()
+      estimator.showVisualization()
 
       const runsCount = 5
       await displayHTML(`
@@ -60,6 +61,7 @@ jsPsych.plugins['antisaccades'] = (function(){
         await drawRandomSaccadeTask()
       }
 
+      estimator.hideVisualization()
       rastoc.switchTo.idle()
       jsPsych.finishTrial();
     },
