@@ -106,8 +106,8 @@ jsPsych.plugins['antisaccades'] = (function(){
         data.runs.push(await drawRandomSaccadeTask())
       }
 
-      // TODO: Pass this data to jspsych
       Object.assign(data, { endedAt: new Date })
+      jsPsych.data.get().push(data)
       estimator.hideVisualization()
       rastoc.switchTo.idle()
       jsPsych.finishTrial();
