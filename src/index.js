@@ -113,23 +113,15 @@ const drawer = (function() {
   }
   return {
     appendMarkerFor: {
+      centerFixation: () => _appendPoint('fixation-marker', 'black', 10),
       antisaccade: {
         target: () => _appendPoint('antisaccade-target', 'black', 30),
         antiSignal: () => _appendPoint('antisaccade-anti-signal', 'red', 30),
         proSignal: () => _appendPoint('antisaccade-pro-signal', 'green', 30),
-      }
-    },
-    appendFixationMarker() {
-      return _appendPoint('fixation-marker', 'black', 10)
-    },
-    appendGazeVisualization() {
-      return _appendPoint('gaze-prediction-visualization', 'red', 10);
-    },
-    appendValidationVisualization() {
-      return _appendPoint('calibration-measurment-visualization', 'black', 30);
-    },
-    appendCalibrationStimulus() {
-      return _appendPoint('calibration-stiumulus-visualization', 'blue', 30);
+      },
+      gaze: () => _appendPoint('gaze-prediction-visualization', 'red', 10),
+      calibration: () => _appendPoint('calibration-stiumulus-visualization', 'blue', 30),
+      validation: () => _appendPoint('calibration-measurment-visualization', 'black', 30),
     },
     getCenterInPixels(point) {
       const bbox = point.getBoundingClientRect();

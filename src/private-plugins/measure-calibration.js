@@ -28,7 +28,7 @@ jsPsych.plugins['measure-calibration'] = (function(){
       const measurements = [];
       for (const [xPercentage, yPercentage] of validationSectionsCenters) {
         const validationPointMeasurements = [];
-        const validationPoint = drawer.appendValidationVisualization();
+        const validationPoint = drawer.appendMarkerFor.validation();
         await drawer.moveInCircleAround(
           validationPoint,
           xPercentage,

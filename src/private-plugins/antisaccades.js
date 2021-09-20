@@ -31,7 +31,7 @@ jsPsych.plugins['antisaccades'] = (function(){
         const isAntisaccadeTask = randomBoolean()
         const targetAppearsInRightSide = randomBoolean()
 
-        const fixationMarker = drawer.appendFixationMarker()
+        const fixationMarker = drawer.appendMarkerFor.centerFixation()
         drawer.moveToPercentages(fixationMarker, 50, 50)
 
         await sleep(2000)

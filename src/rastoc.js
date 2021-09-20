@@ -12,7 +12,7 @@ const calibrator = (function () {
       return state.lastCalibrationPercentageCoordinates
     },
     async runExplicitCalibration(drawer) {
-      let stimulus = drawer.appendCalibrationStimulus()
+      let stimulus = drawer.appendMarkerFor.calibration()
       const stimulusUpdater = (xPercentage, yPercentage) => {
         drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
         return drawer.getCenterInPixels(stimulus)
@@ -64,7 +64,7 @@ const estimator = (function () {
         throw new Error('La visualización de la estimación ya está activada.');
       }
 
-      const visualizationElement = drawer.appendGazeVisualization();
+      const visualizationElement = drawer.appendMarkerFor.gaze();
       const intervalId = setInterval(async () => {
         const [x, y] = await this.currentPrediction();
         drawer.moveToPixels(
@@ -97,7 +97,7 @@ const estimator = (function () {
       });
     },
     async runValidationRound(drawer) {
-      let stimulus = drawer.appendValidationVisualization()
+      let stimulus = drawer.appendMarkerFor.validation()
       const stimulusUpdater = (xPercentage, yPercentage) => {
         drawer.moveToPercentages(stimulus, xPercentage, yPercentage)
         return drawer.getCenterInPixels(stimulus)
