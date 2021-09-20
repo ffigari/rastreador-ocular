@@ -263,8 +263,9 @@ Quedan abiertas algunas preguntas de diseño del experimento:
 - cuánto tiempo se muestra el fixation mark antes de mostrar el estímulo target
   a mirar o esquivar
 - cuánto tiempo se muestra el target
-- cómo se señala anti vs pro sacada
+- cómo se señala anti vs pro sacada? color, forma geométrica, flecha?
 - cuántas iteraciones se realizan
+- a qué distancia del fixation mark se muestra el target?
  
 ### Referencias
 
