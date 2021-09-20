@@ -174,6 +174,11 @@ const estimator = (function () {
 const rastoc = (function() {
   const state = {
     phase: 'idle',
+    dataRecollection: {
+      inProgress: false,
+      intervalId: null,
+      values: [],
+    }
   }
   return {
     get continueTo() {
@@ -198,7 +203,17 @@ const rastoc = (function() {
           })
           wgExt.pause();
 
-          // TODO: Desactivar el guardado de las estimaciones
+          if (state.dataRecollection.inProgress) {
+            jsPsych.data.get().push({
+              name: 'estimation-window',
+              values: [...state.dataRecollection.values]
+            })
+            Object.assign(state.dataRecollection, {
+              inProgress: false,
+              intervalId: null,
+              values: [],
+            })
+          }
           return null
         },
         async calibrating() {
@@ -214,7 +229,6 @@ const rastoc = (function() {
           return calibrator
         },
         async estimating() {
-          // TODO: Activar el guardado de las estimaciones
           const msg = (
             reason
           ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
@@ -226,6 +240,19 @@ const rastoc = (function() {
             phase: 'estimating',
           })
           await wgExt.resume();
+
+          Object.assign(state.dataRecollection, {
+            inProgress: true,
+            intervalId: setInterval(async () => {
+              state.dataRecollection.values.push({
+                estimatedAt: new Date,
+                estimation: await estimator.currentPrediction()
+              })
+              if (!state.dataRecollection.inProgress) {
+                clearInterval(state.dataRecollection.intervalId)
+              }
+            }, 1000 / 24)
+          })
 
           return estimator
         },
