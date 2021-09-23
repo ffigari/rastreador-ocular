@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://unpkg.com/@tensorflow/tfjs-core@2.4.0/dist/tf-core.js"></script>
+    <script src="https://unpkg.com/@tensorflow/tfjs-converter@2.4.0/dist/tf-converter.js"></script>
+    <script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.4.0/dist/tf-backend-webgl.js"></script>
+    <script src="https://unpkg.com/@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
+    <script>
+      // Detección de movimiento
+      const movementDetector = (function() {
+        const module = {}
+        const state = {}
+
+        window.addEventListener('load', async () => {
+          const model = await faceLandmarksDetection
+            .load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
+          try {
+            videoStream = await navigator
+              .mediaDevices
+              .getUserMedia({ video: true, audio: false })
+          } catch (e) {
+            console.error(e)
+            return
+          }
+
+          const videoElement = document.createElement('video')
+          videoElement.srcObject = videoStream
+          videoElement.play()
+          videoElement.addEventListener('canplay', () => {
+            const detectorLoop = async () => {
+              const predictions = await model.estimateFaces({
+                input: videoElement
+              })
+              console.log(predictions)
+              if (state.calibrationInProgress || state.detectionInProgress) {
+                window.requestAnimationFrame(detectorLoop)
+              }
+            }
+            Object.assign(module, {
+              videoStream,
+              start: {
+                calibration() {
+                  state.calibrationInProgress = true
+                  state.detectionInProgress = false
+                  window.requestAnimationFrame(detectorLoop)
+                },
+                detection() {
+                  state.calibrationInProgress = false
+                  state.detectionInProgress = true
+                }
+              },
+              stop() {
+                state.calibrationInProgress = false
+                state.detectionInProgress = false
+              },
+            })
+            document.dispatchEvent(new Event('movement-detector:ready'))
+          })
+        })
+
+        return module
+      })()
+    </script>
+    <title> Detección de movimiento </title>
+  </head>
+  <body>
+    <button disabled id="calibration-starter">Iniciar calibración</button>
+    <button disabled id="detection-starter">Pasar a detección</button>
+    <button disabled id="detector-stoper">Frenar detección</button>
+    <video id="webcam-output">Video stream not available.</video>
+    <script>
+      document.addEventListener('movement-detector:ready', () => {
+        const videoElement = document.getElementById('webcam-output')
+        videoElement.srcObject = movementDetector.videoStream
+        videoElement.play()
+
+        const calibrationStarterButton = document.getElementById('calibration-starter')
+        const detectionStarterButton = document.getElementById('detection-starter')
+        const stoperButton = document.getElementById('detector-stoper')
+        calibrationStarterButton.disabled = false
+        calibrationStarterButton.addEventListener('click', () => {
+          movementDetector.start.calibration()
+          calibrationStarterButton.disabled = true
+          detectionStarterButton.disabled = false
+          stoperButton.disabled = false
+        })
+        detectionStarterButton.addEventListener('click', () => {
+          movementDetector.start.detection()
+          calibrationStarterButton.disabled = true
+          detectionStarterButton.disabled = true
+          stoperButton.disabled = false
+        })
+        stoperButton.addEventListener('click', () => {
+          movementDetector.stop()
+          calibrationStarterButton.disabled = false
+          detectionStarterButton.disabled = true
+          stoperButton.disabled = true
+        })
+      })
+    </script>
+  </body>
+</html>
