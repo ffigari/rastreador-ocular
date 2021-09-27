@@ -1,7 +1,12 @@
 // Detección de movimiento
 const movementDetector = (function() {
   const module = {}
-  const state = {}
+  const state = {
+    calibrationInProgress: false,
+    detectionInProgress: false,
+
+    useNextFrameAsValidPosition: false,
+  }
 
   window.addEventListener('load', async () => {
     const model = await faceLandmarksDetection
@@ -44,11 +49,13 @@ const movementDetector = (function() {
           })
           return { min, max }
         })
-        console.log(JSON.stringify([leftBBox, rightBBox], undefined, 2))
 
-        // TODO: Calibrar
-        //       Si se está en la fase correspondiente agregar los patchs
-        //       conseguidos a la data válida
+        if (state.useNextFrameAsValidPosition) {
+          // TODO: Calibrar
+          //       Si se está en la fase correspondiente agregar los patchs
+          //       conseguidos a la data válida
+          state.useNextFrameAsValidPosition = false
+        }
 
         // TODO: Detectar movimiento
         //       Movimientos laterales, up/down, alejación, acercación
@@ -66,8 +73,8 @@ const movementDetector = (function() {
             throw new Error(
               'Sólo se pueden agregar puntos durante la fase de calibración.'
             )
-            // TODO: Modificar estado como corresponda
           }
+          state.useNextFrameAsValidPosition = true;
         },
         start: {
           calibration() {
