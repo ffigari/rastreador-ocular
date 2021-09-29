@@ -1,4 +1,3 @@
-// Detección de movimiento
 const movementDetector = (function() {
   const module = {}
   const state = {
@@ -6,6 +5,11 @@ const movementDetector = (function() {
     detectionInProgress: false,
 
     useNextFrameAsValidPosition: false,
+
+    // Bounding boxes considered to be valid. They are collected during the
+    // calibration phase and are then used to detect movements and whether the
+    // user gets closer or further of the screen
+    eyesCollectedBBoxes: [],
   }
 
   window.addEventListener('load', async () => {
@@ -51,9 +55,10 @@ const movementDetector = (function() {
         })
 
         if (state.useNextFrameAsValidPosition) {
-          // TODO: Calibrar
-          //       Si se está en la fase correspondiente agregar los patchs
-          //       conseguidos a la data válida
+          state.eyesCollectedBBoxes.push({
+            left: leftBBox,
+            right: rightBBox,
+          })
           state.useNextFrameAsValidPosition = false
         }
 
@@ -80,6 +85,7 @@ const movementDetector = (function() {
           calibration() {
             state.calibrationInProgress = true
             state.detectionInProgress = false
+            state.eyesCollectedBBoxes = []
             window.requestAnimationFrame(detectorLoop)
           },
           detection() {
