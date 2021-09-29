@@ -1,3 +1,5 @@
+
+
 const movementDetector = (function() {
   const module = {}
   const state = {
@@ -6,10 +8,16 @@ const movementDetector = (function() {
 
     useNextFrameAsValidPosition: false,
 
-    // Bounding boxes considered to be valid. They are collected during the
-    // calibration phase and are then used to detect movements and whether the
-    // user gets closer or further of the screen
-    eyesCollectedBBoxes: [],
+    lastCapturedEyes: null,
+
+    // Eye patches considered to be valid positions. They are collected during
+    // the calibration phase and are then used to detect movements and whether
+    // the user gets closer or further of the screen.
+    collectedEyesPatches: [],
+
+    // Canvas element in which the movement detection should be debugged.
+    // Captured video and estimated data will be drawn over it.
+    debuggingCanvasCtx: null,
   }
 
   window.addEventListener('load', async () => {
@@ -29,6 +37,34 @@ const movementDetector = (function() {
     videoElement.play()
     videoElement.addEventListener('canplay', () => {
       const detectorLoop = async () => {
+        if (state.debuggingCanvasCtx) {
+          state.debuggingCanvasCtx.drawImage(
+            videoElement,
+            0,
+            0,
+            state.debuggingCanvasCtx.canvas.width,
+            state.debuggingCanvasCtx.canvas.height
+          );
+          state.collectedEyesPatches.forEach(({ left, right }) => {
+            [[left, 'green'], [right, 'blue']].forEach(([{ min, max }, color]) => {
+              const width = max.x - min.x;
+              const height = max.y - min.y;
+              state.debuggingCanvasCtx.lineWidth = 2;
+              state.debuggingCanvasCtx.strokeStyle = color;
+              state.debuggingCanvasCtx.strokeRect(min.x, min.y, width, height);
+            });
+          })
+          if (state.lastCapturedEyes) {
+            const { left, right } = state.lastCapturedEyes;
+            [left, right].forEach(({ min, max }) => {
+              const width = max.x - min.x;
+              const height = max.y - min.y;
+              state.debuggingCanvasCtx.lineWidth = 2;
+              state.debuggingCanvasCtx.strokeStyle = 'red';
+              state.debuggingCanvasCtx.strokeRect(min.x, min.y, width, height);
+            });
+          }
+        }
         const predictions = await model.estimateFaces({
           input: videoElement
         })
@@ -46,20 +82,22 @@ const movementDetector = (function() {
           const max = { x: null, y: null };
           keypointIndexes.forEach(keypointIndex => {
             const [x, y, z] = predictions[0].scaledMesh[keypointIndex];
-            min.x = min.x && min.x < x ? min.x : x
-            min.y = min.y && min.y < y ? min.y : y
-            max.x = max.x && max.x > x ? max.x : x
-            max.y = max.y && max.y > y ? max.y : y
+            min.x = min.x && min.x < x ? min.x : x;
+            min.y = min.y && min.y < y ? min.y : y;
+            max.x = max.x && max.x > x ? max.x : x;
+            max.y = max.y && max.y > y ? max.y : y;
           })
           return { min, max }
         })
 
+        state.lastCapturedEyes = { left: leftBBox, right: rightBBox };
+
         if (state.useNextFrameAsValidPosition) {
-          state.eyesCollectedBBoxes.push({
+          state.collectedEyesPatches.push({
             left: leftBBox,
             right: rightBBox,
-          })
-          state.useNextFrameAsValidPosition = false
+          });
+          state.useNextFrameAsValidPosition = false;
         }
 
         // TODO: Detectar movimiento
@@ -69,10 +107,16 @@ const movementDetector = (function() {
         }
       }
       Object.assign(module, {
-        // TODO: Agregar interfaz para debuggear
-        //       Debería poder pasarle algún elemento HTML (canvas? video?)
-        //       donde se visualice la info que se va capturando.
-        videoStream,
+        visualizeAt(canvasElement) {
+          if (canvasElement?.nodeName !== "CANVAS") {
+            throw new Error(
+              `'movementDetector.visualizeAt' espera un elemento HTML de tipo 'canvas'.`
+            )
+          }
+          canvasElement.width = videoElement.videoWidth
+          canvasElement.height = videoElement.videoHeight
+          state.debuggingCanvasCtx = canvasElement.getContext("2d")
+        },
         useNextFrameAsValidPosition() {
           if (!state.calibrationInProgress) {
             throw new Error(
@@ -85,7 +129,7 @@ const movementDetector = (function() {
           calibration() {
             state.calibrationInProgress = true
             state.detectionInProgress = false
-            state.eyesCollectedBBoxes = []
+            state.collectedEyesPatches = []
             window.requestAnimationFrame(detectorLoop)
           },
           detection() {
@@ -96,6 +140,16 @@ const movementDetector = (function() {
         stop() {
           state.calibrationInProgress = false
           state.detectionInProgress = false
+          state.collectedEyesPatches = [];
+          state.lastCapturedEyes = null;
+          if (state.debuggingCanvasCtx) {
+            state.debuggingCanvasCtx.clearRect(
+              0,
+              0,
+              state.debuggingCanvasCtx.canvas.width,
+              state.debuggingCanvasCtx.canvas.height
+            )
+          }
         },
       })
       document.dispatchEvent(new Event('movement-detector:ready'))

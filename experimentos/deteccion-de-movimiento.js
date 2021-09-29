@@ -1,7 +1,5 @@
 document.addEventListener('movement-detector:ready', () => {
-  const videoElement = document.getElementById('webcam-output')
-  videoElement.srcObject = movementDetector.videoStream
-  videoElement.play()
+  movementDetector.visualizeAt(document.getElementById('debugging-canvas'))
 
   const calibrationStarterButton = document.getElementById('calibration-starter')
   const adderButton = document.getElementById('valid-position-adder')
