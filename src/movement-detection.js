@@ -10,17 +10,21 @@ const movementDetector = (function() {
         max.x = max.x && max.x > x ? max.x : x;
         max.y = max.y && max.y > y ? max.y : y;
       })
-      return new (function (min, max) {
-        Object.assign(this, {
-          min, max, width: max.x - min.x, height: max.y - min.y,
-        }, {
-          drawItselfOver(ctx, color) {
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = color;
-            ctx.strokeRect(this.min.x, this.min.y, this.width, this.height);
-          },
-        })
-      })(min, max);
+      return {
+        min,
+        max,
+        width: max.x - min.x,
+        height: max.y - min.y,
+        center: {
+          x: (min.x + max.x) / 2,
+          y: (min.y + max.y) / 2,
+        },
+        visualizeAt(ctx, color) {
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = color || 'black';
+          ctx.strokeRect(this.min.x, this.min.y, this.width, this.height);
+        },
+      };
     },
     eyesPatchsPair: (prediction) => {
       // Los índices de los keypoints pueden consultarse en
@@ -29,18 +33,49 @@ const movementDetector = (function() {
         [189, 244, 232, 230, 228, 226, 225, 223, 221],
         [413, 464, 452, 450, 448, 446, 445, 443, 441],
       ].map(keypointsIndexes => create.eyePatch(prediction, keypointsIndexes))
-      return new (function (left, right) {
-        Object.assign(this, {
-          left, right
-        }, {
-          drawItselfOver(ctx, { leftColor, rightColor, color }) {
-            [
-              [this.left,  leftColor  || color || 'black'],
-              [this.right, rightColor || color || 'black'],
-            ].forEach(([patch, color]) => patch.drawItselfOver(ctx, color))
-          },
-        })
-      })(leftEyePatch, rightEyePatch);
+      return {
+        left: leftEyePatch,
+        right: rightEyePatch,
+        visualizeAt(ctx, { leftColor, rightColor, color }) {
+          [
+            [this.left,  leftColor  || color],
+            [this.right, rightColor || color],
+          ].map(([patch, color]) => patch.visualizeAt(ctx, color))
+        }
+      };
+    },
+    validEyePosition: (patches) => {
+      const axisCenter = (axis) => {
+        return patches
+        .map(({ center }) => center[axis])
+        .reduce((acc, cur) => acc + cur, 0) / patches.length;
+      }
+      const center = {
+        x: axisCenter('x'),
+        y: axisCenter('y'),
+      }
+      return {
+        visualizeAt(ctx, color) {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(center.x, center.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        },
+      };
+    },
+    validEyesPosition: (eyesPatches) => {
+      const [leftEye, rightEye] = eyesPatches.reduce((acc, cur) => {
+        acc[0].push(cur.left);
+        acc[1].push(cur.right);
+        return acc;
+      }, [[],[]]).map(x => create.validEyePosition(x))
+      return {
+        visualizeAt(ctx) {
+          [[leftEye, 'green'], [rightEye, 'blue']].map(([
+            eye, color
+          ]) => eye.visualizeAt(ctx, color));
+        }
+      };
     },
   }
 
@@ -57,6 +92,8 @@ const movementDetector = (function() {
     // the calibration phase and are then used to detect movements and whether
     // the user gets closer or further of the screen.
     collectedEyesPatches: [],
+
+    validEyesPosition: null,
 
     // Canvas element in which the movement detection should be debugged.
     // Captured video and estimated data will be drawn over it.
@@ -88,12 +125,13 @@ const movementDetector = (function() {
             state.debuggingCanvasCtx.canvas.width,
             state.debuggingCanvasCtx.canvas.height
           );
-          state.collectedEyesPatches.forEach((x) => x.drawItselfOver(
+          state.collectedEyesPatches.forEach((x) => x.visualizeAt(
             state.debuggingCanvasCtx, { leftColor: 'green', rightColor: 'blue', }
           ));
-          state.lastCapturedEyes?.drawItselfOver(state.debuggingCanvasCtx, {
+          state.lastCapturedEyes?.visualizeAt(state.debuggingCanvasCtx, {
             color: 'red',
           })
+          state.validEyesPosition?.visualizeAt(state.debuggingCanvasCtx)
         }
         const predictions = await model.estimateFaces({
           input: videoElement
@@ -110,6 +148,8 @@ const movementDetector = (function() {
         state.lastCapturedEyes = eyesPatchsPair;
         if (state.useNextFrameAsValidPosition) {
           state.collectedEyesPatches.push(eyesPatchsPair);
+          state.validEyesPosition =
+            create.validEyesPosition(state.collectedEyesPatches)
           state.useNextFrameAsValidPosition = false;
         }
 
@@ -155,6 +195,7 @@ const movementDetector = (function() {
           state.detectionInProgress = false
           state.collectedEyesPatches = [];
           state.lastCapturedEyes = null;
+          state.validEyesPosition = null;
           if (state.debuggingCanvasCtx) {
             state.debuggingCanvasCtx.clearRect(
               0,
