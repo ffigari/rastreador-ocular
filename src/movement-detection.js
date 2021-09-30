@@ -1,4 +1,7 @@
 const movementDetector = (function() {
+  distance = (p1, p2) => Math.sqrt(
+    Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
+  )
   const create = {
     eyePatch: (prediction, keypointsIndexes) => {
       const min = { x: null, y: null }
@@ -49,7 +52,7 @@ const movementDetector = (function() {
             [this.left,  leftColor  || color],
             [this.right, rightColor || color],
           ].map(([patch, color]) => patch.visualizeAt(ctx, color))
-        }
+        },
       };
     },
     validEyePosition: (patches) => {
@@ -68,14 +71,15 @@ const movementDetector = (function() {
         // Flat them into a single array
         .reduce((acc, cur) => acc.concat(cur))
         // Compute each coord's distance to the center of all coordinates
-        .map(({ x, y }) => Math.sqrt(
-          Math.pow(center.x - x, 2) + Math.pow(center.y - y, 2)
-        ))
+        .map(p => distance(center, p))
         // Find the max distance
         .reduce((acc, cur) => acc > cur ? acc : cur)
         // Add 10% to the resulting value
         * 1.1;
       return {
+        contains(eyePatch) {
+          return eyePatch.corners.every(c => distance(center, c) <= ratio);
+        },
         visualizeAt(ctx, color) {
           ctx.fillStyle = color;
           ctx.beginPath();
@@ -92,17 +96,21 @@ const movementDetector = (function() {
       };
     },
     validEyesPosition: (eyesPatches) => {
-      const [leftEye, rightEye] = eyesPatches.reduce((acc, cur) => {
+      const [leftValidPosition, rightValidPosition] = eyesPatches.reduce((acc, cur) => {
         acc[0].push(cur.left);
         acc[1].push(cur.right);
         return acc;
       }, [[],[]]).map(x => create.validEyePosition(x))
       return {
         visualizeAt(ctx) {
-          [[leftEye, 'green'], [rightEye, 'blue']].map(([
+          [[leftValidPosition, 'green'], [rightValidPosition, 'blue']].map(([
             eye, color
           ]) => eye.visualizeAt(ctx, color));
-        }
+        },
+        contains(eyesPair) {
+          return leftValidPosition.contains(eyesPair.left)
+            && rightValidPosition.contains(eyesPair.right)
+        },
       };
     },
   }
@@ -173,16 +181,22 @@ const movementDetector = (function() {
           throw new Error('Se detectó más de una cara.')
         }
         const eyesPatchsPair = create.eyesPatchsPair(predictions[0]);
-        state.lastCapturedEyes = eyesPatchsPair;
         if (state.useNextFrameAsValidPosition) {
           state.collectedEyesPatches.push(eyesPatchsPair);
           state.validEyesPosition =
             create.validEyesPosition(state.collectedEyesPatches)
           state.useNextFrameAsValidPosition = false;
+          // TODO: Agregar un evento que diga que ya se estableció una posición
+          //       válida
         }
 
-        // TODO: Detectar movimiento
-        //       Movimientos laterales, up/down, alejación, acercación
+        if (state.detectionInProgress) {
+          if (!state.validEyesPosition.contains(eyesPatchsPair)) {
+            console.log('TODO: emit an event')
+          }
+        }
+
+        state.lastCapturedEyes = eyesPatchsPair;
         if (state.calibrationInProgress || state.detectionInProgress) {
           window.requestAnimationFrame(detectorLoop)
         }
@@ -214,6 +228,11 @@ const movementDetector = (function() {
             window.requestAnimationFrame(detectorLoop)
           },
           detection() {
+            if (!state.validEyesPosition) {
+              throw new Error(
+                'No se puede pasar a detectar porque aún no se definió cuál es la posición válida de los ojos.'
+              );
+            }
             state.detectionInProgress = true
             state.calibrationInProgress = false
           }
@@ -239,4 +258,4 @@ const movementDetector = (function() {
   })
 
   return module
-})()
+})();
