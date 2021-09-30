@@ -24,6 +24,14 @@ const movementDetector = (function() {
           ctx.strokeStyle = color || 'black';
           ctx.strokeRect(this.min.x, this.min.y, this.width, this.height);
         },
+        get corners() {
+          return [
+            { x: min.x, y: min.y },
+            { x: min.x, y: max.y },
+            { x: max.x, y: min.y },
+            { x: max.x, y: max.y },
+          ]
+        }
       };
     },
     eyesPatchsPair: (prediction) => {
@@ -47,19 +55,39 @@ const movementDetector = (function() {
     validEyePosition: (patches) => {
       const axisCenter = (axis) => {
         return patches
-        .map(({ center }) => center[axis])
-        .reduce((acc, cur) => acc + cur, 0) / patches.length;
-      }
+          .map(({ center }) => center[axis])
+          .reduce((acc, cur) => acc + cur, 0) / patches.length;
+      };
       const center = {
         x: axisCenter('x'),
         y: axisCenter('y'),
-      }
+      };
+      const ratio = patches
+        // Collect all corners
+        .map(x => x.corners)
+        // Flat them into a single array
+        .reduce((acc, cur) => acc.concat(cur))
+        // Compute each coord's distance to the center of all coordinates
+        .map(({ x, y }) => Math.sqrt(
+          Math.pow(center.x - x, 2) + Math.pow(center.y - y, 2)
+        ))
+        // Find the max distance
+        .reduce((acc, cur) => acc > cur ? acc : cur)
+        // Add 10% to the resulting value
+        * 1.1;
       return {
         visualizeAt(ctx, color) {
           ctx.fillStyle = color;
           ctx.beginPath();
           ctx.arc(center.x, center.y, 3, 0, Math.PI * 2);
           ctx.fill();
+
+          ctx.globalAlpha = 0.3;
+          ctx.beginPath();
+          ctx.fillStyle = color;
+          ctx.arc(center.x, center.y, ratio, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
         },
       };
     },
