@@ -1,4 +1,42 @@
 const movementDetector = (function() {
+  const Loop = function (main, extras) {
+    extras = extras || {};
+
+    let inProgress = false;
+    const full = async () => {
+      await main(extras.pre?.call() || {});
+      if (inProgress) {
+        go();
+      }
+    };
+
+    let animationId = null;
+    const go = () => {
+      animationId = window.requestAnimationFrame(full);
+    };
+    return {
+      get inProgress() {
+        return inProgress;
+      },
+      turn: {
+        on() {
+          if (inProgress) {
+            throw new Error('loop is already turned on.')
+          }
+          inProgress = true;
+          go();
+        },
+        off() {
+          if (!inProgress) {
+            throw new Error('loop is already turned off.')
+          }
+          inProgress = false;
+          animationId && window.cancelAnimationFrame(animationId);
+          animationId = null;
+        },
+      },
+    };
+  };
   distance = (p1, p2) => Math.sqrt(
     Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
   )
@@ -117,9 +155,6 @@ const movementDetector = (function() {
 
   const module = {}
   const state = {
-    calibrationInProgress: false,
-    detectionInProgress: false,
-
     useNextFrameAsValidPosition: false,
 
     lastCapturedEyes: null,
@@ -152,23 +187,7 @@ const movementDetector = (function() {
     videoElement.srcObject = videoStream
     videoElement.play()
     videoElement.addEventListener('canplay', () => {
-      const detectorLoop = async () => {
-        if (state.debuggingCanvasCtx) {
-          state.debuggingCanvasCtx.drawImage(
-            videoElement,
-            0,
-            0,
-            state.debuggingCanvasCtx.canvas.width,
-            state.debuggingCanvasCtx.canvas.height
-          );
-          state.collectedEyesPatches.forEach((x) => x.visualizeAt(
-            state.debuggingCanvasCtx, { leftColor: 'green', rightColor: 'blue', }
-          ));
-          state.lastCapturedEyes?.visualizeAt(state.debuggingCanvasCtx, {
-            color: 'red',
-          })
-          state.validEyesPosition?.visualizeAt(state.debuggingCanvasCtx)
-        }
+      const eyesCapturingLoop = new Loop(async () => {
         const predictions = await model.estimateFaces({
           input: videoElement
         })
@@ -180,27 +199,54 @@ const movementDetector = (function() {
         if (predictions.length > 1) {
           throw new Error('Se detectó más de una cara.')
         }
-        const eyesPatchsPair = create.eyesPatchsPair(predictions[0]);
+
+        state.lastCapturedEyes = create.eyesPatchsPair(predictions[0]);
+      });
+      const drawerLoop = new Loop(({
+        ctx
+      }) => {
+        ctx.drawImage(videoElement, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        state.collectedEyesPatches.forEach((x) => x.visualizeAt(ctx, {
+          leftColor: 'green',
+          rightColor: 'blue',
+        }));
+        state.lastCapturedEyes?.visualizeAt(ctx, { color: 'red', })
+        state.validEyesPosition?.visualizeAt(ctx)
+      }, {
+        pre: () => {
+          ctx = state.debuggingCanvasCtx
+          if (!ctx) {
+            throw new Error('el loop para dibujar necesita tener el canvas de debugging.')
+          }
+          return { ctx }
+        },
+      });
+      const calibrationLoop = new Loop(() => {
         if (state.useNextFrameAsValidPosition) {
-          state.collectedEyesPatches.push(eyesPatchsPair);
-          state.validEyesPosition =
-            create.validEyesPosition(state.collectedEyesPatches)
+          state.collectedEyesPatches.push(state.lastCapturedEyes);
+          state.validEyesPosition = create.validEyesPosition(state.collectedEyesPatches)
           state.useNextFrameAsValidPosition = false;
           // TODO: Agregar un evento que diga que ya se estableció una posición
           //       válida
         }
-
-        if (state.detectionInProgress) {
-          if (!state.validEyesPosition.contains(eyesPatchsPair)) {
-            console.log('TODO: emit an event')
+      })
+      const detectionLoop = new Loop(() => {
+        if (
+          state.lastCapturedEyes &&
+          !state.validEyesPosition.contains(state.lastCapturedEyes)
+        ) {
+          console.log('TODO: emit an event')
+        }
+      }, {
+        pre: () => {
+          if (!state.validEyesPosition) {
+            throw new Error('No se definió la posición válida de los ojos.')
           }
-        }
+        },
+      })
 
-        state.lastCapturedEyes = eyesPatchsPair;
-        if (state.calibrationInProgress || state.detectionInProgress) {
-          window.requestAnimationFrame(detectorLoop)
-        }
-      }
+      eyesCapturingLoop.turn.on();
+
       Object.assign(module, {
         visualizeAt(canvasElement) {
           if (canvasElement?.nodeName !== "CANVAS") {
@@ -211,9 +257,10 @@ const movementDetector = (function() {
           canvasElement.width = videoElement.videoWidth
           canvasElement.height = videoElement.videoHeight
           state.debuggingCanvasCtx = canvasElement.getContext("2d")
+          drawerLoop.turn.on();
         },
         useNextFrameAsValidPosition() {
-          if (!state.calibrationInProgress) {
+          if (!calibrationLoop.inProgress) {
             throw new Error(
               'Sólo se pueden agregar puntos durante la fase de calibración.'
             )
@@ -222,10 +269,9 @@ const movementDetector = (function() {
         },
         start: {
           calibration() {
-            state.calibrationInProgress = true
-            state.detectionInProgress = false
             state.collectedEyesPatches = []
-            window.requestAnimationFrame(detectorLoop)
+
+            calibrationLoop.turn.on();
           },
           detection() {
             if (!state.validEyesPosition) {
@@ -233,24 +279,18 @@ const movementDetector = (function() {
                 'No se puede pasar a detectar porque aún no se definió cuál es la posición válida de los ojos.'
               );
             }
-            state.detectionInProgress = true
-            state.calibrationInProgress = false
+
+            calibrationLoop.turn.off();
+            detectionLoop.turn.on();
           }
         },
         stop() {
-          state.calibrationInProgress = false
-          state.detectionInProgress = false
+          calibrationLoop.inProgress && calibrationLoop.turn.off();
+          detectionLoop.inProgress && detectionLoop.turn.off();
+
           state.collectedEyesPatches = [];
           state.lastCapturedEyes = null;
           state.validEyesPosition = null;
-          if (state.debuggingCanvasCtx) {
-            state.debuggingCanvasCtx.clearRect(
-              0,
-              0,
-              state.debuggingCanvasCtx.canvas.width,
-              state.debuggingCanvasCtx.canvas.height
-            )
-          }
         },
       })
       document.dispatchEvent(new Event('movement-detector:ready'))
