@@ -50,14 +50,19 @@
     </p>
 
     <div id="face-reporter">
-      <p hidden id="face-ok-msg">cara ok</p>
-      <p hidden id="no-face-msg">cara no detectada</p>
-      <p hidden id="multiple-faces-msg">cara detectada múltiples veces</p>
+      <p hidden id="face-ok-msg" style="color: green; font-weight: bold;">
+        cara ok</p>
+      <p hidden id="no-face-msg" style="color: red; font-weight: bold;">
+        cara no detectada</p>
+      <p hidden id="multiple-faces-msg" style="color: red; font-weight: bold;">
+        cara detectada múltiples veces</p>
     </div>
 
     <div id="movement-reporter">
-      <p hidden id="no-movement-msg">no se detectó movimiento</p>
-      <p hidden id="movement-detected-msg">movimiento detectado</p>
+      <p hidden id="no-movement-msg" style="color: green; font-weight: bold;">
+        no se detectó movimiento</p>
+      <p hidden id="movement-detected-msg" style="color: red; font-weight: bold;">
+        movimiento detectado</p>
     </div>
 
     <script src="./deteccion-de-movimiento.js"></script>
