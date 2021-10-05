@@ -219,10 +219,11 @@ al usuario como herramientas provistas y reestricciones al sistema.
 
 Sugerencias
 - Apoyar la computadora sobre una mesa y sentarse cómodamente en una silla.
+Buscar un lugar tal que los ojos queden bien iluminados.
 - Durante la calibración, evitar pestañear al mismo tiempo que se interactúa con
 los estímulos. Puede por ejemplo descansarse la vista luego de presionar la
 barra de espacio.
-- Evitar mover la cabeza una vez calibrado el sistema
+- Evitar mover la cabeza una vez calibrado el sistema.
 
 #### Decisiones de diseño
 

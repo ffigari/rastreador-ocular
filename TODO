@@ -1,7 +1,6 @@
-  . detección de movimiento de la cara
-    al momento de calibrar guardar info de dónde está la cara y usar eso para
-    saber cuando se movió el sujeto
+  . agregar lo de cercanía y lejanía
   . handlear el caso en el cual desaparezca la cara
+  . handlear el caso en el cual haya dos caras
 
   . mirar https://github.com/EasyEyes/remote-calibrator
 
