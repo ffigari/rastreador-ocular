@@ -228,6 +228,7 @@ const movementDetector = (function() {
           state.useNextFrameAsValidPosition = false;
           // TODO: Agregar un evento que diga que ya se estableció una posición
           //       válida
+          document.dispatchEvent(new Event('movement-detector:calibration-ready'))
         }
       })
       const detectionLoop = new Loop(() => {
@@ -293,7 +294,7 @@ const movementDetector = (function() {
           state.validEyesPosition = null;
         },
       })
-      document.dispatchEvent(new Event('movement-detector:ready'))
+      document.dispatchEvent(new Event('movement-detector:module-ready'))
     })
   })
 

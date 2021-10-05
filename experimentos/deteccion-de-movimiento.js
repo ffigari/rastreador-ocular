@@ -1,37 +1,37 @@
-document.addEventListener('movement-detector:ready', () => {
+document.addEventListener('movement-detector:module-ready', () => {
   movementDetector.visualizeAt(document.getElementById('debugging-canvas'))
 
   const calibrationStarterButton = document.getElementById('calibration-starter')
   const adderButton = document.getElementById('valid-position-adder')
   const detectionStarterButton = document.getElementById('detection-starter')
-  const stoperButton = document.getElementById('detector-stoper')
+  const reseterButton = document.getElementById('reseter')
 
-  calibrationStarterButton.disabled = false
   calibrationStarterButton.addEventListener('click', () => {
-    movementDetector.start.calibration()
     calibrationStarterButton.disabled = true
+    movementDetector.start.calibration()
     adderButton.disabled = false
-    detectionStarterButton.disabled = false
-    stoperButton.disabled = false
+    reseterButton.disabled = false
     document.getElementById('calibration-instructions').hidden = false
   })
   adderButton.addEventListener('click', () => {
     movementDetector.useNextFrameAsValidPosition()
   })
+  document.addEventListener('movement-detector:calibration-ready', () => {
+    detectionStarterButton.disabled = false;
+  })
   detectionStarterButton.addEventListener('click', () => {
+    adderButton.disabled = true
+    document.getElementById('calibration-instructions').hidden = true
+    detectionStarterButton.disabled = true
     movementDetector.start.detection()
-    calibrationStarterButton.disabled = true
-    adderButton.disabled = true
-    detectionStarterButton.disabled = true
-    stoperButton.disabled = false
-    document.getElementById('calibration-instructions').hidden = true
   })
-  stoperButton.addEventListener('click', () => {
+  reseterButton.addEventListener('click', () => {
+    adderButton.disabled = true;
+    detectionStarterButton.disabled = true;
+    reseterButton.disabled = true;
     movementDetector.stop()
-    calibrationStarterButton.disabled = false
-    adderButton.disabled = true
-    detectionStarterButton.disabled = true
-    stoperButton.disabled = true
-    document.getElementById('calibration-instructions').hidden = true
+    calibrationStarterButton.disabled = false;
   })
+
+  calibrationStarterButton.disabled = false
 })
