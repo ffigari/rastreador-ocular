@@ -1,37 +1,88 @@
-document.addEventListener('movement-detector:module-ready', () => {
-  movementDetector.visualizeAt(document.getElementById('debugging-canvas'))
+const setUp = {
+  debugging() {
+    movementDetector.visualizeAt(document.getElementById('debugging-canvas'))
+  },
+  controllers() {
+    const calibrationStarterButton = document.getElementById('calibration-starter')
+    const adderButton = document.getElementById('valid-position-adder')
+    const detectionStarterButton = document.getElementById('detection-starter')
+    const reseterButton = document.getElementById('reseter')
 
-  const calibrationStarterButton = document.getElementById('calibration-starter')
-  const adderButton = document.getElementById('valid-position-adder')
-  const detectionStarterButton = document.getElementById('detection-starter')
-  const reseterButton = document.getElementById('reseter')
+    calibrationStarterButton.addEventListener('click', () => {
+      calibrationStarterButton.disabled = true
+      movementDetector.start.calibration()
+      adderButton.disabled = false
+      reseterButton.disabled = false
+      document.getElementById('calibration-instructions').hidden = false
+    })
+    adderButton.addEventListener('click', () => {
+      movementDetector.useNextFrameAsValidPosition()
+    })
+    document.addEventListener('movement-detector:calibration:ready', () => {
+      detectionStarterButton.disabled = false;
+    })
+    detectionStarterButton.addEventListener('click', () => {
+      adderButton.disabled = true
+      document.getElementById('calibration-instructions').hidden = true
+      detectionStarterButton.disabled = true
+      movementDetector.start.detection()
+    })
+    reseterButton.addEventListener('click', () => {
+      adderButton.disabled = true;
+      detectionStarterButton.disabled = true;
+      reseterButton.disabled = true;
+      movementDetector.stop()
+      calibrationStarterButton.disabled = false;
+    })
 
-  calibrationStarterButton.addEventListener('click', () => {
-    calibrationStarterButton.disabled = true
-    movementDetector.start.calibration()
-    adderButton.disabled = false
-    reseterButton.disabled = false
-    document.getElementById('calibration-instructions').hidden = false
-  })
-  adderButton.addEventListener('click', () => {
-    movementDetector.useNextFrameAsValidPosition()
-  })
-  document.addEventListener('movement-detector:calibration-ready', () => {
-    detectionStarterButton.disabled = false;
-  })
-  detectionStarterButton.addEventListener('click', () => {
-    adderButton.disabled = true
-    document.getElementById('calibration-instructions').hidden = true
-    detectionStarterButton.disabled = true
-    movementDetector.start.detection()
-  })
-  reseterButton.addEventListener('click', () => {
-    adderButton.disabled = true;
-    detectionStarterButton.disabled = true;
-    reseterButton.disabled = true;
-    movementDetector.stop()
-    calibrationStarterButton.disabled = false;
-  })
-
-  calibrationStarterButton.disabled = false
+    calibrationStarterButton.disabled = false
+  },
+  faceReporter() {
+    const hideAllBut = (id) => {
+      document.getElementById('face-ok-msg').hidden = true;
+      document.getElementById('no-face-msg').hidden = true;
+      document.getElementById('multiple-faces-msg').hidden = true;
+      document.getElementById(id).hidden = false;
+    }
+    document.addEventListener(
+      'movement-detector:face:detected-correctly',
+      () => hideAllBut('face-ok-msg')
+    );
+    document.addEventListener(
+      'movement-detector:face:not-detected',
+      () => hideAllBut('no-face-msg')
+    );
+    document.addEventListener(
+      'movement-detector:face:detected-multiple-times',
+      () => hideAllBut('multiple-faces-msg')
+    );
+  },
+  movementReporter() {
+    const hideAll = () => {
+      document.getElementById('no-movement-msg').hidden = true;
+      document.getElementById('movement-detected-msg').hidden = true;
+    }
+    const hideAllBut = (id) => {
+      hideAll();
+      document.getElementById(id).hidden = false;
+    }
+    document.addEventListener(
+      'movement-detector:movement:not-detected',
+      () => hideAllBut('no-movement-msg')
+    );
+    document.addEventListener(
+      'movement-detector:movement:detected',
+      () => hideAllBut('movement-detected-msg')
+    );
+    document.addEventListener(
+      'movement-detector:calibration:reset',
+      hideAll
+    )
+  },
+}
+document.addEventListener('movement-detector:ready', () => {
+  setUp.debugging();
+  setUp.controllers();
+  setUp.faceReporter();
+  setUp.movementReporter();
 })

@@ -40,7 +40,7 @@
         Reiniciar
       </button>
     </div>
-    <canvas id="debugging-canvas"></video>
+    <canvas id="debugging-canvas"></canvas>
     <p
       id="calibration-instructions"
       hidden
@@ -48,6 +48,18 @@
       Hacé click en "Agregar posición válida" para utilizar el frame actual como
       posición válida de la cabeza.
     </p>
+
+    <div id="face-reporter">
+      <p hidden id="face-ok-msg">cara ok</p>
+      <p hidden id="no-face-msg">cara no detectada</p>
+      <p hidden id="multiple-faces-msg">cara detectada múltiples veces</p>
+    </div>
+
+    <div id="movement-reporter">
+      <p hidden id="no-movement-msg">no se detectó movimiento</p>
+      <p hidden id="movement-detected-msg">movimiento detectado</p>
+    </div>
+
     <script src="./deteccion-de-movimiento.js"></script>
   </body>
 </html>

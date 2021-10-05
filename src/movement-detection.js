@@ -169,8 +169,42 @@ const movementDetector = (function() {
     // Canvas element in which the movement detection should be debugged.
     // Captured video and estimated data will be drawn over it.
     debuggingCanvasCtx: null,
+  };
+  const _dispatch = (
+    eventName
+  ) => document.dispatchEvent(new Event(`movement-detector:${eventName}`));
+  const dispatch = {
+    moduleReady() {
+      _dispatch('ready');
+    },
+    calibration: {
+      ready() {
+        _dispatch('calibration:ready');
+      },
+      reset() {
+        _dispatch('calibration:reset')
+      }
+    },
+    face: {
+      notDetected() {
+        _dispatch('face:not-detected');
+      },
+      detectedMultipleTimes() {
+        _dispatch('face:detected-multiple-times');
+      },
+      detectedCorrectly() {
+        _dispatch('face:detected-correctly');
+      },
+    },
+    movement: {
+      notDetected() {
+        _dispatch('movement:not-detected');
+      },
+      detected() {
+        _dispatch('movement:detected');
+      },
+    }
   }
-
   window.addEventListener('load', async () => {
     const model = await faceLandmarksDetection
       .load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
@@ -191,16 +225,15 @@ const movementDetector = (function() {
         const predictions = await model.estimateFaces({
           input: videoElement
         })
-        // TODO: En lugar de tirar un error habría que informar al usuario con
-        //       algún evento.
         if (predictions.length === 0) {
-          throw new Error('No se detectó ninguna cara.')
+          return dispatch.face.notDetected();
         }
         if (predictions.length > 1) {
-          throw new Error('Se detectó más de una cara.')
+          return dispatch.face.detectedMultipleTimes();
         }
 
         state.lastCapturedEyes = create.eyesPatchsPair(predictions[0]);
+        return dispatch.face.detectedCorrectly();
       });
       const drawerLoop = new Loop(({
         ctx
@@ -226,9 +259,7 @@ const movementDetector = (function() {
           state.collectedEyesPatches.push(state.lastCapturedEyes);
           state.validEyesPosition = create.validEyesPosition(state.collectedEyesPatches)
           state.useNextFrameAsValidPosition = false;
-          // TODO: Agregar un evento que diga que ya se estableció una posición
-          //       válida
-          document.dispatchEvent(new Event('movement-detector:calibration-ready'))
+          dispatch.calibration.ready();
         }
       })
       const detectionLoop = new Loop(() => {
@@ -236,8 +267,9 @@ const movementDetector = (function() {
           state.lastCapturedEyes &&
           !state.validEyesPosition.contains(state.lastCapturedEyes)
         ) {
-          console.log('TODO: emit an event')
+          return dispatch.movement.detected();
         }
+        return dispatch.movement.notDetected();
       }, {
         pre: () => {
           if (!state.validEyesPosition) {
@@ -292,9 +324,10 @@ const movementDetector = (function() {
           state.collectedEyesPatches = [];
           state.lastCapturedEyes = null;
           state.validEyesPosition = null;
+          dispatch.calibration.reset();
         },
       })
-      document.dispatchEvent(new Event('movement-detector:module-ready'))
+      dispatch.moduleReady()
     })
   })
 
