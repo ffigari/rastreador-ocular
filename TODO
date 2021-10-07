@@ -1,7 +1,4 @@
-  . detección de movimiento de la cara
-    al momento de calibrar guardar info de dónde está la cara y usar eso para
-    saber cuando se movió el sujeto
-  . handlear el caso en el cual desaparezca la cara
+  . mirar https://github.com/EasyEyes/remote-calibrator
 
   . leer "In the Eye of the Beholder: A Survey of Models for Eyes and Gaze"
     https://sci-hub.st/https://doi.org/10.1109/TPAMI.2009.30
@@ -12,7 +9,6 @@
     un plugin que cuando lo corrés te muestra un único punto y si pifia la
     estimación entonces te manda a calibrar
 
-  . en `showVisualization` usar `requestAnimationFrame` en lugar de `setInterval`
   . ver un poco el tema de handlear los errores mejor
     - si ocurre algún error debería frenarse todo gracefully (eg, si WG da null
       como estimación)

@@ -1,17 +1,3 @@
-  . preguntarles de probar un poco lo que armé
-
-  . cambia algo usar 'keyup' o 'keydown' para identificar la barra de espacio?
-
-  . para calcular el error de validación estoy tomando únicamente un dato
-    correspondiente al momento de la barra de espacio. tendría sentido tomar un
-    rango de tiempo?
-
-  . habría que dedicar cierto tiempo a corregir esto del delay de la respuesta
-    al pedido de la última estimación
-
-  . me entran dudas de qué datos mostrar y cómo mostrarlos
-
-  . como hacemos para el tema de exportar los datos
-
   . jspsychophysics no puedo usarlo porque necesito dibujar los estímulos dentro
     del código
+  . se puede ver de reportar más detalle al detectar movimiento
