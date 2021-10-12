@@ -48,7 +48,10 @@ evita que se les de un uso general. Librerías como
 [headtrackr](https://github.com/auduno/headtrackr) o
 [tracking.js](https://github.com/eduardolundgren/tracking.js/) ofrecen face
 detection o feature detection pero ninguna ofrece detección de pupilas o
-estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.
+estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.  
+[EasyEyes: Remote Calibrator](https://github.com/EasyEyes/remote-calibrator) es
+un paquete que provee distintas herramientas para experimentos psicofísicos. En
+particular como estimado de mirada ofrece un wrapper de WG.
 
 #### Soluciones existentes
 
