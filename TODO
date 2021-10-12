@@ -1,5 +1,5 @@
-  . leer "In the Eye of the Beholder: A Survey of Models for Eyes and Gaze"
-    https://sci-hub.st/https://doi.org/10.1109/TPAMI.2009.30
+  . actualizar el experimento de antisacadas para que entre trials te diga si te
+    moviste y te mande a recalibrar si es necesario
 
   . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
 
