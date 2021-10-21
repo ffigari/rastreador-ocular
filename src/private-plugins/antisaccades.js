@@ -79,38 +79,11 @@ jsPsych.plugins['antisaccades'] = (function(){
       const estimator = await rastoc.switchTo.estimating()
       estimator.showVisualization()
 
-      const runsCount = 5
-      await displayHTML(`
-        <h2>Instrucciones</h2>
-        <p>
-          Vamos a realizar un experimento de antisacadas. <br>
-          Se te mostrarán ${runsCount} iteraciones de tareas en las cuales un
-          primer estímulo te indicará en qué dirección mirar respecto de un
-          segundo estímulo. Si el primer estímulo es <span style="color: red;
-          font-weight: bold;">rojo</span> tenés que mirar en la <span
-          style="color: red; font-weight: bold;">dirección opuesta</span>. Si
-          en cambio es <span style="color: green; font-weight:
-          bold;">verde</span> tenés que mirar en la <span style="color: green;
-          font-weight: bold;">misma dirección</span>. <br>
-          Presioná cualquier tecla para comenzar.
-       <p>
-      `).at(display_element).untilAnyKeyIsPressed()
+      const data = await drawRandomSaccadeTask();
 
-      const data = {
-        name: 'antisaccade-experiment',
-        startedAt: new Date,
-        endedAt: null,
-        runs: [],
-      }
-      for (let i = 0; i < runsCount; ++i) {
-        data.runs.push(await drawRandomSaccadeTask())
-      }
-
-      Object.assign(data, { endedAt: new Date })
-      jsPsych.data.get().push(data)
       estimator.hideVisualization()
       rastoc.switchTo.idle()
-      jsPsych.finishTrial();
+      jsPsych.finishTrial(data)
     },
   }
 })();

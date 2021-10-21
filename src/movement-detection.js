@@ -326,6 +326,7 @@ const movementDetector = (function() {
           state.validEyesPosition = null;
           dispatch.calibration.reset();
         },
+        isReady: true,
       })
       dispatch.moduleReady()
     })

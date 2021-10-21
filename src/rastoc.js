@@ -24,6 +24,9 @@ const calibrator = (function () {
       ]
       math.shuffle(pixCoordinates)
       state.lastCalibrationPercentageCoordinates = [];
+      movementDetector &&
+        movementDetector.isReady &&
+        movementDetector.start.calibration();
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
         const [
@@ -31,6 +34,9 @@ const calibrator = (function () {
         ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
+        movementDetector &&
+          movementDetector.isReady &&
+          movementDetector.useNextFrameAsValidPosition();
         wgExt.calibratePoint(xPixGT, yPixGT)
         state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
