@@ -79,11 +79,11 @@ jsPsych.plugins['antisaccades'] = (function(){
       const estimator = await rastoc.switchTo.estimating()
       estimator.showVisualization()
 
-      const data = await drawRandomSaccadeTask();
+      const taskData = await drawRandomSaccadeTask();
 
       estimator.hideVisualization()
-      rastoc.switchTo.idle()
-      jsPsych.finishTrial(data)
+      const estimationWindowData = rastoc.switchTo.idle();
+      jsPsych.finishTrial({ estimationWindowData, taskData })
     },
   }
 })();

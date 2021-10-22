@@ -32,8 +32,6 @@ document.addEventListener('movement-detector:ready', () => {
         //       Va a convenir agregar un plugin nuevo 'recalibrate-eyetracker'
         timeline: [{
           type: 'antisaccades',
-          // type: 'html-keyboard-response',
-          // stimulus: 'This trial is in a loop. Press R to repeat this trial, or C to continue.'
         }],
         loop_function: function() {
           runsCount--;

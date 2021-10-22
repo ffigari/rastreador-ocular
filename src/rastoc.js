@@ -24,7 +24,7 @@ const calibrator = (function () {
       ]
       math.shuffle(pixCoordinates)
       state.lastCalibrationPercentageCoordinates = [];
-      movementDetector &&
+      typeof movementDetector !== 'undefined' &&
         movementDetector.isReady &&
         movementDetector.start.calibration();
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
@@ -34,7 +34,7 @@ const calibrator = (function () {
         ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
-        movementDetector &&
+      typeof movementDetector !== 'undefined' &&
           movementDetector.isReady &&
           movementDetector.useNextFrameAsValidPosition();
         wgExt.calibratePoint(xPixGT, yPixGT)
@@ -209,18 +209,19 @@ const rastoc = (function() {
           })
           wgExt.pause();
 
+          let collectedData = null;
           if (state.dataRecollection.inProgress) {
-            jsPsych.data.get().push({
+            collectedData = {
               name: 'estimation-window',
               values: [...state.dataRecollection.values]
-            })
+            };
             Object.assign(state.dataRecollection, {
               inProgress: false,
               intervalId: null,
               values: [],
             })
           }
-          return null
+          return collectedData
         },
         async calibrating() {
           if (state.phase !== 'idle') {
