@@ -1,10 +1,8 @@
 const movementDetector = (function() {
-  const Loop = function (main, extras) {
-    extras = extras || {};
-
+  const Loop = function (main, preMain) {
     let inProgress = false;
     const full = async () => {
-      await main(extras.pre?.call() || {});
+      await main(preMain?.call() || {});
       if (inProgress) {
         go();
       }
@@ -245,14 +243,12 @@ const movementDetector = (function() {
         }));
         state.lastCapturedEyes?.visualizeAt(ctx, { color: 'red', })
         state.validEyesPosition?.visualizeAt(ctx)
-      }, {
-        pre: () => {
-          ctx = state.debuggingCanvasCtx
-          if (!ctx) {
-            throw new Error('el loop para dibujar necesita tener el canvas de debugging.')
-          }
-          return { ctx }
-        },
+      }, () => {
+        ctx = state.debuggingCanvasCtx
+        if (!ctx) {
+          throw new Error('el loop para dibujar necesita tener el canvas de debugging.')
+        }
+        return { ctx }
       });
       const calibrationLoop = new Loop(() => {
         if (state.useNextFrameAsValidPosition) {
@@ -270,12 +266,10 @@ const movementDetector = (function() {
           return dispatch.movement.detected();
         }
         return dispatch.movement.notDetected();
-      }, {
-        pre: () => {
-          if (!state.validEyesPosition) {
-            throw new Error('No se definió la posición válida de los ojos.')
-          }
-        },
+      }, () => {
+        if (!state.validEyesPosition) {
+          throw new Error('No se definió la posición válida de los ojos.')
+        }
       })
 
       eyesCapturingLoop.turn.on();
