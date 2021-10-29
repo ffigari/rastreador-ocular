@@ -11,6 +11,9 @@ const calibrator = (function () {
       }
       return state.lastCalibrationPercentageCoordinates
     },
+    resetCalibration() {
+      // TODO: Reste wg and this module
+    },
     async runExplicitCalibration(drawer) {
       let stimulus = drawer.appendMarkerFor.calibration()
       const stimulusUpdater = (xPercentage, yPercentage) => {

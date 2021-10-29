@@ -41,6 +41,19 @@ document.addEventListener('movement-detector:ready', () => {
         //       Va a convenir agregar un plugin nuevo 'recalibrate-eyetracker'
         timeline: [{
           type: 'antisaccades',
+        }, {
+          timeline: [{
+            type: 'html-keyboard-response',
+            stimulus: function () {
+              return `Detectamos una descalibración, vamos a recalibrar. Quedan ${runsCount - 1} iteraciones.`;
+            },
+          }, {
+            type: 'html-keyboard-response',
+            stimulus: 'recalibrando',
+          }],
+          conditional_function: function () {
+            return (runsCount - 1) % 2 === 0;
+          },
         }],
         loop_function: function() {
           runsCount--;

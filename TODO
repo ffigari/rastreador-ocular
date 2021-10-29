@@ -1,9 +1,8 @@
   . actualizar el experimento de antisacadas para que entre trials te diga si te
     moviste y te mande a recalibrar si es necesario
-    - calibrar la detección de movimiento mientras se calibra el eyetracker
-    - recalirar [si](
-        https://www.jspsych.org/7.0/overview/timeline/#conditional-timelines
-      ) se detecta un movimiento
+    - definir el criterio para decidir si se descalibro el sistema
+    - si se decide que se descalibro, recalibrar antes del proximo trial y en la
+      data exportarlo (pensar dónde conviene)
 
   . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
 
