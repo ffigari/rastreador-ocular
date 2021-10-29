@@ -1,6 +1,15 @@
 let runsCount = 5
 
 document.addEventListener('movement-detector:ready', () => {
+  document.addEventListener('movement-detector:movement:not-detected', () => {
+    console.log('face ok')
+  });
+  document.addEventListener('movement-detector:movement:detected', () => {
+    console.log('face movement detected')
+  });
+  document.addEventListener('movement-detector:calibration:reset', () => {
+    console.log('face movement calibration reset')
+  })
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',
@@ -40,6 +49,7 @@ document.addEventListener('movement-detector:ready', () => {
       }]
     }],
     on_finish: function() {
+      movementDetector.stop()
       jsPsych.data.get().localSave('json','antisaccades-experiment.json');
     },
     extensions: [

@@ -1,6 +1,5 @@
   . actualizar el experimento de antisacadas para que entre trials te diga si te
     moviste y te mande a recalibrar si es necesario
-    - poner la detección de movimiento en paralelo al experimento
     - calibrar la detección de movimiento mientras se calibra el eyetracker
     - recalirar [si](
         https://www.jspsych.org/7.0/overview/timeline/#conditional-timelines

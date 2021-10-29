@@ -34,14 +34,17 @@ const calibrator = (function () {
         ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
-      typeof movementDetector !== 'undefined' &&
-          movementDetector.isReady &&
-          movementDetector.useNextFrameAsValidPosition();
+        typeof movementDetector !== 'undefined' &&
+            movementDetector.isReady &&
+            movementDetector.useNextFrameAsValidPosition();
         wgExt.calibratePoint(xPixGT, yPixGT)
         state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
         ])
       }
+      typeof movementDetector !== 'undefined' &&
+          movementDetector.isReady &&
+          movementDetector.start.detection();
       drawer.erasePoint(stimulus)
     }
   }
