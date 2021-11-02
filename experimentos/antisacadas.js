@@ -1,15 +1,30 @@
 let runsCount = 5
 
-document.addEventListener('movement-detector:ready', () => {
-  document.addEventListener('movement-detector:movement:not-detected', () => {
-    console.log('face ok')
-  });
+const MovementReporter = function() {
+  const resetMovementDetection = () => {
+    movementDetected = false;
+  }
+  resetMovementDetection();
+
   document.addEventListener('movement-detector:movement:detected', () => {
-    console.log('face movement detected')
+    movementDetected = true;
   });
   document.addEventListener('movement-detector:calibration:reset', () => {
-    console.log('face movement calibration reset')
+    resetMovementDetection();
   })
+
+  Object.assign(this, {
+    detectedMovementSinceLastCheckpoint: () => {
+      return movementDetected;
+    },
+    startNewWindow() {
+      resetMovementDetection();
+    }
+  })
+}
+
+document.addEventListener('movement-detector:ready', () => {
+  const movementReporter = new MovementReporter();
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',
@@ -36,23 +51,23 @@ document.addEventListener('movement-detector:ready', () => {
       `,
     }, {
       timeline: [{
-        // TODO: Agregar para recalibrar condicionalmente
-        //       Hay que ver cómo resetear WG
-        //       Va a convenir agregar un plugin nuevo 'recalibrate-eyetracker'
         timeline: [{
           type: 'antisaccades',
         }, {
+          on_start: function() {
+            movementReporter.startNewWindow();
+          },
           timeline: [{
             type: 'html-keyboard-response',
             stimulus: function () {
               return `Detectamos una descalibración, vamos a recalibrar. Quedan ${runsCount - 1} iteraciones.`;
             },
           }, {
-            type: 'html-keyboard-response',
+            type: 'html-keyboard-response',  // TODO: Agregar plugin para recalibrar
             stimulus: 'recalibrando',
           }],
           conditional_function: function () {
-            return (runsCount - 1) % 2 === 0;
+            return movementReporter.detectedMovementSinceLastCheckpoint();
           },
         }],
         loop_function: function() {
