@@ -1,14 +1,3 @@
-  . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
-
-  . armar plugin para drift detection
-    un plugin que cuando lo corrés te muestra un único punto y si pifia la
-    estimación entonces te manda a calibrar
-
   . ver un poco el tema de handlear los errores mejor
-    - si ocurre algún error debería frenarse todo gracefully (eg, si WG da null
-      como estimación)
     - si el tab con el experimento se deja abierto en background, hay chances de
       que crashee
-
-  . mover la sección de notas del readme a un informe más modular (tal vez
-    latex?) cosa de que sea más fácil editarlo.
