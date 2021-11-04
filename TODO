@@ -1,9 +1,3 @@
-  . actualizar el experimento de antisacadas para que entre trials te diga si te
-    moviste y te mande a recalibrar si es necesario
-    - definir el criterio para decidir si se descalibro el sistema
-    - si se decide que se descalibro, recalibrar antes del proximo trial y en la
-      data exportarlo (pensar dónde conviene)
-
   . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
 
   . armar plugin para drift detection
