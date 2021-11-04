@@ -252,6 +252,11 @@ const movementDetector = (function() {
       });
       const calibrationLoop = new Loop(() => {
         if (state.useNextFrameAsValidPosition) {
+          if (!state.lastCapturedEyes) {
+            throw new Error(
+              "No puede utilizarse el próximo frame como posición válida porque la última posición de los ojos es 'null'"
+            );
+          }
           state.collectedEyesPatches.push(state.lastCapturedEyes);
           state.validEyesPosition = create.validEyesPosition(state.collectedEyesPatches)
           state.useNextFrameAsValidPosition = false;
@@ -316,7 +321,6 @@ const movementDetector = (function() {
           detectionLoop.inProgress && detectionLoop.turn.off();
 
           state.collectedEyesPatches = [];
-          state.lastCapturedEyes = null;
           state.validEyesPosition = null;
           dispatch.calibration.reset();
         },
