@@ -11,6 +11,13 @@ const calibrator = (function () {
       }
       return state.lastCalibrationPercentageCoordinates
     },
+    async reset() {
+      typeof movementDetector !== 'undefined' &&
+        movementDetector.isReady &&
+        movementDetector.stop();
+
+      await wgExt.resetCalibration();
+    },
     async runExplicitCalibration(drawer) {
       let stimulus = drawer.appendMarkerFor.calibration()
       const stimulusUpdater = (xPercentage, yPercentage) => {
@@ -24,6 +31,9 @@ const calibrator = (function () {
       ]
       math.shuffle(pixCoordinates)
       state.lastCalibrationPercentageCoordinates = [];
+      typeof movementDetector !== 'undefined' &&
+        movementDetector.isReady &&
+        movementDetector.start.calibration();
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
         const [
@@ -31,11 +41,17 @@ const calibrator = (function () {
         ] = stimulusUpdater(xPerGroundTruth, yPerGroundTruth);
         // ...and map the coordiante once the user presses the space bar
         await forSingleSpaceBarOn(document)
+        typeof movementDetector !== 'undefined' &&
+            movementDetector.isReady &&
+            movementDetector.useNextFrameAsValidPosition();
         wgExt.calibratePoint(xPixGT, yPixGT)
         state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
         ])
       }
+      typeof movementDetector !== 'undefined' &&
+          movementDetector.isReady &&
+          movementDetector.start.detection();
       drawer.erasePoint(stimulus)
     }
   }
@@ -198,23 +214,26 @@ const rastoc = (function() {
             throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
           }
 
-          Object.assign(state, {
-            phase: 'idle',
-          })
-          wgExt.pause();
-
+          let collectedData = null;
           if (state.dataRecollection.inProgress) {
-            jsPsych.data.get().push({
+            collectedData = {
               name: 'estimation-window',
               values: [...state.dataRecollection.values]
-            })
+            };
+            clearInterval(state.dataRecollection.intervalId);
             Object.assign(state.dataRecollection, {
               inProgress: false,
               intervalId: null,
               values: [],
             })
           }
-          return null
+
+          Object.assign(state, {
+            phase: 'idle',
+          })
+          wgExt.pause();
+
+          return collectedData
         },
         async calibrating() {
           if (state.phase !== 'idle') {
@@ -229,11 +248,8 @@ const rastoc = (function() {
           return calibrator
         },
         async estimating() {
-          const msg = (
-            reason
-          ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
           if (state.phase !== 'idle') {
-            throw new Error(msg(`la fase actual no es 'idle'`))
+            throw new Error("No se pudo cambiar a 'estimating' porque la fase actual no es 'idle'.");
           }
 
           Object.assign(state, {

@@ -1,6 +1,3 @@
-  . actualizar el experimento de antisacadas para que entre trials te diga si te
-    moviste y te mande a recalibrar si es necesario
-
   . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
 
   . armar plugin para drift detection
