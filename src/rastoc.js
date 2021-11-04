@@ -215,23 +215,25 @@ const rastoc = (function() {
             throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
           }
 
-          Object.assign(state, {
-            phase: 'idle',
-          })
-          wgExt.pause();
-
           let collectedData = null;
           if (state.dataRecollection.inProgress) {
             collectedData = {
               name: 'estimation-window',
               values: [...state.dataRecollection.values]
             };
+            clearInterval(state.dataRecollection.intervalId);
             Object.assign(state.dataRecollection, {
               inProgress: false,
               intervalId: null,
               values: [],
             })
           }
+
+          Object.assign(state, {
+            phase: 'idle',
+          })
+          wgExt.pause();
+
           return collectedData
         },
         async calibrating() {
