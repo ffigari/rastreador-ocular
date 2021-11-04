@@ -1,8 +1,3 @@
-  . mirar https://github.com/EasyEyes/remote-calibrator
-
-  . leer "In the Eye of the Beholder: A Survey of Models for Eyes and Gaze"
-    https://sci-hub.st/https://doi.org/10.1109/TPAMI.2009.30
-
   . reveer un poco WG como trata la captura del ojo y el movimiento de la cara
 
   . armar plugin para drift detection

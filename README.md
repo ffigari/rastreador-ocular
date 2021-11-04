@@ -48,19 +48,22 @@ evita que se les de un uso general. Librerías como
 [headtrackr](https://github.com/auduno/headtrackr) o
 [tracking.js](https://github.com/eduardolundgren/tracking.js/) ofrecen face
 detection o feature detection pero ninguna ofrece detección de pupilas o
-estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.
+estimaciones de miradas. Tampoco pintan tener mucho mantenimiento.  
+[EasyEyes: Remote Calibrator](https://github.com/EasyEyes/remote-calibrator) es
+un paquete que provee distintas herramientas para experimentos psicofísicos. En
+particular como estimado de mirada ofrece un wrapper de WG.
 
 #### Soluciones existentes
 
 ##### WebGazer
 
-WG calibra el sistema con cada click y con movimientos del mouse cada a lo sumo
-50ms. Simplifican el problema asumiendo que la mirada y estos eventos se
-alinean perfectamente por más que otros trabajos hayan mostrado que no es
-cierto. Hay correspondencia entre mirada y eventos [cita?] pero existe también
-un delay que depende de cada evento [4]. Los datos se agregan al modelo a
-medida que ocurren. Los pares [imagen de los ojos, coordenada] se utilizan para
-entrenar el modelo.
+La detección realizada por WG se basa en apariencia [6]. Calibra el sistema con
+cada click y con movimientos del mouse cada a lo sumo 50ms. Simplifican el
+problema asumiendo que la mirada y estos eventos se alinean perfectamente por
+más que otros trabajos hayan mostrado que no es cierto. Hay correspondencia
+entre mirada y eventos [cita?] pero existe también un delay que depende de cada
+evento [4]. Los datos se agregan al modelo a medida que ocurren. Los pares
+[imagen de los ojos, coordenada] se utilizan para entrenar el modelo.
 
 En cada frame se realiza una predicción nueva. Para ello recuperan la imagen de
 los ojos y predicen luego la coordenada mirada en la pantalla. Opcionalmente
@@ -98,13 +101,13 @@ controlada dentro de un laboratorio. Esto permite ajustar luminosidad y
 posiciones de las cámaras según convenga al setup que se utilice. Un supervisor
 puede además asistir al sujeto a acomodarse correctamente.
 
-En un contexto remoto se pierde el control sobre estas variables. La luminosidad
-inicial puede no ser ideal pues el sujeto puede estar a contra luz o en la
-oscuridad. Podría además modificarse durante el experimento. Tampoco se tiene
-control sobre los movimientos de la cabeza o del cuerpo que el sujeto pudiera
-realizar. El posicionamiento del dispositivo utilizado impacta también en la
-calidad de los resultados. En un laboratorio puede preverse donde se sentará el
-sujeto y cómo se posicionarán las cámaras.
+En un contexto remoto se pierde el control sobre estas variables [6]. La
+luminosidad inicial puede no ser ideal pues el sujeto puede estar a contra luz
+o en la oscuridad. Podría además modificarse durante el experimento. Tampoco se
+tiene control sobre los movimientos de la cabeza o del cuerpo que el sujeto
+pudiera realizar. El posicionamiento del dispositivo utilizado impacta también
+en la calidad de los resultados. En un laboratorio puede preverse donde se
+sentará el sujeto y cómo se posicionarán las cámaras.
 
 #### Calidad de las imágenes
 
@@ -121,6 +124,15 @@ resoluciones de las cámaras web y el poder de cómputo. Al momento de iniciar
 experimentos deben verificarse las características del setup del sujeto.
 Previamente deben establecerse criterios mínimos para permitir el inicio del
 experimento.
+
+#### Reducción de los métodos utilizables
+
+Al contar únicamente con la cámara web del dispositivo en cuestión quedan
+descartado todo método que requieran el uso de múltiples cámaras y de la adición
+de fuentes de luz. Esto es una dificultad pues gran parte de la investigación
+existente está construida sobre estos mecanismos [6]. En particular, los métodos
+que sí aplican a nuesto caso de uso (eg, métodos basados en apariencia) han 
+recibido menos atención.
 
 ### Elementos de un algoritmo de estimación de mirada
 
@@ -295,11 +307,16 @@ Quedan abiertas algunas preguntas de diseño del experimento:
   /papers/look-away_the-anti-saccade-task-and-the-voluntary-control-of-eye-movement.md
 )
 
+- [
+  [6] Dan Witzner Hansen and Qiang Ji. In the eye of the beholder: A survey of models for eyes and gaze. IEEE TPAMI, 32(3):478—500, 2010
+](
+  papers/in-the-eye-of-the-beholder_a-survey-of-models-for-eyes-and-gaze.md
+)
+
 #### otros que podría ser interestante leer, en ningún orden particular:
 
 - T. Judd, K. Ehinger, F. Durand, and A. Torralba. Learning to predict where humans look. ICCV, 2009
 - Y. Sugano, Y. Matsushita, Y. Sato, and H. Koike. An incre- mental learning method for unconstrained gaze estimation. ECCV, 2008
-- Dan Witzner Hansen and Qiang Ji. In the eye of the beholder: A survey of models for eyes and gaze. IEEE TPAMI, 32(3):478—500, 2010.
 - Zhang, Z. (2000). A flexible new technique for camera calibration. IEEE Trans. Pattern Anal. Mach. Intell. 22, 1330–1334. doi: 10.1109/34.888718
 - Holmqvist, K., Nyström, M., and Mulvey, F. (2012). “Eye tracker data quality: what it is and how to measure it,” in Proceedings of the Symposium on Eye Tracking Research and Applications ETRA ‘12, (New York, NY: ACM Press), 45. doi: 10.1145/2168556.2168563
 - Arvin, S., Rasmussen, R., and Yonehara, K. (2020). EyeLoop: an open-source, high-speed eye-tracker designed for dynamic experiments. bioRxiv [Preprint]. doi: 10.1101/2020.07.03.186387
