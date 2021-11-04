@@ -47,7 +47,7 @@ document.addEventListener('movement-detector:ready', () => {
           bold;">verde</span> tenés que mirar en la <span style="color: green;
           font-weight: bold;">misma dirección</span>. <br>
           Presioná cualquier tecla para comenzar.
-       <p>
+        <p>
       `,
     }, {
       timeline: [{
@@ -60,11 +60,10 @@ document.addEventListener('movement-detector:ready', () => {
           timeline: [{
             type: 'html-keyboard-response',
             stimulus: function () {
-              return `Detectamos una descalibración, vamos a recalibrar. Quedan ${runsCount - 1} iteraciones.`;
+              return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
             },
           }, {
-            type: 'html-keyboard-response',  // TODO: Agregar plugin para recalibrar
-            stimulus: 'recalibrando',
+            type: 'recalibrate-eye-tracker',
           }],
           conditional_function: function () {
             return movementReporter.detectedMovementSinceLastCheckpoint();

@@ -11,8 +11,13 @@ const calibrator = (function () {
       }
       return state.lastCalibrationPercentageCoordinates
     },
-    resetCalibration() {
-      // TODO: Reste wg and this module
+    async reset() {
+      typeof movementDetector !== 'undefined' &&
+        movementDetector.isReady &&
+        movementDetector.stop();
+
+      wgExt.pause();
+      await wgExt.resetCalibration();
     },
     async runExplicitCalibration(drawer) {
       let stimulus = drawer.appendMarkerFor.calibration()
@@ -242,11 +247,8 @@ const rastoc = (function() {
           return calibrator
         },
         async estimating() {
-          const msg = (
-            reason
-          ) => `No se pudo cambiar a 'estimating' porque ${reason}.`
           if (state.phase !== 'idle') {
-            throw new Error(msg(`la fase actual no es 'idle'`))
+            throw new Error("No se pudo cambiar a 'estimating' porque la fase actual no es 'idle'.");
           }
 
           Object.assign(state, {
