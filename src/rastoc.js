@@ -16,7 +16,6 @@ const calibrator = (function () {
         movementDetector.isReady &&
         movementDetector.stop();
 
-      wgExt.pause();
       await wgExt.resetCalibration();
     },
     async runExplicitCalibration(drawer) {
