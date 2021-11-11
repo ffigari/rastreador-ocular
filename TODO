@@ -1,5 +1,3 @@
-  . detectar tamaño de pantalla + calidad de la cámara web
-    . seguir la división plugins / módulos
   . ver un poco el tema de handlear los errores mejor
     - si el tab con el experimento se deja abierto en background, hay chances de
       que crashee

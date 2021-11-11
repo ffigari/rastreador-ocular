@@ -1,8 +1,8 @@
 const movementDetector = (function() {
-  const Loop = function (main, preMain) {
+  const Loop = function (mainCb, preMainCb) {
     let inProgress = false;
     const full = async () => {
-      await main(preMain?.call() || {});
+      await mainCb(preMainCb?.call() || {});
       if (inProgress) {
         go();
       }

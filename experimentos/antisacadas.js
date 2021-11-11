@@ -31,6 +31,8 @@ document.addEventListener('movement-detector:ready', () => {
     }, {
       type: 'fullscreen',
     }, {
+      type: 'check-requirements',
+    }, {
       type: 'calibrate-eye-tracker',
     }, {
       type: 'html-keyboard-response',
