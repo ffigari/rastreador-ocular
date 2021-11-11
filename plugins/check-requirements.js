@@ -4,7 +4,7 @@ jsPsych.plugins['check-requirements'] = (function(){
       name: 'check-requirements',
     },
     trial: async function(display_element, trial) {
-      const { systemIsOk, errors } = requirementsChecker.checkSystem()
+      const { systemIsOk, errors } = await requirementsChecker.checkSystem()
       if (!systemIsOk) {
         display_element.innerHTML = `
           <h2>Hardware insuficiente</h2>
