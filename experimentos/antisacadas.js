@@ -64,6 +64,9 @@ document.addEventListener('movement-detector:ready', () => {
             stimulus: function () {
               return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
             },
+            on_start() {
+              jsPsych.data.get().addToLast({ decalibration_detected: true });
+            },
           }, {
             type: 'recalibrate-eye-tracker',
           }],
