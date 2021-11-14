@@ -64,6 +64,7 @@ const requirementsChecker = (function () {
       }
 
       return {
+        systemConfig: { viewportWidth, viewportHeight },
         systemIsOk: errors.length === 0,
         errors,
       };
