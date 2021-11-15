@@ -2,9 +2,20 @@
 
 ## Implementación
 
+### módulos de js + plugins
+
 Con `./install.sh` se instalan las dependencias.  
 El entry point es `index.html`.
 Se puede hacer `firefox index.html` por ejemplo.
+
+### heatmap
+
+Setear el entorno:
+```
+python -m venv rastoc-env  # armado con Python 3.9.7
+source rastoc-env/bin/activate
+pip install -r requirements.txt 
+```
 
 ## Armar experimentos
 
