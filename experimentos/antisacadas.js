@@ -1,5 +1,7 @@
 let runsCount = 5
 
+// TODO: Crear un módulo 'rastoc-lib' para meter todo el código que vaya a ser
+//       provisto que no sea el rastreador en sí
 const MovementReporter = function() {
   const resetMovementDetection = () => {
     movementDetected = false;
@@ -23,8 +25,38 @@ const MovementReporter = function() {
   })
 }
 
-document.addEventListener('movement-detector:ready', () => {
+const convertToTrackedTimeline = (timeline) => {
   const movementReporter = new MovementReporter();
+  return [{
+    type: 'start-estimation-window',
+    on_start() {
+      movementReporter.startNewWindow();
+    }
+  }, {
+
+    timeline
+
+  }, {
+    type: 'finish-estimation-window',
+  }, {
+    conditional_function: function () {
+      return movementReporter.detectedMovementSinceLastCheckpoint();
+    },
+    timeline: [{
+      type: 'html-keyboard-response',
+      stimulus: function () {
+        return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
+      },
+      on_start() {
+        jsPsych.data.get().addToLast({ decalibration_detected: true });
+      },
+    }, {
+      type: 'recalibrate-eye-tracker',
+    }],
+  }]
+}
+
+document.addEventListener('movement-detector:ready', () => {
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',
@@ -52,36 +84,17 @@ document.addEventListener('movement-detector:ready', () => {
         <p>
       `,
     }, {
-      timeline: [{
-        timeline: [{
-          type: 'antisaccades',
-        }, {
-          on_start: function() {
-            movementReporter.startNewWindow();
-          },
-          timeline: [{
-            type: 'html-keyboard-response',
-            stimulus: function () {
-              return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
-            },
-            on_start() {
-              jsPsych.data.get().addToLast({ decalibration_detected: true });
-            },
-          }, {
-            type: 'recalibrate-eye-tracker',
-          }],
-          conditional_function: function () {
-            return movementReporter.detectedMovementSinceLastCheckpoint();
-          },
-        }],
-        loop_function: function() {
-          runsCount--;
-          return runsCount > 0;
-        },
-      }]
+      timeline: convertToTrackedTimeline([{
+        type: 'antisaccades',
+      }]),
+      loop_function: function() {
+        runsCount--;
+        return runsCount > 0;
+      },
+    }, {
+      type: 'rastoc-finish'
     }],
     on_finish: function() {
-      movementDetector.stop()
       jsPsych.data.get().localSave('json','antisaccades-experiment.json');
     },
     extensions: [
