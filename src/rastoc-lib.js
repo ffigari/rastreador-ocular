@@ -21,6 +21,9 @@ const MovementReporter = function() {
   })
 }
 
+// TODO: No recalibrar si la descalibración es en el último trial
+//       Aunque eso implicaría que esta función sea consciente del loop así que
+//       no sé muy bien cómo convenga resolverlo
 const convertToTrackedTimeline = (timeline) => {
   const movementReporter = new MovementReporter();
   return [{
