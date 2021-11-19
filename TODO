@@ -16,6 +16,8 @@
           indicador de la calidad del registro.
   . graficar las intensidades de mirada en un heatmap
 
+  . juntar todo rastoc en un único módulo y adaptar el playground para poder
+    calibrar todo el sistema sin necesidad de JSPsych
   . para el detector de movimiento hay que relajar cuando se considera que es
     una descalibración pero se puede usar eso mismo como indicador de la calidad
     del registro

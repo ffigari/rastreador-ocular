@@ -19,7 +19,10 @@ jsPsych.plugins['rastoc-initialize'] = (function(){
           </ul>
         `;
       } else {
-        jsPsych.finishTrial({ systemConfig });
+        jsPsych.finishTrial({
+          rastocCategory: 'system',
+          systemConfig,
+        });
       }
     },
   }

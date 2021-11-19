@@ -7,8 +7,10 @@ const shuffle = (a) => {
   return a;
 }
 
-const totalRuns = 5;
+const totalRuns = 2;
 let runsCount = totalRuns;
+
+let textStimulus = "El patito nadaba en el estanque buscando pancitos flotantes.";
 
 document.addEventListener('movement-detector:ready', () => {
   jsPsych.init({
@@ -30,14 +32,22 @@ document.addEventListener('movement-detector:ready', () => {
       <p>
     `,
     }, {
-      timeline: convertToTrackedTimeline([{
+      timeline: convertToTrackedTimeline({
+        name: 'lectura',
+      }, [{
         type: 'html-keyboard-response',
         stimulus: function() {
-          const baseString = "El patito nadaba en el estanque buscando pancitos flotantes.";
-          if (runsCount === totalRuns) {
-            return baseString;
+          if (runsCount < totalRuns) {
+            textStimulus = shuffle(textStimulus.split(" ")).join(" ");
           }
-          return shuffle(baseString.split(" ")).join(" ");
+          return textStimulus;
+        },
+        on_finish: function(data) {
+          data.trial = {
+            config: {
+              shownText: textStimulus,
+            }
+          }
         },
       }]),
       loop_function: function() {
