@@ -17,7 +17,7 @@ document.addEventListener('movement-detector:ready', () => {
     }, {
       type: 'fullscreen',
     }, {
-      type: 'check-requirements',
+      type: 'rastoc-initialize',
     }, {
       type: 'calibrate-eye-tracker',
     }, {

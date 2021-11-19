@@ -1,7 +1,7 @@
-jsPsych.plugins['check-requirements'] = (function(){
+jsPsych.plugins['rastoc-initialize'] = (function(){
   return {
     info: {
-      name: 'check-requirements',
+      name: 'rastoc-initialize',
     },
     trial: async function(display_element, trial) {
       const {

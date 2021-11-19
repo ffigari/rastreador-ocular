@@ -1,4 +1,6 @@
-  . armar algun segundo experimento sencillo para generalizar lo de abajo
+  . exportar la data necesaria
+    hay que ir pusheando en cada momento y luego recolectarlo en el script de
+    Python
   . traducir output de JSPsych para rescatar la siguiente data
     - Info del trial (depende del experimento)
       En antisacadas:
@@ -14,11 +16,12 @@
           indicador de la calidad del registro.
   . graficar las intensidades de mirada en un heatmap
 
+  . para el detector de movimiento hay que relajar cuando se considera que es
+    una descalibración pero se puede usar eso mismo como indicador de la calidad
+    del registro
   . la distribucion de los puntos de calibracion podria tener en cuenta el
     tamaño del viewport. Si la pantalla es grande los puntos quedan en los
     extremos.
-  . en la tarea de antisacadas habría que evitar pedir recalibración si se
-    descalibra en el último run.
   . ver un poco el tema de handlear los errores mejor
     - si el tab con el experimento se deja abierto en background, hay chances de
       que crashee
