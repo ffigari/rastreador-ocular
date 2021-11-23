@@ -19,6 +19,8 @@ pip install -r requirements.txt
 
 ## Armar experimentos
 
+// TODO: Actualizar esto en base al móduli rastoc-jspsych
+
 En `/plugins` hay una serie de plugins de JSPsych que permiten la interacción
 con el sistema de eyetracking. Para armar un experimento que incluya la
 detección de movimiento y la estimación de la mirada deben incluirse los

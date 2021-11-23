@@ -18,9 +18,6 @@
 
   . juntar todo rastoc en un único módulo y adaptar el playground para poder
     calibrar todo el sistema sin necesidad de JSPsych
-  . para el detector de movimiento hay que relajar cuando se considera que es
-    una descalibración pero se puede usar eso mismo como indicador de la calidad
-    del registro
   . la distribucion de los puntos de calibracion podria tener en cuenta el
     tamaño del viewport. Si la pantalla es grande los puntos quedan en los
     extremos.

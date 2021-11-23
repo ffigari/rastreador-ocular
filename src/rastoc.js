@@ -220,7 +220,22 @@ const rastoc = (function() {
 
           let estimatedGazes = null;
           if (state.dataRecollection.inProgress) {
-            estimatedGazes = [...state.dataRecollection.values];
+            estimatedGazes = [...state.dataRecollection.values].map(({
+              estimatedAt, estimation
+            }) => ({
+              name: 'gaze-estimation',
+              ts: estimatedAt,
+              x: estimation[0],
+              y: estimation[1],
+              quality: {
+                // TODO: Armar algo para poder extrapolar alguna medida de
+                //       confianza.
+                //       Una primer opción es al momento de la estimación usar
+                //       la distancia de los ojos al promedio de las posiciones
+                //       de los momentos de calibración
+                confidence: 1,
+              }
+            }));
             clearInterval(state.dataRecollection.intervalId);
             Object.assign(state.dataRecollection, {
               inProgress: false,

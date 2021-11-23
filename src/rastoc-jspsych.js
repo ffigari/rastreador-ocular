@@ -65,7 +65,7 @@ const convertToTrackedTimeline = (experiment, timeline) => {
     on_timeline_finish() {
       const estimator = rastoc.continueTo.estimate();
       estimator.hideVisualization();
-      const gazeEstimationEvents = rastoc.switchTo.idle();
+      const events = rastoc.switchTo.idle();
 
       const lastTrialData = JSON.parse(jsPsych.data.getLastTrialData().json())[0];
       const givenConfig = lastTrialData?.trial?.config || null
@@ -78,7 +78,7 @@ const convertToTrackedTimeline = (experiment, timeline) => {
           endedAt: new Date,
           config: givenConfig,
         },
-        events: gazeEstimationEvents,
+        events,
       });
 
     },
