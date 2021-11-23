@@ -21,8 +21,6 @@ const MovementReporter = function() {
   })
 }
 
-// TODO: Renombrar módulo a 'rastoc-jspsych'
-
 // TODO: Sacar la calibración de afuera y acá calibrar si no está calibrado o
 //       si se detecto una descalibración
 const convertToTrackedTimeline = (experiment, timeline) => {
