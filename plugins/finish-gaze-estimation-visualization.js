@@ -1,3 +1,4 @@
+// TODO: Delete
 jsPsych.plugins['finish-gaze-estimation-visualization'] = (function(){
   return {
     info: {

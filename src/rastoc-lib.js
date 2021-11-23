@@ -21,12 +21,31 @@ const MovementReporter = function() {
   })
 }
 
+// TODO: Renombrar módulo a 'rastoc-jspsych'
+
 // TODO: Sacar la calibración de afuera y acá calibrar si no está calibrado o
 //       si se detecto una descalibración
 const convertToTrackedTimeline = (experiment, timeline) => {
+  if (!experiment) {
+    throw new Error(
+      `Missing first parameter 'experiment' with experiment's info.`
+    );
+  }
+  if (!timeline) {
+    throw new Error(
+      `Missing second parameter 'timeline' with experiment's jspsych timeline.`
+    );
+  }
+
   if (!experiment.name) {
     throw new Error(
       `First parameter 'experiment' is missing its 'name' property.`
+    );
+  }
+
+  if (!Array.isArray(timeline)) {
+    throw new Error(
+      `Second parameter 'timeline' is not an array as expected.`
     );
   }
 
@@ -35,19 +54,23 @@ const convertToTrackedTimeline = (experiment, timeline) => {
   let startedAt = null;
 
   return [{
-    type: 'start-estimation-window',
-    on_start() {
+    async on_timeline_start() {
+      const estimator = await rastoc.switchTo.estimating()
+      estimator.showVisualization()
+
       movementReporter.startNewWindow();
       startedAt = new Date;
-    }
-  }, {
+    },
 
-    timeline
+    timeline,
 
-  }, {
-    on_start() {
+    on_timeline_finish() {
+      const estimator = rastoc.continueTo.estimate();
+      estimator.hideVisualization();
+      const gazeEstimationEvents = rastoc.switchTo.idle();
+
       const lastTrialData = JSON.parse(jsPsych.data.getLastTrialData().json())[0];
-      const givenConfig = lastTrialData?.trial?.config;
+      const givenConfig = lastTrialData?.trial?.config || null
 
       jsPsych.data.get().addToLast({
         rastocCategory: 'trial-instance',
@@ -55,11 +78,12 @@ const convertToTrackedTimeline = (experiment, timeline) => {
         trial: {
           startedAt,
           endedAt: new Date,
-          config: givenConfig
+          config: givenConfig,
         },
+        events: gazeEstimationEvents,
       });
+
     },
-    type: 'finish-estimation-window',
   }, {
     conditional_function: function () {
       return movementReporter.detectedMovementSinceLastCheckpoint();

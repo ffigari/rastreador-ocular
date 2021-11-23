@@ -1,3 +1,4 @@
+// TODO: Ensure fullscreen has been enabled
 jsPsych.plugins['rastoc-initialize'] = (function(){
   return {
     info: {

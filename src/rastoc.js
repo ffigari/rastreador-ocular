@@ -1,5 +1,7 @@
 const wgExt = jsPsych.extensions.webgazer
 
+// TODO: Las variables 'calibrator' y 'estimator' no tendrían que quedar en el
+//       scope global
 const calibrator = (function () {
   const state = {
     lastCalibrationPercentageCoordinates: null
@@ -211,15 +213,14 @@ const rastoc = (function() {
       return {
         idle() {
           if (state.phase === 'idle') {
-            throw new Error(`No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`)
+            throw new Error(
+              `No se pudo cambiar a 'idle' porque la fase ya actual es 'idle'.`
+            );
           }
 
-          let collectedData = null;
+          let estimatedGazes = null;
           if (state.dataRecollection.inProgress) {
-            collectedData = {
-              name: 'estimation-window',
-              values: [...state.dataRecollection.values]
-            };
+            estimatedGazes = [...state.dataRecollection.values];
             clearInterval(state.dataRecollection.intervalId);
             Object.assign(state.dataRecollection, {
               inProgress: false,
@@ -233,7 +234,7 @@ const rastoc = (function() {
           })
           wgExt.pause();
 
-          return collectedData
+          return estimatedGazes
         },
         async calibrating() {
           if (state.phase !== 'idle') {
