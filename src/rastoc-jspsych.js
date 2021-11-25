@@ -81,8 +81,6 @@ const convertToTrackedTimeline = (experiment, timeline) => {
         events.push(...decalibrationEvents)
       }
 
-      // TODO: Clarify in docs that last node of input timeline can return an
-      //       object with details about the trial configuration
       const lastTrialData = JSON.parse(jsPsych.data.getLastTrialData().json())[0];
       const givenConfig = lastTrialData?.trial?.config || null
 

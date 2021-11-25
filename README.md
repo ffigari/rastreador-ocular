@@ -1,6 +1,6 @@
 # rastreador-ocular
 
-## Implementación
+## Development
 
 ### módulos de js + plugins
 
@@ -8,7 +8,7 @@ Con `./install.sh` se instalan las dependencias.
 El entry point es `index.html`.
 Se puede hacer `firefox index.html` por ejemplo.
 
-### heatmap
+### data analysis
 
 Setear el entorno:
 ```
@@ -17,45 +17,32 @@ source rastoc-env/bin/activate
 pip install -r requirements.txt 
 ```
 
-## Armar experimentos
+## Interfaz JSPsych
 
-// TODO: Actualizar esto en base al móduli rastoc-jspsych
-
-En `/plugins` hay una serie de plugins de JSPsych que permiten la interacción
-con el sistema de eyetracking. Para armar un experimento que incluya la
-detección de movimiento y la estimación de la mirada deben incluirse los
-siguientes archivos dentro de su `<head>`:
-```html
-<!-- JS de tensorflow utilizado para la detección de movimiento -->
-<script src="https://unpkg.com/@tensorflow/tfjs-core@2.4.0/dist/tf-core.js"></script>
-<script src="https://unpkg.com/@tensorflow/tfjs-converter@2.4.0/dist/tf-converter.js"></script>
-<script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.4.0/dist/tf-backend-webgl.js"></script>
-<script src="https://unpkg.com/@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
-
-<!--
-  JS propio para la detección de movimiento, la estimación de mirada y utils.
-  El path dependenrá de la posición relativa del html en cuestión
--->
-<script src="../src/movement-detection.js"></script>
-<script src="../src/index.js"></script>
-<script src="../src/rastoc.js"></script>
-```
-Tendrá luego que importarse al menos el plugin de calibración.
-[`/experimentos/antisacadas.html`](/experimentos/antisacadas.html) puede
-utilizarse como referencia.
+Se provee una interfaz para la utilización de Rastoc a la par de JSPsych. El
+experimento de lectura ([`html`](/experimentos/lectura.html),
+[`js`](/experimentos/lectura.js)) puede utilizarse como referencia.  
+Resumidamente, se debe:
+- importar los scripts necesarios
+- envolver el llamado a `jsPsych.init` dentro de un listener al evento que nos
+indica que Rastoc está listo.
+- agregar los llamados a los plugins provistos `rastoc-initialize` y
+`rastoc-finish`.
+- agregar a WebGazer como extensión.
+- realizar un llamado a `convertToTrackedTimeline` al timeline que queramos
+decorar. Esta función retornará un nuevo timeline que incluye calibración del
+sistema, detección de descalibración y exportación de datos en formato
+estandarizado. Adicionalmente, en el último nodo del timeline input se puede 
+proveer información sobre el trial ejecutado utilizando 
+[`on_finish`](https://www.jspsych.org/7.0/overview/events/#on_finish-trial) y
+haciendo `data.trial = { config: { ... } }`.
 
 ## Utilización directa
 
-Pueden utilizarse directamente los módulos de estimación de mirada y de
-detección de movimiento, por ejemplo para la construcción de un plugin propio de
-JSPsych. Más adelante habrá una documentación más concreta. De momento pueden
-mirarse los objetos exportados dentro de cada módulo ([`/src/rastoc.js`](
-/src/rastoc.js), [`/src/movement-detection.js`](/src/movement-detection.js)).
-Ambos módulos deben calibrarse previo a poder ser utilizados. Sin embargo, si se
-importa el módulo de detección de movimiento entonces se calibrará a la par del
-de estimación de mirada cuando se llame al método `runExplicitCalibration`.
+Se planea la adición y documentación de una interfaz directa de Rastoc cosa de
+permitir su uso en distintos contextos.
 
-## Notas del trabajo
+## Investigación
 
 En la carpeta [`/notas`](/notas/README.md) se encuentra un markdown en estilo
 informe que documenta algunas ideas relacionadas al trabajo. Hay también notas
