@@ -7,7 +7,7 @@ const shuffle = (a) => {
   return a;
 }
 
-const totalRuns = 2;
+const totalRuns = 3;
 let runsCount = totalRuns;
 
 let textStimulus = "El patito nadaba en el estanque buscando pancitos flotantes.";
@@ -20,8 +20,6 @@ document.addEventListener('movement-detector:ready', () => {
       type: 'fullscreen',
     }, {
       type: 'rastoc-initialize',
-    }, {
-      type: 'calibrate-eye-tracker',
     }, {
       type: 'html-keyboard-response',
       stimulus: `

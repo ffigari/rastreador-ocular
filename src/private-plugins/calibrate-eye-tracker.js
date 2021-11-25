@@ -1,3 +1,4 @@
+// TODO: Mover esto a los plugins privados
 jsPsych.plugins['calibrate-eye-tracker'] = (function(){
   return {
     info: {

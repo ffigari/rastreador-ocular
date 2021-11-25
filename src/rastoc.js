@@ -33,6 +33,7 @@ const calibrator = (function () {
       ]
       math.shuffle(pixCoordinates)
       state.lastCalibrationPercentageCoordinates = [];
+      // TODO: Estos checks raros no deberían ser necesarios
       typeof movementDetector !== 'undefined' &&
         movementDetector.isReady &&
         movementDetector.start.calibration();
@@ -55,6 +56,10 @@ const calibrator = (function () {
           movementDetector.isReady &&
           movementDetector.start.detection();
       drawer.erasePoint(stimulus)
+
+      document.dispatchEvent(new Event('calibrator:system-calibrated'));
+      // TODO: Return events with calibration data
+      return [];
     }
   }
 })()
@@ -71,9 +76,7 @@ const estimator = (function () {
     async currentPrediction() {
       const current = await wgExt.getCurrentPrediction();
       if (current === null) {
-        throw new Error(
-          `WebGazer retornó 'null' para la predicción actual. Verificar que la librería haya sido correctamente inicializada.`
-        );
+        throw new Error(`WebGazer retornó 'null' para la predicción actual.`);
       }
       return [current.x, current.y];
     },
@@ -84,12 +87,18 @@ const estimator = (function () {
 
       const visualizationElement = drawer.appendMarkerFor.gaze();
       const intervalId = setInterval(async () => {
-        const [x, y] = await this.currentPrediction();
-        drawer.moveToPixels(
-          visualizationElement,
-          x,
-          y
-        );
+        try {
+          // Ideally this try catch should not be needed but there seems to be
+          // a race condition in which this interval is not cleared in time
+          const [x, y] = await this.currentPrediction();
+          drawer.moveToPixels(
+            visualizationElement,
+            x,
+            y
+          );
+        } catch (e) {
+          console.warn(e)
+        }
       }, 100)
 
       Object.assign(state.visualization, {
@@ -196,9 +205,44 @@ const rastoc = (function() {
       inProgress: false,
       intervalId: null,
       values: [],
-    }
+    },
+    atLeastOneCalibrationWasDone: false,
+    decalibrationEvents: []
   }
+
+  document.addEventListener('movement-detector:movement:detected', () => {
+    if (state.decalibrationEvents.length > 0) {
+      // Movement was already reported
+      // It would make more sense for the calibrator to listen to this movement
+      // related continous events and fire one single event when it decides that
+      // the system got decalibrated
+      return;
+    }
+    state.decalibrationEvents = [
+      { name: 'decalibration-detected', ts: new Date }
+    ];
+  });
+  document.addEventListener('calibrator:system-calibrated', () => {
+    state.atLeastOneCalibrationWasDone = true;
+    state.decalibrationEvents = [];
+  })
+
   return {
+    calibrationIsNeeded() {
+      if (!state.atLeastOneCalibrationWasDone) {
+        return true;
+      }
+      const {
+        decalibrationWasDetectedSinceLastCalibration
+      } = this.checkDecalibration();
+      return decalibrationWasDetectedSinceLastCalibration;
+    },
+    checkDecalibration() {
+      return {
+        decalibrationWasDetectedSinceLastCalibration: state.decalibrationEvents.length > 0,
+        decalibrationEvents: state.decalibrationEvents,
+      };
+    },
     get continueTo() {
       return {
         estimate() {
@@ -261,11 +305,21 @@ const rastoc = (function() {
           })
           await wgExt.resume();
 
+          if (state.atLeastOneCalibrationWasDone) {
+            await calibrator.reset()
+          }
+
           return calibrator
         },
         async estimating() {
           if (state.phase !== 'idle') {
             throw new Error("No se pudo cambiar a 'estimating' porque la fase actual no es 'idle'.");
+          }
+
+          if (state.dataRecollection.intervalId !== null) {
+            throw new Error(
+              "Al entrar en la fase de estimación no se debería estar recolectando data."
+            );
           }
 
           Object.assign(state, {
@@ -276,12 +330,19 @@ const rastoc = (function() {
           Object.assign(state.dataRecollection, {
             inProgress: true,
             intervalId: setInterval(async () => {
-              state.dataRecollection.values.push({
-                estimatedAt: new Date,
-                estimation: await estimator.currentPrediction()
-              })
-              if (!state.dataRecollection.inProgress) {
-                clearInterval(state.dataRecollection.intervalId)
+              try {
+                // Ideally this try catch should not be needed but there seems
+                // to be a race condition in which this interval is not cleared
+                // in time
+                state.dataRecollection.values.push({
+                  estimatedAt: new Date,
+                  estimation: await estimator.currentPrediction()
+                })
+                if (!state.dataRecollection.inProgress) {
+                  clearInterval(state.dataRecollection.intervalId)
+                }
+              } catch (e) {
+                console.warn(e)
               }
             }, 1000 / 24)
           })

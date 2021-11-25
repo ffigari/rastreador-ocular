@@ -1,28 +1,36 @@
-const MovementReporter = function() {
-  const resetMovementDetection = () => {
-    movementDetected = false;
-  }
-  resetMovementDetection();
-
-  document.addEventListener('movement-detector:movement:detected', () => {
-    movementDetected = true;
-  });
-  document.addEventListener('movement-detector:calibration:reset', () => {
-    resetMovementDetection();
-  })
-
-  Object.assign(this, {
-    detectedMovementSinceLastCheckpoint: () => {
-      return movementDetected;
+jsPsych.plugins['ensure-calibrated-system'] = (function(){
+  return {
+    info: {
+      name: 'ensure-calibrated-system',
     },
-    startNewWindow() {
-      resetMovementDetection();
-    }
-  })
-}
+    trial: async function(display_element, trial) {
+      let calibrationEvents = [];
+      if (rastoc.calibrationIsNeeded()) {
+        const calibrator = await rastoc.switchTo.calibrating()
 
-// TODO: Sacar la calibración de afuera y acá calibrar si no está calibrado o
-//       si se detecto una descalibración
+        // TODO: Por alguna razón este texto no se está mostrando
+        await displayHTML(`
+          <h2> Calibración </h2>
+          <p>
+            Te vamos a mostrar una serie de estímulos. A medida que aparezcan
+            tenés que mirarlos y presionar la barra de espacio para indicar que
+            los estás mirando. <br>
+            Para comenzar presioná cualquier tecla.
+          </p>
+        `).at(display_element).untilAnyKeyIsPressed()
+
+        calibrationEvents = await calibrator.runExplicitCalibration(drawer)
+
+        rastoc.switchTo.idle()
+      }
+      jsPsych.finishTrial({
+        rastocCategory: 'calibration',
+        events: calibrationEvents,
+      });
+    },
+  }
+})();
+
 const convertToTrackedTimeline = (experiment, timeline) => {
   if (!experiment) {
     throw new Error(
@@ -43,20 +51,18 @@ const convertToTrackedTimeline = (experiment, timeline) => {
 
   if (!Array.isArray(timeline)) {
     throw new Error(
-      `Second parameter 'timeline' is not an array as expected.`
+      `Second parameter 'timeline' must be an array of JSPsych nodes.`
     );
   }
-
-  const movementReporter = new MovementReporter();
 
   let startedAt = null;
 
   return [{
+      type: 'ensure-calibrated-system',
+    }, {
     async on_timeline_start() {
       const estimator = await rastoc.switchTo.estimating()
       estimator.showVisualization()
-
-      movementReporter.startNewWindow();
       startedAt = new Date;
     },
 
@@ -67,6 +73,16 @@ const convertToTrackedTimeline = (experiment, timeline) => {
       estimator.hideVisualization();
       const events = rastoc.switchTo.idle();
 
+      const {
+        decalibrationWasDetectedSinceLastCalibration,
+        decalibrationEvents,
+      } = rastoc.checkDecalibration();
+      if (decalibrationWasDetectedSinceLastCalibration) {
+        events.push(...decalibrationEvents)
+      }
+
+      // TODO: Clarify in docs that last node of input timeline can return an
+      //       object with details about the trial configuration
       const lastTrialData = JSON.parse(jsPsych.data.getLastTrialData().json())[0];
       const givenConfig = lastTrialData?.trial?.config || null
 
@@ -82,23 +98,5 @@ const convertToTrackedTimeline = (experiment, timeline) => {
       });
 
     },
-  }, {
-    conditional_function: function () {
-      return movementReporter.detectedMovementSinceLastCheckpoint();
-    },
-    timeline: [{
-      type: 'html-keyboard-response',
-      stimulus: function () {
-        return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
-      },
-      on_start() {
-        // TODO: Acá hay que avisar esto segun el formato elegido
-        jsPsych.data.get().addToLast({ decalibration_detected: true });
-      },
-    }, {
-      // TODO: Replace this with single calibration plugin and push required
-      //       data
-      type: 'recalibrate-eye-tracker',
-    }],
   }]
 }

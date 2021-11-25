@@ -9,8 +9,6 @@ document.addEventListener('movement-detector:ready', () => {
     }, {
       type: 'rastoc-initialize',
     }, {
-      type: 'calibrate-eye-tracker',
-    }, {
       type: 'html-keyboard-response',
       stimulus: `
         <h2>Instrucciones</h2>
