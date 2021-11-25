@@ -1,39 +1,13 @@
-let runsCount = 5
-
-const MovementReporter = function() {
-  const resetMovementDetection = () => {
-    movementDetected = false;
-  }
-  resetMovementDetection();
-
-  document.addEventListener('movement-detector:movement:detected', () => {
-    movementDetected = true;
-  });
-  document.addEventListener('movement-detector:calibration:reset', () => {
-    resetMovementDetection();
-  })
-
-  Object.assign(this, {
-    detectedMovementSinceLastCheckpoint: () => {
-      return movementDetected;
-    },
-    startNewWindow() {
-      resetMovementDetection();
-    }
-  })
-}
+let runsCount = 2
 
 document.addEventListener('movement-detector:ready', () => {
-  const movementReporter = new MovementReporter();
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',
     }, {
       type: 'fullscreen',
     }, {
-      type: 'check-requirements',
-    }, {
-      type: 'calibrate-eye-tracker',
+      type: 'rastoc-initialize',
     }, {
       type: 'html-keyboard-response',
       stimulus: `
@@ -52,34 +26,20 @@ document.addEventListener('movement-detector:ready', () => {
         <p>
       `,
     }, {
-      timeline: [{
-        timeline: [{
-          type: 'antisaccades',
-        }, {
-          on_start: function() {
-            movementReporter.startNewWindow();
-          },
-          timeline: [{
-            type: 'html-keyboard-response',
-            stimulus: function () {
-              return `Detectamos una descalibración, vamos a recalibrar. Presioná cualquier tecla para continuar.`;
-            },
-          }, {
-            type: 'recalibrate-eye-tracker',
-          }],
-          conditional_function: function () {
-            return movementReporter.detectedMovementSinceLastCheckpoint();
-          },
-        }],
-        loop_function: function() {
-          runsCount--;
-          return runsCount > 0;
-        },
-      }]
+      timeline: convertToTrackedTimeline({
+        name: 'antisacadas'
+      }, [{
+        type: 'antisaccades',
+      }]),
+      loop_function: function() {
+        runsCount--;
+        return runsCount > 0;
+      },
+    }, {
+      type: 'rastoc-finish'
     }],
     on_finish: function() {
-      movementDetector.stop()
-      jsPsych.data.get().localSave('json','antisaccades-experiment.json');
+      jsPsych.data.get().localSave('json','antisacadas.json');
     },
     extensions: [
       {type: 'webgazer'}

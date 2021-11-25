@@ -111,7 +111,7 @@ const movementDetector = (function() {
         // Find the max distance
         .reduce((acc, cur) => acc > cur ? acc : cur)
         // Add 10% to the resulting value
-        * 1.1;
+        * 1.5;
       return {
         contains(eyePatch) {
           return eyePatch.corners.every(c => distance(center, c) <= ratio);

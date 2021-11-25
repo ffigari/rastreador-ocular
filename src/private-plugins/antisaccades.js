@@ -1,73 +1,44 @@
-const drawRandomSaccadeTask = async () => {
-  const randomBoolean = () => Math.random() < 0.5
+const randomBoolean = () => Math.random() < 0.5
 
+const drawRandomSaccadeTask = async () => {
   const timeBeforeShowingTaskInMs = 230
   const isAntisaccadeTask = randomBoolean()
   const targetAppearsInRightSide = randomBoolean()
-  const data = {
-    name: 'antisaccade-task',
-    startedAt: new Date,
-    endedAt: null,
-    config: { isAntisaccadeTask, targetAppearsInRightSide },
-    timestamps: {
-      fixation: {
-        appeareance: null,
-        erasure: null,
-        coordinates: null,
-      },
-      typeSignal: {
-        appeareance: null,
-        erasure: null,
-        coordinates: null,
-      },
-      target: {
-        appeareance: null,
-        erasure: null,
-        coordinates: null,
-      },
-    },
-  }
 
-  const fixationMarker = drawer.appendMarkerFor.centerFixation()
-  drawer.moveToPercentages(fixationMarker, 50, 50)
-  Object.assign(data.timestamps.fixation, {
-    coordinates: drawer.getCenterInPixels(fixationMarker),
-    appeareance: new Date,
-  })
+  const trialConfig = {
+    isAntisaccadeTask,
+    targetAppearsInRightSide,
+    // TODO: Ver de agregar alguna lista de eventos con un formato estandarizado
+    //       Si se les define algo como "eventos con coordenadas y alguna
+    //       descripcion" entonces podría usarse en os gráficos que se produzcan
+    //       independientemente del experimento
+  };
 
-  await sleep(2000)
-  drawer.erasePoint(fixationMarker)
-  data.timestamps.fixation.erasure = new Date
+  const fixationMarker = drawer.appendMarkerFor.centerFixation();
+  drawer.moveToPercentages(fixationMarker, 50, 50);
 
-  await sleep(timeBeforeShowingTaskInMs)
+  await sleep(2000);
+  drawer.erasePoint(fixationMarker);
+
+  await sleep(timeBeforeShowingTaskInMs);
 
   const typeSignalMarker = isAntisaccadeTask
     ? drawer.appendMarkerFor.antisaccade.antiSignal()
-    : drawer.appendMarkerFor.antisaccade.proSignal()
-  drawer.moveToPercentages(typeSignalMarker, 50, 50)
-  Object.assign(data.timestamps.typeSignal, {
-    coordinates: drawer.getCenterInPixels(typeSignalMarker),
-    appeareance: new Date,
-  })
+    : drawer.appendMarkerFor.antisaccade.proSignal();
+  drawer.moveToPercentages(typeSignalMarker, 50, 50);
 
-  const targetMarker = drawer.appendMarkerFor.antisaccade.target()
+  const targetMarker = drawer.appendMarkerFor.antisaccade.target();
   drawer.moveToPercentages(
     targetMarker,
     targetAppearsInRightSide ? 80 : 20,
     50
-  )
-  Object.assign(data.timestamps.target, {
-    coordinates: drawer.getCenterInPixels(targetMarker),
-    appeareance: new Date,
-  })
+  );
 
-  await sleep(2000)
-  drawer.erasePoint(typeSignalMarker)
-  data.timestamps.typeSignal.erasure = new Date
-  drawer.erasePoint(targetMarker)
-  data.timestamps.target.erasure = new Date
+  await sleep(2000);
+  drawer.erasePoint(typeSignalMarker);
+  drawer.erasePoint(targetMarker);
 
-  return Object.assign(data, { endedAt: new Date })
+  return trialConfig;
 }
 
 jsPsych.plugins['antisaccades'] = (function(){
@@ -76,14 +47,13 @@ jsPsych.plugins['antisaccades'] = (function(){
       name: 'antisaccades',
     },
     trial: async function(display_element, trial) {
-      const estimator = await rastoc.switchTo.estimating()
-      estimator.showVisualization()
+      const trialConfig = await drawRandomSaccadeTask();
 
-      const taskData = await drawRandomSaccadeTask();
-
-      estimator.hideVisualization()
-      const estimationWindowData = rastoc.switchTo.idle();
-      jsPsych.finishTrial({ estimationWindowData, taskData })
+      jsPsych.finishTrial({
+        trial: {
+          config: trialConfig,
+        }
+      })
     },
   }
 })();

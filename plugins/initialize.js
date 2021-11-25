@@ -1,10 +1,13 @@
-jsPsych.plugins['check-requirements'] = (function(){
+// TODO: Ensure fullscreen has been enabled
+jsPsych.plugins['rastoc-initialize'] = (function(){
   return {
     info: {
-      name: 'check-requirements',
+      name: 'rastoc-initialize',
     },
     trial: async function(display_element, trial) {
-      const { systemIsOk, errors } = await requirementsChecker.checkSystem()
+      const {
+        systemConfig, systemIsOk, errors
+      } = await requirementsChecker.checkSystem()
       if (!systemIsOk) {
         display_element.innerHTML = `
           <h2>Hardware insuficiente</h2>
@@ -17,7 +20,10 @@ jsPsych.plugins['check-requirements'] = (function(){
           </ul>
         `;
       } else {
-        jsPsych.finishTrial();
+        jsPsych.finishTrial({
+          rastocCategory: 'system',
+          systemConfig,
+        });
       }
     },
   }
