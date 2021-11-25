@@ -37,6 +37,9 @@ const calibrator = (function () {
       typeof movementDetector !== 'undefined' &&
         movementDetector.isReady &&
         movementDetector.start.calibration();
+      let calibrationEvents = [
+        { name: 'calibration-started', ts: new Date },
+      ];
       for (const [xPerGroundTruth, yPerGroundTruth] of pixCoordinates) {
         // Draw this ground truth coordinate...
         const [
@@ -47,19 +50,25 @@ const calibrator = (function () {
         typeof movementDetector !== 'undefined' &&
             movementDetector.isReady &&
             movementDetector.useNextFrameAsValidPosition();
-        wgExt.calibratePoint(xPixGT, yPixGT)
+        calibrationEvents.push({
+          name: 'calibration-stimulus-shown',
+          ts: new Date,
+          x: xPixGT,
+          y: yPixGT,
+        });
+        wgExt.calibratePoint(xPixGT, yPixGT);
         state.lastCalibrationPercentageCoordinates.push([
           xPerGroundTruth, yPerGroundTruth
-        ])
+        ]);
       }
+      calibrationEvents.push({ name: 'calibration-finished', ts: new Date });
       typeof movementDetector !== 'undefined' &&
           movementDetector.isReady &&
           movementDetector.start.detection();
       drawer.erasePoint(stimulus)
 
       document.dispatchEvent(new Event('calibrator:system-calibrated'));
-      // TODO: Return events with calibration data
-      return [];
+      return calibrationEvents;
     }
   }
 })()

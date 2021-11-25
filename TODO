@@ -1,19 +1,4 @@
-  . exportar la data necesaria
-    hay que ir pusheando en cada momento y luego recolectarlo en el script de
-    Python
-  . traducir output de JSPsych para rescatar la siguiente data
-    - Info del trial (depende del experimento)
-      En antisacadas:
-      #Trial, Cue (pro o anti), Direccion (der o izq)
-    - Info de los ojos, para cada trial {tiempo (sobre todo si es frec variable), x, y}
-      A esto idealmente me gustaria agregarle
-      {tiempo, x, y, {evento/s}, {calidad del registro}} x la duracion del trial
-        - {evento/s}: Puede estar codificado como booleanas, una por evento, o
-          como categorica... lo importante (sobre todo si es frec variable) es
-          saber cuando pasaron las cosas
-        - {calidad del registro}}: Puede ser la posicion de la cara, o si pierde
-          el ojo, o cualquier variable que se pueda usar para construir un
-          indicador de la calidad del registro.
+  . parsear data exportada
   . graficar las intensidades de mirada en un heatmap
 
   . juntar todo rastoc en un único módulo y adaptar el playground para poder
