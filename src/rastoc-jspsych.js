@@ -61,9 +61,9 @@ const convertToTrackedTimeline = (experiment, timeline) => {
       type: 'ensure-calibrated-system',
     }, {
     async on_timeline_start() {
+      startedAt = new Date;
       const estimator = await rastoc.switchTo.estimating()
       estimator.showVisualization()
-      startedAt = new Date;
     },
 
     timeline,
