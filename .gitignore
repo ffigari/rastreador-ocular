@@ -1,3 +1,4 @@
 vendor/
 rastoc-env/
 *.json
+output
