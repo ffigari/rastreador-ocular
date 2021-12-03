@@ -96,7 +96,7 @@ def uniformly_sample_trial_gazes(t):
 
     return interpolated_gazes
 
-def create_heatmap(experiment_name, trial_number, gazes):
+def create_heatmap(experiment_name, trial_number, trial, gazes):
     xs = [g['x'] for g in gazes]
     ys = [g['y'] for g in gazes]
 
@@ -123,11 +123,26 @@ def create_heatmap(experiment_name, trial_number, gazes):
     heatmap = gaussian_filter(heatmap, sigma=30)
     
     plt.clf()
-    # extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     extent = [
         0, system_config['viewportWidth'], system_config['viewportHeight'], 0
     ]
     plt.imshow(heatmap.T, extent=extent, origin='upper')
+    ax = plt.gca()
+    title = "Mapa de calor de miradas estimadas"
+    if experiment_name == 'antisacadas':
+        title += '\nExperimento de antisacadas'
+        if trial['config']['isAntisaccadeTask']:
+            title += ' - Tarea de antisacada'
+        else:
+            title += ' - Tarea de prosacada'
+        title += '\nEstímulo mostrado a la '
+        if trial['config']['targetAppearsInRightSide']:
+            title += 'derecha'
+        else:
+            title += 'izquierda'
+    if experiment_name == 'lectura':
+        title += '\nExperimento de lectura'
+    ax.set_title(title, fontdict={ 'fontsize': 7 })
     plt.savefig(
         'output/{}-{}-intensity-heatmap'.format(experiment_name, trial_number)
     )
@@ -138,4 +153,4 @@ if os.path.isdir('output'):
 os.mkdir('output')
 for n in experiments:
     for trial_number, t in enumerate(experiments[n]):
-        create_heatmap(n, trial_number, uniformly_sample_trial_gazes(t))
+        create_heatmap(n, trial_number, t, uniformly_sample_trial_gazes(t))
