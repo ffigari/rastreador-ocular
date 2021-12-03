@@ -1,4 +1,4 @@
-let runsCount = 2
+let runsCount = 5
 
 document.addEventListener('movement-detector:ready', () => {
   jsPsych.init({

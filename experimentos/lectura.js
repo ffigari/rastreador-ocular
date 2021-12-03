@@ -7,7 +7,7 @@ const shuffle = (a) => {
   return a;
 }
 
-const totalRuns = 3;
+const totalRuns = 5;
 let runsCount = totalRuns;
 
 let textStimulus = "El patito nadaba en el estanque buscando pancitos flotantes.";

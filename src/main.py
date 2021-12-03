@@ -1,9 +1,8 @@
-import sys
-import numpy as np
-import json
-from functools import reduce
+import sys, os, json, shutil, math
 from datetime import datetime, timedelta
-import math
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.ndimage.filters import gaussian_filter
 
 def date_iso_string_to_datetime(date_string):
     return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
@@ -97,7 +96,46 @@ def uniformly_sample_trial_gazes(t):
 
     return interpolated_gazes
 
+def create_heatmap(experiment_name, trial_number, gazes):
+    xs = [g['x'] for g in gazes]
+    ys = [g['y'] for g in gazes]
+
+    x_min = math.floor(min(xs))
+    y_min = math.floor(min(ys))
+
+    x_delta = math.ceil(max(xs)) - x_min
+    y_delta = math.ceil(max(ys)) - y_min
+
+    gaze_histogram, xedges, yedges = np.histogram2d(
+        xs,
+        ys,
+        bins=(x_delta, y_delta)
+    )
+
+    heatmap = np.zeros((
+        system_config['viewportWidth'],
+        system_config['viewportHeight']
+    ))
+    heatmap[
+        x_min:x_min + x_delta,
+        y_min:y_min + y_delta,
+    ] = gaze_histogram
+    heatmap = gaussian_filter(heatmap, sigma=30)
+    
+    plt.clf()
+    # extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    extent = [
+        0, system_config['viewportWidth'], system_config['viewportHeight'], 0
+    ]
+    plt.imshow(heatmap.T, extent=extent, origin='upper')
+    plt.savefig(
+        'output/{}-{}-intensity-heatmap'.format(experiment_name, trial_number)
+    )
+
+
+if os.path.isdir('output'):
+    shutil.rmtree('output')
+os.mkdir('output')
 for n in experiments:
-    for t in experiments[n]:
-        gazes = uniformly_sample_trial_gazes(t)
-        # TODO: Build heatmap of gaze intensity
+    for trial_number, t in enumerate(experiments[n]):
+        create_heatmap(n, trial_number, uniformly_sample_trial_gazes(t))
