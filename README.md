@@ -4,17 +4,24 @@
 
 ### módulos de js + plugins
 
-Con `./install.sh` se instalan las dependencias.  
-El entry point es `index.html`.
-Se puede hacer `firefox index.html` por ejemplo.
+`./install.sh` para instalar las dependencias.  
+`node index.js` para buildear el js.
+
+Dps el entry point es `index.html`, con abrirlo en un navegador se pueden usar
+los experimentos armados. Se puede por ejemplo hacer `firefox index.html`.
 
 ### data analysis
 
 Setear el entorno:
+```bash
+python -m venv rastoc-env  # para crear el entorno virtual, armado con Python3.9
+source rastoc-env/bin/activate  # para activar el entorno
+pip install -r requirements.txt  # para instalar las dependencias
 ```
-python -m venv rastoc-env  # armado con Python 3.9.7
-source rastoc-env/bin/activate
-pip install -r requirements.txt 
+
+Armar los heatmaps de un experimento:
+```python
+python src/data-analysis/main.py data/lectura.json
 ```
 
 ## Interfaz JSPsych

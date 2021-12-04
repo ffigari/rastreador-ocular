@@ -1,9 +1,9 @@
+import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
 
-// TODO: Add build instructions in readme
-// TODO: Clean build directory (remove and create)
-// TODO: Allow import directly from 'src' instead of doing upper imports
+const buildDir = 'build'
+fs.rmdirSync(buildDir, { recursive: true });
 
 const compiler = webpack({
   mode: 'none',
@@ -13,7 +13,7 @@ const compiler = webpack({
     'rastoc-lib': path.resolve(path.dirname(''), '/src/rastoc-lib/index.js'),
   },
   output: {
-    path: path.resolve(path.dirname(''), 'build'),
+    path: path.resolve(path.dirname(''), buildDir),
     filename: '[name].js',
   }
 });
