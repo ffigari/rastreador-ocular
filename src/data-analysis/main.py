@@ -130,7 +130,7 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
     ax = plt.gca()
     title = "Mapa de calor de miradas estimadas"
     if experiment_name == 'antisacadas':
-        title += '\nExperimento de antisacadas'
+        title += '\nExperimento de antisacadas (trial {})'.format(trial_number)
         if trial['config']['isAntisaccadeTask']:
             title += ' - Tarea de antisacada'
         else:

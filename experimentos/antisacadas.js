@@ -1,6 +1,6 @@
 let runsCount = 5
 
-document.addEventListener('movement-detector:ready', () => {
+document.addEventListener('rastoc:ready', () => {
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',

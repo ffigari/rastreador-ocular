@@ -12,7 +12,7 @@ let runsCount = totalRuns;
 
 let textStimulus = "El patito nadaba en el estanque buscando pancitos flotantes.";
 
-document.addEventListener('movement-detector:ready', () => {
+document.addEventListener('rastoc:ready', () => {
   jsPsych.init({
     timeline: [{
       type: 'webgazer-init-camera',

@@ -1,4 +1,7 @@
 vendor/
 rastoc-env/
-*.json
-output
+data/
+output/
+build/
+node_modules/
+package-lock.json
