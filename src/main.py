@@ -128,6 +128,7 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
     ]
     plt.imshow(heatmap.T, extent=extent, origin='upper')
     ax = plt.gca()
+    # TODO: Agregar número de trial en el titulo
     title = "Mapa de calor de miradas estimadas"
     if experiment_name == 'antisacadas':
         title += '\nExperimento de antisacadas'

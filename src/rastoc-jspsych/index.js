@@ -1,37 +1,18 @@
-jsPsych.plugins['ensure-calibrated-system'] = (function(){
-  return {
-    info: {
-      name: 'ensure-calibrated-system',
-    },
-    trial: async function(display_element, trial) {
-      let calibrationEvents = [];
-      if (rastoc.calibrationIsNeeded()) {
-        const calibrator = await rastoc.switchTo.calibrating()
+import plugins from './plugins/index.js'
 
-        // TODO: Por alguna razón este texto no se está mostrando
-        await displayHTML(`
-          <h2> Calibración </h2>
-          <p>
-            Te vamos a mostrar una serie de estímulos. A medida que aparezcan
-            tenés que mirarlos y presionar la barra de espacio para indicar que
-            los estás mirando. <br>
-            Para comenzar presioná cualquier tecla.
-          </p>
-        `).at(display_element).untilAnyKeyIsPressed()
+plugins.forEach(({ name, trialCb }) => {
+  jsPsych.plugins[name] = (function () {
+    return {
+      info: {
+        name,
+        parameters: {},
+      },
+      trial: trialCb
+    }
+  })();
+})
 
-        calibrationEvents = await calibrator.runExplicitCalibration(drawer)
-
-        rastoc.switchTo.idle()
-      }
-      jsPsych.finishTrial({
-        rastocCategory: 'calibration',
-        events: calibrationEvents,
-      });
-    },
-  }
-})();
-
-const convertToTrackedTimeline = (experiment, timeline) => {
+window.convertToTrackedTimeline = (experiment, timeline) => {
   if (!experiment) {
     throw new Error(
       `Missing first parameter 'experiment' with experiment's info.`
@@ -58,8 +39,8 @@ const convertToTrackedTimeline = (experiment, timeline) => {
   let startedAt = null;
 
   return [{
-      type: 'ensure-calibrated-system',
-    }, {
+    type: 'ensure-calibrated-system',
+  }, {
     async on_timeline_start() {
       startedAt = new Date;
       const estimator = await rastoc.switchTo.estimating()

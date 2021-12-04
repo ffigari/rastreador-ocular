@@ -1,8 +1,5 @@
-  . parsear data exportada
-  . graficar las intensidades de mirada en un heatmap
-
-  . juntar todo rastoc en un único módulo y adaptar el playground para poder
-    calibrar todo el sistema sin necesidad de JSPsych
+  . falta crear archivos js para el modulo de utils y de requirements checker
+  . borrar todos los experimentos viejos + private plugins
 
   . la distribucion de los puntos de calibracion podria tener en cuenta el
     tamaño del viewport. Si la pantalla es grande los puntos quedan en los

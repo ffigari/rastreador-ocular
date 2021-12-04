@@ -1,4 +1,4 @@
-const movementDetector = (function() {
+window.movementDetector = (function() {
   const Loop = function (mainCb, preMainCb) {
     let inProgress = false;
     const full = async () => {
@@ -35,7 +35,7 @@ const movementDetector = (function() {
       },
     };
   };
-  distance = (p1, p2) => Math.sqrt(
+  const distance = (p1, p2) => Math.sqrt(
     Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
   )
   const create = {
@@ -170,7 +170,7 @@ const movementDetector = (function() {
   };
   const _dispatch = (
     eventName
-  ) => document.dispatchEvent(new Event(`movement-detector:${eventName}`));
+  ) => document.dispatchEvent(new Event(`rastoc_movement-detector:${eventName}`));
   const dispatch = {
     moduleReady() {
       _dispatch('ready');
@@ -206,6 +206,7 @@ const movementDetector = (function() {
   window.addEventListener('load', async () => {
     const model = await faceLandmarksDetection
       .load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
+    let videoStream;
     try {
       videoStream = await navigator
         .mediaDevices
@@ -244,7 +245,7 @@ const movementDetector = (function() {
         state.lastCapturedEyes?.visualizeAt(ctx, { color: 'red', })
         state.validEyesPosition?.visualizeAt(ctx)
       }, () => {
-        ctx = state.debuggingCanvasCtx
+        const ctx = state.debuggingCanvasCtx
         if (!ctx) {
           throw new Error('el loop para dibujar necesita tener el canvas de debugging.')
         }
