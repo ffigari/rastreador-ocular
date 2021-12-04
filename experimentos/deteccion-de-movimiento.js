@@ -1,6 +1,7 @@
+let movementDetector;
 const setUp = {
   debugging() {
-    movementDetector.visualizeAt(document.getElementById('debugging-canvas'))
+    movementDetector = rastoc.debugFaceAt(document.getElementById('debugging-canvas'));
   },
   controllers() {
     const calibrationStarterButton = document.getElementById('calibration-starter')
@@ -18,7 +19,7 @@ const setUp = {
     adderButton.addEventListener('click', () => {
       movementDetector.useNextFrameAsValidPosition()
     })
-    document.addEventListener('movement-detector:calibration:ready', () => {
+    document.addEventListener('rastoc_movement-detector:calibration:ready', () => {
       detectionStarterButton.disabled = false;
     })
     detectionStarterButton.addEventListener('click', () => {
@@ -45,15 +46,15 @@ const setUp = {
       document.getElementById(id).hidden = false;
     }
     document.addEventListener(
-      'movement-detector:face:detected-correctly',
+      'rastoc_movement-detector:face:detected-correctly',
       () => hideAllBut('face-ok-msg')
     );
     document.addEventListener(
-      'movement-detector:face:not-detected',
+      'rastoc_movement-detector:face:not-detected',
       () => hideAllBut('no-face-msg')
     );
     document.addEventListener(
-      'movement-detector:face:detected-multiple-times',
+      'rastoc_movement-detector:face:detected-multiple-times',
       () => hideAllBut('multiple-faces-msg')
     );
   },
@@ -67,20 +68,20 @@ const setUp = {
       document.getElementById(id).hidden = false;
     }
     document.addEventListener(
-      'movement-detector:movement:not-detected',
+      'rastoc_movement-detector:movement:not-detected',
       () => hideAllBut('no-movement-msg')
     );
     document.addEventListener(
-      'movement-detector:movement:detected',
+      'rastoc_movement-detector:movement:detected',
       () => hideAllBut('movement-detected-msg')
     );
     document.addEventListener(
-      'movement-detector:calibration:reset',
+      'rastoc_movement-detector:calibration:reset',
       hideAll
     )
   },
 }
-document.addEventListener('movement-detector:ready', () => {
+document.addEventListener('rastoc_movement-detector:ready', () => {
   setUp.debugging();
   setUp.controllers();
   setUp.faceReporter();

@@ -1,12 +1,16 @@
-import './movement-detection.js'
-import { instantiateCalibratorWith } from './calibrator.js'
-import { instantiateEstimatorWith } from './estimator.js'
-const wgExt = jsPsych.extensions.webgazer
+const wgExt = jsPsych.extensions.webgazer;
+import { instantiateMovementDetector } from './movement-detector/index.js';
+import { instantiateCalibratorWith } from './calibrator.js';
+import { instantiateEstimatorWith } from './estimator.js';
 
 let movementDetectorIsReady = false;
 document.addEventListener('rastoc_movement-detector:ready', () => {
   movementDetectorIsReady = true;
 })
+
+const movementDetector = instantiateMovementDetector();
+const calibrator = instantiateCalibratorWith(wgExt, movementDetector);
+const estimator = instantiateEstimatorWith(wgExt);
 
 const state = {
   phase: 'idle',
@@ -15,49 +19,17 @@ const state = {
     intervalId: null,
     values: [],
   },
-  atLeastOneCalibrationWasDone: false,
-  decalibrationEvents: []
-}
-
-// TODO: This should listen to an event from the 'calibrator'. That module has
-//       to listen to the events from the movement detector. No readyness check
-//       is needed since no interaction will be done with any of the modules
-//       until rastoc does not send the ready signal
-document.addEventListener('movement-detector:movement:detected', () => {
-  if (state.decalibrationEvents.length > 0) {
-    // Movement was already reported
-    // It would make more sense for the calibrator to listen to this movement
-    // related continous events and fire one single event when it decides that
-    // the system got decalibrated
-    return;
-  }
-  state.decalibrationEvents = [
-    { name: 'decalibration-detected', ts: new Date }
-  ];
-});
-document.addEventListener('calibrator:system-calibrated', () => {
-  state.atLeastOneCalibrationWasDone = true;
-  state.decalibrationEvents = [];
-})
-
-const calibrator = instantiateCalibratorWith(wgExt, movementDetector);
-const estimator = instantiateEstimatorWith(wgExt);
-// TODO: Add a method to indicate the face debugging canvas
+};
 window.rastoc = {
+  debugFaceAt(canvasElement) {
+    movementDetector.debugFaceAt(canvasElement)
+    return movementDetector;
+  },
   calibrationIsNeeded() {
-    if (!state.atLeastOneCalibrationWasDone) {
-      return true;
-    }
-    const {
-      decalibrationWasDetectedSinceLastCalibration
-    } = this.checkDecalibration();
-    return decalibrationWasDetectedSinceLastCalibration;
+    return calibrator.calibrationIsNeeded();
   },
   checkDecalibration() {
-    return {
-      decalibrationWasDetectedSinceLastCalibration: state.decalibrationEvents.length > 0,
-      decalibrationEvents: state.decalibrationEvents,
-    };
+    return calibrator.checkDecalibration();
   },
   get continueTo() {
     return {
@@ -120,11 +92,7 @@ window.rastoc = {
           phase: 'calibrating',
         })
         await wgExt.resume();
-
-        if (state.atLeastOneCalibrationWasDone) {
-          await calibrator.reset()
-        }
-
+        await calibrator.reset()
         return calibrator
       },
       async estimating() {
