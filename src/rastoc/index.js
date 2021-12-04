@@ -135,6 +135,9 @@ window.rastoc = {
       },
     }
   },
+  finish() {
+    movementDetector.stop();
+  }
 };
   
 window.addEventListener('load', () => {
