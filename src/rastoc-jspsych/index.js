@@ -43,15 +43,15 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
   }, {
     async on_timeline_start() {
       startedAt = new Date;
-      const estimator = await rastoc.switchTo.estimating()
-      estimator.showVisualization()
+      const { visualizer } = await rastoc.switchTo.estimating();
+      visualizer.showGazeEstimation();
     },
 
     timeline,
 
     on_timeline_finish() {
-      const estimator = rastoc.continueTo.estimate();
-      estimator.hideVisualization();
+      const { visualizer } = rastoc.continueTo.estimate();
+      visualizer.hideGazeEstimation();
       const events = rastoc.switchTo.idle();
 
       const {

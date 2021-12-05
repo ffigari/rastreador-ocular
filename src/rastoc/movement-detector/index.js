@@ -1,8 +1,12 @@
 import { Loop } from '../../utils.js';
 import { create } from './eye-patches.js';
 
-const movementDetector = {};
+let movementDetector;
 export const instantiateMovementDetector = () => {
+  if (movementDetector) {
+    return movementDetector;
+  }
+  movementDetector = {};
   const state = {
     useNextFrameAsValidPosition: false,
 

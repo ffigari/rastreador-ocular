@@ -104,6 +104,12 @@ export const canvasDrawer = (function() {
     erasePoint(point) {
       document.getElementById(point.id).remove();
     },
+    hidePoint(point) {
+      document.getElementById(point.id).style.display = 'none';
+    },
+    showPoint(point) {
+      document.getElementById(point.id).style.display = 'block';
+    },
   };
 })()
 

@@ -2,10 +2,12 @@ const wgExt = jsPsych.extensions.webgazer;
 import { instantiateMovementDetector } from './movement-detector/index.js';
 import { instantiateCalibratorWith } from './calibrator.js';
 import { instantiateEstimatorWith } from './estimator.js';
+import { instantiateVisualizerWith } from './visualizer.js';
 
 const movementDetector = instantiateMovementDetector();
 const calibrator = instantiateCalibratorWith(wgExt, movementDetector);
 const estimator = instantiateEstimatorWith(wgExt);
+const visualizer = instantiateVisualizerWith(estimator)
 
 const state = {
   phase: 'idle',
@@ -32,7 +34,7 @@ window.rastoc = {
         if (state.phase !== 'estimating') {
           throw new Error(`No se puede continuar estimando por que la fase actual es '${state.phase}'`)
         }
-        return estimator
+        return { visualizer };
       }
     }
   },
@@ -125,8 +127,7 @@ window.rastoc = {
           }, 1000 / 24)
         })
 
-        // TODO: Acá no sé si tenga sentido llamar devolver el estimator
-        return estimator
+        return { visualizer };
       },
     }
   },
