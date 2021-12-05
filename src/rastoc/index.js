@@ -3,6 +3,7 @@ import { instantiateMovementDetector } from './movement-detector/index.js';
 import { instantiateCalibratorWith } from './calibrator.js';
 import { instantiateEstimatorWith } from './estimator.js';
 
+// TODO: Probar sacar esto
 let movementDetectorIsReady = false;
 document.addEventListener('rastoc_movement-detector:ready', () => {
   movementDetectorIsReady = true;
@@ -76,10 +77,14 @@ window.rastoc = {
           })
         }
 
+        if (state.phase === 'estimating') {
+          estimator.stop();
+        }
+        wgExt.pause();
+
         Object.assign(state, {
           phase: 'idle',
-        })
-        wgExt.pause();
+        });
 
         return estimatedGazes
       },
@@ -110,27 +115,23 @@ window.rastoc = {
           phase: 'estimating',
         })
         await wgExt.resume();
+        estimator.start();
 
         Object.assign(state.dataRecollection, {
           inProgress: true,
           intervalId: setInterval(async () => {
-            try {
-              // Ideally this try catch should not be needed but there seems
-              // to be a race condition in which this interval is not cleared
-              // in time
-              state.dataRecollection.values.push({
-                estimatedAt: new Date,
-                estimation: await estimator.currentPrediction()
-              })
-              if (!state.dataRecollection.inProgress) {
-                clearInterval(state.dataRecollection.intervalId)
-              }
-            } catch (e) {
-              console.warn(e)
+            const p = estimator.lastPrediction;
+            if (!p) {
+              return;
             }
+            state.dataRecollection.values.push({
+              estimatedAt: new Date,
+              estimation: p,
+            });
           }, 1000 / 24)
         })
 
+        // TODO: Acá no sé si tenga sentido llamar devolver el estimator
         return estimator
       },
     }

@@ -1,4 +1,4 @@
-import { canvasDrawer } from '../utils.js';
+import { canvasDrawer, Loop } from '../utils.js';
 
 let estimator;
 export const instantiateEstimatorWith = (gazeEstimator) => {
@@ -8,15 +8,28 @@ export const instantiateEstimatorWith = (gazeEstimator) => {
         isOn: false,
         elementId: null,
         loopCallbackIntervalId: null,
-      }
+      },
+      lastPrediction: null,
     }
+
+    const predictionUpdaterLoop = new Loop(async () => {
+      const prediction = await gazeEstimator.getCurrentPrediction();
+      if (prediction === null) {
+        state.lastPrediction = null;
+      } else {
+        state.lastPrediction = [prediction.x, prediction.y];
+      }
+    })
+
     estimator = {
-      async currentPrediction() {
-        const current = await gazeEstimator.getCurrentPrediction();
-        if (current === null) {
-          throw new Error(`WebGazer retornó 'null' para la predicción actual.`);
-        }
-        return [current.x, current.y];
+      start() {
+        predictionUpdaterLoop.turn.on();
+      },
+      stop() {
+        predictionUpdaterLoop.turn.off();
+      },
+      get lastPrediction() {
+        return state.lastPrediction;
       },
       showVisualization () {
         if (state.visualization.isOn) {
@@ -25,18 +38,17 @@ export const instantiateEstimatorWith = (gazeEstimator) => {
 
         const visualizationElement = canvasDrawer.appendMarkerFor.gaze();
         const intervalId = setInterval(async () => {
-          try {
-            // Ideally this try catch should not be needed but there seems to be
-            // a race condition in which this interval is not cleared in time
-            const [x, y] = await this.currentPrediction();
-            canvasDrawer.moveToPixels(
-              visualizationElement,
-              x,
-              y
-            );
-          } catch (e) {
-            console.warn(e)
+          const p = this.lastPrediction;
+          if (!p) {
+            // TODO: En este caso habría que esconder el marker
+            return;
           }
+          const [x, y] = p;
+          canvasDrawer.moveToPixels(
+            visualizationElement,
+            x,
+            y
+          );
         }, 100)
 
         Object.assign(state.visualization, {
