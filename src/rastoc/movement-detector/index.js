@@ -1,4 +1,5 @@
-import { Loop, distance, create } from './utils.js';
+import { Loop } from '../../utils.js';
+import { create } from './eye-patches.js';
 
 const movementDetector = {};
 export const instantiateMovementDetector = () => {

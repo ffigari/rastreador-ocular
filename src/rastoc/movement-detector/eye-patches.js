@@ -1,43 +1,6 @@
-export const Loop = function (mainCb, preMainCb) {
-  let inProgress = false;
-  const full = async () => {
-    await mainCb(preMainCb?.call() || {});
-    if (inProgress) {
-      go();
-    }
-  };
-
-  let animationId = null;
-  const go = () => {
-    animationId = window.requestAnimationFrame(full);
-  };
-  return {
-    get inProgress() {
-      return inProgress;
-    },
-    turn: {
-      on() {
-        if (inProgress) {
-          throw new Error('loop is already turned on.')
-        }
-        inProgress = true;
-        go();
-      },
-      off() {
-        if (!inProgress) {
-          throw new Error('loop is already turned off.')
-        }
-        inProgress = false;
-        animationId && window.cancelAnimationFrame(animationId);
-        animationId = null;
-      },
-    },
-  };
-};
-
-export const distance = (p1, p2) => Math.sqrt(
+const distance = (p1, p2) => Math.sqrt(
   Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
-)
+);
 
 export const create = {
   eyePatch: (prediction, keypointsIndexes) => {
@@ -150,4 +113,4 @@ export const create = {
       },
     };
   },
-}
+};

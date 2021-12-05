@@ -1,3 +1,40 @@
+export const Loop = function (mainCb, preMainCb) {
+  let inProgress = false;
+  const full = async () => {
+    await mainCb(preMainCb?.call() || {});
+    if (inProgress) {
+      go();
+    }
+  };
+
+  let animationId = null;
+  const go = () => {
+    animationId = window.requestAnimationFrame(full);
+  };
+  return {
+    get inProgress() {
+      return inProgress;
+    },
+    turn: {
+      on() {
+        if (inProgress) {
+          throw new Error('loop is already turned on.')
+        }
+        inProgress = true;
+        go();
+      },
+      off() {
+        if (!inProgress) {
+          throw new Error('loop is already turned off.')
+        }
+        inProgress = false;
+        animationId && window.cancelAnimationFrame(animationId);
+        animationId = null;
+      },
+    },
+  };
+};
+
 export const displayHTML = (html) => {
   return {
     at: (element) => {

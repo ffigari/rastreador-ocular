@@ -1,5 +1,6 @@
-  . falta crear archivos js para el modulo de utils y de requirements checker
-  . borrar todos los experimentos viejos + private plugins
+  . el sistema debería armarse asumiendo que capaz no hay una estimación
+    disponible: debería poder manejar ese caso (eg, indicar en la data exportada
+    que no hay dato)
 
   . la distribucion de los puntos de calibracion podria tener en cuenta el
     tamaño del viewport. Si la pantalla es grande los puntos quedan en los
