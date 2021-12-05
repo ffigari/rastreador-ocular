@@ -3,12 +3,6 @@ import { instantiateMovementDetector } from './movement-detector/index.js';
 import { instantiateCalibratorWith } from './calibrator.js';
 import { instantiateEstimatorWith } from './estimator.js';
 
-// TODO: Probar sacar esto
-let movementDetectorIsReady = false;
-document.addEventListener('rastoc_movement-detector:ready', () => {
-  movementDetectorIsReady = true;
-})
-
 const movementDetector = instantiateMovementDetector();
 const calibrator = instantiateCalibratorWith(wgExt, movementDetector);
 const estimator = instantiateEstimatorWith(wgExt);
@@ -141,12 +135,6 @@ window.rastoc = {
   }
 };
   
-window.addEventListener('load', () => {
-  if (movementDetectorIsReady) {
-    document.dispatchEvent(new Event('rastoc:ready'));
-  } else {
-    document.addEventListener('rastoc_movement-detector:ready', () => {
-      document.dispatchEvent(new Event('rastoc:ready'));
-    })
-  }
-});
+document.addEventListener('rastoc_movement-detector:ready', () => {
+  document.dispatchEvent(new Event('rastoc:ready'));
+})
