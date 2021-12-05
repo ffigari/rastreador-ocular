@@ -97,8 +97,8 @@ def uniformly_sample_trial_gazes(t):
     return interpolated_gazes
 
 def create_heatmap(experiment_name, trial_number, trial, gazes):
-    xs = [g['x'] for g in gazes]
-    ys = [g['y'] for g in gazes]
+    xs = [min(system_config['viewportWidth'], max(0, g['x'])) for g in gazes]
+    ys = [min(system_config['viewportHeight'], max(0, g['y'])) for g in gazes]
 
     x_min = math.floor(min(xs))
     y_min = math.floor(min(ys))
