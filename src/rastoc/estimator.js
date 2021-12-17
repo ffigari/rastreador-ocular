@@ -1,30 +1,35 @@
 import { canvasDrawer, Loop } from '../utils.js';
 
+const wgExt = jsPsych.extensions.webgazer;
 let estimator;
-export const instantiateEstimatorWith = (gazeEstimator) => {
+export const instantiateEstimator = () => {
   if (!estimator) {
-    const state = {
-      lastPrediction: null,
-    }
-
-    const predictionUpdaterLoop = new Loop(async () => {
-      const prediction = await gazeEstimator.getCurrentPrediction();
-      if (prediction === null) {
-        state.lastPrediction = null;
-      } else {
-        state.lastPrediction = [prediction.x, prediction.y];
-      }
-    })
-
+    let cancelGazeUpdateHandler;
     estimator = {
-      start() {
-        predictionUpdaterLoop.turn.on();
+      async resume() {
+        await wgExt.resume();
+        cancelGazeUpdateHandler = wgExt.onGazeUpdate((prediction) => {
+          document.dispatchEvent(new CustomEvent('rastoc:gaze-estimated', {
+            detail: {
+              name: 'gaze-estimation',
+              ts: new Date,
+              x: prediction.x,
+              y: prediction.y,
+              quality: {
+                // TODO: Armar algo para poder extrapolar alguna medida de
+                //       confianza.
+                //       Una primer opción es al momento de la estimación usar
+                //       la distancia de los ojos al promedio de las posiciones
+                //       de los momentos de calibración
+                confidence: 1,
+              }
+            },
+          }))
+        })
       },
       stop() {
-        predictionUpdaterLoop.turn.off();
-      },
-      get lastPrediction() {
-        return state.lastPrediction;
+        cancelGazeUpdateHandler();
+        wgExt.pause();
       },
     };
   }

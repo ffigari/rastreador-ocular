@@ -1,21 +1,15 @@
-const wgExt = jsPsych.extensions.webgazer;
 import { instantiateMovementDetector } from './movement-detector/index.js';
 import { instantiateCalibratorWith } from './calibrator.js';
-import { instantiateEstimatorWith } from './estimator.js';
+import { instantiateEstimator } from './estimator.js';
 import { instantiateVisualizerWith } from './visualizer.js';
 
 const movementDetector = instantiateMovementDetector();
-const calibrator = instantiateCalibratorWith(wgExt, movementDetector);
-const estimator = instantiateEstimatorWith(wgExt);
+const calibrator = instantiateCalibratorWith(movementDetector);
+const estimator = instantiateEstimator();
 const visualizer = instantiateVisualizerWith(estimator)
 
 const state = {
   phase: 'idle',
-  dataRecollection: {
-    inProgress: false,
-    intervalId: null,
-    values: [],
-  },
 };
 window.rastoc = {
   debugFaceAt(canvasElement) {
@@ -24,9 +18,6 @@ window.rastoc = {
   },
   calibrationIsNeeded() {
     return calibrator.calibrationIsNeeded();
-  },
-  checkDecalibration() {
-    return calibrator.checkDecalibration();
   },
   get continueTo() {
     return {
@@ -47,42 +38,13 @@ window.rastoc = {
           );
         }
 
-        let estimatedGazes = null;
-        if (state.dataRecollection.inProgress) {
-          estimatedGazes = [...state.dataRecollection.values].map(({
-            estimatedAt, estimation
-          }) => ({
-            name: 'gaze-estimation',
-            ts: estimatedAt,
-            x: estimation[0],
-            y: estimation[1],
-            quality: {
-              // TODO: Armar algo para poder extrapolar alguna medida de
-              //       confianza.
-              //       Una primer opción es al momento de la estimación usar
-              //       la distancia de los ojos al promedio de las posiciones
-              //       de los momentos de calibración
-              confidence: 1,
-            }
-          }));
-          clearInterval(state.dataRecollection.intervalId);
-          Object.assign(state.dataRecollection, {
-            inProgress: false,
-            intervalId: null,
-            values: [],
-          })
-        }
-
         if (state.phase === 'estimating') {
           estimator.stop();
         }
-        wgExt.pause();
 
         Object.assign(state, {
           phase: 'idle',
         });
-
-        return estimatedGazes
       },
       async calibrating() {
         if (state.phase !== 'idle') {
@@ -92,7 +54,6 @@ window.rastoc = {
         Object.assign(state, {
           phase: 'calibrating',
         })
-        await wgExt.resume();
         await calibrator.reset()
         return calibrator
       },
@@ -101,30 +62,9 @@ window.rastoc = {
           throw new Error("No se pudo cambiar a 'estimating' porque la fase actual no es 'idle'.");
         }
 
-        if (state.dataRecollection.intervalId !== null) {
-          throw new Error(
-            "Al entrar en la fase de estimación no se debería estar recolectando data."
-          );
-        }
-
+        await estimator.resume();
         Object.assign(state, {
           phase: 'estimating',
-        })
-        await wgExt.resume();
-        estimator.start();
-
-        Object.assign(state.dataRecollection, {
-          inProgress: true,
-          intervalId: setInterval(async () => {
-            const p = estimator.lastPrediction;
-            if (!p) {
-              return;
-            }
-            state.dataRecollection.values.push({
-              estimatedAt: new Date,
-              estimation: p,
-            });
-          }, 1000 / 24)
         })
 
         return { visualizer };
@@ -133,7 +73,7 @@ window.rastoc = {
   },
   finish() {
     movementDetector.stop();
-  }
+  },
 };
   
 document.addEventListener('rastoc_movement-detector:ready', () => {

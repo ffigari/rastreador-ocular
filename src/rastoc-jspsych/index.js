@@ -37,6 +37,13 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
   }
 
   let startedAt = null;
+  let events = [];
+  const eventsNames = [
+    'rastoc:gaze-estimated',
+    'rastoc:calibration',
+    'rastoc:decalibration',
+  ];
+  const handler = ({ detail: gazeEvent }) => events.push(gazeEvent);
 
   return [{
     type: 'ensure-calibrated-system',
@@ -45,6 +52,10 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
       startedAt = new Date;
       const { visualizer } = await rastoc.switchTo.estimating();
       visualizer.showGazeEstimation();
+      eventsNames.map(eventName => {
+        document.addEventListener(eventName, handler);
+        return eventName;
+      })
     },
 
     timeline,
@@ -52,15 +63,7 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
     on_timeline_finish() {
       const { visualizer } = rastoc.continueTo.estimate();
       visualizer.hideGazeEstimation();
-      const events = rastoc.switchTo.idle();
-
-      const {
-        decalibrationWasDetectedSinceLastCalibration,
-        decalibrationEvents,
-      } = rastoc.checkDecalibration();
-      if (decalibrationWasDetectedSinceLastCalibration) {
-        events.push(...decalibrationEvents)
-      }
+      rastoc.switchTo.idle();
 
       const lastTrialData = JSON.parse(jsPsych.data.getLastTrialData().json())[0];
       const givenConfig = lastTrialData?.trial?.config || null
@@ -76,6 +79,9 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
         events,
       });
 
+      eventsNames.forEach((
+        eventName
+      ) => document.removeEventListener(eventName, handler))
     },
   }]
 }

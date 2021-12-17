@@ -4,24 +4,18 @@ let visualizer;
 export const instantiateVisualizerWith = (estimator) => {
   if (!visualizer) {
     let gazeMarker;
-    const gazeEstimatorUpdater = new Loop(() => {
-      const p = estimator.lastPrediction;
-      if (!p) {
-        canvasDrawer.hidePoint(gazeMarker);
-      } else {
-        canvasDrawer.showPoint(gazeMarker);
-        const [x, y] = p;
-        canvasDrawer.moveToPixels(gazeMarker, x, y);
-      }
-    });
+    let handlerId;
     visualizer = {
       showGazeEstimation() {
         gazeMarker = canvasDrawer.appendMarkerFor.gaze();
         canvasDrawer.hidePoint(gazeMarker);
-        gazeEstimatorUpdater.turn.on();
+        handlerId = document.addEventListener('rastoc:gaze-estimated', ({ detail: { x, y } }) => {
+          canvasDrawer.showPoint(gazeMarker);
+          canvasDrawer.moveToPixels(gazeMarker, x, y);
+        })
       },
       hideGazeEstimation() {
-        gazeEstimatorUpdater.turn.off();
+        document.removeEventListener('rastoc:gaze-estimated', handlerId)
         canvasDrawer.erasePoint(gazeMarker);
       },
     };

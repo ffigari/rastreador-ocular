@@ -1,24 +1,3 @@
-  . retrabjar sampleo de estimaciones
-    . ahora se reportan estimaciones cada 1000 / 24 ms pero la realidad es que
-      ese dato que se reporta puede ser el mismo y tampoco corresponde el ts
-      en el cual se realizó la estimación
-    . los loops que están atados al recambio de frames tienen que actualizarse
-      con el `requestAnimationFrame` pero luego deben emitirse eventos del
-      estilo `eyes positions estimated`, `gaze estimated` para que los datos
-      puedan consumirse
-
-    - usar el `setGazeListener` de WG
-    - aplicar la misma idea (animation frame vs event) al detector de
-      movimiento. El reporte del facemesh puede incluso separarse en un módulo
-      aparte por si eventualmente se lo quiere usar para un estimador de la
-      mirada propio
-    - volar lo de que se retornan los eventos al cambiar de etapas con rastoc.
-      En lugar de eso emitir los eventos directo al `document` para que puedan
-      ser consumidos donde sea necesario. La interfaz de JSPsych cambiarla 
-      para que nomás en `rastoc-initialize` se suscriba a los eventos y los
-      vaya guardando en algún arreglo que es exportado luego con
-      `rastoc-finish`
-
   . armar releases
     . el objetivo es que quien luego quiera usar Rastoc necesite nomás copiar
       la carpeta esa y ya poder salir andando

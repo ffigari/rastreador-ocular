@@ -35,25 +35,6 @@ export const Loop = function (mainCb, preMainCb) {
   };
 };
 
-export const displayHTML = (html) => {
-  return {
-    at: (element) => {
-      return {
-        async untilAnyKeyIsPressed() {
-          element.innerHTML = html
-          const spaceWasPressed = await new Promise((res) => {
-            document.addEventListener('keydown', (e) => {
-              res(e.code === 'Space')
-            })
-          })
-          element.innerHTML = ''
-          return spaceWasPressed
-        }
-      }
-    }
-  }
-};
-
 export const canvasDrawer = (function() {
   let _counter = 1
   let _appendPoint = (id, color, sizeInPixels) => {
