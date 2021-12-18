@@ -1,7 +1,3 @@
-  . armar releases
-    . el objetivo es que quien luego quiera usar Rastoc necesite nomás copiar
-      la carpeta esa y ya poder salir andando
-
   . detallar la data del experimento de antisacadas
     . ahora se solapan datos de los distintos trials porque están medio flojos
       los timestamps disponibles. En cada trial quedan estimaciones del trial
