@@ -6,6 +6,9 @@
 
 `./install.sh` para instalar las dependencias.  
 `node index.js` para buildear el js.
+La versión de `node` requerida está dentro del archivo `.nvmrc` por lo que puede
+usarse `nvm use` (luego de instalar al menos una vez con `nvm install`) para
+cambiar a la versión requerida (https://github.com/nvm-sh/nvm).
 
 Dps el entry point es `index.html`, con abrirlo en un navegador se pueden usar
 los experimentos armados. Se puede por ejemplo hacer `firefox index.html`.
