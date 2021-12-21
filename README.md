@@ -60,6 +60,9 @@ estandarizado. Adicionalmente, en el último nodo del timeline input se puede
 proveer información sobre el trial ejecutado utilizando 
 [`on_finish`](https://www.jspsych.org/7.0/overview/events/#on_finish-trial) y
 haciendo `data.trial = { config: { ... } }`.
+En particular las entradas `config.relevantDataStartsAt` y
+`config.relevantDataFinishesAt` permiten definir el intervalo de las
+estimaciones de mirada obtenidas que se consideran relevantes al análisis.
 
 Scripts a importar:
 ```html

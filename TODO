@@ -1,11 +1,3 @@
-  . detallar la data del experimento de antisacadas
-    . agregar espacio vacio al principio y al comienzo del experimento de
-      antisacadas
-    . agregar un par de timestamps en trial.config para indicar el intervalo
-      relevante al análisis
-    . actualizar el data analysis para que el heatmap se haga con los momentos
-      relevantes
-
   . armar experimento de seguimiento
     . nomás un punto que se mueva de manera continua por la pantalla 
 

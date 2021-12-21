@@ -11,6 +11,9 @@ const drawRandomSaccadeTask = async () => {
     targetAppearsInRightSide,
   };
 
+  await sleep(1000);
+  trialConfig.relevantDataStartsAt = new Date;
+
   const fixationMarker = canvasDrawer.appendMarkerFor.centerFixation();
   canvasDrawer.moveToPercentages(fixationMarker, 50, 50);
 
@@ -34,6 +37,9 @@ const drawRandomSaccadeTask = async () => {
   await sleep(2000);
   canvasDrawer.erasePoint(typeSignalMarker);
   canvasDrawer.erasePoint(targetMarker);
+
+  trialConfig.relevantDataFinishesAt = new Date;
+  await sleep(1000);
 
   return trialConfig;
 }

@@ -43,6 +43,14 @@ for n in experiments:
     for t in experiments[n]:
         t['startedAt'] = date_iso_string_to_datetime(t['startedAt'])
         t['endedAt'] = date_iso_string_to_datetime(t['endedAt'])
+        t['relevantDataStartsAt'] = \
+            date_iso_string_to_datetime(t['config']['relevantDataStartsAt']) \
+            if 'relevantDataStartsAt' in t['config'] \
+            else t['startedAt']
+        t['relevantDataFinishesAt'] = \
+            date_iso_string_to_datetime(t['config']['relevantDataFinishesAt']) \
+            if 'relevantDataFinishesAt' in t['config'] \
+            else t['endedAt']
 events = sorted(events, key=lambda d: d['ts'])
 for e in events:
     e['ts'] = date_iso_string_to_datetime(e['ts'])
@@ -53,7 +61,7 @@ def uniformly_sample_trial_gazes(t):
         for e
         in events
         if e['name'] == 'gaze-estimation' \
-           and t['startedAt'] <= e['ts'] <= t['endedAt']
+            and t['relevantDataStartsAt'] <= e['ts'] <= t['relevantDataFinishesAt']
     ]
     def interpolate_for(ts):
         if ts < trial_gaze_events[0]['ts']:
