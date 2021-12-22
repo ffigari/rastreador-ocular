@@ -1,8 +1,8 @@
 import { canvasDrawer, forSingleSpaceBarOn, shuffle } from '../utils.js';
 
-const wgExt = jsPsych.extensions.webgazer;
 let calibrator;
 export const instantiateCalibratorWith = (movementDetector) => {
+  const wgExt = jsPsych.extensions.webgazer;
   if (!calibrator) {
     const state = {
       atLeastOneCalibrationWasDone: false,

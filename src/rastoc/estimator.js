@@ -1,8 +1,8 @@
 import { canvasDrawer, Loop } from '../utils.js';
 
-const wgExt = jsPsych.extensions.webgazer;
 let estimator;
 export const instantiateEstimator = () => {
+  const wgExt = jsPsych.extensions.webgazer;
   if (!estimator) {
     let cancelGazeUpdateHandler;
     estimator = {
