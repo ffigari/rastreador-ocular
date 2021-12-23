@@ -1,4 +1,4 @@
-import { canvasDrawer, Loop } from '../utils.js';
+import { canvasDrawer } from '../utils.js';
 
 let visualizer;
 export const instantiateVisualizerWith = (estimator) => {

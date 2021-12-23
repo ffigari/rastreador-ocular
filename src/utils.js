@@ -61,6 +61,7 @@ export const canvasDrawer = (function() {
         antiSignal: () => _appendPoint('antisaccade-anti-signal', 'red', 30),
         proSignal: () => _appendPoint('antisaccade-pro-signal', 'green', 30),
       },
+      followUp: () => _appendPoint('follow-up', 'black', 30),
       gaze: () => _appendPoint('gaze-prediction-visualization', 'red', 10),
       calibration: () => _appendPoint('calibration-stiumulus-visualization', 'blue', 30),
       validation: () => _appendPoint('calibration-measurment-visualization', 'black', 30),

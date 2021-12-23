@@ -1,9 +1,13 @@
-  . armar experimento de seguimiento
-    . nomás un punto que se mueva de manera continua por la pantalla 
+  . agregar data analysis básico para el expermiento de seguimiento
 
   . borrar experimento de lectura
 
   . documentar protocolo y cantidad de trials de cada exp armado
+
+  . rename canvasDrawer to drawer
+  . mover shuffle y sleep a utils y rastoc-lib
+
+  . permitir que el data analysis reciba datos de varios sujetos
 
   . investigar qué datos de hardware se pueden recolectar
 
@@ -27,21 +31,6 @@
         - botón para exportar la data: al clickearlo te ofrece a descargar un
           archivo con los eventos que se generan
     . armar una web genérica par tener de playground
-
-  . escritura
-    . arrancar a escribir la tesis en un doc
-      - método: explicar lo que se armó
-      - motivación: costos, remotismo, aplicabilidad
-      - experimentos: cuáles se van a realizar? tienen interés clínico o son
-        para validar?
-      - ojos: brevemente, qué elementos de la visión nos interesan? qué tiempos
-        y que precisión necesitamos?
-      - implementaciones existes: qué herramientas ya existen? cómo andan? dónde
-        andan? aplican a nuestro caso de uso?
-      - algoritmos de eyetracking: qué categorias existen? que requerimientos de
-        hadrware tienen? cuáles nos sirven?
-    . método, intro, experimentos que se realizan, motivación, aplicabilidad,
-      contexto del ojo (precisión y tiempos que se buscan)
 
   . experimentación
     . diseñar experimento online
