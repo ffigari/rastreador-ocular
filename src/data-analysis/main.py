@@ -148,8 +148,6 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
             title += 'derecha'
         else:
             title += 'izquierda'
-    if experiment_name == 'lectura':
-        title += '\nExperimento de lectura'
     ax.set_title(title, fontdict={ 'fontsize': 7 })
     plt.savefig(
         'output/{}-{}-intensity-heatmap'.format(experiment_name, trial_number)

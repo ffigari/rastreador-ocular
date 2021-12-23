@@ -24,7 +24,7 @@ pip install -r requirements.txt  # para instalar las dependencias
 
 Armar los heatmaps de un experimento:
 ```python
-python src/data-analysis/main.py data/lectura.json
+python src/data-analysis/main.py data/antisacadas.json
 ```
 
 ## Utilización
@@ -45,8 +45,8 @@ document.addEventListener('rastoc:ready', () => {
 ### Interfaz JSPsych
 
 Se provee una interfaz para la utilización de Rastoc a la par de JSPsych. El
-experimento de lectura ([`html`](/experimentos/lectura.html),
-[`js`](/experimentos/lectura.js)) puede utilizarse como referencia.  
+experimento de antisacadas ([`html`](/experimentos/antisacadas.html),
+[`js`](/experimentos/antisacadas.js)) puede utilizarse como referencia.  
 Resumidamente, se debe:
 - importar los scripts necesarios
 - llamar a `jsPsych.init` dentro del handler para el evento `rastoc-ready`
