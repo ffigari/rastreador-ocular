@@ -37,7 +37,7 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
   }
 
   let startedAt = null;
-  let events = [];
+  let events;
   const eventsNames = [
     'rastoc:gaze-estimated',
     'rastoc:calibration',
@@ -46,16 +46,19 @@ window.convertToTrackedTimeline = (experiment, timeline) => {
   const handler = ({ detail: gazeEvent }) => events.push(gazeEvent);
 
   return [{
+    on_start() {
+      events = [];
+      eventsNames.map(eventName => {
+        document.addEventListener(eventName, handler);
+        return eventName;
+      });
+    },
     type: 'ensure-calibrated-system',
   }, {
     async on_timeline_start() {
       startedAt = new Date;
       const { visualizer } = await rastoc.switchTo.estimating();
       visualizer.showGazeEstimation();
-      eventsNames.map(eventName => {
-        document.addEventListener(eventName, handler);
-        return eventName;
-      })
     },
 
     timeline,
