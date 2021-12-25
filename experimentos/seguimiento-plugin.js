@@ -26,7 +26,9 @@ const msBetweenTargets = 2000;
 
 const drawRandomSeguimientoTask = async () => {
   const shuffledPointsToVisit = shuffle(pointsToVisit);
-  const trialConfig = {};
+  const trialConfig = {
+    stimulusPositions: [],
+  };
 
   await sleep(500);
   const fixationMarker = canvasDrawer.appendMarkerFor.centerFixation();
@@ -56,9 +58,16 @@ const drawRandomSeguimientoTask = async () => {
           return res();
         }
         const position = interpolate2D(source, target, elapsed / msBetweenTargets);
-        // TODO: Store marker position
         canvasDrawer.moveToPercentages(followUpMarker, position[0], position[1]);
         canvasDrawer.showPoint(followUpMarker);
+
+        const positionInPixels = canvasDrawer.getCenterInPixels(followUpMarker);
+        trialConfig.stimulusPositions.push({
+          name: 'follow-up-stimulus-position',
+          ts: new Date,
+          x: positionInPixels[0],
+          y: positionInPixels[1],
+        })
 
         window.requestAnimationFrame(drawer);
       }

@@ -34,7 +34,7 @@ document.addEventListener('rastoc:ready', () => {
       type: 'rastoc-finish'
     }],
     on_finish: function() {
-      jsPsych.data.get().localSave('json','antisacadas.json');
+      jsPsych.data.get().localSave('json','seguimiento.json');
     },
     extensions: [
       {type: 'webgazer'}
