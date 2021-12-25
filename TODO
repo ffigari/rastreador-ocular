@@ -1,19 +1,48 @@
-  . agregar data analysis básico para el expermiento de seguimiento
-
   . documentar protocolo y cantidad de trials de cada exp armado
+
+  . plotear distancia x y distancia y de la estimacion de la mirada al estímulo
+    mostrado
+
+  . separar el data analysis en un par de módulos
+    - setup / data reading
+    - interpolation
+    - plotting
+
+  . armar lo de la medida de confianza y agregarlo al plot de la historia del
+    experimento
+    . hay que tomar extender el detector de movimiento para que se le pueda
+      preguntar qué tan lejos de la posición inicial está el sujeto
 
   . rename canvasDrawer to drawer
   . mover shuffle y sleep a utils y rastoc-lib
 
   . permitir que el data analysis reciba datos de varios sujetos
+    . esto va a implicar armar una instancia de JSPsyc que incluya al menos dos
+      experimentos. Parte del código puede estar armado sin bancar esto
 
   . investigar qué datos de hardware se pueden recolectar
+    . como mínimo hay que acumular los tamaños de la pantalla (eso creo que ya
+      está)
 
   . armar experimento de antisacadas vertical
     . no tiene valor clínico pero puede permitir validar los resultados
     . menos trials que el antisacada horizontal
 
   . agregar experimento TMT
+
+  . experimentación
+    . diseñar experimento online
+      . para hacer una validación inicial
+      . experimentos cortos 5, 10 mins
+      . conseguir ~20 sujetos
+      . armarse un único jspsych
+      . idealmente para enero
+    . diseñar experimento presencial
+      . comparación contra un eyetracker profesional
+      . en laboratorio, experimentos más largos (30, 40 mins)
+      . implica implementar los mismos experimentos para ambas plataformas
+      . idealmente a esta altura ya tendría que estar el tema de las releases y
+        habría que probarlo en Windows por las dudas
 
   . ver bien como hacer lo de usar rastoc sin JSPsych
     . revisar la inicialización de WG
@@ -29,19 +58,6 @@
         - botón para exportar la data: al clickearlo te ofrece a descargar un
           archivo con los eventos que se generan
     . armar una web genérica par tener de playground
-
-  . experimentación
-    . diseñar experimento online
-      . para hacer una validación inicial
-      . experimentos cortos 5, 10 mins
-      . conseguir ~20 sujetos
-      . idealmente para enero
-    . diseñar experimento presencial
-      . comparación contra un eyetracker profesional
-      . en laboratorio, experimentos más largos (30, 40 mins)
-      . implica implementar los mismos experimentos para ambas plataformas
-      . idealmente a esta altura ya tendría que estar el tema de las releases y
-        habría que probarlo en Windows por las dudas
 
   . ver un poco el tema de handlear los errores mejor
     - si el tab con el experimento se deja abierto en background, hay chances de

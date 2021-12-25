@@ -2,6 +2,8 @@ import sys, os, json, shutil, math
 from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
 from scipy.ndimage.filters import gaussian_filter
 
 def date_iso_string_to_datetime(date_string):
@@ -136,9 +138,9 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
     ]
     plt.imshow(heatmap.T, extent=extent, origin='upper')
     ax = plt.gca()
-    title = "Mapa de calor de miradas estimadas"
+    title = "Mapa de calor de miradas estimadas (trial {})".format(trial_number)
     if experiment_name == 'antisacadas':
-        title += '\nExperimento de antisacadas (trial {})'.format(trial_number)
+        title += '\nExperimento de antisacadas'
         if trial['config']['isAntisaccadeTask']:
             title += ' - Tarea de antisacada'
         else:
@@ -153,10 +155,62 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
         'output/{}-{}-intensity-heatmap'.format(experiment_name, trial_number)
     )
 
+def plot_experiment_context(ax, experiment):
+    experimentStartedAt = experiment[0]['startedAt']
+    experimentEndedAt = experiment[-1]['endedAt']
+
+    ax.set_xlim(0, distance_in_ms(experimentEndedAt, experimentStartedAt))
+    for trial_number, t in enumerate(experiment):
+        t_start = distance_in_ms(t['startedAt'], experimentStartedAt)
+        duration = distance_in_ms(t['endedAt'], t['startedAt'])
+        ax.add_patch(Rectangle((t_start, 0), duration, 20,
+             edgecolor = 'black',
+             facecolor = (trial_number % 2, (trial_number + 1) % 2, 0, 0.2),
+             fill=True,
+             lw=0.5))
+    for decalibrationEvent in [
+        e for e in events
+        if e['name'] == 'decalibration-detected' \
+            and experimentStartedAt <= e['ts'] <= experimentEndedAt
+    ]:
+        ax.axvline(
+            distance_in_ms(decalibrationEvent['ts'], experimentStartedAt),
+            linewidth=2,
+            linestyle='--',
+            color='red'
+        )
+
+    for calibrationStartedEvent in [
+        e for e in events
+        if e['name'] == 'calibration-started' \
+            and experimentStartedAt <= e['ts'] <= experimentEndedAt
+    ]:
+        calibrationFinishedEvent = [
+          e for e in events
+          if e['name'] == 'calibration-finished' \
+              and calibrationStartedEvent['ts'] <= e['ts'] <= experimentEndedAt
+        ][0]
+        t_start = distance_in_ms(calibrationStartedEvent['ts'], experimentStartedAt)
+        duration = distance_in_ms(calibrationFinishedEvent['ts'], calibrationStartedEvent['ts'])
+        ax.add_patch(Rectangle((t_start, 0), duration, 20,
+             edgecolor = 'black',
+             facecolor = (0, 0, 1, 0.2),
+             fill=True,
+             lw=0.5))
 
 if os.path.isdir('output'):
     shutil.rmtree('output')
 os.mkdir('output')
 for n in experiments:
+    fig, ax = plt.subplots()
+
+    plot_experiment_context(ax, experiments[n])
+    # TODO: For 'seguimiento' experiment compute x and y distances between
+    #       shown stimulus and gaze estimation. It implies normalizing data so
+    #       that both values can be queried for the same timestamps which
+    #       implies interpolation
+    # TODO: Plot x and y distances
+
     for trial_number, t in enumerate(experiments[n]):
-        create_heatmap(n, trial_number, t, uniformly_sample_trial_gazes(t))
+        trial_estimated_gazes = uniformly_sample_trial_gazes(t)
+        create_heatmap(n, trial_number, t, trial_estimated_gazes)
