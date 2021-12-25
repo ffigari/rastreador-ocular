@@ -1,5 +1,3 @@
-  . documentar protocolo y cantidad de trials de cada exp armado
-
   . plotear distancia x y distancia y de la estimacion de la mirada al estímulo
     mostrado
 
@@ -23,26 +21,6 @@
   . investigar qué datos de hardware se pueden recolectar
     . como mínimo hay que acumular los tamaños de la pantalla (eso creo que ya
       está)
-
-  . armar experimento de antisacadas vertical
-    . no tiene valor clínico pero puede permitir validar los resultados
-    . menos trials que el antisacada horizontal
-
-  . agregar experimento TMT
-
-  . experimentación
-    . diseñar experimento online
-      . para hacer una validación inicial
-      . experimentos cortos 5, 10 mins
-      . conseguir ~20 sujetos
-      . armarse un único jspsych
-      . idealmente para enero
-    . diseñar experimento presencial
-      . comparación contra un eyetracker profesional
-      . en laboratorio, experimentos más largos (30, 40 mins)
-      . implica implementar los mismos experimentos para ambas plataformas
-      . idealmente a esta altura ya tendría que estar el tema de las releases y
-        habría que probarlo en Windows por las dudas
 
   . ver bien como hacer lo de usar rastoc sin JSPsych
     . revisar la inicialización de WG
