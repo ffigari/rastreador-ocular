@@ -53,25 +53,23 @@ for n in experiments:
             date_iso_string_to_datetime(t['config']['relevantDataFinishesAt']) \
             if 'relevantDataFinishesAt' in t['config'] \
             else t['endedAt']
+
+        if n == 'seguimiento':
+            for e in t['config']['stimulusPositions']:
+                e['ts'] = date_iso_string_to_datetime(e['ts'])
 events = sorted(events, key=lambda d: d['ts'])
 for e in events:
     e['ts'] = date_iso_string_to_datetime(e['ts'])
 
-def uniformly_sample_trial_gazes(t):
-    trial_gaze_events = [
-        e
-        for e
-        in events
-        if e['name'] == 'gaze-estimation' \
-            and t['relevantDataStartsAt'] <= e['ts'] <= t['relevantDataFinishesAt']
-    ]
-    def interpolate_for(ts):
-        if ts < trial_gaze_events[0]['ts']:
+SAMPLING_DELTA = timedelta(0, 0.1)
+def get_interpolator_for(xy_events):
+    def interpolate_at(ts):
+        if ts < xy_events[0]['ts']:
             raise Exception('Timestamp to interpolate is too small')
-        if ts > trial_gaze_events[-1]['ts']:
+        if ts > xy_events[-1]['ts']:
             raise Exception('Timestamp to interpolate is too big')
 
-        for (lower, upper) in zip(trial_gaze_events, trial_gaze_events[1:]):
+        for (lower, upper) in zip(xy_events, xy_events[1:]):
             # search the enclosing events of the input timestamp
             if ts > upper['ts']:
                 continue
@@ -95,14 +93,55 @@ def uniformly_sample_trial_gazes(t):
                 'x': interpolate_for_axis('x'),
                 'y': interpolate_for_axis('y'),
             }
+    return interpolate_at
+
+def uniformly_sample_experiment_gazes_and_follow_up_stimulus(e):
+    def sample_gaze_and_follow_up_stimulus(t):
+        trial_gaze_events = [
+            e
+            for e
+            in events
+            if e['name'] == 'gaze-estimation' \
+                    and t['relevantDataStartsAt'] <= e['ts'] <= t['relevantDataFinishesAt']
+        ]
+        stimulus_events = [
+            e for e in t['config']['stimulusPositions']
+        ]
+        gaze_interpolator = get_interpolator_for(trial_gaze_events)
+        stimulus_interpolator = get_interpolator_for(stimulus_events)
+        trial_interpolations = []
+        ts = max(trial_gaze_events[0]['ts'], stimulus_events[0]['ts'])
+        limit_ts = min(trial_gaze_events[-1]['ts'], stimulus_events[-1]['ts'])
+        while ts <= limit_ts:
+            gaze = gaze_interpolator(ts)
+            stimulus = stimulus_interpolator(ts)
+            trial_interpolations.append({
+                'ts': ts,
+                'gaze_x': gaze['x'],
+                'gaze_y': gaze['y'],
+                'stimulus_x': stimulus['x'],
+                'stimulus_y': stimulus['y'],
+            })
+            ts = ts + SAMPLING_DELTA
+        return trial_interpolations
+    return [sample_gaze_and_follow_up_stimulus(t) for t in e]
+
+def uniformly_sample_trial_gazes(t):
+    trial_gaze_events = [
+        e
+        for e
+        in events
+        if e['name'] == 'gaze-estimation' \
+            and t['relevantDataStartsAt'] <= e['ts'] <= t['relevantDataFinishesAt']
+    ]
+    interpolate_at = get_interpolator_for(trial_gaze_events)
 
     interpolated_gazes = []
-    sampling_delta = timedelta(0, 0.1)
     ts = trial_gaze_events[0]['ts']
     while ts <= trial_gaze_events[-1]['ts']:
-        gaze = interpolate_for(ts)
+        gaze = interpolate_at(ts)
         interpolated_gazes.append(gaze)
-        ts = ts + sampling_delta
+        ts = ts + SAMPLING_DELTA
 
     return interpolated_gazes
 
@@ -155,7 +194,7 @@ def create_heatmap(experiment_name, trial_number, trial, gazes):
         'output/{}-{}-intensity-heatmap'.format(experiment_name, trial_number)
     )
 
-def plot_experiment_context(ax, experiment):
+def plot_experiment_context(ax, experiment, top_limit):
     experimentStartedAt = experiment[0]['startedAt']
     experimentEndedAt = experiment[-1]['endedAt']
 
@@ -163,7 +202,7 @@ def plot_experiment_context(ax, experiment):
     for trial_number, t in enumerate(experiment):
         t_start = distance_in_ms(t['startedAt'], experimentStartedAt)
         duration = distance_in_ms(t['endedAt'], t['startedAt'])
-        ax.add_patch(Rectangle((t_start, 0), duration, 20,
+        ax.add_patch(Rectangle((t_start, 0), duration, top_limit,
              edgecolor = 'black',
              facecolor = (trial_number % 2, (trial_number + 1) % 2, 0, 0.2),
              fill=True,
@@ -192,7 +231,7 @@ def plot_experiment_context(ax, experiment):
         ][0]
         t_start = distance_in_ms(calibrationStartedEvent['ts'], experimentStartedAt)
         duration = distance_in_ms(calibrationFinishedEvent['ts'], calibrationStartedEvent['ts'])
-        ax.add_patch(Rectangle((t_start, 0), duration, 20,
+        ax.add_patch(Rectangle((t_start, 0), duration, top_limit,
              edgecolor = 'black',
              facecolor = (0, 0, 1, 0.2),
              fill=True,
@@ -201,16 +240,47 @@ def plot_experiment_context(ax, experiment):
 if os.path.isdir('output'):
     shutil.rmtree('output')
 os.mkdir('output')
+
+plt.rcParams['figure.figsize'] = [10, 7]
 for n in experiments:
-    fig, ax = plt.subplots()
+    e = experiments[n]
 
-    plot_experiment_context(ax, experiments[n])
-    # TODO: For 'seguimiento' experiment compute x and y distances between
-    #       shown stimulus and gaze estimation. It implies normalizing data so
-    #       that both values can be queried for the same timestamps which
-    #       implies interpolation
-    # TODO: Plot x and y distances
-
-    for trial_number, t in enumerate(experiments[n]):
+    for trial_number, t in enumerate(e):
         trial_estimated_gazes = uniformly_sample_trial_gazes(t)
         create_heatmap(n, trial_number, t, trial_estimated_gazes)
+
+    if n == 'seguimiento':
+        fig, ax = plt.subplots()
+        seguimiento_data = []
+        top_limit = 0
+        for trial_samples in uniformly_sample_experiment_gazes_and_follow_up_stimulus(e):
+            x_axis_distances = [
+                abs(s['gaze_x'] - s['stimulus_x'])
+                for s
+                in trial_samples
+            ]
+            y_axis_distances = [
+                abs(s['gaze_y'] - s['stimulus_y'])
+                for s
+                in trial_samples
+            ]
+            top_limit = max(top_limit, max(x_axis_distances), max(y_axis_distances))
+            timestamps = [
+                distance_in_ms(s['ts'], e[0]['startedAt'])
+                for s
+                in trial_samples
+            ]
+            seguimiento_data.append([x_axis_distances, y_axis_distances, timestamps])
+        plot_experiment_context(ax, e, top_limit)
+        for [x_axis_distances, y_axis_distances, timestamps] in seguimiento_data:
+            ax.plot(
+                timestamps, x_axis_distances,
+                color="green", linewidth=0.5
+            )
+            ax.plot(
+                timestamps, y_axis_distances,
+                color="blue", linewidth=0.5
+            )
+        plt.savefig(
+            'output/seguimiento-gaze_stimulus_distances'
+        )

@@ -1,6 +1,3 @@
-  . plotear distancia x y distancia y de la estimacion de la mirada al estímulo
-    mostrado
-
   . separar el data analysis en un par de módulos
     - setup / data reading
     - interpolation
