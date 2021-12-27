@@ -11,9 +11,11 @@
   . rename canvasDrawer to drawer
   . mover shuffle y sleep a utils y rastoc-lib
 
-  . permitir que el data analysis reciba datos de varios sujetos
-    . esto va a implicar armar una instancia de JSPsyc que incluya al menos dos
-      experimentos. Parte del código puede estar armado sin bancar esto
+  . permitir que el data analysis pueda recibir múltiples experimentos por
+    instancia de JSPsych
+    . Parte del código puede estar armado sin bancar esto 
+  . permitir que el data analysis pueda recibir instancias de JSPsych de
+    múltiples sujetos
 
   . investigar qué datos de hardware se pueden recolectar
     . como mínimo hay que acumular los tamaños de la pantalla (eso creo que ya
