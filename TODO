@@ -1,8 +1,3 @@
-  . separar el data analysis en un par de módulos
-    - setup / data reading
-    - interpolation
-    - plotting
-
   . armar lo de la medida de confianza y agregarlo al plot de la historia del
     experimento
     . hay que tomar extender el detector de movimiento para que se le pueda
