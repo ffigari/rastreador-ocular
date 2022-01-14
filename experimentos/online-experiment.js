@@ -17,13 +17,13 @@ const getNValuesFrom = (
 ) => [...Array(n).keys()].map(() => gen.next().value);
 
 const generateSaccadeTrial = (trialId, isAntisaccade) => {
-  const foreperiodDuration = getRandomIntInclusive(200, 1800);
-  const fixationDuration = getRandomIntInclusive(200, 1800);
+  const foreperiodDuration = getRandomIntInclusive(500, 1000);
+  const fixationDuration = getRandomIntInclusive(500, 1000);
   // Para el RSI tendría sentido hacer una binormal porque en verdad importa
   // estar por arriba o por debajo del valor ese de 200 ms que menciona el 
   // artículo
   const rsiDuration = getRandomIntInclusive(150, 250); 
-  const cueDuration = 1000;
+  const cueDuration = 700;
 
   const fixationMarker = {
     obj_type: 'cross',
@@ -104,11 +104,24 @@ jsPsych.init({
           experimentos tendrías que estar <b>moviendo únicamente tus ojos</b>.
         </p>
         <p>
-          Si te parece bien presioná cualquier tecla para arrancar con la
-          sesión.
+          Si te parece bien presioná cualquier tecla para arrancar la sesión.
         </p>
       `
     },
+    {
+      type: "fullscreen",
+      message: `
+        <p>
+          Para evitar distracciones te pedimos también que en la medida de lo
+          posible durante la duración del experimento cierres aplicaciones que
+          generen notificaciones y pongas el teléfono en modo no molestar.
+        </p>
+        <p>
+          Además vamos a cambiar a pantalla completa.
+        </p>
+      `,
+      button_label: "Continuar"
+    }
   ].concat(
     {
       type: 'html-keyboard-response',

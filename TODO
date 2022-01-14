@@ -1,52 +1,46 @@
-  . armar instancia de experimentación online
-    . subirlo a cognition.run
-
-    . agregar eyetracking
-      . esto puede tomar un rato porque acá hay chances de tener que cambiar la
-        interfaz jspsych. Lo que armé de decorar un único trial no sé funciona
-        tan bien
-      . Capaz es más sencillo que los listeners de eventos se manejen nomás en
-        los plugins init / finish, ya más pensando en verlo como una extensión
-        de JSPsych. Rastoc exportaría entonces los mismos eventos (estimation,
-        decalibration, calibration) que exporta ahora pero unificados en un
-        único array al final de todo. El tema de los timestamps del trial 
-        quedaría en manos del usuario, que es además algo totalmente específico
-        al diseño de cada experimento. Los únicos gráficos generalizable son un
-        heatmap de dónde estuvo mirando el usuario y un gráfico que muestre el
-        histórico de calibración, descalibración, alguna medida de confianza
-      . luego al usuario habría que pedirle
-        - que use esos dos plugins + lo del `rastoc:ready`
-        - que previo a cada trial haga un llamado al plugin que chequea si el
-          sistema está o no calibrado
-      . lo de pausar rastoc ni aplica la verdad acá ya que los trials son bien
-        cortos y sin mucha cosa entremedio. En todo caso se puede comentar en la
-        doc la posibilidad de pausarlo para dejar de consumir recursos
-
-    . chequear si puedo agregar algo más de captura de hardware como por ejemplo
-      la resolución o el tipo de la cámara. Dsp al momento de presentar el exp
-      estaría bueno consultar al sujeto la posición de la cámara
-
-  . armar lo de la medida de confianza y agregarlo al plot de la historia del
-    experimento
+  . agregar eyetracking el experimento online
+    . esto puede tomar un rato porque acá hay chances de tener que cambiar la
+      interfaz jspsych. Lo que armé de decorar un único trial no sé funciona
+      tan bien
+    . Capaz es más sencillo que los listeners de eventos se manejen nomás en
+      los plugins init / finish, ya más pensando en verlo como una extensión
+      de JSPsych. Rastoc exportaría entonces los mismos eventos (estimation,
+      decalibration, calibration) que exporta ahora pero unificados en un
+      único array al final de todo. El tema de los timestamps del trial 
+      quedaría en manos del usuario, que es además algo totalmente específico
+      al diseño de cada experimento. Los únicos gráficos generalizable son un
+      heatmap de dónde estuvo mirando el usuario y un gráfico que muestre el
+      histórico de calibración, descalibración, alguna medida de confianza
+    . luego al usuario habría que pedirle
+      - que use esos dos plugins + lo del `rastoc:ready`
+      - que previo a cada trial haga un llamado al plugin que chequea si el
+        sistema está o no calibrado
+    . lo de pausar rastoc ni aplica la verdad acá ya que los trials son bien
+      cortos y sin mucha cosa entremedio. En todo caso se puede comentar en la
+      doc la posibilidad de pausarlo para dejar de consumir recursos
+  . chequear si puedo agregar algo más de captura de hardware como por ejemplo
+    la resolución o el tipo de la cámara. Dsp al momento de presentar el exp
+    estaría bueno consultar al sujeto la posición de la cámara
+  . armar lo de la medida de confianza y reportarlo junto a los eventos de
+    estimación
     . hay que tomar extender el detector de movimiento para que se le pueda
       preguntar qué tan lejos de la posición inicial está el sujeto
+    . tmb hay que plotearlo en el gráfico del histórico para tener al menos un
+      chequeo visual de que la métrica da mal antes de que se descalibre
+  . mirar si se puede usar lo del plugin para determinar la distancia y poder
+    mostrar los estímulos en cierto ángulo como hacen en la bibliografía
+  . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
 
-  . rename canvasDrawer to drawer (creo que esto vuela con la introducción de
-    psychophysics)
-  . mover shuffle y sleep a utils y rastoc-lib
+  . ordenar un poco todo
+    . nuevamente algunos exps quedaron viejos
+    . rename canvasDrawer to drawer, tmp tiene sentido exponerlo en los utils
+    . mover shuffle y sleep a utils y rastoc-lib
 
   . permitir que el data analysis pueda recibir múltiples experimentos por
     instancia de JSPsych
     . Parte del código puede estar armado sin bancar esto 
   . permitir que el data analysis pueda recibir instancias de JSPsych de
     múltiples sujetos
-
-  . investigar qué datos de hardware se pueden recolectar
-    . como mínimo hay que acumular los tamaños de la pantalla (eso creo que ya
-      está)
-
-  . armar algún duck hunting bien sencillo donde se apunta con la mirada y se
-    dispara con la barra de espacio. 
 
   . ver bien como hacer lo de usar rastoc sin JSPsych
     . revisar la inicialización de WG
