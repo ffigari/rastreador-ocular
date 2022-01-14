@@ -1,3 +1,4 @@
+// TODO: Borrar este
 let runsCount = 5
 
 document.addEventListener('rastoc:ready', () => {
