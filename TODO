@@ -1,11 +1,4 @@
   . armar instancia de experimentación online
-    . primero un experimento de prosacadas de 30 trials
-    . aleatorizar tiempo entre trials
-    . aleatorizar tiempo entre estimulo de fixation y estímulo a (no) mirar
-    . agregar texto explicativo
-    . agregar el bloque con trials de prueba + cambiarlo a 250
-    . hacer lo mismo para antisacadas
-    . medir el tiempo que toma
     . subirlo a cognition.run
 
     . agregar eyetracking
