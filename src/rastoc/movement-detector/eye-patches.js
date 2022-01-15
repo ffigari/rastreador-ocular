@@ -74,8 +74,8 @@ export const create = {
       .map(p => distance(center, p))
     // Find the max distance
       .reduce((acc, cur) => acc > cur ? acc : cur)
-    // Add 10% to the resulting value
-      * 1.5;
+    // Add 30% to the resulting value
+      * 1.3;
     return {
       contains(eyePatch) {
         return eyePatch.corners.every(c => distance(center, c) <= ratio);
