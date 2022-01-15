@@ -4,19 +4,27 @@ let visualizer;
 export const instantiateVisualizerWith = (estimator) => {
   if (!visualizer) {
     let gazeMarker;
-    let handlerId;
+    const handler = ({ detail: { x, y } }) => {
+      canvasDrawer.showPoint(gazeMarker);
+      canvasDrawer.moveToPixels(gazeMarker, x, y);
+    }
     visualizer = {
       showGazeEstimation() {
+        if (gazeMarker) {
+          return;
+        }
         gazeMarker = canvasDrawer.appendMarkerFor.gaze();
         canvasDrawer.hidePoint(gazeMarker);
-        handlerId = document.addEventListener('rastoc:gaze-estimated', ({ detail: { x, y } }) => {
-          canvasDrawer.showPoint(gazeMarker);
-          canvasDrawer.moveToPixels(gazeMarker, x, y);
-        })
+        document.addEventListener('rastoc:gaze-estimated', handler)
       },
       hideGazeEstimation() {
-        document.removeEventListener('rastoc:gaze-estimated', handlerId)
+        if (!gazeMarker) {
+          return;
+        }
+
+        document.removeEventListener('rastoc:gaze-estimated', handler);
         canvasDrawer.erasePoint(gazeMarker);
+        gazeMarker = undefined;
       },
     };
   }

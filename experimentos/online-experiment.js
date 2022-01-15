@@ -16,7 +16,7 @@ const getNValuesFrom = (
   n, gen
 ) => [...Array(n).keys()].map(() => gen.next().value);
 
-const generateSaccadeTrial = (trialId, isAntisaccade) => {
+const generateSaccadeNode = (trialId, isAntisaccade) => {
   const foreperiodDuration = getRandomIntInclusive(500, 1000);
   const fixationDuration = getRandomIntInclusive(500, 1000);
   // Para el RSI tendría sentido hacer una binormal porque en verdad importa
@@ -54,35 +54,42 @@ const generateSaccadeTrial = (trialId, isAntisaccade) => {
   //       trial de psychophysics. Se puede usar el on_start de jspsych y
   //       sumar las duraciones pero da una pequeña diferencia de 5 - 10 ms.
   return {
-    type: "psychophysics",
-    stimuli: [
-      fixationMarker, visualCue,
-    ],
-    response_ends_trial: false,
-    trial_duration:
-    foreperiodDuration + fixationDuration + rsiDuration + cueDuration,
+    timeline: [{
+      type: 'ensure-calibrated-system',
+    }, {
+      type: "psychophysics",
+      stimuli: [
+        fixationMarker, visualCue,
+      ],
+      response_ends_trial: false,
+      trial_duration:
+      foreperiodDuration + fixationDuration + rsiDuration + cueDuration,
+    }]
   };
 }
 
-const generateNSaccadeTrials = (
+const generateNSaccadeNodes = (
   n, gen, isAntisaccade
 ) => getNValuesFrom(n, gen).map((
   trialId
-) => generateSaccadeTrial(trialId, isAntisaccade));
+) => generateSaccadeNode(trialId, isAntisaccade));
 
-const generateNProsaccadeTrials = (
+const generateNProsaccadeNodes = (
   n, gen
-) => generateNSaccadeTrials(n, gen, false);
+) => generateNSaccadeNodes(n, gen, false);
 
-const generateNAntisaccadeTrials = (
+const generateNAntisaccadeNodes = (
   n, gen
-) => generateNSaccadeTrials(n, gen, true);
+) => generateNSaccadeNodes(n, gen, true);
 
-jsPsych.init({
-  timeline: [
-    {
-      type: 'html-keyboard-response',
-      stimulus: `
+// TODO: Agregar algún comentario que explique en qué consiste la calibración
+//       Dsp de explicar hacer la calibración inicial para darla de práctica
+document.addEventListener('rastoc:ready', () => {
+  jsPsych.init({
+    timeline: [
+      {
+        type: 'html-keyboard-response',
+        stimulus: `
         <p>
           Bienvenido a esta primera instancia de experimentación, gracias por
           participar c:
@@ -107,10 +114,28 @@ jsPsych.init({
           Si te parece bien presioná cualquier tecla para arrancar la sesión.
         </p>
       `
-    },
-    {
-      type: "fullscreen",
-      message: `
+      }, {
+        type: 'webgazer-init-camera',
+        instructions: `
+          <p>
+            Corregí la posición de la webcam para que tus ojos queden
+            correctamente enfocados. Tu cabeza debería quedar en el centro del
+            recuadro que aparece acá arriba.
+          </p>
+          <p>
+            Cuando el recuadro se pinte de verde podés hacer click en
+            "Continuar".
+          </p>
+        `,
+        button_text: "Continuar"
+      }, {
+        type: 'rastoc-initialize',
+        on_finish() {
+          rastoc.visualizer.showGazeEstimation();
+        },
+      }, {
+        type: "fullscreen",
+        message: `
         <p>
           Para evitar distracciones te pedimos también que en la medida de lo
           posible durante la duración del experimento cierres aplicaciones que
@@ -120,12 +145,12 @@ jsPsych.init({
           Además vamos a cambiar a pantalla completa.
         </p>
       `,
-      button_label: "Continuar"
-    }
-  ].concat(
-    {
-      type: 'html-keyboard-response',
-      stimulus: `
+        button_label: "Continuar"
+      }
+    ].concat(
+      {
+        type: 'html-keyboard-response',
+        stimulus: `
         <h2>1. Experimento de prosacadas</h2>
         <p>
           Esta tarea consiste en primero fijar la mirada en una <b>cruz central
@@ -139,28 +164,28 @@ jsPsych.init({
           Presioná cualquier tecla para comenzar.
         </p>
       `,
-    },
-    // TODO: Actualizar las cantidades de trials
-    generateNProsaccadeTrials(5, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
-    },
-    generateNProsaccadeTrials(10, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
-    },
-    generateNProsaccadeTrials(10, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Queda un último bloque de prosacadas, presioná cualquier tecla para continuar."
-    },
-    generateNProsaccadeTrials(10, idsGenerator)
-  ).concat(
-    {
-      type: 'html-keyboard-response',
-      stimulus: `
+      },
+      // TODO: Actualizar las cantidades de trials
+      generateNProsaccadeNodes(5, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
+      //},
+      //generateNProsaccadeNodes(10, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
+      //},
+      //generateNProsaccadeNodes(10, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Queda un último bloque de prosacadas, presioná cualquier tecla para continuar."
+      //},
+      //generateNProsaccadeNodes(10, idsGenerator)
+    ).concat(
+      {
+        type: 'html-keyboard-response',
+        stimulus: `
         <h2>2. Experimento de antisacadas</h2>
         <p>
           Ahora toca <b>evitar</b> mirar el círculo. La tarea comenzará ahora
@@ -173,23 +198,35 @@ jsPsych.init({
           Presioná cualquier tecla para comenzar.
         </p>
       `,
+      },
+      // TODO: Actualizar las cantidades de trials
+      generateNAntisaccadeNodes(5, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
+      //},
+      //generateNAntisaccadeNodes(10, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
+      //},
+      //generateNAntisaccadeNodes(10, idsGenerator),
+      //{
+      //  type: 'html-keyboard-response',
+      //  stimulus: "Queda un último bloque, presioná cualquier tecla para continuar."
+      //},
+      //generateNAntisaccadeNodes(10, idsGenerator)
+    ).concat({
+      on_start() {
+        rastoc.visualizer.hideGazeEstimation();
+      },
+      type: 'rastoc-finish'
+    }),
+    on_finish: function() {
+      jsPsych.data.get().localSave('json','online-experiment.json');
     },
-    // TODO: Actualizar las cantidades de trials
-    generateNAntisaccadeTrials(5, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
-    },
-    generateNAntisaccadeTrials(10, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
-    },
-    generateNAntisaccadeTrials(10, idsGenerator),
-    {
-      type: 'html-keyboard-response',
-      stimulus: "Queda un último bloque, presioná cualquier tecla para continuar."
-    },
-    generateNAntisaccadeTrials(10, idsGenerator)
-  ),
-})
+    extensions: [
+      {type: 'webgazer'}
+    ]
+  })
+});

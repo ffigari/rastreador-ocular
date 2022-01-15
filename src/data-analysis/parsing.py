@@ -17,12 +17,17 @@ def read_subject_run(js_psych_output_file_path):
         if entry['rastocCategory'] == 'system':
             system_config = entry['systemConfig']
             continue
+        # TODO: Agregar parsing de categoria de eventos
+        # TODO: Esta categoría va a volar
         if entry['rastocCategory'] == 'trial-instance':
             name = entry['experiment']['name']
+            # TODO: Va a desaparecer esto así que hay que revisar los usos y ver
+            #       qué se hace con el plotting
             if name not in experiments:
                 experiments[name] = []
             experiments[name].append(entry['trial'])
         events.extend(entry['events'])
+        # TODO: Si no se reconoció la categoría lanzar un error
 
     # Clean up data
     for n in experiments:

@@ -1,23 +1,8 @@
+  . intercalar bloques de prosacada y bloques de antisacada
+    . al inicio hacer 10 y 10 de cada una sumándole las explicaciones
+  . agregar calibración inicial con mensaje explicativo
   . agregar eyetracking el experimento online
-    . esto puede tomar un rato porque acá hay chances de tener que cambiar la
-      interfaz jspsych. Lo que armé de decorar un único trial no sé funciona
-      tan bien
-    . Capaz es más sencillo que los listeners de eventos se manejen nomás en
-      los plugins init / finish, ya más pensando en verlo como una extensión
-      de JSPsych. Rastoc exportaría entonces los mismos eventos (estimation,
-      decalibration, calibration) que exporta ahora pero unificados en un
-      único array al final de todo. El tema de los timestamps del trial 
-      quedaría en manos del usuario, que es además algo totalmente específico
-      al diseño de cada experimento. Los únicos gráficos generalizable son un
-      heatmap de dónde estuvo mirando el usuario y un gráfico que muestre el
-      histórico de calibración, descalibración, alguna medida de confianza
-    . luego al usuario habría que pedirle
-      - que use esos dos plugins + lo del `rastoc:ready`
-      - que previo a cada trial haga un llamado al plugin que chequea si el
-        sistema está o no calibrado
-    . lo de pausar rastoc ni aplica la verdad acá ya que los trials son bien
-      cortos y sin mucha cosa entremedio. En todo caso se puede comentar en la
-      doc la posibilidad de pausarlo para dejar de consumir recursos
+    . actualizar docs
   . chequear si puedo agregar algo más de captura de hardware como por ejemplo
     la resolución o el tipo de la cámara. Dsp al momento de presentar el exp
     estaría bueno consultar al sujeto la posición de la cámara
@@ -31,10 +16,30 @@
     mostrar los estímulos en cierto ángulo como hacen en la bibliografía
   . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
 
+  . en el home mostrar las tareas existentes
+    . sacar del exp online la visualización de la mirada
+    . actualizar el readme con lo de que se puede usar la vis
+
   . ordenar un poco todo
     . nuevamente algunos exps quedaron viejos
     . rename canvasDrawer to drawer, tmp tiene sentido exponerlo en los utils
     . mover shuffle y sleep a utils y rastoc-lib
+    . se puede retrabajar un poco el tema de los eventos de rastoc (incluidos
+      los de debugging) para que quede mas centralizado y no anden repetidos los
+      nombres de los eventos
+
+  . rehacer el gráfico del histórico
+
+  . hacer un poco de data analysis para antisacadas
+    . desde jspsych habría que señalar inicios y finalizciones de cada trial
+      así como un nombre de exp para pode reconocer
+    . hacer lo que comentó Juan de agrupar correctos e incorrectos, además de
+      hacer un mirroring para agrupar izquierda y derecha
+    . para el de heatmaps tiene que estar lo de si es izquieda o derecha + pro
+      vs anti
+      . hay que separar el criterio de agrupación de trials de la generación del
+        heatmap por si más adelante se decide armar heatmap de otro
+    . dsp hay que hacer an
 
   . permitir que el data analysis pueda recibir múltiples experimentos por
     instancia de JSPsych
