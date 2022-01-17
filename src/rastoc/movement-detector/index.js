@@ -1,5 +1,9 @@
 import { Loop } from '../../utils.js';
 import { create } from './eye-patches.js';
+import {
+  MINIMUM_CAMERA_WIDTH,
+  MINIMUM_CAMERA_HEIGHT
+} from '../../requirements-checker.js';
 
 let movementDetector;
 export const instantiateMovementDetector = async () => {
@@ -71,9 +75,20 @@ export const instantiateMovementDetector = async () => {
   try {
     videoStream = await navigator
       .mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({
+        video: {
+          width: { min: MINIMUM_CAMERA_WIDTH },
+          height: { min: MINIMUM_CAMERA_HEIGHT },
+        },
+        audio: false
+      })
   } catch (e) {
-    console.error(e)
+    console.error(
+      `No se pudo conseguir una cámara que satisfaga la resolución mínima de ${
+        MINIMUM_CAMERA_WIDTH
+      }x${
+        MINIMUM_CAMERA_HEIGHT
+      }. Error original:`, e)
     return
   }
 

@@ -1,8 +1,8 @@
 const MINIMUM_VIEWPORT_WIDTH = 700;
 const MINIMUM_VIEWPORT_HEIGHT = 500;
 
-const MINIMUM_CAMERA_WIDTH = 640;
-const MINIMUM_CAMERA_HEIGHT = 480;
+export const MINIMUM_CAMERA_WIDTH = 640;
+export const MINIMUM_CAMERA_HEIGHT = 480;
 
 export const checkSystem = async () => {
   let errors = [];
@@ -25,7 +25,7 @@ export const checkSystem = async () => {
       MINIMUM_VIEWPORT_HEIGHT
     }.`
   );
-
+  const systemConfig = { viewportWidth, viewportHeight };
 
   let cameraIsAccessible = true;
   try {
@@ -42,13 +42,16 @@ export const checkSystem = async () => {
 
   if (cameraIsAccessible) {
     try {
-      await navigator.mediaDevices.getUserMedia({
+      const userMedia = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
           width: { min: MINIMUM_CAMERA_WIDTH },
           height: { min: MINIMUM_CAMERA_HEIGHT },
         },
       });
+      const videoSettings = userMedia.getVideoTracks()[0].getSettings()
+      systemConfig.cameraWidth = videoSettings.width
+      systemConfig.cameraHeight = videoSettings.height
     } catch (e) {
       errors.push(
         `Tu cámara web no tiene la resolución mínima necesaria de ${
@@ -58,11 +61,10 @@ export const checkSystem = async () => {
         }.`
       );
     }
-
   }
 
   return {
-    systemConfig: { viewportWidth, viewportHeight },
+    systemConfig,
     systemIsOk: errors.length === 0,
     errors,
   };
