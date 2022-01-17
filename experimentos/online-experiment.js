@@ -17,12 +17,12 @@ const getNValuesFrom = (
 ) => [...Array(n).keys()].map(() => gen.next().value);
 
 const generateSaccadeNode = (trialId, isAntisaccade) => {
-  const foreperiodDuration = getRandomIntInclusive(500, 1000);
+  const intraTrialBlankDuration = getRandomIntInclusive(500, 1000);
   const fixationDuration = getRandomIntInclusive(500, 1000);
   // Para el RSI tendría sentido hacer una binormal porque en verdad importa
   // estar por arriba o por debajo del valor ese de 200 ms que menciona el 
   // artículo
-  const rsiDuration = getRandomIntInclusive(150, 250); 
+  const interTrialBlankDuration = getRandomIntInclusive(150, 250); 
   const cueDuration = 700;
 
   const fixationMarker = {
@@ -30,8 +30,8 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
     origin_center: true,
     startX: 0,
     startY: 0,
-    show_start_time: foreperiodDuration,
-    show_end_time: foreperiodDuration + fixationDuration,
+    show_start_time: intraTrialBlankDuration,
+    show_end_time: intraTrialBlankDuration + fixationDuration,
     line_length: 40,
   };
   const cueGoesLeft = getRandomBoolean();
@@ -41,9 +41,10 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
     origin_center: true,
     startX: (cueGoesLeft ? 1 : -1) * window.innerWidth / 4,
     startY: 0,
-    show_start_time: foreperiodDuration + fixationDuration + rsiDuration,
+    show_start_time:
+      intraTrialBlankDuration + fixationDuration + interTrialBlankDuration,
     show_end_time:
-    foreperiodDuration + fixationDuration + rsiDuration + cueDuration,
+      intraTrialBlankDuration + fixationDuration + interTrialBlankDuration + cueDuration,
     radius: 20,
     line_color: color,
     fill_color: color,
@@ -53,17 +54,37 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
   //       No encontré manera de capturar con precisión cuando empieza el
   //       trial de psychophysics. Se puede usar el on_start de jspsych y
   //       sumar las duraciones pero da una pequeña diferencia de 5 - 10 ms.
+  let startTs;
   return {
     timeline: [{
       type: 'ensure-calibrated-system',
     }, {
+      on_start() {
+        startTs = new Date;
+      },
       type: "psychophysics",
       stimuli: [
         fixationMarker, visualCue,
       ],
       response_ends_trial: false,
       trial_duration:
-      foreperiodDuration + fixationDuration + rsiDuration + cueDuration,
+        intraTrialBlankDuration + fixationDuration + interTrialBlankDuration + cueDuration,
+      on_finish(data) {
+        const finishTs = new Date;
+        data.rastocCategory = 'trial-instance';
+
+        data.trialId = trialId;
+        data.cueWasShownAtLeft = cueGoesLeft;
+        data.experimentName = isAntisaccade ? 'antisaccade' : 'prosaccade';
+
+        data.starTs = startTs.toISOString();
+        data.finishTs = finishTs.toISOString();
+
+        data.intraTrialBlankDuration = intraTrialBlankDuration;
+        data.fixationDuration = fixationDuration;
+        data.interTrialBlankDuration = interTrialBlankDuration;
+        data.cueDuration = cueDuration;
+      }
     }]
   };
 }
@@ -177,7 +198,9 @@ document.addEventListener('rastoc:ready', () => {
             verde lateral</span>.
           </p>
           <p>
-            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba.
+            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba 
+            de la tarea de <span style="color: green; font-weight:
+            bold;">prosacada</span>.
           </p>
       `,
         choices: ["Continuar"],
@@ -196,7 +219,9 @@ document.addEventListener('rastoc:ready', () => {
             lateral</span>.
           </p>
           <p>
-            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba.
+            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba 
+            de la tarea de <span style="color: red; font-weight:
+            bold;">antisacada</span>.
           </p>
       `,
         choices: ["Continuar"],
