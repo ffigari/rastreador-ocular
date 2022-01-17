@@ -82,38 +82,33 @@ const generateNAntisaccadeNodes = (
   n, gen
 ) => generateNSaccadeNodes(n, gen, true);
 
-// TODO: Agregar algún comentario que explique en qué consiste la calibración
-//       Dsp de explicar hacer la calibración inicial para darla de práctica
 document.addEventListener('rastoc:ready', () => {
   jsPsych.init({
     timeline: [
       {
-        type: 'html-keyboard-response',
+        type: 'html-button-response',
         stimulus: `
         <p>
           Bienvenido a esta primera instancia de experimentación, gracias por
           participar c:
         </p>
         <p>
-          En esta sesión vamos a realizar dos experimentos durante los cuales
-          estaremos estimando qué punto de la pantalla estás mirando.  Cada uno
-          tiene una duración de aproximadamente 10 minutos y ocurre además que
-          nuestro sistema de estimación de mirada es muy vulnerable a
-          movimientos de cabeza. Es entonces importante que <b>te sientes en un
-          lugar cómodo</b> y posiciones la notebook tal que puedas estar en la
-          misma posición durante unos minutos.
+          Nota: antes de mandar esto a los participantes hay que ajustar la
+          cantidad de trials de cada bloque y sacar el punto rojo de debugging
+          correspondiente a la mirada estimada.
         </p>
         <p>
-          El sistema en cuestión requiere ser inicialmente calibrado para poder
-          estimar la mirada. Además, si luego detectamos demasiado movimiento
-          procederemos a recalibrar. Tené en cuenta que <b>rotar la cabeza
-          también cuenta como movimiento</b>. Idealmente durante los
-          experimentos tendrías que estar <b>moviendo únicamente tus ojos</b>.
+          En esta sesión vamos a realizar dos tipos de tareas (prosacada y
+          antisacada) en los cuales estaremos estimando qué punto de la
+          pantalla estás mirando. En total toma unos 20 minutos  y ocurre
+          además que nuestro sistema de estimación de mirada es muy vulnerable
+          a movimientos de cabeza. Es entonces importante que <b>te sientes en
+          un lugar cómodo</b> y posiciones la notebook tal que puedas estar en
+          la misma posición durante unos minutos. De todos modos entre medio va
+          a haber pausas para que puedas descansar un ratín.
         </p>
-        <p>
-          Si te parece bien presioná cualquier tecla para arrancar la sesión.
-        </p>
-      `
+      `,
+        choices: ["Continuar"],
       }, {
         type: 'webgazer-init-camera',
         instructions: `
@@ -140,82 +135,131 @@ document.addEventListener('rastoc:ready', () => {
           Para evitar distracciones te pedimos también que en la medida de lo
           posible durante la duración del experimento cierres aplicaciones que
           generen notificaciones y pongas el teléfono en modo no molestar.
+          <br>
+          Además vamos a cambiar a pantalla completa.
         </p>
         <p>
-          Además vamos a cambiar a pantalla completa.
+          El sistema en cuestión requiere ser inicialmente calibrado para poder
+          estimar la mirada. Además, cada vez que detectamos demasiado
+          movimiento procederemos a recalibrar. Tené en cuenta que <b>rotar la
+          cabeza también cuenta como movimiento</b>. Idealmente durante los
+          experimentos tendrías que estar <b>moviendo únicamente tus ojos</b>.
+          <br>
+          La calibración consiste en fijar la mirada en puntos azules que van a
+          aparecer en la pantalla. Cada vez que aparezca uno tenés que fijar la
+          mirada en él y presionar luego la <b>barra de espacio</b>.
         </p>
       `,
         button_label: "Continuar"
       }
     ].concat(
       {
-        type: 'html-keyboard-response',
+        type: 'html-button-response',
         stimulus: `
-        <h2>1. Experimento de prosacadas</h2>
-        <p>
-          Esta tarea consiste en primero fijar la mirada en una <b>cruz central
-          negra</b> y luego mirar un <span style="color: green; font-weight:
-          bold;">círculo verde lateral</span>. La tarea toma ~3 segundos.
-          Primero realizaremos 10 instancias para que te familiarices con ella
-          y luego 250 instancias divididas en tres bloques. Entre cada bloque
-          vas a tener oportunidad de descansar.
-        </p>
-        <p>
-          Presioná cualquier tecla para comenzar.
-        </p>
+          <p>
+            Vamos a arrancar con una ronda de prueba para que te familiarices
+            con ambas tareas. Ahora tocan 10 repeticiones de cada una. Luego
+            para cada tarea haremos 250 repeticiones divididas en tres bloques.
+          </p>
+          <p>
+            La tarea de <span style="color: green; font-weight:
+            bold;">prosacada</span> consiste en primero fijar la mirada en una
+            <b>cruz central negra</b> y luego mirar en la <span style="color:
+            green; font-weight: bold;">misma dirección</span> en la cual
+            aparece un <span style="color: green; font-weight: bold;">círculo
+            verde lateral</span>.
+          </p>
+          <p>
+            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba.
+          </p>
       `,
+        choices: ["Continuar"],
       },
-      // TODO: Actualizar las cantidades de trials
       generateNProsaccadeNodes(5, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
-      //},
-      //generateNProsaccadeNodes(10, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
-      //},
-      //generateNProsaccadeNodes(10, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Queda un último bloque de prosacadas, presioná cualquier tecla para continuar."
-      //},
-      //generateNProsaccadeNodes(10, idsGenerator)
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Ahora vamos a practicar la tarea de <span style="color: red;
+            font-weight: bold;">antisacada</span>. Similar a la tarea anterior,
+            esta consiste en primero fijar la mirada en una <b>cruz central
+            negra</b> pero en luego mirar en la <span style="color: red;
+            font-weight: bold;">dirección opuesta</span> a la cual aparece un
+            <span style="color: red; font-weight: bold;">círculo rojo
+            lateral</span>.
+          </p>
+          <p>
+            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba.
+          </p>
+      `,
+        choices: ["Continuar"],
+      },
+      generateNAntisaccadeNodes(5, idsGenerator)
     ).concat(
       {
-        type: 'html-keyboard-response',
+        type: 'html-button-response',
         stimulus: `
-        <h2>2. Experimento de antisacadas</h2>
-        <p>
-          Ahora toca <b>evitar</b> mirar el círculo. La tarea comenzará ahora
-          con la misma cruz central pero verás luego en cambio un <span
-          style="color: red; font-weight: bold;">círculo rojo</span>. Cuando
-          aparezca el círculo tendrás que mirar en la <span style="color: red;
-          font-weight: bold;">dirección OPUESTA</span>.
-        </p>
-        <p>
-          Presioná cualquier tecla para comenzar.
-        </p>
-      `,
+          <p>
+            Ahora comenzaremos con los bloques reales, arrancando con uno de
+            prosacadas (misma dirección).
+          </p>
+        `,
+        choices: ["Continuar"]
       },
-      // TODO: Actualizar las cantidades de trials
+      generateNProsaccadeNodes(5, idsGenerator),
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Ahora toca el primer bloque de antisacadas (dirección opuesta).
+          </p>
+        `,
+        choices: ["Continuar"]
+      },
       generateNAntisaccadeNodes(5, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Presioná cualquier tecla para arrancar con los bloques reales."
-      //},
-      //generateNAntisaccadeNodes(10, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Quedan 2 bloques, presioná cualquier tecla para continuar."
-      //},
-      //generateNAntisaccadeNodes(10, idsGenerator),
-      //{
-      //  type: 'html-keyboard-response',
-      //  stimulus: "Queda un último bloque, presioná cualquier tecla para continuar."
-      //},
-      //generateNAntisaccadeNodes(10, idsGenerator)
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Segundo bloque de prosacada (misma dirección).
+          </p>
+        `,
+        choices: ["Continuar"]
+      },
+      generateNProsaccadeNodes(5, idsGenerator),
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Segundo bloque de antisacada (dirección opuesta).
+          </p>
+        `,
+        choices: ["Continuar"]
+      },
+      generateNAntisaccadeNodes(5, idsGenerator),
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Último bloque de prosacada (misma dirección).
+          </p>
+        `,
+        choices: ["Continuar"]
+      },
+      generateNProsaccadeNodes(5, idsGenerator),
+      {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            Último bloque de antisacadas (dirección opuesta). Luego de este
+            bloque, cuando la pantalla quede en blanco habremos terminado y ahí
+            ya podés cerrar esta pestaña. Gracias nuevamente por haber
+            participado!
+          </p>
+        `,
+        choices: ["Continuar"]
+      },
+      generateNAntisaccadeNodes(5, idsGenerator)
     ).concat({
       on_start() {
         rastoc.visualizer.hideGazeEstimation();

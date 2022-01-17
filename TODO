@@ -1,8 +1,3 @@
-  . intercalar bloques de prosacada y bloques de antisacada
-    . al inicio hacer 10 y 10 de cada una sumándole las explicaciones
-  . agregar calibración inicial con mensaje explicativo
-  . agregar eyetracking el experimento online
-    . actualizar docs
   . chequear si puedo agregar algo más de captura de hardware como por ejemplo
     la resolución o el tipo de la cámara. Dsp al momento de presentar el exp
     estaría bueno consultar al sujeto la posición de la cámara
@@ -12,6 +7,7 @@
       preguntar qué tan lejos de la posición inicial está el sujeto
     . tmb hay que plotearlo en el gráfico del histórico para tener al menos un
       chequeo visual de que la métrica da mal antes de que se descalibre
+  . en el experimento online agregar los ts de los estímulos de cada trial
   . mirar si se puede usar lo del plugin para determinar la distancia y poder
     mostrar los estímulos en cierto ángulo como hacen en la bibliografía
   . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
