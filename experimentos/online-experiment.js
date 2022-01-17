@@ -140,17 +140,24 @@ document.addEventListener('rastoc:ready', () => {
         </p>
         <p>
           El sistema en cuestión requiere ser inicialmente calibrado para poder
-          estimar la mirada. Además, cada vez que detectamos demasiado
+          estimar la mirada. Además, cada vez que detectemos demasiado
           movimiento procederemos a recalibrar. Tené en cuenta que <b>rotar la
           cabeza también cuenta como movimiento</b>. Idealmente durante los
           experimentos tendrías que estar <b>moviendo únicamente tus ojos</b>.
-          <br>
+        </p>
+        <p>
           La calibración consiste en fijar la mirada en puntos azules que van a
           aparecer en la pantalla. Cada vez que aparezca uno tenés que fijar la
           mirada en él y presionar luego la <b>barra de espacio</b>.
         </p>
+        <p>
+          En el próximo paso relizarás la calibración inicial.
+        </p>
       `,
         button_label: "Continuar"
+      },
+      {
+        type: 'ensure-calibrated-system',
       }
     ].concat(
       {
