@@ -24,9 +24,9 @@ window.addEventListener('load', async () => {
   };
   window.rastoc = {
     visualizer,
+    movementDetector,
     debugFaceAt(canvasElement) {
       movementDetector.debugFaceAt(canvasElement)
-      return movementDetector;
     },
     calibrationIsNeeded() {
       return calibrator.calibrationIsNeeded();
