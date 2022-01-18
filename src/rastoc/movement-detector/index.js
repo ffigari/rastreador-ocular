@@ -17,11 +17,15 @@ export const instantiateMovementDetector = async () => {
     lastCapturedEyes: null,
 
     // Eye patches considered to be valid positions. They are collected during
-    // the calibration phase and are then used to detect movements and whether
-    // the user gets closer or further of the screen.
+    // the calibration phase and are then used to detect movements
     collectedEyesPatches: [],
 
     validEyesPosition: null,
+
+    // Average distance of the last captured pair of eyes to the valid eyes
+    // positions. Reported in pixels. Updated on each cycle while detection is
+    // on.
+    distanceToValidPosition: null,
 
     // Canvas element in which the movement detection should be debugged.
     // Captured video and estimated data will be drawn over it.
@@ -141,6 +145,10 @@ export const instantiateMovementDetector = async () => {
       }
     })
     const detectionLoop = new Loop(() => {
+      if (state.lastCapturedEyes) {
+        state.distanceToValidPosition =
+          state.validEyesPosition.averageDistanceTo(state.lastCapturedEyes);
+      }
       if (
         state.lastCapturedEyes &&
         !state.validEyesPosition.contains(state.lastCapturedEyes)
@@ -176,6 +184,9 @@ export const instantiateMovementDetector = async () => {
         }
         state.useNextFrameAsValidPosition = true;
       },
+      distanceToValidPosition() {
+        return state.distanceToValidPosition;
+      },
       start: {
         calibration() {
           state.collectedEyesPatches = []
@@ -199,6 +210,7 @@ export const instantiateMovementDetector = async () => {
 
         state.collectedEyesPatches = [];
         state.validEyesPosition = null;
+        state.distanceToValidPosition = null;
         dispatch.calibration.reset();
       },
     });

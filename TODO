@@ -1,16 +1,8 @@
   . armar lo de la medida de confianza y reportarlo junto a los eventos de
     estimación
-    . hay que tomar extender el detector de movimiento para que se le pueda
-      preguntar qué tan lejos de la posición inicial está el sujeto
-    . tmb hay que plotearlo en el gráfico del histórico para tener al menos un
-      chequeo visual de que la métrica da mal antes de que se descalibre
   . mirar si se puede usar lo del plugin para determinar la distancia y poder
     mostrar los estímulos en cierto ángulo como hacen en la bibliografía
   . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
-
-  . en el home mostrar las tareas existentes
-    . sacar del exp online la visualización de la mirada
-    . actualizar el readme con lo de que se puede usar la vis
 
   . ordenar un poco todo
     . nuevamente algunos exps quedaron viejos
@@ -19,8 +11,15 @@
     . se puede retrabajar un poco el tema de los eventos de rastoc (incluidos
       los de debugging) para que quede mas centralizado y no anden repetidos los
       nombres de los eventos
+    . en el home mostrar las tareas existentes
+      . sacar del exp online la visualización de la mirada
+      . actualizar el readme con lo de que se puede usar la vis
+
 
   . rehacer el gráfico del histórico
+    . plotear un fondo para cuando se esté calibrando, un línea para lo que es
+      la medida de confianza y lineas verticales que indiquen las momentos de
+      las descalibraciones
 
   . hacer un poco de data analysis para antisacadas
     . desde jspsych habría que señalar inicios y finalizciones de cada trial

@@ -1,6 +1,7 @@
 let movementDetector;
 const setUp = {
   debugging() {
+    // TODO: Exponer los subcomponentes
     movementDetector = rastoc.debugFaceAt(document.getElementById('debugging-canvas'));
   },
   controllers() {
@@ -79,6 +80,13 @@ const setUp = {
       'rastoc_movement-detector:calibration:reset',
       hideAll
     )
+
+    const distanceUpdater = () => {
+      document.getElementById("distance-container").innerHTML =
+        movementDetector.distanceToValidPosition()?.toFixed(2) || "null"
+      window.requestAnimationFrame(distanceUpdater);
+    };
+    window.requestAnimationFrame(distanceUpdater);
   },
 }
 document.addEventListener('rastoc_movement-detector:ready', () => {
