@@ -117,36 +117,39 @@ document.addEventListener('rastoc:ready', () => {
       {
         type: 'html-button-response',
         stimulus: `
-        <p>
-          Bienvenido a esta primera instancia de experimentación, gracias por
-          participar c:
-        </p>
-        <p>
-          Nota: antes de mandar esto a los participantes hay que ajustar la
-          cantidad de trials de cada bloque y sacar el punto rojo de debugging
-          correspondiente a la mirada estimada.
-        </p>
-        <p>
-          En esta sesión vamos a realizar dos tipos de tareas (prosacada y
-          antisacada) en los cuales estaremos estimando qué punto de la
-          pantalla estás mirando. En total toma unos 20 minutos  y ocurre
-          además que nuestro sistema de estimación de mirada es muy vulnerable
-          a movimientos de cabeza. Es entonces importante que <b>te sientes en
-          un lugar cómodo</b> y posiciones la notebook tal que puedas estar en
-          la misma posición durante unos minutos. De todos modos entre medio va
-          a haber pausas para que puedas descansar un ratín.
-        </p>
-        <p>
-          Además, para que podamos determinar el tamaño de tu pantalla vas a
-          necesitar una tarjeta tipo SUBE, DNI o tarjeta de débito.
-          <br>
-          Cuanto tengas todo dale click a "Continuar" y arrancamos.
-        </p>
+        <div style="text-align: left;">
+          <p>
+            Bienvenido a esta primera instancia de experimentación, gracias por
+            participar c:
+          </p>
+          <p>
+            <i>Nota: antes de mandar esto a los participantes hay que ajustar la
+            cantidad de trials de cada bloque y sacar el punto rojo de debugging
+            correspondiente a la mirada estimada.</i>
+          </p>
+          <p>
+            En esta sesión vamos a realizar dos tipos de tareas (prosacada y
+            antisacada) en los cuales estaremos estimando qué punto de la
+            pantalla estás mirando. En total toma unos 20 minutos  y ocurre
+            además que nuestro sistema de estimación de mirada es muy vulnerable
+            a movimientos de cabeza. Es entonces importante que <b>te sientes en
+            un lugar cómodo</b> y posiciones la notebook tal que puedas estar en
+            la misma posición durante unos minutos. De todos modos entre medio va
+            a haber pausas para que puedas descansar un ratín.
+          </p>
+          <p>
+            Además, para que podamos determinar el tamaño de tu pantalla <b>vas a
+            necesitar una tarjeta tipo SUBE, DNI o tarjeta de débito</b>.
+            <br>
+            Cuanto tengas todo dale click a "Continuar" y arrancamos.
+          </p>
+        </div>
       `,
         choices: ["Continuar"],
       }, {
         type: 'webgazer-init-camera',
         instructions: `
+        <div style="text-align: left;">
           <p>
             Corregí la posición de la webcam para que tus ojos queden
             correctamente enfocados. Tu cabeza debería quedar en el centro del
@@ -156,6 +159,7 @@ document.addEventListener('rastoc:ready', () => {
             Cuando el recuadro se pinte de verde podés hacer click en
             "Continuar".
           </p>
+        </div>
         `,
         button_text: "Continuar"
       }, {
@@ -166,6 +170,7 @@ document.addEventListener('rastoc:ready', () => {
       }, {
         type: "fullscreen",
         message: `
+        <div style="text-align: left;">
           <p>
             Para evitar distracciones te pedimos también que en la medida de lo
             posible durante la duración del experimento cierres aplicaciones que
@@ -176,36 +181,39 @@ document.addEventListener('rastoc:ready', () => {
           <p>
             En el próximo paso estimaremos la dimensión de tu pantalla y luego
             veremos el tema de la calibración.
-          </p>`,
+          </p>
+        </div>`,
         button_label: "Continuar"
       }, {
         type: 'virtual-chinrest',
         item_path: "card.png",
         adjustment_prompt: `
+        <div style="text-align: left;">
           <p>
             Apoya la tarjeta que elegiste antes contra la imagen de acá arriba.
             <br>
             Después clickeá y arrastrá la esquina inferior derecha de la imagen
             hasta que coincidan los tamaños.
           </p>
+        <div>
         `,
         adjustment_button_prompt:
           "Clickeá acá cuando el tamaño de la imagen sea el correcto",
         blindspot_prompt: `
+        <div style="text-align: left">
           <p>Ahora vamos a medir qué tan lejos de la pantalla estás.</p>
-          <div style="text-align: left">
-            <ol>
-              <li>Poné tu mano izquierda sobre la <b>barra de espacio</b>.</li>
-              <li>Cubrí tu ojo derecho con tu mano derecha.</li>
-              <li>Usando tu ojo izquierdo, enfocá el cuadrado negro. Asegurate
-              de mantener el foco en él.</li>
-              <li>El <span style="color: red; font-weight: bold;">círculo
-              rojo</span> va a desaparecer mientras se mueve desde la derecha a
-              la izquierda. Presioná la barra de espacio cuando el círculo
-              desaparezca.</li>
-            </ol>
-          </div>
+          <ol>
+            <li>Poné tu mano izquierda sobre la <b>barra de espacio</b>.</li>
+            <li>Cubrí tu ojo derecho con tu mano derecha.</li>
+            <li>Usando tu ojo izquierdo, enfocá el cuadrado negro. Asegurate
+            de mantener el foco en él.</li>
+            <li>El <span style="color: red; font-weight: bold;">círculo
+            rojo</span> va a desaparecer mientras se mueve desde la derecha a
+            la izquierda. Presioná la barra de espacio cuando el círculo
+            desaparezca.</li>
+          </ol>
           <p>Presioná la barra de espacio cuando estés listo para comenzar.</p>
+        </div>
           `,
         redo_measurement_button_label: "No, eso no parece correcto. Reintentar.",
         blindspot_done_prompt: "Sí, esa distancia parece bien.",
@@ -223,6 +231,7 @@ document.addEventListener('rastoc:ready', () => {
       }, {
         type: 'html-button-response',
         stimulus: `
+        <div style="text-align: left">
           <p>
             El sistema en cuestión requiere ser inicialmente calibrado para
             poder estimar la mirada. Además, cada vez que detectemos demasiado
@@ -234,12 +243,22 @@ document.addEventListener('rastoc:ready', () => {
           <p>
             La calibración consiste en fijar la mirada en <span style="color:
             blue; font-weight: bold;">círculos azules</span> que van a aparecer
-            en la pantalla. Cada vez que aparezca uno tenés que fijar la mirada
-            en él y presionar luego la <b>barra de espacio</b>.
+            en la pantalla.
+            <br>
+            Cada vez que aparezca uno tenés que
           </p>
+          <ol>
+            <li>fijar la mirada en él</li>
+            <li>presionar la <b>barra de espacio</b></li>
+          </ol>
           <p>
             En el próximo paso relizarás la calibración inicial.
+            <br>
+            Si más adelante te vuelve a aparecer la pantalla en blanco con el
+            punto azul entonces el sistema tiene que ser recalibrado. Cuando
+            haya que recalibrar no van a volver a aparecer las intrucciones.
           </p>
+        </div>
         `,
         choices: ["Continuar"],
       },
@@ -250,6 +269,7 @@ document.addEventListener('rastoc:ready', () => {
       {
         type: 'html-button-response',
         stimulus: `
+        <div style="text-align: left">
           <p>
             Vamos a arrancar con una ronda de prueba para que te familiarices
             con ambas tareas. Ahora tocan 10 repeticiones de cada una. Luego
@@ -268,6 +288,7 @@ document.addEventListener('rastoc:ready', () => {
             de la tarea de <span style="color: green; font-weight:
             bold;">prosacada</span>.
           </p>
+        </div>
         `,
         choices: ["Continuar"],
       },
@@ -275,6 +296,7 @@ document.addEventListener('rastoc:ready', () => {
       {
         type: 'html-button-response',
         stimulus: `
+        <div style="text-align: left">
           <p>
             Ahora vamos a practicar la tarea de <span style="color: red;
             font-weight: bold;">antisacada</span>. Similar a la tarea anterior,
@@ -289,6 +311,7 @@ document.addEventListener('rastoc:ready', () => {
             de la tarea de <span style="color: red; font-weight:
             bold;">antisacada</span>.
           </p>
+        </div>
       `,
         choices: ["Continuar"],
       },
