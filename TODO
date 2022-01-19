@@ -1,20 +1,43 @@
-  . armar lo de la medida de confianza y agregarlo al plot de la historia del
-    experimento
-    . hay que tomar extender el detector de movimiento para que se le pueda
-      preguntar qué tan lejos de la posición inicial está el sujeto
+  . mirar si se puede usar lo del plugin para determinar la distancia y poder
+    mostrar los estímulos en cierto ángulo como hacen en la bibliografía
+  . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
 
-  . rename canvasDrawer to drawer
-  . mover shuffle y sleep a utils y rastoc-lib
+  . ordenar un poco todo
+    . nuevamente algunos exps quedaron viejos
+    . rename canvasDrawer to drawer, tmp tiene sentido exponerlo en los utils
+    . mover shuffle y sleep a utils y rastoc-lib
+    . se puede retrabajar un poco el tema de los eventos de rastoc (incluidos
+      los de debugging) para que quede mas centralizado y no anden repetidos los
+      nombres de los eventos
+    . en el home mostrar las tareas existentes
+      . sacar del exp online la visualización de la mirada
+      . actualizar el readme con lo de que se puede usar la vis
+
+
+  . rehacer el gráfico del histórico
+    . plotear un fondo para cuando se esté calibrando, un línea para lo que es
+      la medida de confianza y lineas verticales que indiquen las momentos de
+      las descalibraciones
+
+  . hacer un poco de data analysis para antisacadas
+    . desde jspsych habría que señalar inicios y finalizciones de cada trial
+      así como un nombre de exp para pode reconocer
+    . hacer lo que comentó Juan de agrupar correctos e incorrectos, además de
+      hacer un mirroring para agrupar izquierda y derecha
+    . para el de heatmaps tiene que estar lo de si es izquieda o derecha + pro
+      vs anti
+      . hay que separar el criterio de agrupación de trials de la generación del
+        heatmap por si más adelante se decide armar heatmap de otro
+    . dsp hay que hacer an
+
+  . ver si puedo elegir el ángulo de los puntos de calibración cuando se provee
+    el valor pix2deg de virtual-chinrest
 
   . permitir que el data analysis pueda recibir múltiples experimentos por
     instancia de JSPsych
     . Parte del código puede estar armado sin bancar esto 
   . permitir que el data analysis pueda recibir instancias de JSPsych de
     múltiples sujetos
-
-  . investigar qué datos de hardware se pueden recolectar
-    . como mínimo hay que acumular los tamaños de la pantalla (eso creo que ya
-      está)
 
   . ver bien como hacer lo de usar rastoc sin JSPsych
     . revisar la inicialización de WG

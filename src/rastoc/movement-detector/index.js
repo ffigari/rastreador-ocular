@@ -1,5 +1,9 @@
 import { Loop } from '../../utils.js';
 import { create } from './eye-patches.js';
+import {
+  MINIMUM_CAMERA_WIDTH,
+  MINIMUM_CAMERA_HEIGHT
+} from '../../requirements-checker.js';
 
 let movementDetector;
 export const instantiateMovementDetector = async () => {
@@ -13,11 +17,15 @@ export const instantiateMovementDetector = async () => {
     lastCapturedEyes: null,
 
     // Eye patches considered to be valid positions. They are collected during
-    // the calibration phase and are then used to detect movements and whether
-    // the user gets closer or further of the screen.
+    // the calibration phase and are then used to detect movements
     collectedEyesPatches: [],
 
     validEyesPosition: null,
+
+    // Average distance of the last captured pair of eyes to the valid eyes
+    // positions. Reported in pixels. Updated on each cycle while detection is
+    // on.
+    distanceToValidPosition: null,
 
     // Canvas element in which the movement detection should be debugged.
     // Captured video and estimated data will be drawn over it.
@@ -71,9 +79,20 @@ export const instantiateMovementDetector = async () => {
   try {
     videoStream = await navigator
       .mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({
+        video: {
+          width: { min: MINIMUM_CAMERA_WIDTH },
+          height: { min: MINIMUM_CAMERA_HEIGHT },
+        },
+        audio: false
+      })
   } catch (e) {
-    console.error(e)
+    console.error(
+      `No se pudo conseguir una cámara que satisfaga la resolución mínima de ${
+        MINIMUM_CAMERA_WIDTH
+      }x${
+        MINIMUM_CAMERA_HEIGHT
+      }. Error original:`, e)
     return
   }
 
@@ -126,6 +145,10 @@ export const instantiateMovementDetector = async () => {
       }
     })
     const detectionLoop = new Loop(() => {
+      if (state.lastCapturedEyes) {
+        state.distanceToValidPosition =
+          state.validEyesPosition.averageDistanceTo(state.lastCapturedEyes);
+      }
       if (
         state.lastCapturedEyes &&
         !state.validEyesPosition.contains(state.lastCapturedEyes)
@@ -161,6 +184,9 @@ export const instantiateMovementDetector = async () => {
         }
         state.useNextFrameAsValidPosition = true;
       },
+      distanceToValidPosition() {
+        return state.distanceToValidPosition;
+      },
       start: {
         calibration() {
           state.collectedEyesPatches = []
@@ -184,6 +210,7 @@ export const instantiateMovementDetector = async () => {
 
         state.collectedEyesPatches = [];
         state.validEyesPosition = null;
+        state.distanceToValidPosition = null;
         dispatch.calibration.reset();
       },
     });

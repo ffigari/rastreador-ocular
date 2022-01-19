@@ -1,6 +1,5 @@
 import { checkSystem } from '../../requirements-checker.js'
 
-// TODO: Ensure fullscreen has been enabled
 export default {
   name: 'rastoc-initialize',
   trialCb: async function(display_element, trial) {
@@ -17,6 +16,7 @@ export default {
           </ul>
         `;
     } else {
+      await rastoc.start();
       jsPsych.finishTrial({
         rastocCategory: 'system',
         systemConfig,

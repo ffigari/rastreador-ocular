@@ -66,19 +66,25 @@ export const create = {
       y: axisCenter('y'),
     };
     const ratio = patches
-    // Collect all corners
+      // Collect all corners
       .map(x => x.corners)
-    // Flat them into a single array
+      // Flat them into a single array
       .reduce((acc, cur) => acc.concat(cur))
-    // Compute each coord's distance to the center of all coordinates
+      // Compute each coord's distance to the center of all coordinates
       .map(p => distance(center, p))
-    // Find the max distance
+      // Find the max distance
       .reduce((acc, cur) => acc > cur ? acc : cur)
-    // Add 10% to the resulting value
-      * 1.5;
+      // Add 30% to the resulting value
+      * 1.3;
     return {
       contains(eyePatch) {
         return eyePatch.corners.every(c => distance(center, c) <= ratio);
+      },
+      averageDistanceTo(eyePatch) {
+        return Math.sqrt(
+          Math.pow(center.x - eyePatch.center.x, 2) +
+          Math.pow(center.y - eyePatch.center.y, 2)
+        );
       },
       visualizeAt(ctx, color) {
         ctx.fillStyle = color;
@@ -111,6 +117,12 @@ export const create = {
         return leftValidPosition.contains(eyesPair.left)
           && rightValidPosition.contains(eyesPair.right)
       },
+      averageDistanceTo(eyesPair) {
+        return (
+          leftValidPosition.averageDistanceTo(eyesPair.left) +
+          rightValidPosition.averageDistanceTo(eyesPair.right)
+        ) / 2;
+      }
     };
   },
 };
