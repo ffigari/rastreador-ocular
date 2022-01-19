@@ -1,5 +1,3 @@
-  . armar lo de la medida de confianza y reportarlo junto a los eventos de
-    estimación
   . mirar si se puede usar lo del plugin para determinar la distancia y poder
     mostrar los estímulos en cierto ángulo como hacen en la bibliografía
   . pedir los datos a los sujetos dentro de la misma instancia de JSPsych

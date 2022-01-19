@@ -16,7 +16,7 @@ window.addEventListener('load', async () => {
 
   const movementDetector = await instantiateMovementDetector();
   const calibrator = instantiateCalibratorWith(movementDetector);
-  const estimator = instantiateEstimator();
+  const estimator = instantiateEstimator(movementDetector);
   const visualizer = instantiateVisualizerWith(estimator)
 
   const state = {
