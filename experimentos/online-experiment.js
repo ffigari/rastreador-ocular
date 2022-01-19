@@ -36,24 +36,30 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
   };
   const cueGoesLeft = getRandomBoolean();
   const color = isAntisaccade ? 'red' : 'green';
+  const radius = 20;
+  let cueXDistance;
   const visualCue = {
     obj_type: 'circle',
     origin_center: true,
-    startX: (cueGoesLeft ? 1 : -1) * window.innerWidth / 4,
+    get startX() {
+      const { px2deg } = jsPsych.data.get().values()
+        .find((t) => t.trial_type === "virtual-chinrest")
+      cueXDistance = Math.round(Math.min(
+        (window.innerWidth / 2) - 2 * radius,
+        10 * px2deg
+      ));
+      return (cueGoesLeft ? 1 : -1) * cueXDistance;
+    },
     startY: 0,
     show_start_time:
       intraTrialBlankDuration + fixationDuration + interTrialBlankDuration,
     show_end_time:
       intraTrialBlankDuration + fixationDuration + interTrialBlankDuration + cueDuration,
-    radius: 20,
+    radius,
     line_color: color,
     fill_color: color,
   };
 
-  // TODO: Registrar los timestamps de este trial y su id
-  //       No encontré manera de capturar con precisión cuando empieza el
-  //       trial de psychophysics. Se puede usar el on_start de jspsych y
-  //       sumar las duraciones pero da una pequeña diferencia de 5 - 10 ms.
   let startTs;
   return {
     timeline: [{
@@ -84,6 +90,8 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
         data.fixationDuration = fixationDuration;
         data.interTrialBlankDuration = interTrialBlankDuration;
         data.cueDuration = cueDuration;
+
+        data.cueXDistance = cueXDistance;
       }
     }]
   };
@@ -128,6 +136,12 @@ document.addEventListener('rastoc:ready', () => {
           la misma posición durante unos minutos. De todos modos entre medio va
           a haber pausas para que puedas descansar un ratín.
         </p>
+        <p>
+          Además, para que podamos determinar el tamaño de tu pantalla vas a
+          necesitar una tarjeta tipo SUBE, DNI o tarjeta de débito.
+          <br>
+          Cuanto tengas todo dale click a "Continuar" y arrancamos.
+        </p>
       `,
         choices: ["Continuar"],
       }, {
@@ -152,30 +166,43 @@ document.addEventListener('rastoc:ready', () => {
       }, {
         type: "fullscreen",
         message: `
-        <p>
-          Para evitar distracciones te pedimos también que en la medida de lo
-          posible durante la duración del experimento cierres aplicaciones que
-          generen notificaciones y pongas el teléfono en modo no molestar.
-          <br>
-          Además vamos a cambiar a pantalla completa.
-        </p>
-        <p>
-          El sistema en cuestión requiere ser inicialmente calibrado para poder
-          estimar la mirada. Además, cada vez que detectemos demasiado
-          movimiento procederemos a recalibrar. Tené en cuenta que <b>rotar la
-          cabeza también cuenta como movimiento</b>. Idealmente durante los
-          experimentos tendrías que estar <b>moviendo únicamente tus ojos</b>.
-        </p>
-        <p>
-          La calibración consiste en fijar la mirada en puntos azules que van a
-          aparecer en la pantalla. Cada vez que aparezca uno tenés que fijar la
-          mirada en él y presionar luego la <b>barra de espacio</b>.
-        </p>
-        <p>
-          En el próximo paso relizarás la calibración inicial.
-        </p>
-      `,
+          <p>
+            Para evitar distracciones te pedimos también que en la medida de lo
+            posible durante la duración del experimento cierres aplicaciones que
+            generen notificaciones y pongas el teléfono en modo no molestar.
+            <br>
+            Además vamos a cambiar a pantalla completa.
+          </p>
+          <p>
+            En el próximo paso estimaremos la dimensión de tu pantalla y luego
+            veremos el tema de la calibración.
+          </p>`,
         button_label: "Continuar"
+      }, {
+        type: 'virtual-chinrest',
+        item_path: "card.png",
+      }, {
+        type: 'html-button-response',
+        stimulus: `
+          <p>
+            El sistema en cuestión requiere ser inicialmente calibrado para
+            poder estimar la mirada. Además, cada vez que detectemos demasiado
+            movimiento procederemos a recalibrar. Tené en cuenta que <b>rotar
+            la cabeza también cuenta como movimiento</b>. Idealmente durante
+            los experimentos tendrías que estar <b>moviendo únicamente tus
+            ojos</b>.
+          </p>
+          <p>
+            La calibración consiste en fijar la mirada en <span style="color:
+            blue; font-weight: bold;">círculos azules</span> que van a aparecer
+            en la pantalla. Cada vez que aparezca uno tenés que fijar la mirada
+            en él y presionar luego la <b>barra de espacio</b>.
+          </p>
+          <p>
+            En el próximo paso relizarás la calibración inicial.
+          </p>
+        `,
+        choices: ["Continuar"],
       },
       {
         type: 'ensure-calibrated-system',
@@ -202,7 +229,7 @@ document.addEventListener('rastoc:ready', () => {
             de la tarea de <span style="color: green; font-weight:
             bold;">prosacada</span>.
           </p>
-      `,
+        `,
         choices: ["Continuar"],
       },
       generateNProsaccadeNodes(5, idsGenerator),
@@ -227,7 +254,7 @@ document.addEventListener('rastoc:ready', () => {
         choices: ["Continuar"],
       },
       generateNAntisaccadeNodes(5, idsGenerator)
-    ).concat(
+    )/*.concat(
       {
         type: 'html-button-response',
         stimulus: `
@@ -292,7 +319,7 @@ document.addEventListener('rastoc:ready', () => {
         choices: ["Continuar"]
       },
       generateNAntisaccadeNodes(5, idsGenerator)
-    ).concat({
+    )*/.concat({
       on_start() {
         rastoc.visualizer.hideGazeEstimation();
       },

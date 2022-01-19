@@ -30,6 +30,9 @@
         heatmap por si más adelante se decide armar heatmap de otro
     . dsp hay que hacer an
 
+  . ver si puedo elegir el ángulo de los puntos de calibración cuando se provee
+    el valor pix2deg de virtual-chinrest
+
   . permitir que el data analysis pueda recibir múltiples experimentos por
     instancia de JSPsych
     . Parte del código puede estar armado sin bancar esto 
