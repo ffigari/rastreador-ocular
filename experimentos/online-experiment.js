@@ -181,6 +181,45 @@ document.addEventListener('rastoc:ready', () => {
       }, {
         type: 'virtual-chinrest',
         item_path: "card.png",
+        adjustment_prompt: `
+          <p>
+            Apoya la tarjeta que elegiste antes contra la imagen de acá arriba.
+            <br>
+            Después clickeá y arrastrá la esquina inferior derecha de la imagen
+            hasta que coincidan los tamaños.
+          </p>
+        `,
+        adjustment_button_prompt:
+          "Clickeá acá cuando el tamaño de la imagen sea el correcto",
+        blindspot_prompt: `
+          <p>Ahora vamos a medir qué tan lejos de la pantalla estás.</p>
+          <div style="text-align: left">
+            <ol>
+              <li>Poné tu mano izquierda sobre la <b>barra de espacio</b>.</li>
+              <li>Cubrí tu ojo derecho con tu mano derecha.</li>
+              <li>Usando tu ojo izquierdo, enfocá el cuadrado negro. Asegurate
+              de mantener el foco en él.</li>
+              <li>El <span style="color: red; font-weight: bold;">círculo
+              rojo</span> va a desaparecer mientras se mueve desde la derecha a
+              la izquierda. Presioná la barra de espacio cuando el círculo
+              desaparezca.</li>
+            </ol>
+          </div>
+          <p>Presioná la barra de espacio cuando estés listo para comenzar.</p>
+          `,
+        redo_measurement_button_label: "No, eso no parece correcto. Reintentar.",
+        blindspot_done_prompt: "Sí, esa distancia parece bien.",
+        blindspot_measurements_prompt: "Medidas restantes:",
+        viewing_distance_report: `
+          <p>
+            Basado en tus respuestas, estás sentandote a aproximadamente <span
+            id='distance-estimate' style='font-weight: bold;'></span> de la
+            pantalla.
+          </p>
+          <p>
+            Te parece que está bien esa estimación?
+          </p>
+        `
       }, {
         type: 'html-button-response',
         stimulus: `
