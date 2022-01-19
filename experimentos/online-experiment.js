@@ -316,7 +316,7 @@ document.addEventListener('rastoc:ready', () => {
         choices: ["Continuar"],
       },
       generateNAntisaccadeNodes(5, idsGenerator)
-    )/*.concat(
+    ).concat(
       {
         type: 'html-button-response',
         stimulus: `
@@ -381,7 +381,7 @@ document.addEventListener('rastoc:ready', () => {
         choices: ["Continuar"]
       },
       generateNAntisaccadeNodes(5, idsGenerator)
-    )*/.concat({
+    ).concat({
       on_start() {
         rastoc.visualizer.hideGazeEstimation();
       },
