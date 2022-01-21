@@ -1,6 +1,6 @@
-  . mirar si se puede usar lo del plugin para determinar la distancia y poder
-    mostrar los estímulos en cierto ángulo como hacen en la bibliografía
-  . pedir los datos a los sujetos dentro de la misma instancia de JSPsych
+  . terminar de definir la cantidad de trials que van a ir en el experimento
+    online. Idealmente debería durar todo menos de 15 minutos.
+  . ver de mostrar los puntos de calibración en base a un ángulo
 
   . ordenar un poco todo
     . nuevamente algunos exps quedaron viejos

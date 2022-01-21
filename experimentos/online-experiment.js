@@ -147,6 +147,63 @@ document.addEventListener('rastoc:ready', () => {
       `,
         choices: ["Continuar"],
       }, {
+        type: 'survey-html-form',
+        button_label: 'Continuar',
+        html: `
+        <div style="text-align: left;">
+          <p>
+            Completá este par de datos tuyos.
+          </p>
+
+          <ul>
+            <li>
+              Edad? <br>
+              <input name="edad" type="number" max="200" min="0" value="25">
+            </li>
+
+            <li>
+              Vas a estar usando anteojos ahora durante el experimento? <br>
+
+              <label for="no-anteojos-input">No</label>
+              <input
+                type="radio"
+                name="anteojos"
+                id="no-anteojos-input"
+                value="no"
+                checked
+              >
+              &nbsp;
+
+              <label for="anteojos-input">Sí</label>
+              <input
+                type="radio"
+                name="anteojos"
+                id="anteojos-input"
+                value="si"
+              >
+              &nbsp;
+
+              <label for="lentes-de-contacto-input">Uso lentes de contacto</label>
+              <input
+                type="radio"
+                name="anteojos"
+                id="lentes-de-contacto-input"
+                value="contacto"
+              >
+            </li>
+          </ul>
+
+          <p>
+            Te aclaramos también que si bien vamos a usar la webcam, no vamos a
+            estar guardando nada de lo grabado. El video lo usamos en vivo
+            mientras realizás el experimento para estimar la coordenada de la
+            pantalla que estás mirando. Al final del experimento a nosotros
+            investigadores nos van a llegar únicamente estos datos que
+            completaste arriba y una lista de esas coordenadas.
+          </p>
+        </div>
+        `
+      }, {
         type: 'webgazer-init-camera',
         instructions: `
         <div style="text-align: left;">
