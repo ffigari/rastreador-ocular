@@ -111,6 +111,9 @@ const generateNAntisaccadeNodes = (
   n, gen
 ) => generateNSaccadeNodes(n, gen, true);
 
+const TRAINING_TRIALS_COUNT = 10;
+const REAL_TRIALS_COUNT_PER_BLOCK = [50, 75, 75];
+
 document.addEventListener('rastoc:ready', () => {
   jsPsych.init({
     timeline: [
@@ -121,11 +124,6 @@ document.addEventListener('rastoc:ready', () => {
           <p>
             Bienvenido a esta primera instancia de experimentación, gracias por
             participar c:
-          </p>
-          <p>
-            <i>Nota: antes de mandar esto a los participantes hay que ajustar la
-            cantidad de trials de cada bloque y sacar el punto rojo de debugging
-            correspondiente a la mirada estimada.</i>
           </p>
           <p>
             En esta sesión vamos a realizar dos tipos de tareas (prosacada y
@@ -221,9 +219,6 @@ document.addEventListener('rastoc:ready', () => {
         button_text: "Continuar"
       }, {
         type: 'rastoc-initialize',
-        on_finish() {
-          rastoc.visualizer.showGazeEstimation();
-        },
       }, {
         type: "fullscreen",
         message: `
@@ -349,7 +344,7 @@ document.addEventListener('rastoc:ready', () => {
         `,
         choices: ["Continuar"],
       },
-      generateNProsaccadeNodes(5, idsGenerator),
+      generateNProsaccadeNodes(TRAINING_TRIALS_COUNT, idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
@@ -372,64 +367,64 @@ document.addEventListener('rastoc:ready', () => {
       `,
         choices: ["Continuar"],
       },
-      generateNAntisaccadeNodes(5, idsGenerator)
+      generateNAntisaccadeNodes(TRAINING_TRIALS_COUNT, idsGenerator)
     ).concat(
       {
         type: 'html-button-response',
         stimulus: `
           <p>
             Ahora comenzaremos con los bloques reales, arrancando con uno de
-            prosacadas (misma dirección).
+            prosacadas (mirar en la misma dirección).
           </p>
         `,
         choices: ["Continuar"]
       },
-      generateNProsaccadeNodes(5, idsGenerator),
+      generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[0], idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
           <p>
-            Ahora toca el primer bloque de antisacadas (dirección opuesta).
+            Ahora toca el primer bloque de antisacadas (mirar en la dirección opuesta).
           </p>
         `,
         choices: ["Continuar"]
       },
-      generateNAntisaccadeNodes(5, idsGenerator),
+      generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[0], idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
           <p>
-            Segundo bloque de prosacada (misma dirección).
+            Segundo bloque de prosacada (mirar en la misma dirección).
           </p>
         `,
         choices: ["Continuar"]
       },
-      generateNProsaccadeNodes(5, idsGenerator),
+      generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[1], idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
           <p>
-            Segundo bloque de antisacada (dirección opuesta).
+            Segundo bloque de antisacada (mirar en la dirección opuesta).
           </p>
         `,
         choices: ["Continuar"]
       },
-      generateNAntisaccadeNodes(5, idsGenerator),
+      generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[1], idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
           <p>
-            Último bloque de prosacada (misma dirección).
+            Último bloque de prosacada (mirar en la misma dirección).
           </p>
         `,
         choices: ["Continuar"]
       },
-      generateNProsaccadeNodes(5, idsGenerator),
+      generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[2], idsGenerator),
       {
         type: 'html-button-response',
         stimulus: `
           <p>
-            Último bloque de antisacadas (dirección opuesta). Luego de este
+            Último bloque de antisacadas (mirar en la dirección opuesta). Luego de este
             bloque, cuando la pantalla quede en blanco habremos terminado y ahí
             ya podés cerrar esta pestaña. Gracias nuevamente por haber
             participado!
@@ -437,11 +432,8 @@ document.addEventListener('rastoc:ready', () => {
         `,
         choices: ["Continuar"]
       },
-      generateNAntisaccadeNodes(5, idsGenerator)
+      generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[2], idsGenerator)
     ).concat({
-      on_start() {
-        rastoc.visualizer.hideGazeEstimation();
-      },
       type: 'rastoc-finish'
     }),
     on_finish: function() {
