@@ -9,7 +9,7 @@ const mainEventsNames = [
   'rastoc:decalibration',
 ];
 
-window.addEventListener('load', async () => {
+async () => {
   if (!jsPsych.extensions.webgazer) {
     throw new Error("The WebGazer extension from JSPsych is not loaded.");
   }
@@ -90,5 +90,20 @@ window.addEventListener('load', async () => {
   document.addEventListener('rastoc_movement-detector:ready', () => {
     document.dispatchEvent(new Event('rastoc:ready'));
   })
-})
+}
 
+// TODO: Replicate JSPsych's initialization of WG
+// TODO: Figure out how to reuse WG's stuff for the video and the canvas
+// TODO: Subscribe to WG's eye patches update and draw them over the debugging
+//       canvas that has the video
+// TODO: Reimplement movement detection by reusing WG eye patches
+window.rastoc = {
+  resetCalibration() {
+    // TODO: Reset movement detection data
+    webgazer.clearData();
+  },
+  mapCoordinateToGaze(x, y) {
+    // TODO: Add gaze position as valid position
+    webgazer.recordScreenPosition(x, y, 'click');
+  },
+};

@@ -1,8 +1,7 @@
-vendor/
 rastoc-env/
-data/
-output/
-build/
 node_modules/
 package-lock.json
 __pycache__
+output
+www/build
+www/vendor
