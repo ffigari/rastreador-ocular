@@ -73,29 +73,6 @@ export const instantiateMovementDetector = async () => {
     )
   }
 
-  const model = await faceLandmarksDetection
-    .load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
-  let videoStream;
-  try {
-    videoStream = await navigator
-      .mediaDevices
-      .getUserMedia({
-        video: {
-          width: { min: MINIMUM_CAMERA_WIDTH },
-          height: { min: MINIMUM_CAMERA_HEIGHT },
-        },
-        audio: false
-      })
-  } catch (e) {
-    console.error(
-      `No se pudo conseguir una cámara que satisfaga la resolución mínima de ${
-        MINIMUM_CAMERA_WIDTH
-      }x${
-        MINIMUM_CAMERA_HEIGHT
-      }. Error original:`, e)
-    return
-  }
-
   const videoElement = document.createElement('video')
   videoElement.srcObject = videoStream
   videoElement.play()

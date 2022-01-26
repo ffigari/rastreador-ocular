@@ -14,7 +14,16 @@ window.addEventListener('load', async () => {
     throw new Error("The WebGazer extension from JSPsych is not loaded.");
   }
 
-  const movementDetector = await instantiateMovementDetector();
+  const movementDetector = {
+    debugFaceAt(canvas) { },
+    useNextFrameAsValidPosition() { },
+    distanceToValidPosition() { return 0; },
+    start: {
+      calibration() { },
+      detection() { },
+    },
+    stop() { },
+  };
   const calibrator = instantiateCalibratorWith(movementDetector);
   const estimator = instantiateEstimator(movementDetector);
   const visualizer = instantiateVisualizerWith(estimator)
