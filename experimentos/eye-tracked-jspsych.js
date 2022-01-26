@@ -23,7 +23,7 @@ const handler = ({ clientX, clientY }) => {
 const rastocJSPsych = {
   createFreeCalibrationNode: () => {
     return { timeline: [{
-      type: 'html-keyboard-response',
+      type: jsPsychHtmlKeyboardResponse,
       choices: [' '],
       stimulus: `
       <div>
@@ -50,7 +50,7 @@ const rastocJSPsych = {
         document.addEventListener('click', handler);
       },
     }, {
-      type: 'html-keyboard-response',
+      type: jsPsychHtmlKeyboardResponse,
       choices: [' '],
       stimulus: '',
       on_finish() {
@@ -61,17 +61,22 @@ const rastocJSPsych = {
   }
 };
 
+const jsPsych = initJsPsych({
+  on_finish: function() {
+    jsPsych.data.get().localSave('json','eye-tracked-jspsych.json');
+  },
+  extensions: [{ type: jsPsychExtensionWebgazer }],
+});
+
 // TODO: Add usage of virtual-chinrest plugin to retrieve the angle of vision
 //       and draw stimulus accordingly
-// TODO: Update to JSPsych 7.1
 // TODO: When movement detection is up again, replace toy task with a quick one
 //       time based and ensure calibration between tasks
-jsPsych.init({
-  timeline: [{
-    type: 'webgazer-init-camera',
-  }, rastocJSPsych.createFreeCalibrationNode(), {
-    type: 'html-button-response',
-    stimulus: `
+jsPsych.run([{
+  type: jsPsychWebgazerInitCamera,
+}, rastocJSPsych.createFreeCalibrationNode(), {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
       <div>
         <p>
           During this screen your gaze is being estimated using JSPsych's
@@ -84,16 +89,9 @@ jsPsych.init({
         </p>
       </div>
     `,
-    extensions: [{
-      type: 'webgazer', 
-      params: { targets: ['#my-paragraph'] },
-    }],
-    choices: ["Continuar"],
+  extensions: [{
+    type: jsPsychExtensionWebgazer, 
+    params: { targets: ['#my-paragraph'] },
   }],
-  on_finish: function() {
-    jsPsych.data.get().localSave('json','eye-tracked-jspsych.json');
-  },
-  extensions: [
-    {type: 'webgazer'}
-  ]
-});
+  choices: ["Continue"],
+}]);
