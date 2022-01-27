@@ -13,7 +13,7 @@ const jsPsych = initJsPsych({
 //       time based and ensure calibration between tasks
 jsPsych.run([{
   type: jsPsychWebgazerInitCamera,
-}, window.rastocJSPsych.createFreeCalibrationNode(), {
+}, rastocJSPsych.createFreeCalibrationNode(), {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
       <div>
