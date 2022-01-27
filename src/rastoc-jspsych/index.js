@@ -1,9 +1,9 @@
-// TODO: The rastoc-finalize plugin should export calibration events, detection
-//       of decalibration events and the evolution confidence measure
+// TODO: Export rastoc events
+//         . create an object which captures rastoc events on an array and allow
+//           them to be retrieved later on
+//         . after each trial, add ocurred rastoc events to last trial so that
+//           behavior is more consistent with the current webgazer events
 // TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
-const handler = ({ clientX, clientY }) => {
-  rastoc.mapCoordinateToGaze(clientX, clientY);
-};
 window.rastocJSPsych = {
   createFreeCalibrationNode: () => {
     return { timeline: [{
@@ -28,18 +28,14 @@ window.rastocJSPsych = {
       </div>
       `,
       on_finish() {
-        rastoc.resetCalibration();
-        webgazer.resume();
-        webgazer.showPredictionPoints(true);
-        document.addEventListener('click', handler);
+        rastoc.startCalibrationPhase();
       },
     }, {
       type: jsPsychHtmlKeyboardResponse,
       choices: [' '],
       stimulus: '',
       on_finish() {
-        document.removeEventListener('click', handler);
-        webgazer.showPredictionPoints(false);
+        rastoc.endCalibrationPhase();
       },
     }]};
   }

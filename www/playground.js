@@ -24,7 +24,9 @@ document.addEventListener('webgazer-found', async () => {
   wg.showFaceFeedbackBox(false);
   wg.showPredictionPoints(false);
 
-  await wg.begin();
+  await wg.begin(undefined, {
+    initializeMouseListeners: false,
+  });
   wg.showVideo(true);
   wg.showFaceOverlay(true);
   wg.showFaceFeedbackBox(true);
@@ -39,7 +41,26 @@ document.addEventListener('webgazer-found', async () => {
   ).style.position = 'relative';
   document.getElementById('webgazer-loading-status').remove();
 
-  document.dispatchEvent(new Event('webgazer-initialized'));
+  document.getElementById("free-calibration-start-button").disabled = false;
 });
 
-// TODO: Add movement detection
+document.addEventListener('rastoc:point-calibrated', () => {
+  const pointsCount = rastoc.calibrationPointsCount;
+  document.getElementById(
+    "calibration-status"
+  ).innerHTML = `calibrated (${ pointsCount === 1
+    ? "1 point"
+    : `${pointsCount} points`
+  })`;
+});
+
+document.addEventListener('rastoc:calibration-started', () => {
+  document.getElementById("free-calibration-start-button").disabled = true;
+  document.getElementById("calibration-stop-button").disabled = false;
+  document.getElementById("calibration-status").innerHTML = "uncalibrated"
+});
+
+document.addEventListener('rastoc:calibration-finished', () => {
+  document.getElementById("free-calibration-start-button").disabled = false;
+  document.getElementById("calibration-stop-button").disabled = true;
+});

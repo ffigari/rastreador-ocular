@@ -94,18 +94,52 @@
 //   })
 // }
 
-// TODO: Replicate JSPsych's initialization of WG
-// TODO: Figure out how to reuse WG's stuff for the video and the canvas
 // TODO: Subscribe to WG's eye patches update and draw them over the debugging
 //       canvas that has the video
 // TODO: Reimplement movement detection by reusing WG eye patches
+
+
+const state = {
+  calibrationPointsCount: 0,
+};
+
+const _mapCoordinateToGaze = (x, y) => {
+  // TODO: Add gaze position as valid movement detection position
+  webgazer.recordScreenPosition(x, y, 'click');
+  state.calibrationPointsCount++;
+  document.dispatchEvent(new Event('rastoc:point-calibrated'));
+};
+const _clickCalibrationHandler = ({ clientX, clientY }) => {
+  _mapCoordinateToGaze(clientX, clientY);
+};
+const startCalibrationPhase = () => {
+  webgazer.clearData();
+  // TODO: Reset movement detection data
+  state.calibrationPointsCount = 0;
+  webgazer.resume();
+
+  webgazer.showPredictionPoints(false);
+  const _enableGazeVisualizationAfterFirstClick = () => {
+    webgazer.showPredictionPoints(true);
+    document.removeEventListener('click', _enableGazeVisualizationAfterFirstClick);
+  };
+  setImmediate(() => {
+    document.addEventListener('click', _clickCalibrationHandler);
+    document.addEventListener('click', _enableGazeVisualizationAfterFirstClick);
+    document.dispatchEvent(new Event('rastoc:calibration-started'));
+  });
+};
+const endCalibrationPhase = () => {
+  document.removeEventListener('click', _clickCalibrationHandler);
+  webgazer.showPredictionPoints(false);
+  document.dispatchEvent(new Event('rastoc:calibration-finished'));
+};
+
+// TODO: Add movement detection
 window.rastoc = {
-  resetCalibration() {
-    // TODO: Reset movement detection data
-    webgazer.clearData();
-  },
-  mapCoordinateToGaze(x, y) {
-    // TODO: Add gaze position as valid position
-    webgazer.recordScreenPosition(x, y, 'click');
-  },
+  startCalibrationPhase,
+  endCalibrationPhase,
+  get calibrationPointsCount() {
+    return state.calibrationPointsCount;
+  }
 };
