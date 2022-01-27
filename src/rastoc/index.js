@@ -136,6 +136,27 @@ const endCalibrationPhase = () => {
 };
 
 // TODO: Add movement detection
+//        . on eye frame update,
+//          . if eye patch is present then draw eye patch over WG video canvas
+//          . otherwise infomr missing eye patch
+//        . on eye patch update, store last eye patch
+//        . draw eye patches over video canvas for debugging purposes
+//          . if eye patch is not present then it should be informed in the
+//            status
+//        . on point-calibration:
+//          - if eye patch is not present, inform it and prevent calibration
+//          - compute eyes valid position info from last relevant eye patch
+//            (bbox or center, width and height?)
+//        . on calibration start
+//          . reset movement detection
+//        . on calibration end
+//          . enable movement detection
+//        . on eye patch update
+//          . if calibration is enabled then compute where movement detection
+//            criteria is met. If movement status (detected or not) changes,
+//            then inform it.
+//        . on movement detection
+//          . mark as decalibrated
 window.rastoc = {
   startCalibrationPhase,
   endCalibrationPhase,

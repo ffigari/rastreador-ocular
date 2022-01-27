@@ -9,8 +9,10 @@ const jsPsych = initJsPsych({
 //       https://www.jspsych.org/7.1/plugins/browser-check/
 // TODO: Add usage of virtual-chinrest plugin to retrieve the angle of vision
 //       and draw stimulus accordingly
-// TODO: When movement detection is up again, replace toy task with a quick one
-//       time based and ensure calibration between tasks
+// TODO: Add movement detection relevant task
+//         . add some code to ensure the system gets calibrated
+//         . replace current task with a shorter one so that movement detection
+//           can be tested
 jsPsych.run([{
   type: jsPsychWebgazerInitCamera,
 }, rastocJSPsych.createFreeCalibrationNode(), {
