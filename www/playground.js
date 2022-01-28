@@ -1,24 +1,13 @@
-let wg;
-document.addEventListener('DOMContentLoaded', async () => {
-  if (typeof webgazer === 'undefined' || !window.webgazer) {
-    console.error(
-      'WebGazer was not found. Make sure the js file has been loaded.'
-    );
-    document.dispatchEvent(new Event('webgazer-not-found'));
-    return;
-  }
-  wg = window.webgazer;
-  document.dispatchEvent(new Event('webgazer-found'));
-})
+const wg = window.webgazer;
 
-document.addEventListener('webgazer-not-found', () => {
+document.addEventListener('rastoc:webgazer-not-found', () => {
   wgUnavailabilityMsg = document.createElement('p');
   wgUnavailabilityMsg.innerHTML = "WebGazer not found";
   document.getElementById('debugging-webcam-video-container').append(wgUnavailabilityMsg);
   document.getElementById('webgazer-loading-status').remove();
 });
 
-document.addEventListener('webgazer-found', async () => {
+document.addEventListener('rastoc:webgazer-found', async () => {
   wg.showVideo(false);
   wg.showFaceOverlay(false);
   wg.showFaceFeedbackBox(false);

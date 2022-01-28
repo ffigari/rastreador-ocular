@@ -94,6 +94,17 @@
 //   })
 // }
 
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof webgazer === 'undefined' || !window.webgazer) {
+    console.error(
+      'WebGazer was not found. Make sure the js file has been loaded.'
+    );
+    document.dispatchEvent(new Event('rastoc:webgazer-not-found'));
+    return;
+  }
+  document.dispatchEvent(new Event('rastoc:webgazer-found'));
+});
+
 // TODO: Subscribe to WG's eye patches update and draw them over the debugging
 //       canvas that has the video
 // TODO: Reimplement movement detection by reusing WG eye patches
