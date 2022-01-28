@@ -24,11 +24,16 @@
       onClick="rastoc.endCalibrationPhase()"
     >stop calibration phase</button>
 
-    <p>
-      Calibration status: <span id="calibration-status">uncalibrated</span>
-    </p>
-    <!-- TODO: Add eye patch status report -->
-    <!-- TODO: Add movement detection status report -->
+    <div>
+      Status report
+      <p>
+        Calibration: <span id="calibration-status">uncalibrated</span>
+        <br>
+        Eye features: <span id="eye-features-status">unavailable</span>
+        <br>
+        <!-- TODO: Add movement detection status report -->
+      </p>
+    </div>
 
     <div id="debugging-webcam-video-container">
       <p id="webgazer-loading-status">Loading WebGazer...</p>

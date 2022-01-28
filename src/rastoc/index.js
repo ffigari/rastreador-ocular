@@ -98,9 +98,9 @@
 //       canvas that has the video
 // TODO: Reimplement movement detection by reusing WG eye patches
 
-
 const state = {
   calibrationPointsCount: 0,
+  eyeFeaturesJustWereAvailable: false,
 };
 
 const _mapCoordinateToGaze = (x, y) => {
@@ -135,11 +135,28 @@ const endCalibrationPhase = () => {
   document.dispatchEvent(new Event('rastoc:calibration-finished'));
 };
 
+document.addEventListener('webgazer:eye-features-update', ({
+  detail: lastEyeFeatures,
+}) => {
+  state.lastEyeFeatures = lastEyeFeatures
+  if (lastEyeFeatures) {
+    document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
+      detail: {},
+    }))
+  }
+
+  document.dispatchEvent(new Event('rastoc:eye-features-updated'))
+  if (lastEyeFeatures && !state.eyeFeaturesJustWereAvailable) {
+    state.eyeFeaturesJustWereAvailable = true;
+    document.dispatchEvent(new Event('rastoc:eye-features-went-available'));
+  }
+  if (!lastEyeFeatures && state.eyeFeaturesJustWereAvailable) {
+    state.eyeFeaturesJustWereAvailable = false;
+    document.dispatchEvent(new Event('rastoc:eye-features-went-unavailable'));
+  }
+});
+
 // TODO: Add movement detection
-//        . on eye frame update,
-//          . if eye patch is present then draw eye patch over WG video canvas
-//          . otherwise infomr missing eye patch
-//        . on eye patch update, store last eye patch
 //        . draw eye patches over video canvas for debugging purposes
 //          . if eye patch is not present then it should be informed in the
 //            status

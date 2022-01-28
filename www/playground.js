@@ -64,3 +64,11 @@ document.addEventListener('rastoc:calibration-finished', () => {
   document.getElementById("free-calibration-start-button").disabled = false;
   document.getElementById("calibration-stop-button").disabled = true;
 });
+
+document.addEventListener('rastoc:eye-features-went-available', () => {
+  document.getElementById('eye-features-status').innerHTML = "available"
+});
+
+document.addEventListener('rastoc:eye-features-went-unavailable', () => {
+  document.getElementById('eye-features-status').innerHTML = "unavailable"
+});
