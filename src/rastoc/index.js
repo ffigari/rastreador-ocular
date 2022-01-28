@@ -105,58 +105,50 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.dispatchEvent(new Event('rastoc:webgazer-found'));
 });
 
-// TODO: Subscribe to WG's eye patches update and draw them over the debugging
-//       canvas that has the video
-// TODO: Reimplement movement detection by reusing WG eye patches
-
 const state = {
+  // TODO: Replace this count with an array containing the calibration mappings
   calibrationPointsCount: 0,
+  // TODO: Instead of storing this boolean, store last features
   eyeFeaturesJustWereAvailable: false,
+  // TODO: Add object to store criteria relevant computed data
 };
 
-const _mapCoordinateToGaze = (x, y) => {
-  // TODO: Add gaze position as valid movement detection position
+const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
+  // TODO: If eye features are not available return
   webgazer.recordScreenPosition(x, y, 'click');
+  // TODO: Store new calibration data
   state.calibrationPointsCount++;
+  // TODO: Recompute data needed for movement detection criteria
+  //       This should be mean of each one of the received values (origin,
+  //       width, height)
   document.dispatchEvent(new Event('rastoc:point-calibrated'));
 };
-const _clickCalibrationHandler = ({ clientX, clientY }) => {
-  _mapCoordinateToGaze(clientX, clientY);
-};
-const startCalibrationPhase = () => {
-  webgazer.clearData();
-  // TODO: Reset movement detection data
-  state.calibrationPointsCount = 0;
-  webgazer.resume();
 
-  webgazer.showPredictionPoints(false);
-  const _enableGazeVisualizationAfterFirstClick = () => {
-    webgazer.showPredictionPoints(true);
-    document.removeEventListener('click', _enableGazeVisualizationAfterFirstClick);
-  };
-  setImmediate(() => {
-    document.addEventListener('click', _clickCalibrationHandler);
-    document.addEventListener('click', _enableGazeVisualizationAfterFirstClick);
-    document.dispatchEvent(new Event('rastoc:calibration-started'));
-  });
-};
-const endCalibrationPhase = () => {
-  document.removeEventListener('click', _clickCalibrationHandler);
-  webgazer.showPredictionPoints(false);
-  document.dispatchEvent(new Event('rastoc:calibration-finished'));
-};
-
+// TODO: This could be placed in a separate file dedicated to webgazer wrapper
+//       related stuff.
 document.addEventListener('webgazer:eye-features-update', ({
   detail: lastEyeFeatures,
 }) => {
-  state.lastEyeFeatures = lastEyeFeatures
+  state.lastEyeFeatures = lastEyeFeatures;
   if (lastEyeFeatures) {
+    let update = {};
+    ['left', 'right'].forEach(side => {
+      if (!lastEyeFeatures[side]) {
+        update[side] = null;
+        return;
+      }
+      const e = lastEyeFeatures[side];
+      update[side] = {
+        origin: { x: e.imagex, y: e.imagey },
+        width: e.width,
+        height: e.height,
+      };
+    });
     document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
-      detail: {},
+      detail: update,
     }))
   }
 
-  document.dispatchEvent(new Event('rastoc:eye-features-updated'))
   if (lastEyeFeatures && !state.eyeFeaturesJustWereAvailable) {
     state.eyeFeaturesJustWereAvailable = true;
     document.dispatchEvent(new Event('rastoc:eye-features-went-available'));
@@ -167,27 +159,65 @@ document.addEventListener('webgazer:eye-features-update', ({
   }
 });
 
-// TODO: Add movement detection
-//        . draw eye patches over video canvas for debugging purposes
-//          . if eye patch is not present then it should be informed in the
-//            status
-//        . on point-calibration:
-//          - if eye patch is not present, inform it and prevent calibration
-//          - compute eyes valid position info from last relevant eye patch
-//            (bbox or center, width and height?)
-//        . on calibration start
-//          . reset movement detection
-//        . on calibration end
-//          . enable movement detection
-//        . on eye patch update
-//          . if calibration is enabled then compute where movement detection
-//            criteria is met. If movement status (detected or not) changes,
-//            then inform it.
-//        . on movement detection
-//          . mark as decalibrated
+const markAsDecalibrated = () => {
+  // TODO: Update state (calibration must not be reset)
+  // TODO: dispatch decalibration
+}
+
+const markAsPositionRecovered = () => {
+  // TODO: Update state (calibration must not be reset)
+  // TODO: dispatch position recovered
+}
+
+document.addEventListener('rastoc:eye-features-went-unavailable', () => {
+  // TODO:
+});
+
+document.addEventListener('rastoc:calibration-finished', () => {
+  // TODO:
+});
+
+document.addEventListener('rastoc:eye-features-update', ({
+  detail: update,
+}) => {
+  // TODO: Verify whether criteria is met
+  //   if system is not calibrated
+  //     return
+  //
+  //   if last feature did not break criteria but this one does:
+  //     markAsDecalibrated
+  //
+  //   if this feature breaks criteria but last feature met it:
+  //     markAsPositionRecovered
+});
+
 window.rastoc = {
-  startCalibrationPhase,
-  endCalibrationPhase,
+  startCalibrationPhase() {
+    webgazer.clearData();
+    // TODO: Clear calibration array
+
+    // TODO: Stop movement detection
+    // TODO: Clear movement decalibration computed data
+    state.calibrationPointsCount = 0;
+    webgazer.resume();
+
+    webgazer.showPredictionPoints(false);
+    const _enableGazeVisualizationAfterFirstClick = () => {
+      webgazer.showPredictionPoints(true);
+      document.removeEventListener('click', _enableGazeVisualizationAfterFirstClick);
+    };
+    setImmediate(() => {
+      document.addEventListener('click', _clickCalibrationHandler);
+      document.addEventListener('click', _enableGazeVisualizationAfterFirstClick);
+      document.dispatchEvent(new Event('rastoc:calibration-started'));
+    });
+  },
+  endCalibrationPhase() {
+    document.removeEventListener('click', _clickCalibrationHandler);
+    webgazer.showPredictionPoints(false);
+    document.dispatchEvent(new Event('rastoc:calibration-finished'));
+    // TODO: Enable movement detection back
+  },
   get calibrationPointsCount() {
     return state.calibrationPointsCount;
   }
