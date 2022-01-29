@@ -111,8 +111,7 @@ const state = {
   calibrationEyeFeatures: [],
   // eye features from last frame
   lastFrameEyeFeatures: null,
-  calibrating: false,
-  // TODO: Add object to store criteria relevant computed data
+  movementDetection: null,
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
@@ -163,12 +162,7 @@ document.addEventListener('webgazer:eye-features-update', ({
 document.addEventListener('rastoc:eye-features-update', ({
   detail: update,
 }) => {
-  if (state.calibrating) {
-    // Movement detection is not performed while the system is calibrating
-    return;
-  }
-  if (state.calibrationEyeFeatures.length === 0){
-    // System is not calibrated
+  if (!state.movementDetection) {
     return;
   }
   console.log('checking movement detection')
@@ -182,10 +176,8 @@ document.addEventListener('rastoc:eye-features-update', ({
 
 window.rastoc = {
   startCalibrationPhase() {
-    state.calibrating = true;
-
     webgazer.clearData();
-    // TODO: Clear movement decalibration computed data
+    state.movementDetection = null;
     state.calibrationEyeFeatures = [];
     webgazer.resume();
     webgazer.showPredictionPoints(false);
@@ -213,7 +205,10 @@ window.rastoc = {
     webgazer.showPredictionPoints(false);
     // TODO: Compute movement detection criteria relevant data
 
-    state.calibrating = false;
+    state.movementDetection = {
+      foo: 'fa'
+    };
+
     document.dispatchEvent(new Event('rastoc:calibration-finished'));
   },
   get calibrationPointsCount() {
