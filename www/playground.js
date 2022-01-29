@@ -43,41 +43,63 @@ document.addEventListener('rastoc:webgazer-found', async () => {
   eyesBBoxesCanvas.style.height = wgWebcamVideoCanvas.style.height
   eyesBBoxesCanvas.style.transform = 'scale(-1, 1)';
 
-  const fn = () => {
+  const startButtonInitialEnable = () => {
     document.getElementById("free-calibration-start-button").disabled = false;
-    document.removeEventListener('rastoc:eye-features-went-available', fn)
+    document.removeEventListener('rastoc:eye-features-went-available', startButtonInitialEnable)
   }
-  document.addEventListener('rastoc:eye-features-went-available', fn);
-});
-
-document.addEventListener('rastoc:point-calibrated', () => {
-  const pointsCount = rastoc.calibrationPointsCount;
-  document.getElementById(
-    "calibration-status"
-  ).innerHTML = `calibrated (${ pointsCount === 1
-    ? "1 point"
-    : `${pointsCount} points`
-  })`;
+  document.addEventListener('rastoc:eye-features-went-available', startButtonInitialEnable);
 });
 
 document.addEventListener('rastoc:calibration-started', () => {
-  document.getElementById("free-calibration-start-button").disabled = true;
-  document.getElementById("calibration-stop-button").disabled = false;
-  document.getElementById("calibration-status").innerHTML = "uncalibrated"
-});
+  const startButton = document.getElementById("free-calibration-start-button");
+  const stopButton = document.getElementById("calibration-stop-button");
+  const countElement = document.getElementById("calibrations-points-count");
 
-document.addEventListener('rastoc:calibration-finished', () => {
-  document.getElementById("free-calibration-start-button").disabled = false;
-  document.getElementById("calibration-stop-button").disabled = true;
+  startButton.disabled = true;
+  document.getElementById(
+    "calibration-status"
+  ).innerHTML = "calibration in progress";
+  countElement.innerHTML = "no calibration points provided";
+  countElement.hidden = false;
+
+  const stopButtonEnabler = () => {
+    stopButton.disabled = false;
+    document.removeEventListener('rastoc:point-calibrated', stopButtonEnabler);
+  }
+  document.addEventListener('rastoc:point-calibrated', stopButtonEnabler);
+
+  const pointsCountUpdater = () => {
+    const pointsCount = rastoc.calibrationPointsCount;
+    document.getElementById(
+      "calibrations-points-count"
+    ).innerHTML = `calibrated (${ pointsCount === 1
+      ? "1 point"
+      : `${pointsCount} points`
+    })`;
+  };
+  document.addEventListener('rastoc:point-calibrated', pointsCountUpdater);
+
+  const calibrationFinisher = () => {
+    startButton.disabled = false;
+    stopButton.disabled = true;
+    document.getElementById("calibration-status").innerHTML = "system calibrated";
+    document.removeEventListener('rastoc:point-calibrated', pointsCountUpdater);
+    document.removeEventListener('rastoc:calibration-finished', calibrationFinisher);
+  }
+  document.addEventListener('rastoc:calibration-finished', calibrationFinisher);
 });
 
 document.addEventListener('rastoc:eye-features-went-available', () => {
-  document.getElementById('eye-features-status').innerHTML = "available"
+  document.getElementById(
+    'eye-features-status'
+  ).innerHTML = "eye features available";
   wg.showFaceOverlay(true);
 });
 
 document.addEventListener('rastoc:eye-features-went-unavailable', () => {
-  document.getElementById('eye-features-status').innerHTML = "unavailable"
+  document.getElementById(
+    'eye-features-status'
+  ).innerHTML = "eye features unavailable";
   const eyesBBoxesCanvas = document.getElementById('eye-bboxes');
   const ctx = eyesBBoxesCanvas.getContext('2d');
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
