@@ -43,7 +43,11 @@ document.addEventListener('rastoc:webgazer-found', async () => {
   eyesBBoxesCanvas.style.height = wgWebcamVideoCanvas.style.height
   eyesBBoxesCanvas.style.transform = 'scale(-1, 1)';
 
-  document.getElementById("free-calibration-start-button").disabled = false;
+  const fn = () => {
+    document.getElementById("free-calibration-start-button").disabled = false;
+    document.removeEventListener('rastoc:eye-features-went-available', fn)
+  }
+  document.addEventListener('rastoc:eye-features-went-available', fn);
 });
 
 document.addEventListener('rastoc:point-calibrated', () => {
