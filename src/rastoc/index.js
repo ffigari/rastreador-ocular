@@ -188,17 +188,25 @@ window.rastoc = {
     // TODO: Clear movement decalibration computed data
     state.calibrationEyeFeatures = [];
     webgazer.resume();
-
     webgazer.showPredictionPoints(false);
-    const _enableGazeVisualizationAfterFirstClick = () => {
-      webgazer.showPredictionPoints(true);
-      document.removeEventListener('click', _enableGazeVisualizationAfterFirstClick);
-    };
-    setImmediate(() => {
+
+    // If this action was started by a click event (eg, clicking a start button)
+    // then the events being added here will be called once. Because of that,
+    // the click listeners have to be added after this click event finishes.
+    // Ideally something like setImmediate could be used here but it does not
+    // yet seem to be supported by most browsers.
+    setTimeout(() => {
       document.addEventListener('click', _clickCalibrationHandler);
-      document.addEventListener('click', _enableGazeVisualizationAfterFirstClick);
+
+      // Enable gaze visualization after one click
+      const fn = () => {
+        webgazer.showPredictionPoints(true);
+        document.removeEventListener('click', fn);
+      };
+      document.addEventListener('click', fn);
+
       document.dispatchEvent(new Event('rastoc:calibration-started'));
-    });
+    }, 0);
   },
   endCalibrationPhase() {
     document.removeEventListener('click', _clickCalibrationHandler);
