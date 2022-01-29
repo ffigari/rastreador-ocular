@@ -106,75 +106,57 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 const state = {
-  // TODO: Replace this count with an array containing the calibration mappings
-  calibrationPointsCount: 0,
-  // TODO: Instead of storing this boolean, store last features
-  eyeFeaturesJustWereAvailable: false,
+  // list of features corresponding to the ones from last frame each time a
+  // calibration point was added
+  calibrationEyeFeatures: [],
+  // eye features from last frame
+  lastFrameEyeFeatures: null,
   // TODO: Add object to store criteria relevant computed data
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
-  // TODO: If eye features are not available return
+  if (!state.lastFrameEyeFeatures) {
+    console.log('Calibration was not performed due to missing eye features.');
+    return;
+  }
   webgazer.recordScreenPosition(x, y, 'click');
-  // TODO: Store new calibration data
-  state.calibrationPointsCount++;
-  // TODO: Recompute data needed for movement detection criteria
-  //       This should be mean of each one of the received values (origin,
-  //       width, height)
+  state.calibrationEyeFeatures.push(state.lastFrameEyeFeatures);
   document.dispatchEvent(new Event('rastoc:point-calibrated'));
 };
 
 // TODO: This could be placed in a separate file dedicated to webgazer wrapper
 //       related stuff.
 document.addEventListener('webgazer:eye-features-update', ({
-  detail: lastEyeFeatures,
+  detail: eyeFeatures,
 }) => {
-  state.lastEyeFeatures = lastEyeFeatures;
-  if (lastEyeFeatures) {
+  const eyeFeatureJustWereAvailable = !!state.lastFrameEyeFeatures;
+  state.lastFrameEyeFeatures = null;
+  if (eyeFeatures) {
     let update = {};
     ['left', 'right'].forEach(side => {
-      if (!lastEyeFeatures[side]) {
+      if (!eyeFeatures[side]) {
         update[side] = null;
         return;
       }
-      const e = lastEyeFeatures[side];
+      const e = eyeFeatures[side];
       update[side] = {
         origin: { x: e.imagex, y: e.imagey },
         width: e.width,
         height: e.height,
       };
     });
+    state.lastFrameEyeFeatures = eyeFeatures;
     document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
       detail: update,
     }))
   }
 
-  if (lastEyeFeatures && !state.eyeFeaturesJustWereAvailable) {
-    state.eyeFeaturesJustWereAvailable = true;
+  if (eyeFeatures && !eyeFeatureJustWereAvailable) {
     document.dispatchEvent(new Event('rastoc:eye-features-went-available'));
   }
-  if (!lastEyeFeatures && state.eyeFeaturesJustWereAvailable) {
-    state.eyeFeaturesJustWereAvailable = false;
+  if (!eyeFeatures && eyeFeatureJustWereAvailable) {
     document.dispatchEvent(new Event('rastoc:eye-features-went-unavailable'));
   }
-});
-
-const markAsDecalibrated = () => {
-  // TODO: Update state (calibration must not be reset)
-  // TODO: dispatch decalibration
-}
-
-const markAsPositionRecovered = () => {
-  // TODO: Update state (calibration must not be reset)
-  // TODO: dispatch position recovered
-}
-
-document.addEventListener('rastoc:eye-features-went-unavailable', () => {
-  // TODO:
-});
-
-document.addEventListener('rastoc:calibration-finished', () => {
-  // TODO:
 });
 
 document.addEventListener('rastoc:eye-features-update', ({
@@ -194,11 +176,9 @@ document.addEventListener('rastoc:eye-features-update', ({
 window.rastoc = {
   startCalibrationPhase() {
     webgazer.clearData();
-    // TODO: Clear calibration array
-
     // TODO: Stop movement detection
     // TODO: Clear movement decalibration computed data
-    state.calibrationPointsCount = 0;
+    state.calibrationEyeFeatures = [];
     webgazer.resume();
 
     webgazer.showPredictionPoints(false);
@@ -215,10 +195,10 @@ window.rastoc = {
   endCalibrationPhase() {
     document.removeEventListener('click', _clickCalibrationHandler);
     webgazer.showPredictionPoints(false);
+    // TODO: Compute movement detection criteria relevant data
     document.dispatchEvent(new Event('rastoc:calibration-finished'));
-    // TODO: Enable movement detection back
   },
   get calibrationPointsCount() {
-    return state.calibrationPointsCount;
+    return state.calibrationEyeFeatures.length;
   }
 };
