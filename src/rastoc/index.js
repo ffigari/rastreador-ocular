@@ -1,3 +1,90 @@
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+class BBox {
+  constructor(origin, width, height) {
+    this.origin = origin;
+    this.width = width;
+    this.height = height;
+  }
+  static createResized(bbox, scalingFactor) {
+    return new BBox(
+      bbox.origin,
+      bbox.width * scalingFactor,
+      bbox.height * scalingFactor
+    );
+  }
+  contains(point) {
+    // TODO: Implement this
+    return true;
+  }
+  get corners() {
+    // TODO: Implement this
+    return [];
+  }
+}
+
+class MultiBBox {
+  constructor(bboxes) {
+    if (bboxes.length === 0) {
+      throw new Error(
+        `Can not create a multi bbox without bboxes.`
+      );
+    }
+    this.bboxes = bboxes;
+  }
+  contains(inputBBox) {
+    return inputBBox.corners.every((
+      corner
+    ) => this.bboxes.some(bbox => bbox.contains(corner)));
+  }
+} 
+
+class EyesFeatures {
+  constructor(bboxes) {
+    this.bboxes = {};
+    ['left', 'right'].forEach(side => {
+      this.bboxes[side] = bboxes[side];
+    })
+  }
+  static fromWGEyesFeatures(wgEyesFeature) {
+    const bboxes = {};
+    ['left', 'right'].forEach(side => {
+      const {
+        imagex, imagey, width, height
+      } = wgEyesFeature[side];
+      bboxes[side] = new BBox(
+        new Point(imagex, imagey),
+        width,
+        height
+      );
+    })
+    return new EyesFeatures(bboxes);
+  }
+}
+
+class StillnessChecker {
+  constructor(eyesFeatures) {
+    this.stillnessMultiBBoxes = {};
+    ['left', 'right'].forEach(side => {
+      this.stillnessMultiBBoxes[side] = new MultiBBox(eyesFeatures
+        .filter(ftr => !!ftr[side])
+        .map(ftr => ftr[side])
+        .map((bbox) => BBox.createResized(bbox, 1.3))
+      )
+    });
+  }
+  areEyesInOriginalPosition(eyesFeatures) {
+    return ['left', 'right'].every((
+      side
+    ) => this.stillnessMultiBBoxes[side].contains(eyesFeatures[side]));
+  }
+}
+
 // TODO: Review what gets reused and what gets deleted from here
 //
 // import { instantiateMovementDetector } from './movement-detector/index.js';
@@ -110,74 +197,61 @@ const state = {
   // calibration point was added
   calibrationEyeFeatures: [],
   // eye features from last frame
-  lastFrameEyeFeatures: null,
-  movementDetection: null,
+  lastFrameEyesFeatures: null,
+  stillnessChecker: null,
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
-  if (!state.lastFrameEyeFeatures) {
+  if (!state.lastFrameEyesFeatures) {
     console.log('Calibration was not performed due to missing eye features.');
     return;
   }
   webgazer.recordScreenPosition(x, y, 'click');
-  state.calibrationEyeFeatures.push(state.lastFrameEyeFeatures);
+  state.calibrationEyeFeatures.push(state.lastFrameEyesFeatures);
   document.dispatchEvent(new Event('rastoc:point-calibrated'));
 };
 
 // TODO: This could be placed in a separate file dedicated to webgazer wrapper
 //       related stuff.
 document.addEventListener('webgazer:eye-features-update', ({
-  detail: eyeFeatures,
+  detail: wgEyesFeature,
 }) => {
-  const eyeFeatureJustWereAvailable = !!state.lastFrameEyeFeatures;
-  state.lastFrameEyeFeatures = null;
-  if (eyeFeatures) {
-    let update = {};
-    ['left', 'right'].forEach(side => {
-      if (!eyeFeatures[side]) {
-        update[side] = null;
-        return;
-      }
-      const e = eyeFeatures[side];
-      update[side] = {
-        origin: { x: e.imagex, y: e.imagey },
-        width: e.width,
-        height: e.height,
-      };
-    });
-    state.lastFrameEyeFeatures = eyeFeatures;
+  const eyeFeaturesJustWereAvailable = !!state.lastFrameEyesFeatures;
+  state.lastFrameEyesFeatures = null;
+  if (wgEyesFeature) {
+    const eyesFeatures = EyesFeatures.fromWGEyesFeatures(wgEyesFeature);
+    console.log(eyesFeatures.bboxes.left, eyesFeatures.bboxes['left'])
+    state.lastFrameEyesFeatures = eyesFeatures;
     document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
-      detail: update,
+      detail: eyesFeatures,
     }))
   }
 
-  if (eyeFeatures && !eyeFeatureJustWereAvailable) {
+  if (wgEyesFeature && !eyeFeaturesJustWereAvailable) {
     document.dispatchEvent(new Event('rastoc:eye-features-went-available'));
   }
-  if (!eyeFeatures && eyeFeatureJustWereAvailable) {
+  if (!wgEyesFeature && eyeFeaturesJustWereAvailable) {
     document.dispatchEvent(new Event('rastoc:eye-features-went-unavailable'));
   }
 });
 
 document.addEventListener('rastoc:eye-features-update', ({
-  detail: update,
+  detail: eyesFeatures,
 }) => {
-  if (!state.movementDetection) {
+  if (!state.stillnessChecker) {
     return;
   }
-  console.log('checking movement detection')
-  // TODO: Verify whether criteria is met
-  //   if last feature did not break criteria but this one does:
-  //     markAsDecalibrated
-  //
-  //   if this feature breaks criteria but last feature met it:
-  //     markAsPositionRecovered
+
+  // TODO: Compare this frame stillness against the previous frame stillness
+  //            if face moved out or in the valid positions then inform it with
+  //            two distinct events
+  console.log(state.stillnessChecker.areEyesInOriginalPosition(eyesFeatures))
 });
 
 window.rastoc = {
   startCalibrationPhase() {
     webgazer.clearData();
-    state.movementDetection = null;
+    state.stillnessChecker = null;
     state.calibrationEyeFeatures = [];
     webgazer.resume();
     webgazer.showPredictionPoints(false);
@@ -203,12 +277,11 @@ window.rastoc = {
   endCalibrationPhase() {
     document.removeEventListener('click', _clickCalibrationHandler);
     webgazer.showPredictionPoints(false);
-    // TODO: Compute movement detection criteria relevant data
 
-    state.movementDetection = {
-      foo: 'fa'
-    };
+    state.stillnessChecker = new StillnessChecker(state.calibrationEyeFeatures);
 
+    // TODO: Mark movement as not detected
+    // TODO: Draw stillness MultiBBoxes
     document.dispatchEvent(new Event('rastoc:calibration-finished'));
   },
   get calibrationPointsCount() {

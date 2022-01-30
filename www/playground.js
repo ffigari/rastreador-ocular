@@ -107,7 +107,7 @@ document.addEventListener('rastoc:eye-features-went-unavailable', () => {
 });
 
 document.addEventListener('rastoc:eye-features-update', ({
-  detail: lastEyeFeature,
+  detail: lastEyesFeatures,
 }) => {
   const eyesBBoxesCanvas = document.getElementById('eye-bboxes');
 
@@ -119,7 +119,7 @@ document.addEventListener('rastoc:eye-features-update', ({
     ctx.strokeStyle = 'red'
     ctx.lineWidth = 4;
 
-    const { origin: { x, y }, width, height } = lastEyeFeature[side];
+    const { origin: { x, y }, width, height } = lastEyesFeatures.bboxes[side];
     ctx.rect(x, y, width, height);
 
     ctx.stroke();
