@@ -34,6 +34,7 @@ jsPsych.run([{
 }, {
   timeline: [rastocJSPsych.createCalibrationBarrierNode(), {
     type: jsPsychPsychophysics,
+    // TODO: Enable marker
     stimuli: [
       {
         obj_type: 'cross',

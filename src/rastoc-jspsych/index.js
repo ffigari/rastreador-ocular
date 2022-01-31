@@ -47,14 +47,21 @@ const createFreeCalibrationNode = () => {
 const createCalibrationBarrierNode = () => {
   return {
     conditional_function() {
-      console.log('ensuring system is calibrated', rastoc.isCorrectlyCalibrated);
       return !rastoc.isCorrectlyCalibrated;
     },
     timeline: [{
       type: jsPsychHtmlKeyboardResponse,
       choices: [' '],
-      stimulus: "here goes the calibration",
-    }],
+      stimulus: `
+      <p>
+        Decalibration detected.
+        Press <i>Space</i> to proceed with calibration
+      <p>
+      `,
+    }, createFreeCalibrationNode()],
+    loop_function() {
+      return !rastoc.isCorrectlyCalibrated;
+    }
   }
 };
 
