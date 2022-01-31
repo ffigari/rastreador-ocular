@@ -182,14 +182,10 @@ const startMovementDetection = (stillnessChecker) => {
       eyesFeatures
     );
 
-    if (currentFrameIsOutOfPlace && !calibrationLost) {
-      calibrationLost = true;
-      console.log('TODO: first movement detection')
-    }
     if (previousFrameWasOutOfPlace && !currentFrameIsOutOfPlace) {
-      console.log('TODO: stillness position recovered')
+      document.dispatchEvent(new Event('rastoc:stillness-position-recovered'));
     } else if (!previousFrameWasOutOfPlace && currentFrameIsOutOfPlace) {
-      console.log('TODO: stillness position lost')
+      document.dispatchEvent(new Event('rastoc:stillness-position-lost'));
     }
     previousFrameWasOutOfPlace = currentFrameIsOutOfPlace;
   }

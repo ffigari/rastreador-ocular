@@ -50,11 +50,59 @@ document.addEventListener('rastoc:webgazer-found', async () => {
   })
 });
 
+const startMovementReport = (stillnessMultiBBoxes) => {
+  const movementStatusMsg = document.getElementById("movement-detection-status");
+  const movementStatusReport = document.getElementById("movement-detection-report");
+  const movedOnceMsg = document.getElementById("moved-once");
+
+  const ctx = document.getElementById('stillness-area').getContext('2d');
+  ctx.globalAlpha = 0.1;
+  ['left', 'right'].forEach(side => {
+    stillnessMultiBBoxes[side].bboxes.forEach(bbox => {
+      const { origin: { x, y }, width, height } = bbox;
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(x, y, width, height);
+    });
+  });
+  ctx.globalAlpha = 1;
+  movementStatusMsg.innerHTML = "movement detection enabled";
+  movementStatusReport.style.visibility = "visible";
+
+  movedOnceMsg.innerHTML = "no";
+  const firstMoveHandler = () => {
+    movedOnceMsg.innerHTML = "yes";
+    document.removeEventListener('rastoc:stillness-position-lost', firstMoveHandler);
+  };
+  document.addEventListener('rastoc:stillness-position-lost', firstMoveHandler);
+
+  const faceStatusMsg = document.getElementById("eyes-status");
+  faceStatusMsg.innerHTML = "no eyes movement detected";
+  const stillnessRecoveredHandler = () => {
+    faceStatusMsg.innerHTML = "eyes moved but went back to original position";
+  }
+  const stillnessLostHandler = () => {
+    faceStatusMsg.innerHTML = "eyes moved";
+  }
+  document.addEventListener('rastoc:stillness-position-recovered', stillnessRecoveredHandler);
+  document.addEventListener('rastoc:stillness-position-lost', stillnessLostHandler);
+
+  const restartedCalibrationHandler = () => {
+    movementStatusMsg.innerHTML = "movement detection disabled";
+    const ctx = document.getElementById('stillness-area').getContext('2d');
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    movementStatusReport.style.visibility = "hidden";
+
+    document.removeEventListener('rastoc:stillness-position-recovered', stillnessRecoveredHandler);
+    document.removeEventListener('rastoc:stillness-position-lost', stillnessLostHandler);
+    document.removeEventListener('rastoc:calibration-started', restartedCalibrationHandler);
+  }
+  document.addEventListener('rastoc:calibration-started', restartedCalibrationHandler);
+};
+
 document.addEventListener('rastoc:calibration-started', () => {
   const startButton = document.getElementById("free-calibration-start-button");
   const stopButton = document.getElementById("calibration-stop-button");
   const countElement = document.getElementById("calibrations-points-count");
-  const movementStatusMsg = document.getElementById("movement-detection-status");
   const calibrationStatusMsg = document.getElementById("calibration-status");
 
   startButton.disabled = true;
@@ -64,9 +112,6 @@ document.addEventListener('rastoc:calibration-started', () => {
   ).innerHTML = "calibration in progress";
   countElement.innerHTML = "no calibration points provided";
   countElement.hidden = false;
-  movementStatusMsg.innerHTML = "disabled";
-  const ctx = document.getElementById('stillness-area').getContext('2d');
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   // Update info on added points after each calibration
   const pointsCountUpdater = () => {
@@ -84,22 +129,13 @@ document.addEventListener('rastoc:calibration-started', () => {
   const successfulCalibrationHandler = ({ detail: {
     stillnessMultiBBoxes
   } }) => {
-    ['left', 'right'].forEach(side => {
-      const ctx = document.getElementById('stillness-area').getContext('2d');
-      stillnessMultiBBoxes[side].bboxes.forEach(bbox => {
-        const { origin: { x, y }, width, height } = bbox;
-        ctx.globalAlpha = 0.1;
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(x, y, width, height);
-        ctx.globalAlpha = 1;
-      });
-    });
-
     wg.showPredictionPoints(true);
     startButton.disabled = false;
     stopButton.disabled = true;
     calibrationStatusMsg.innerHTML = "system calibrated";
-    movementStatusMsg.innerHTML = "enabled (no movement detected)";
+
+    startMovementReport(stillnessMultiBBoxes);
+
     document.removeEventListener('rastoc:point-calibrated', pointsCountUpdater);
     document.removeEventListener('rastoc:calibration-succeeded', successfulCalibrationHandler);
     document.removeEventListener('rastoc:calibration-failed', failedCalibrationHandler);
