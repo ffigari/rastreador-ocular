@@ -104,7 +104,6 @@ class StillnessChecker {
         throw new Error(`Missing bboxes for ${side} eye.`);
       }
 
-      console.log(BBox)
       this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
         bbox
       ) => BBox.createResizedFromCenter(bbox, 1.8)));
@@ -141,7 +140,7 @@ const state = {
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
   if (!state.lastFrameEyesFeatures) {
-    console.log('Calibration was not performed due to missing eye features.');
+    console.warn('Calibration was not performed due to missing eye features.');
     return;
   }
   webgazer.recordScreenPosition(x, y, 'click');
@@ -173,14 +172,26 @@ document.addEventListener('webgazer:eye-features-update', ({
 });
 
 const startMovementDetection = (stillnessChecker) => {
+  let calibrationLost = false;
+  let previousFrameWasOutOfPlace = false;
   const frameHandler = ({ detail: eyesFeatures }) => {
     if (!state.calibrated) {
       return;
     }
-    console.log('last eyes still?', stillnessChecker.areEyesInOriginalPosition(eyesFeatures))
-    // TODO: Compare this frame stillness against the previous frame stillness
-    //            if face moved out or in the valid positions then inform it with
-    //            two distinct events
+    const currentFrameIsOutOfPlace = !stillnessChecker.areEyesInOriginalPosition(
+      eyesFeatures
+    );
+
+    if (currentFrameIsOutOfPlace && !calibrationLost) {
+      calibrationLost = true;
+      console.log('TODO: first movement detection')
+    }
+    if (previousFrameWasOutOfPlace && !currentFrameIsOutOfPlace) {
+      console.log('TODO: stillness position recovered')
+    } else if (!previousFrameWasOutOfPlace && currentFrameIsOutOfPlace) {
+      console.log('TODO: stillness position lost')
+    }
+    previousFrameWasOutOfPlace = currentFrameIsOutOfPlace;
   }
   document.addEventListener('rastoc:eye-features-update', frameHandler);
   const finishUpHandler = () => {
@@ -225,7 +236,6 @@ window.rastoc = {
     let stillnessChecker;
     try {
       stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
-      console.log(stillnessChecker)
       state.correctlyCalibrated = true;
       state.calibrated = true;
     } catch (e) {

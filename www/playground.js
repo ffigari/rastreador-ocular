@@ -54,6 +54,8 @@ document.addEventListener('rastoc:calibration-started', () => {
   const startButton = document.getElementById("free-calibration-start-button");
   const stopButton = document.getElementById("calibration-stop-button");
   const countElement = document.getElementById("calibrations-points-count");
+  const movementStatusMsg = document.getElementById("movement-detection-status");
+  const calibrationStatusMsg = document.getElementById("calibration-status");
 
   startButton.disabled = true;
   stopButton.disabled = false;
@@ -62,6 +64,7 @@ document.addEventListener('rastoc:calibration-started', () => {
   ).innerHTML = "calibration in progress";
   countElement.innerHTML = "no calibration points provided";
   countElement.hidden = false;
+  movementStatusMsg.innerHTML = "disabled";
   const ctx = document.getElementById('stillness-area').getContext('2d');
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -95,7 +98,8 @@ document.addEventListener('rastoc:calibration-started', () => {
     wg.showPredictionPoints(true);
     startButton.disabled = false;
     stopButton.disabled = true;
-    document.getElementById("calibration-status").innerHTML = "system calibrated";
+    calibrationStatusMsg.innerHTML = "system calibrated";
+    movementStatusMsg.innerHTML = "enabled (no movement detected)";
     document.removeEventListener('rastoc:point-calibrated', pointsCountUpdater);
     document.removeEventListener('rastoc:calibration-succeeded', successfulCalibrationHandler);
     document.removeEventListener('rastoc:calibration-failed', failedCalibrationHandler);
@@ -103,7 +107,7 @@ document.addEventListener('rastoc:calibration-started', () => {
   const failedCalibrationHandler = () => {
     startButton.disabled = false;
     stopButton.disabled = true;
-    document.getElementById("calibration-status").innerHTML = "calibration failed";
+    calibrationStatusMsg.innerHTML = "calibration failed";
     document.removeEventListener('rastoc:point-calibrated', pointsCountUpdater);
     document.removeEventListener('rastoc:calibration-succeeded', successfulCalibrationHandler);
     document.removeEventListener('rastoc:calibration-failed', failedCalibrationHandler);
