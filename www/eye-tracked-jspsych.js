@@ -9,10 +9,6 @@ const jsPsych = initJsPsych({
 //       https://www.jspsych.org/7.1/plugins/browser-check/
 // TODO: Add usage of virtual-chinrest plugin to retrieve the angle of vision
 //       and draw stimulus accordingly
-// TODO: Add movement detection relevant task
-//         . add some code to ensure the system gets calibrated
-//         . replace current task with a shorter one so that movement detection
-//           can be tested
 jsPsych.run([{
   type: jsPsychWebgazerInitCamera,
 }, rastocJSPsych.createFreeCalibrationNode(), {
@@ -35,4 +31,24 @@ jsPsych.run([{
     params: { targets: ['#my-paragraph'] },
   }],
   choices: ["Continue"],
+}, {
+  timeline: [rastocJSPsych.createEnsureCalibatedSystemNode(), {
+    type: jsPsychPsychophysics,
+    stimuli: [
+      {
+        obj_type: 'cross',
+        origin_center: true,
+        get startX() {
+          return (Math.random() < 0.5 ? 1 : -1) * (Math.round(Math.random() * 200) + 20);
+        },
+        startY: 0,
+        show_start_time: 100,
+        show_end_time: 900,
+        line_length: 40,
+      },
+    ],
+    response_ends_trial: false,
+    trial_duration: 1000,
+  }],
+  repetitions: 10,
 }]);
