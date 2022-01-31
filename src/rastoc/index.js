@@ -46,10 +46,10 @@ class MultiBBox {
 
 class EyesFeatures {
   constructor(bboxes) {
-    this.bboxes = {};
-    ['left', 'right'].forEach(side => {
-      this.bboxes[side] = bboxes[side];
-    })
+    this.bboxes = {
+      left: bboxes.left,
+      right: bboxes.right,
+    }
   }
   static fromWGEyesFeatures(wgEyesFeature) {
     const bboxes = {};
@@ -68,20 +68,25 @@ class EyesFeatures {
 }
 
 class StillnessChecker {
-  constructor(eyesFeatures) {
+  constructor(calibrationEyesFeatures) {
+    const calibrationBBoxes = calibrationEyesFeatures.map(ef => ef.bboxes)
+
     this.stillnessMultiBBoxes = {};
     ['left', 'right'].forEach(side => {
-      this.stillnessMultiBBoxes[side] = new MultiBBox(eyesFeatures
-        .filter(ftr => !!ftr[side])
-        .map(ftr => ftr[side])
-        .map((bbox) => BBox.createResized(bbox, 1.3))
-      )
+      const sideBBoxes = calibrationBBoxes.map(ftr => ftr[side]).filter(x => !!x);
+      if (sideBBoxes.length === 0) {
+        throw new Error(`Missing bboxes for ${side} eye.`);
+      }
+
+      this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
+        bbox
+      ) => BBox.createResized(bbox, 1.6)));
     });
   }
   areEyesInOriginalPosition(eyesFeatures) {
     return ['left', 'right'].every((
       side
-    ) => this.stillnessMultiBBoxes[side].contains(eyesFeatures[side]));
+    ) => this.stillnessMultiBBoxes[side].contains(eyesFeatures.bboxes[side]));
   }
 }
 
@@ -99,10 +104,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 const state = {
   // list of features corresponding to the ones from last frame each time a
   // calibration point was added
-  calibrationEyeFeatures: [],
+  calibrationEyesFeatures: [],
   // eye features from last frame
   lastFrameEyesFeatures: null,
-  stillnessChecker: null,
+  // TODO: This two variables have different goals (movement detection related)
+  correctlyCalibrated: false,
+  calibrated: false,
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
@@ -111,7 +118,7 @@ const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
     return;
   }
   webgazer.recordScreenPosition(x, y, 'click');
-  state.calibrationEyeFeatures.push(state.lastFrameEyesFeatures);
+  state.calibrationEyesFeatures.push(state.lastFrameEyesFeatures);
   document.dispatchEvent(new Event('rastoc:point-calibrated'));
 };
 
@@ -124,7 +131,6 @@ document.addEventListener('webgazer:eye-features-update', ({
   state.lastFrameEyesFeatures = null;
   if (wgEyesFeature) {
     const eyesFeatures = EyesFeatures.fromWGEyesFeatures(wgEyesFeature);
-    console.log(eyesFeatures.bboxes.left, eyesFeatures.bboxes['left'])
     state.lastFrameEyesFeatures = eyesFeatures;
     document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
       detail: eyesFeatures,
@@ -139,24 +145,31 @@ document.addEventListener('webgazer:eye-features-update', ({
   }
 });
 
-document.addEventListener('rastoc:eye-features-update', ({
-  detail: eyesFeatures,
-}) => {
-  if (!state.stillnessChecker) {
-    return;
+const startMovementDetection = (stillnessChecker) => {
+  const frameHandler = ({ detail: eyesFeatures }) => {
+    if (!state.calibrated) {
+      return;
+    }
+    console.log('last eyes still?', stillnessChecker.areEyesInOriginalPosition(eyesFeatures))
+    // TODO: Compare this frame stillness against the previous frame stillness
+    //            if face moved out or in the valid positions then inform it with
+    //            two distinct events
   }
-
-  // TODO: Compare this frame stillness against the previous frame stillness
-  //            if face moved out or in the valid positions then inform it with
-  //            two distinct events
-  console.log(state.stillnessChecker.areEyesInOriginalPosition(eyesFeatures))
-});
+  document.addEventListener('rastoc:eye-features-update', frameHandler);
+  const finishUpHandler = () => {
+    document.removeEventListener('rastoc:eye-features-update', frameHandler);
+    document.removeEventListener('rastoc:resetting-calibration', finishUpHandler);
+  }
+  document.addEventListener('rastoc:resetting-calibration', finishUpHandler);
+}
 
 window.rastoc = {
   startCalibrationPhase() {
+    state.correctlyCalibrated = false;
+    state.calibrated = false;
+    document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
-    state.stillnessChecker = null;
-    state.calibrationEyeFeatures = [];
+    state.calibrationEyesFeatures = [];
     webgazer.resume();
     webgazer.showPredictionPoints(false);
 
@@ -182,13 +195,33 @@ window.rastoc = {
     document.removeEventListener('click', _clickCalibrationHandler);
     webgazer.showPredictionPoints(false);
 
-    state.stillnessChecker = new StillnessChecker(state.calibrationEyeFeatures);
+    let stillnessChecker;
+    try {
+      stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
+      console.log(stillnessChecker)
+      state.correctlyCalibrated = true;
+      state.calibrated = true;
+    } catch {
+      state.correctlyCalibrated = false;
+      state.calibrated = false;
+    }
 
-    // TODO: Mark movement as not detected
-    // TODO: Draw stillness MultiBBoxes
-    document.dispatchEvent(new Event('rastoc:calibration-finished'));
+    if (state.correctlyCalibrated) {
+      startMovementDetection(stillnessChecker);
+      document.dispatchEvent(new CustomEvent('rastoc:calibration-succeeded', {
+        detail: {
+          stillnessMultiBBoxes: stillnessChecker.stillnessMultiBBoxes,
+        },
+      }));
+    } else {
+      document.dispatchEvent(new Event('rastoc:calibration-failed'));
+    }
+  },
+  get isCorrectlyCalibrated() {
+    // TODO: This value should be updated on each frame using the stillnessChecker
+    return state.correctlyCalibrated;
   },
   get calibrationPointsCount() {
-    return state.calibrationEyeFeatures.length;
+    return state.calibrationEyesFeatures.length;
   }
 };
