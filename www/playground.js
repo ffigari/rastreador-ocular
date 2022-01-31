@@ -138,14 +138,11 @@ document.addEventListener('rastoc:eye-features-update', ({
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.globalAlpha = 0.5;
   ['left', 'right'].forEach((side) => {
-    ctx.beginPath();
-    ctx.strokeStyle = 'red'
-    ctx.lineWidth = 4;
-
     const { origin: { x, y }, width, height } = lastEyesFeatures.bboxes[side];
-    ctx.rect(x, y, width, height);
-
-    ctx.stroke();
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = 'red';
+    ctx.fillRect(x, y, width, height);
+    ctx.globalAlpha = 1;
   })
   ctx.globalAlpha = 1;
 })
