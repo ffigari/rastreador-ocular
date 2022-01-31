@@ -133,8 +133,7 @@ const state = {
   calibrationEyesFeatures: [],
   // eye features from last frame
   lastFrameEyesFeatures: null,
-  // TODO: This two variables have different goals (movement detection related)
-  correctlyCalibrated: false,
+  calibrationIsNeeded: true,
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
@@ -170,6 +169,23 @@ document.addEventListener('webgazer:eye-features-update', ({
   }
 });
 
+const startDecalibrationCriteriaCheck = () => {
+  state.calibrationIsNeeded = false;
+  const decalibrationDetectedHandler = () => {
+    state.calibrationIsNeeded = true;
+    document.dispatchEvent(new Event('rastoc:decalibration-detected'));
+    document.removeEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+  };
+  const calibrationResetHandler = () => {
+    state.calibrationIsNeeded = true;
+    document.removeEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+  };
+  document.addEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+  document.addEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+};
+
 const startMovementDetection = (stillnessChecker) => {
   let calibrationLost = false;
   let previousFrameWasOutOfPlace = false;
@@ -195,7 +211,6 @@ const startMovementDetection = (stillnessChecker) => {
 
 window.rastoc = {
   startCalibrationPhase() {
-    state.correctlyCalibrated = false;
     document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
     state.calibrationEyesFeatures = [];
@@ -225,16 +240,17 @@ window.rastoc = {
     webgazer.showPredictionPoints(false);
 
     let stillnessChecker;
+    let correctlyCalibrated = false;
     try {
       stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
-      state.correctlyCalibrated = true;
+      correctlyCalibrated = true;
     } catch (e) {
       console.error('calibration failed:', e);
-      state.correctlyCalibrated = false;
     }
 
-    if (state.correctlyCalibrated) {
+    if (correctlyCalibrated) {
       startMovementDetection(stillnessChecker);
+      startDecalibrationCriteriaCheck();
       document.dispatchEvent(new CustomEvent('rastoc:calibration-succeeded', {
         detail: {
           stillnessMultiBBoxes: stillnessChecker.stillnessMultiBBoxes,
@@ -245,8 +261,7 @@ window.rastoc = {
     }
   },
   get isCorrectlyCalibrated() {
-    // TODO: This value should be updated on each frame using the stillnessChecker
-    return state.correctlyCalibrated;
+    return !state.calibrationIsNeeded;
   },
   get calibrationPointsCount() {
     return state.calibrationEyesFeatures.length;
