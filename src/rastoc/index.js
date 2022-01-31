@@ -3,19 +3,35 @@ class Point {
     this.x = x;
     this.y = y;
   }
+  add(xDelta, yDelta) {
+    return new Point(this.x + xDelta, this.y + yDelta);
+  }
 }
 
 class BBox {
   constructor(origin, width, height) {
-    this.origin = origin;
+    this.origin = origin;  // `origin` is the top left coordinate of the bbox,
+                           //  not the center of it
     this.width = width;
     this.height = height;
   }
-  static createResized(bbox, scalingFactor) {
+  get center() {
+    return this.origin
+      .add(
+        Math.round(this.width / 2),
+        Math.round(this.height / 2)
+      );
+  }
+  static createResizedFromCenter(bbox, scalingFactor) {
+    const { width, height } = bbox;
+    const newOrigin = bbox.center.add(
+        -(Math.round(scalingFactor * width / 2)),
+        -(Math.round(scalingFactor * height / 2))
+      );
     return new BBox(
-      bbox.origin,
-      bbox.width * scalingFactor,
-      bbox.height * scalingFactor
+      newOrigin,
+      width * scalingFactor,
+      height * scalingFactor
     );
   }
   contains(point) {
@@ -78,9 +94,10 @@ class StillnessChecker {
         throw new Error(`Missing bboxes for ${side} eye.`);
       }
 
+      console.log(BBox)
       this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
         bbox
-      ) => BBox.createResized(bbox, 1.6)));
+      ) => BBox.createResizedFromCenter(bbox, 1.6)));
     });
   }
   areEyesInOriginalPosition(eyesFeatures) {
@@ -201,7 +218,8 @@ window.rastoc = {
       console.log(stillnessChecker)
       state.correctlyCalibrated = true;
       state.calibrated = true;
-    } catch {
+    } catch (e) {
+      console.error('calibration failed:', e);
       state.correctlyCalibrated = false;
       state.calibrated = false;
     }
