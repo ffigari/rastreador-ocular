@@ -35,12 +35,22 @@ class BBox {
     );
   }
   contains(point) {
-    // TODO: Implement this
-    return true;
+    const { origin: { x, y }, width, height } = this;
+    return (
+      x       <= point.x &&
+      point.x <= x + width
+    ) && (
+      y       <= point.y &&
+      point.y <= y + height
+    );
   }
   get corners() {
-    // TODO: Implement this
-    return [];
+    return [
+      this.origin,
+      this.origin.add(this.width, 0),
+      this.origin.add(0, this.height),
+      this.origin.add(this.width, this.height),
+    ];
   }
 }
 
