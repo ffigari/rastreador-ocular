@@ -97,7 +97,7 @@ class StillnessChecker {
       console.log(BBox)
       this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
         bbox
-      ) => BBox.createResizedFromCenter(bbox, 1.6)));
+      ) => BBox.createResizedFromCenter(bbox, 1.8)));
     });
   }
   areEyesInOriginalPosition(eyesFeatures) {

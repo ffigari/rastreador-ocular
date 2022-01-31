@@ -81,17 +81,14 @@ document.addEventListener('rastoc:calibration-started', () => {
   const successfulCalibrationHandler = ({ detail: {
     stillnessMultiBBoxes
   } }) => {
-    console.log('good calibration');
     ['left', 'right'].forEach(side => {
       const ctx = document.getElementById('stillness-area').getContext('2d');
       stillnessMultiBBoxes[side].bboxes.forEach(bbox => {
         const { origin: { x, y }, width, height } = bbox;
-        ctx.beginPath();
-        ctx.strokeStyle = 'blue'
-        ctx.fillStyle = 'blue'
-        ctx.lineWidth = 1;
-        ctx.rect(x, y, width, height);
-        ctx.stroke();
+        ctx.globalAlpha = 0.1;
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(x, y, width, height);
+        ctx.globalAlpha = 1;
       });
     });
 
@@ -139,7 +136,7 @@ document.addEventListener('rastoc:eye-features-update', ({
 
   const ctx = eyesBBoxesCanvas.getContext('2d');
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+  ctx.globalAlpha = 0.5;
   ['left', 'right'].forEach((side) => {
     ctx.beginPath();
     ctx.strokeStyle = 'red'
@@ -150,4 +147,5 @@ document.addEventListener('rastoc:eye-features-update', ({
 
     ctx.stroke();
   })
+  ctx.globalAlpha = 1;
 })
