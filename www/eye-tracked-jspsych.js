@@ -32,7 +32,7 @@ jsPsych.run([{
   }],
   choices: ["Continue"],
 }, {
-  timeline: [rastocJSPsych.createEnsureCalibatedSystemNode(), {
+  timeline: [rastocJSPsych.createCalibrationBarrierNode(), {
     type: jsPsychPsychophysics,
     stimuli: [
       {

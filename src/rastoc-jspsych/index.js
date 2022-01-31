@@ -45,7 +45,7 @@ window.rastocJSPsych = {
     };
   },
   // TODO: Implement this
-  createEnsureCalibatedSystemNode() {
+  createCalibrationBarrierNode() {
     return {
       conditional_function() {
         console.log('ensuring system is calibrated', rastoc.isCorrectlyCalibrated);
