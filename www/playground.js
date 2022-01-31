@@ -50,6 +50,20 @@ document.addEventListener('rastoc:webgazer-found', async () => {
   })
 });
 
+const startDecalibrationReport = (calibrationStatusMsg) => {
+  const decalibrationDetectedHandler = () => {
+    calibrationStatusMsg.innerHTML = "decalibration detected";
+    document.removeEventListener('rastoc:decalibration-detected', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+  };
+  const calibrationResetHandler = () => {
+    document.removeEventListener('rastoc:decalibration-detected', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+  };
+  document.addEventListener('rastoc:decalibration-detected', decalibrationDetectedHandler)
+  document.addEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+}
+
 const startMovementReport = (stillnessMultiBBoxes) => {
   const movementStatusMsg = document.getElementById("movement-detection-status");
   const movementStatusReport = document.getElementById("movement-detection-report");
@@ -107,9 +121,7 @@ document.addEventListener('rastoc:calibration-started', () => {
 
   startButton.disabled = true;
   stopButton.disabled = false;
-  document.getElementById(
-    "calibration-status"
-  ).innerHTML = "calibration in progress";
+  calibrationStatusMsg.innerHTML = "calibration in progress";
   countElement.innerHTML = "no calibration points provided";
   countElement.hidden = false;
 
@@ -135,6 +147,7 @@ document.addEventListener('rastoc:calibration-started', () => {
     calibrationStatusMsg.innerHTML = "system calibrated";
 
     startMovementReport(stillnessMultiBBoxes);
+    startDecalibrationReport(calibrationStatusMsg);
 
     document.removeEventListener('rastoc:point-calibrated', pointsCountUpdater);
     document.removeEventListener('rastoc:calibration-succeeded', successfulCalibrationHandler);

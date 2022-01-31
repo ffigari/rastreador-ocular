@@ -173,9 +173,9 @@ const startDecalibrationCriteriaCheck = () => {
   state.calibrationIsNeeded = false;
   const decalibrationDetectedHandler = () => {
     state.calibrationIsNeeded = true;
-    document.dispatchEvent(new Event('rastoc:decalibration-detected'));
     document.removeEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
     document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+    document.dispatchEvent(new Event('rastoc:decalibration-detected'));
   };
   const calibrationResetHandler = () => {
     state.calibrationIsNeeded = true;
