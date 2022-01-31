@@ -34,7 +34,9 @@ jsPsych.run([{
 }, {
   timeline: [rastocJSPsych.createCalibrationBarrierNode(), {
     type: jsPsychPsychophysics,
-    // TODO: Enable marker
+    on_start() {
+      rastoc.showGazeEstimation();
+    },
     stimuli: [
       {
         obj_type: 'cross',
@@ -50,6 +52,9 @@ jsPsych.run([{
     ],
     response_ends_trial: false,
     trial_duration: 1000,
+    on_finish() {
+      rastoc.hideGazeEstimation();
+    },
   }],
   repetitions: 10,
 }]);

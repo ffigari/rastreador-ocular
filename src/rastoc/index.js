@@ -209,13 +209,22 @@ const startMovementDetection = (stillnessChecker) => {
   document.addEventListener('rastoc:resetting-calibration', finishUpHandler);
 }
 
+const showGazeEstimation = () => {
+  webgazer.showPredictionPoints(true);
+}
+const hideGazeEstimation = () => {
+  webgazer.showPredictionPoints(false);
+}
+
 window.rastoc = {
+  showGazeEstimation,
+  hideGazeEstimation,
   startCalibrationPhase() {
     document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
     state.calibrationEyesFeatures = [];
     webgazer.resume();
-    webgazer.showPredictionPoints(false);
+    hideGazeEstimation();
 
     // If this action was started by a click event (eg, clicking a start button)
     // then the events being added here will be called once. Because of that,
@@ -227,7 +236,7 @@ window.rastoc = {
 
       // Enable gaze visualization after one click
       const fn = () => {
-        webgazer.showPredictionPoints(true);
+        showGazeEstimation();
         document.removeEventListener('click', fn);
       };
       document.addEventListener('click', fn);
@@ -237,7 +246,7 @@ window.rastoc = {
   },
   endCalibrationPhase() {
     document.removeEventListener('click', _clickCalibrationHandler);
-    webgazer.showPredictionPoints(false);
+    hideGazeEstimation();
 
     let stillnessChecker;
     let correctlyCalibrated = false;
@@ -265,5 +274,5 @@ window.rastoc = {
   },
   get calibrationPointsCount() {
     return state.calibrationEyesFeatures.length;
-  }
+  },
 };

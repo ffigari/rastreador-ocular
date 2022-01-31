@@ -141,7 +141,7 @@ document.addEventListener('rastoc:calibration-started', () => {
   const successfulCalibrationHandler = ({ detail: {
     stillnessMultiBBoxes
   } }) => {
-    wg.showPredictionPoints(true);
+    rastoc.showGazeEstimation();
     startButton.disabled = false;
     stopButton.disabled = true;
     calibrationStatusMsg.innerHTML = "system calibrated";
