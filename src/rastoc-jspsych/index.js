@@ -4,13 +4,12 @@
 //         . after each trial, add ocurred rastoc events to last trial so that
 //           behavior is more consistent with the current webgazer events
 // TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
-window.rastocJSPsych = {
-  createFreeCalibrationNode: () => {
-    return {
-      timeline: [{
-        type: jsPsychHtmlKeyboardResponse,
-        choices: [' '],
-        stimulus: `
+const createFreeCalibrationNode = () => {
+  return {
+    timeline: [{
+      type: jsPsychHtmlKeyboardResponse,
+      choices: [' '],
+      stimulus: `
         <div>
           <h3>Free calibration</h3>
           <p>
@@ -28,35 +27,39 @@ window.rastocJSPsych = {
           </p>
         </div>
         `,
-        on_finish() {
-          rastoc.startCalibrationPhase();
-        },
-      }, {
-        type: jsPsychHtmlKeyboardResponse,
-        choices: [' '],
-        stimulus: '',
-        on_finish() {
-          rastoc.endCalibrationPhase();
-        },
-      }],
-      loop_function() {
-        return !rastoc.isCorrectlyCalibrated;
+      on_finish() {
+        rastoc.startCalibrationPhase();
       },
-    };
-  },
-  // TODO: Implement this
-  createCalibrationBarrierNode() {
-    return {
-      conditional_function() {
-        console.log('ensuring system is calibrated', rastoc.isCorrectlyCalibrated);
-        return !rastoc.isCorrectlyCalibrated;
+    }, {
+      type: jsPsychHtmlKeyboardResponse,
+      choices: [' '],
+      stimulus: '',
+      on_finish() {
+        rastoc.endCalibrationPhase();
       },
-      timeline: [{
-        type: jsPsychHtmlKeyboardResponse,
-        choices: [' '],
-        stimulus: "here goes the calibration",
-      }],
-    };
-  },
+    }],
+    loop_function() {
+      return !rastoc.isCorrectlyCalibrated;
+    },
+  };
+};
+
+const createCalibrationBarrierNode = () => {
+  return {
+    conditional_function() {
+      console.log('ensuring system is calibrated', rastoc.isCorrectlyCalibrated);
+      return !rastoc.isCorrectlyCalibrated;
+    },
+    timeline: [{
+      type: jsPsychHtmlKeyboardResponse,
+      choices: [' '],
+      stimulus: "here goes the calibration",
+    }],
+  }
+};
+
+window.rastocJSPsych = {
+  createFreeCalibrationNode,
+  createCalibrationBarrierNode,
 };
 

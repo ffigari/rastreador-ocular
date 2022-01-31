@@ -135,7 +135,6 @@ const state = {
   lastFrameEyesFeatures: null,
   // TODO: This two variables have different goals (movement detection related)
   correctlyCalibrated: false,
-  calibrated: false,
 };
 
 const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
@@ -175,9 +174,6 @@ const startMovementDetection = (stillnessChecker) => {
   let calibrationLost = false;
   let previousFrameWasOutOfPlace = false;
   const frameHandler = ({ detail: eyesFeatures }) => {
-    if (!state.calibrated) {
-      return;
-    }
     const currentFrameIsOutOfPlace = !stillnessChecker.areEyesInOriginalPosition(
       eyesFeatures
     );
@@ -200,7 +196,6 @@ const startMovementDetection = (stillnessChecker) => {
 window.rastoc = {
   startCalibrationPhase() {
     state.correctlyCalibrated = false;
-    state.calibrated = false;
     document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
     state.calibrationEyesFeatures = [];
@@ -233,11 +228,9 @@ window.rastoc = {
     try {
       stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
       state.correctlyCalibrated = true;
-      state.calibrated = true;
     } catch (e) {
       console.error('calibration failed:', e);
       state.correctlyCalibrated = false;
-      state.calibrated = false;
     }
 
     if (state.correctlyCalibrated) {
