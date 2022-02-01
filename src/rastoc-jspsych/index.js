@@ -65,6 +65,8 @@ const createCalibrationBarrierNode = () => {
   }
 };
 
+// TODO: Add side to side calibration
+//         . allow calibration method to be chosen via a parameter
 window.rastocJSPsych = {
   createFreeCalibrationNode,
   createCalibrationBarrierNode,
