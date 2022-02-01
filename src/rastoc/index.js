@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 const state = {
+  calibrating: false,
   // list of features corresponding to the ones from last frame each time a
   // calibration point was added
   calibrationEyesFeatures: [],
@@ -136,7 +137,11 @@ const state = {
   calibrationIsNeeded: true,
 };
 
-const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
+const mapCoordinateToGaze = ({ x, y }) => {
+  if (!state.calibrating) {
+    console.warn('Can not calibrate outside of calibration phases');
+    return;
+  }
   if (!state.lastFrameEyesFeatures) {
     console.warn('Calibration was not performed due to missing eye features.');
     return;
@@ -216,10 +221,30 @@ const hideGazeEstimation = () => {
   webgazer.showPredictionPoints(false);
 }
 
+const clickToGazeCalibrationHandler = ({ clientX, clientY }) => {
+  mapCoordinateToGaze({
+    x: clientX,
+    y: clientY,
+  })
+};
+
+const keyPressInstantToGazeCalibrationHandler = () => {
+  // TODO: Check pressed code is present
+  // TODO: Check it's a space bar
+  // TODO: Retrieve coordinate with state.coordinateRetrievalCb
+  // TODO: call mapCoordinateToGaze
+  throw new Error('not implemented')
+};
+
 window.rastoc = {
   showGazeEstimation,
   hideGazeEstimation,
-  startCalibrationPhase() {
+  mapCoordinateToGaze,
+  startCalibrationPhase(calibrationType, coordinateRetrievalCb) {
+    console.log('start', calibrationType, coordinateRetrievalCb);
+    calibrationType = calibrationType || "click";
+    state.coordinateRetrievalCb = coordinateRetrievalCb;
+    state.calibrating = true;
     document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
     state.calibrationEyesFeatures = [];
@@ -232,7 +257,13 @@ window.rastoc = {
     // Ideally something like setImmediate could be used here but it does not
     // yet seem to be supported by most browsers.
     setTimeout(() => {
-      document.addEventListener('click', _clickCalibrationHandler);
+      if (calibrationType === "click") {
+        document.addEventListener('click', clickToGazeCalibrationHandler);
+      } else if (calibrationType === "space-bar") {
+          document.addEventListener('keydown', keyPressInstantToGazeCalibrationHandler)
+      } else {
+        throw new Error(`calibration type (${calibrationType}) is not valid.`);
+      }
 
       // Enable gaze visualization after one click
       const fn = () => {
@@ -244,8 +275,17 @@ window.rastoc = {
       document.dispatchEvent(new Event('rastoc:calibration-started'));
     }, 0);
   },
-  endCalibrationPhase() {
-    document.removeEventListener('click', _clickCalibrationHandler);
+  endCalibrationPhase(calibrationType) {
+    calibrationType = calibrationType || "click";
+
+    if (calibrationType === "click") {
+      document.removeEventListener('click', clickToGazeCalibrationHandler);
+    } else if (calibrationType === "space-bar") {
+      document.removeEventListener('keydown', keyPressInstantToGazeCalibrationHandler);
+    } else {
+      throw new Error(`calibration type (${calibrationType}) is not valid.`);
+    }
+
     hideGazeEstimation();
 
     let stillnessChecker;
@@ -268,6 +308,7 @@ window.rastoc = {
     } else {
       document.dispatchEvent(new Event('rastoc:calibration-failed'));
     }
+    state.calibrating = false;
   },
   get isCorrectlyCalibrated() {
     return !state.calibrationIsNeeded;

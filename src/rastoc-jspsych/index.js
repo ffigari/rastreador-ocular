@@ -5,6 +5,12 @@
 //           behavior is more consistent with the current webgazer events
 // TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
 const createSideToSideCalibrationNode = () => {
+  // TODO: At this scope, add a variable to store the coordinate of the stimulus
+  //         . check how to retrieve that coordinate. in the psychophsycis trial
+  //           start by computing that variable and updating it. Points over the
+  //           horizontal central line should be iterated randomly
+  //         . for `rastoc.startCalibrationPhase("side-to-side", cb)` define
+  //           `cb` so `cb()` exposes the coordinate stored up here
   return {
     // TODO: Add calibration here. Here it should be triggered with the space
     //       bar. It will be needed to recover the coordinate of the calibration
@@ -22,6 +28,7 @@ const createSideToSideCalibrationNode = () => {
       `,
       choices: ["Continuar"],
     }],
+    // TODO: Add psychophsycis looped node which show stimulus
   }
 };
 const createFreeCalibrationNode = () => {
@@ -52,15 +59,14 @@ const createFreeCalibrationNode = () => {
         //       into here. A new method should be exposed with allows a
         //       coordinate to be mapped. Then out here 
         //       Maybe a callback that uses that method will be enough
-        rastoc.startCalibrationPhase();
+        rastoc.startCalibrationPhase("click");
       },
     }, {
       type: jsPsychHtmlKeyboardResponse,
       choices: [' '],
       stimulus: '',
       on_finish() {
-        // TODO: Any listener added above should be removed here
-        rastoc.endCalibrationPhase();
+        rastoc.endCalibrationPhase("click");
       },
     }],
     loop_function() {
