@@ -11,7 +11,21 @@ const jsPsych = initJsPsych({
 //       and draw stimulus accordingly
 jsPsych.run([{
   type: jsPsychWebgazerInitCamera,
-}, rastocJSPsych.createEnsuredCalibrationNode("free"), {
+},
+rastocJSPsych.createEnsuredCalibrationNode("side-to-side"),
+{
+  on_start() {
+    rastoc.showGazeEstimation();
+  },
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "bla",
+  choices: ['Continue'],
+  on_finish() {
+    rastoc.hideGazeEstimation();
+  },
+},
+rastocJSPsych.createEnsuredCalibrationNode("free"),
+{
   type: jsPsychHtmlButtonResponse,
   stimulus: `
       <div>

@@ -1,3 +1,22 @@
+import { Point } from '../types/index.js';
+
+const getPsychophysiscCanvasCenter = () => {
+  // This assumes the canvas is always present. Note that if you run multiple
+  // psychophysics stimulus in the same jspsych trial, then the canvas will be a
+  // different one each time.
+  const psychophysicsCanvas = document.getElementById('myCanvas');
+  if (!psychophysicsCanvas) {
+    // Canvas is not yet present
+    throw new Error('psychophysics canvas not found.');
+  }
+  const { left, top } = psychophysicsCanvas.getBoundingClientRect();
+  const { width, height } = psychophysicsCanvas;
+  
+  // And this assumes the canvas has not been scaled
+  const x = Math.round(left + (width / 2));
+  const y = Math.round(top + (height / 2));
+  return new Point(x, y);
+}
 // TODO: Export rastoc events
 //         . create an object which captures rastoc events on an array and allow
 //           them to be retrieved later on
@@ -5,16 +24,10 @@
 //           behavior is more consistent with the current webgazer events
 // TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
 const createSideToSideCalibrationNode = () => {
-  // TODO: At this scope, add a variable to store the coordinate of the stimulus
-  //         . check how to retrieve that coordinate. in the psychophsycis trial
-  //           start by computing that variable and updating it. Points over the
-  //           horizontal central line should be iterated randomly
-  //         . for `rastoc.startCalibrationPhase("side-to-side", cb)` define
-  //           `cb` so `cb()` exposes the coordinate stored up here
+  const totalCalibrationPoints = 9;
+  let calibrationPointsCount = 0;
+  let mapCoordinateToGaze;
   return {
-    // TODO: Add calibration here. Here it should be triggered with the space
-    //       bar. It will be needed to recover the coordinate of the calibration
-    //       stimulus shown so that we can send that coordinate to webgazer
     timeline: [{
       type: jsPsychHtmlButtonResponse,
       stimulus: `
@@ -23,12 +36,70 @@ const createSideToSideCalibrationNode = () => {
       </h3>
       <p>
         En la próxima pantalla van a ir apareciendo puntos azules. Cada vez que
-        aparezca uno, fijá la mirada en él y presiona la barra de espacio
+        aparezca uno, fijá la mirada en él y presiona la barra de espacio.
       </p>
       `,
       choices: ["Continuar"],
+      on_finish() {
+        mapCoordinateToGaze = rastoc.startCalibrationPhase("external");
+      },
+    }, {
+      timeline: [{
+        type: jsPsychPsychophysics,
+        stimuli: [{
+          obj_type: 'circle',
+          radius: 20,
+          origin_center: true,
+          fill_color: 'blue',
+          get startX() {
+            const x = Math.round((
+              Math.random() < 0.5 ? 1 : -1
+            ) * (
+              Math.random() * (window.innerWidth / 2 - 20)
+            ))
+            const y = 0;
+            // The canvas won't be opened until after this runs...
+            setTimeout(() => {
+              let center;
+              try {
+                center = getPsychophysiscCanvasCenter();
+              } catch (e) {
+                console.error(e)
+                throw new Error("Failed to store center coordinate of canvas");
+              }
+              const fn = ({ key }) => {
+                if (key !== ' ') {
+                  return;
+                }
+                mapCoordinateToGaze(center.add(x, y));
+                document.removeEventListener('keydown', fn);
+              };
+              document.addEventListener('keydown', fn);
+            }, 0)
+
+            return x;
+          },
+          startY: 0,
+          show_start_time: 400,
+        }],
+        response_type: 'key',
+        response_start_time: 400,
+        choices: [' '],
+        on_finish() {
+          calibrationPointsCount++;
+        }
+      }],
+      loop_function() {
+        const keep_looping = calibrationPointsCount < totalCalibrationPoints
+        if (!keep_looping) {
+          rastoc.endCalibrationPhase("external");
+        }
+        return keep_looping;
+      },
     }],
-    // TODO: Add psychophsycis looped node which show stimulus
+    loop_function() {
+      return !rastoc.isCorrectlyCalibrated;
+    },
   }
 };
 const createFreeCalibrationNode = () => {
@@ -55,10 +126,6 @@ const createFreeCalibrationNode = () => {
         </div>
         `,
       on_finish() {
-        // TODO: Take the click mapping done for calibration outside rastoc and
-        //       into here. A new method should be exposed with allows a
-        //       coordinate to be mapped. Then out here 
-        //       Maybe a callback that uses that method will be enough
         rastoc.startCalibrationPhase("click");
       },
     }, {

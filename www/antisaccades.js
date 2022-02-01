@@ -49,7 +49,7 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
       //   (window.innerWidth / 2) - 2 * radius,
       //   10 * px2deg
       // ));
-      cueXDistance = (window.innerWidth / 2) - 2 * radius;
+      cueXDistance = (window.innerWidth / 3) - 2 * radius;
       return (cueGoesLeft ? 1 : -1) * cueXDistance;
     },
     startY: 0,
@@ -145,9 +145,11 @@ jsPsych.run([
         a haber pausas para que puedas descansar un ratín.
       </p>
       <p>
+        <!--
         Además, para que podamos determinar el tamaño de tu pantalla <b>vas a
         necesitar una tarjeta tipo SUBE, DNI o tarjeta de débito</b>.
         <br>
+        -->
         Cuanto tengas todo dale click a "Continuar" y arrancamos.
       </p>
     </div>
@@ -190,7 +192,7 @@ jsPsych.run([
           >
           &nbsp;
 
-          <label for="lentes-de-contacto-input">Uso lentes de contacto</label>
+          <label for="lentes-de-contacto-input">Voy a usar lentes de contacto</label>
           <input
             type="radio"
             name="anteojos"
@@ -238,7 +240,7 @@ jsPsych.run([
         Además vamos a cambiar a pantalla completa.
       </p>
       <p>
-        En el próximo paso estimaremos la dimensión de tu pantalla y luego
+        En el próximo paso <!--estimaremos la dimensión de tu pantalla y luego-->
         veremos el tema de la calibración.
       </p>
     </div>`,
