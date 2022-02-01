@@ -64,8 +64,7 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
 
   let startTs;
   return {
-    // TODO: Use side to side calibration
-    timeline: [rastocJSPsych.createCalibrationBarrierNode(), {
+    timeline: [rastocJSPsych.createCalibrationBarrierNode("side-to-side"), {
       on_start() {
         startTs = new Date;
       },
@@ -314,16 +313,14 @@ jsPsych.run([
       <p>
         En el próximo paso relizarás la calibración inicial.
         <br>
-        Si más adelante te vuelve a aparecer la pantalla en blanco con el
-        punto azul entonces el sistema tiene que ser recalibrado. Cuando
-        haya que recalibrar no van a volver a aparecer las intrucciones.
+        Si más adelante detectamos demasiado movimiento entoces te vamos a
+        avisar así recalibramos el sistema.
       </p>
     </div>
     `,
     choices: ["Continuar"],
   },
-  // TODO: Replace free calibration with side to side calibration
-  rastocJSPsych.createFreeCalibrationNode()
+  rastocJSPsych.createEnsuredCalibrationNode("side-to-side"),
 ].concat(
   {
     type: jsPsychHtmlButtonResponse,

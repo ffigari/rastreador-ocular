@@ -4,6 +4,26 @@
 //         . after each trial, add ocurred rastoc events to last trial so that
 //           behavior is more consistent with the current webgazer events
 // TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
+const createSideToSideCalibrationNode = () => {
+  return {
+    // TODO: Add calibration here. Here it should be triggered with the space
+    //       bar. It will be needed to recover the coordinate of the calibration
+    //       stimulus shown so that we can send that coordinate to webgazer
+    timeline: [{
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <h3>
+        Calibración lado a lado
+      </h3>
+      <p>
+        En la próxima pantalla van a ir apareciendo puntos azules. Cada vez que
+        aparezca uno, fijá la mirada en él y presiona la barra de espacio
+      </p>
+      `,
+      choices: ["Continuar"],
+    }],
+  }
+};
 const createFreeCalibrationNode = () => {
   return {
     timeline: [{
@@ -28,6 +48,10 @@ const createFreeCalibrationNode = () => {
         </div>
         `,
       on_finish() {
+        // TODO: Take the click mapping done for calibration outside rastoc and
+        //       into here. A new method should be exposed with allows a
+        //       coordinate to be mapped. Then out here 
+        //       Maybe a callback that uses that method will be enough
         rastoc.startCalibrationPhase();
       },
     }, {
@@ -35,6 +59,7 @@ const createFreeCalibrationNode = () => {
       choices: [' '],
       stimulus: '',
       on_finish() {
+        // TODO: Any listener added above should be removed here
         rastoc.endCalibrationPhase();
       },
     }],
@@ -43,8 +68,17 @@ const createFreeCalibrationNode = () => {
     },
   };
 };
+const createEnsuredCalibrationNode = (calibrationType) => {
+  if (calibrationType === "free") {
+    return createFreeCalibrationNode();
+  } else if (calibrationType === "side-to-side") {
+    return createSideToSideCalibrationNode();
+  } else {
+    throw new Error(`'${calibrationType}' is not a valid calibration type.`);
+  }
+};
 
-const createCalibrationBarrierNode = () => {
+const createCalibrationBarrierNode = (calibrationType) => {
   return {
     conditional_function() {
       return !rastoc.isCorrectlyCalibrated;
@@ -58,7 +92,7 @@ const createCalibrationBarrierNode = () => {
         Press <i>Space</i> to proceed with calibration
       <p>
       `,
-    }, createFreeCalibrationNode()],
+    }, createEnsuredCalibrationNode(calibrationType)],
     loop_function() {
       return !rastoc.isCorrectlyCalibrated;
     }
@@ -68,7 +102,7 @@ const createCalibrationBarrierNode = () => {
 // TODO: Add side to side calibration
 //         . allow calibration method to be chosen via a parameter
 window.rastocJSPsych = {
-  createFreeCalibrationNode,
+  createEnsuredCalibrationNode,
   createCalibrationBarrierNode,
 };
 
