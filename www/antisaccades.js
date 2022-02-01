@@ -114,6 +114,8 @@ const generateNAntisaccadeNodes = (
 const TRAINING_TRIALS_COUNT = 10;
 const REAL_TRIALS_COUNT_PER_BLOCK = [50, 75, 75];
 
+// TODO: Update this to JSPsych 7.1 and the API changes from rastoc-jspsych
+//       https://www.jspsych.org/7.1/support/migration-v7/
 document.addEventListener('rastoc:ready', () => {
   jsPsych.init({
     timeline: [

@@ -1,85 +1,278 @@
-import { instantiateMovementDetector } from './movement-detector/index.js';
-import { instantiateCalibratorWith } from './calibrator.js';
-import { instantiateEstimator } from './estimator.js';
-import { instantiateVisualizerWith } from './visualizer.js';
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+  add(xDelta, yDelta) {
+    return new Point(this.x + xDelta, this.y + yDelta);
+  }
+}
 
-const mainEventsNames = [
-  'rastoc:gaze-estimated',
-  'rastoc:calibration',
-  'rastoc:decalibration',
-];
+class BBox {
+  constructor(origin, width, height) {
+    this.origin = origin;  // `origin` is the top left coordinate of the bbox,
+                           //  not the center of it
+    this.width = width;
+    this.height = height;
+  }
+  get center() {
+    return this.origin
+      .add(
+        Math.round(this.width / 2),
+        Math.round(this.height / 2)
+      );
+  }
+  static createResizedFromCenter(bbox, scalingFactor) {
+    const { width, height } = bbox;
+    const newOrigin = bbox.center.add(
+        -(Math.round(scalingFactor * width / 2)),
+        -(Math.round(scalingFactor * height / 2))
+      );
+    return new BBox(
+      newOrigin,
+      width * scalingFactor,
+      height * scalingFactor
+    );
+  }
+  contains(point) {
+    const { origin: { x, y }, width, height } = this;
+    return (
+      x       <= point.x &&
+      point.x <= x + width
+    ) && (
+      y       <= point.y &&
+      point.y <= y + height
+    );
+  }
+  get corners() {
+    return [
+      this.origin,
+      this.origin.add(this.width, 0),
+      this.origin.add(0, this.height),
+      this.origin.add(this.width, this.height),
+    ];
+  }
+}
 
-window.addEventListener('load', async () => {
-  if (!jsPsych.extensions.webgazer) {
-    throw new Error("The WebGazer extension from JSPsych is not loaded.");
+class MultiBBox {
+  constructor(bboxes) {
+    if (bboxes.length === 0) {
+      throw new Error(
+        `Can not create a multi bbox without bboxes.`
+      );
+    }
+    this.bboxes = bboxes;
+  }
+  contains(inputBBox) {
+    return inputBBox.corners.every((
+      corner
+    ) => this.bboxes.some(bbox => bbox.contains(corner)));
+  }
+} 
+
+class EyesFeatures {
+  constructor(bboxes) {
+    this.bboxes = {
+      left: bboxes.left,
+      right: bboxes.right,
+    }
+  }
+  static fromWGEyesFeatures(wgEyesFeature) {
+    const bboxes = {};
+    ['left', 'right'].forEach(side => {
+      const {
+        imagex, imagey, width, height
+      } = wgEyesFeature[side];
+      bboxes[side] = new BBox(
+        new Point(imagex, imagey),
+        width,
+        height
+      );
+    })
+    return new EyesFeatures(bboxes);
+  }
+}
+
+class StillnessChecker {
+  constructor(calibrationEyesFeatures) {
+    const calibrationBBoxes = calibrationEyesFeatures.map(ef => ef.bboxes)
+
+    this.stillnessMultiBBoxes = {};
+    ['left', 'right'].forEach(side => {
+      const sideBBoxes = calibrationBBoxes.map(ftr => ftr[side]).filter(x => !!x);
+      if (sideBBoxes.length === 0) {
+        throw new Error(`Missing bboxes for ${side} eye.`);
+      }
+
+      this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
+        bbox
+      ) => BBox.createResizedFromCenter(bbox, 1.8)));
+    });
+  }
+  areEyesInOriginalPosition(eyesFeatures) {
+    return ['left', 'right'].every((
+      side
+    ) => this.stillnessMultiBBoxes[side].contains(eyesFeatures.bboxes[side]));
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof webgazer === 'undefined' || !window.webgazer) {
+    console.error(
+      'WebGazer was not found. Make sure the js file has been loaded.'
+    );
+    document.dispatchEvent(new Event('rastoc:webgazer-not-found'));
+    return;
+  }
+  document.dispatchEvent(new Event('rastoc:webgazer-found'));
+});
+
+const state = {
+  // list of features corresponding to the ones from last frame each time a
+  // calibration point was added
+  calibrationEyesFeatures: [],
+  // eye features from last frame
+  lastFrameEyesFeatures: null,
+  calibrationIsNeeded: true,
+};
+
+const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
+  if (!state.lastFrameEyesFeatures) {
+    console.warn('Calibration was not performed due to missing eye features.');
+    return;
+  }
+  webgazer.recordScreenPosition(x, y, 'click');
+  state.calibrationEyesFeatures.push(state.lastFrameEyesFeatures);
+  document.dispatchEvent(new Event('rastoc:point-calibrated'));
+};
+
+// TODO: This could be placed in a separate file dedicated to webgazer wrapper
+//       related stuff.
+document.addEventListener('webgazer:eye-features-update', ({
+  detail: wgEyesFeature,
+}) => {
+  const eyeFeaturesJustWereAvailable = !!state.lastFrameEyesFeatures;
+  state.lastFrameEyesFeatures = null;
+  if (wgEyesFeature) {
+    const eyesFeatures = EyesFeatures.fromWGEyesFeatures(wgEyesFeature);
+    state.lastFrameEyesFeatures = eyesFeatures;
+    document.dispatchEvent(new CustomEvent('rastoc:eye-features-update', {
+      detail: eyesFeatures,
+    }))
   }
 
-  const movementDetector = await instantiateMovementDetector();
-  const calibrator = instantiateCalibratorWith(movementDetector);
-  const estimator = instantiateEstimator(movementDetector);
-  const visualizer = instantiateVisualizerWith(estimator)
+  if (wgEyesFeature && !eyeFeaturesJustWereAvailable) {
+    document.dispatchEvent(new Event('rastoc:eye-features-went-available'));
+  }
+  if (!wgEyesFeature && eyeFeaturesJustWereAvailable) {
+    document.dispatchEvent(new Event('rastoc:eye-features-went-unavailable'));
+  }
+});
 
-  const state = {
-    phase: null,
+const startDecalibrationCriteriaCheck = () => {
+  state.calibrationIsNeeded = false;
+  const decalibrationDetectedHandler = () => {
+    state.calibrationIsNeeded = true;
+    document.removeEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+    document.dispatchEvent(new Event('rastoc:decalibration-detected'));
   };
-  window.rastoc = {
-    visualizer,
-    movementDetector,
-    debugFaceAt(canvasElement) {
-      movementDetector.debugFaceAt(canvasElement)
-    },
-    calibrationIsNeeded() {
-      return calibrator.calibrationIsNeeded();
-    },
-    switchTo: {
-      async calibrating() {
-        if (state.phase === 'calibrating') {
-          throw new Error("Ya se está calibrando");
-        }
-
-        if (state.phase === 'estimating') {
-          estimator.stop();
-        }
-        Object.assign(state, {
-          phase: 'calibrating',
-        })
-        await calibrator.reset()
-        return calibrator
-      },
-      async estimating() {
-        if (state.phase === 'estimating') {
-          throw new Error("Ya se está estimando");
-        }
-
-        await estimator.resume();
-        Object.assign(state, {
-          phase: 'estimating',
-        })
-
-        return { visualizer };
-      },
-    },
-    async start() {
-      await rastoc.switchTo.estimating();
-      state.events = [];
-      state.handler = ({ detail: gazeEvent }) => state.events.push(gazeEvent);
-      ;
-      mainEventsNames.forEach((eventName) => document.addEventListener(
-        eventName,
-        state.handler
-      ));
-    },
-    finish() {
-      movementDetector.stop();
-      mainEventsNames.forEach((
-        eventName
-      ) => document.removeEventListener(eventName, state.handler))
-      return state.events;
-    },
+  const calibrationResetHandler = () => {
+    state.calibrationIsNeeded = true;
+    document.removeEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+    document.removeEventListener('rastoc:resetting-calibration', calibrationResetHandler);
   };
+  document.addEventListener('rastoc:stillness-position-lost', decalibrationDetectedHandler);
+  document.addEventListener('rastoc:resetting-calibration', calibrationResetHandler);
+};
 
-  document.addEventListener('rastoc_movement-detector:ready', () => {
-    document.dispatchEvent(new Event('rastoc:ready'));
-  })
-})
+const startMovementDetection = (stillnessChecker) => {
+  let calibrationLost = false;
+  let previousFrameWasOutOfPlace = false;
+  const frameHandler = ({ detail: eyesFeatures }) => {
+    const currentFrameIsOutOfPlace = !stillnessChecker.areEyesInOriginalPosition(
+      eyesFeatures
+    );
 
+    if (previousFrameWasOutOfPlace && !currentFrameIsOutOfPlace) {
+      document.dispatchEvent(new Event('rastoc:stillness-position-recovered'));
+    } else if (!previousFrameWasOutOfPlace && currentFrameIsOutOfPlace) {
+      document.dispatchEvent(new Event('rastoc:stillness-position-lost'));
+    }
+    previousFrameWasOutOfPlace = currentFrameIsOutOfPlace;
+  }
+  document.addEventListener('rastoc:eye-features-update', frameHandler);
+  const finishUpHandler = () => {
+    document.removeEventListener('rastoc:eye-features-update', frameHandler);
+    document.removeEventListener('rastoc:resetting-calibration', finishUpHandler);
+  }
+  document.addEventListener('rastoc:resetting-calibration', finishUpHandler);
+}
+
+const showGazeEstimation = () => {
+  webgazer.showPredictionPoints(true);
+}
+const hideGazeEstimation = () => {
+  webgazer.showPredictionPoints(false);
+}
+
+window.rastoc = {
+  showGazeEstimation,
+  hideGazeEstimation,
+  startCalibrationPhase() {
+    document.dispatchEvent(new Event('rastoc:resetting-calibration'));
+    webgazer.clearData();
+    state.calibrationEyesFeatures = [];
+    webgazer.resume();
+    hideGazeEstimation();
+
+    // If this action was started by a click event (eg, clicking a start button)
+    // then the events being added here will be called once. Because of that,
+    // the click listeners have to be added after this click event finishes.
+    // Ideally something like setImmediate could be used here but it does not
+    // yet seem to be supported by most browsers.
+    setTimeout(() => {
+      document.addEventListener('click', _clickCalibrationHandler);
+
+      // Enable gaze visualization after one click
+      const fn = () => {
+        showGazeEstimation();
+        document.removeEventListener('click', fn);
+      };
+      document.addEventListener('click', fn);
+
+      document.dispatchEvent(new Event('rastoc:calibration-started'));
+    }, 0);
+  },
+  endCalibrationPhase() {
+    document.removeEventListener('click', _clickCalibrationHandler);
+    hideGazeEstimation();
+
+    let stillnessChecker;
+    let correctlyCalibrated = false;
+    try {
+      stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
+      correctlyCalibrated = true;
+    } catch (e) {
+      console.error('calibration failed:', e);
+    }
+
+    if (correctlyCalibrated) {
+      startMovementDetection(stillnessChecker);
+      startDecalibrationCriteriaCheck();
+      document.dispatchEvent(new CustomEvent('rastoc:calibration-succeeded', {
+        detail: {
+          stillnessMultiBBoxes: stillnessChecker.stillnessMultiBBoxes,
+        },
+      }));
+    } else {
+      document.dispatchEvent(new Event('rastoc:calibration-failed'));
+    }
+  },
+  get isCorrectlyCalibrated() {
+    return !state.calibrationIsNeeded;
+  },
+  get calibrationPointsCount() {
+    return state.calibrationEyesFeatures.length;
+  },
+};
