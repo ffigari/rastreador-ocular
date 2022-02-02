@@ -1,74 +1,4 @@
-class Point {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-  add(xDelta, yDelta) {
-    return new Point(this.x + xDelta, this.y + yDelta);
-  }
-}
-
-class BBox {
-  constructor(origin, width, height) {
-    this.origin = origin;  // `origin` is the top left coordinate of the bbox,
-                           //  not the center of it
-    this.width = width;
-    this.height = height;
-  }
-  get center() {
-    return this.origin
-      .add(
-        Math.round(this.width / 2),
-        Math.round(this.height / 2)
-      );
-  }
-  static createResizedFromCenter(bbox, scalingFactor) {
-    const { width, height } = bbox;
-    const newOrigin = bbox.center.add(
-        -(Math.round(scalingFactor * width / 2)),
-        -(Math.round(scalingFactor * height / 2))
-      );
-    return new BBox(
-      newOrigin,
-      width * scalingFactor,
-      height * scalingFactor
-    );
-  }
-  contains(point) {
-    const { origin: { x, y }, width, height } = this;
-    return (
-      x       <= point.x &&
-      point.x <= x + width
-    ) && (
-      y       <= point.y &&
-      point.y <= y + height
-    );
-  }
-  get corners() {
-    return [
-      this.origin,
-      this.origin.add(this.width, 0),
-      this.origin.add(0, this.height),
-      this.origin.add(this.width, this.height),
-    ];
-  }
-}
-
-class MultiBBox {
-  constructor(bboxes) {
-    if (bboxes.length === 0) {
-      throw new Error(
-        `Can not create a multi bbox without bboxes.`
-      );
-    }
-    this.bboxes = bboxes;
-  }
-  contains(inputBBox) {
-    return inputBBox.corners.every((
-      corner
-    ) => this.bboxes.some(bbox => bbox.contains(corner)));
-  }
-} 
+import { Point, BBox, MultiBBox } from '../types/index.js';
 
 class EyesFeatures {
   constructor(bboxes) {
@@ -128,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 const state = {
+  calibrating: false,
   // list of features corresponding to the ones from last frame each time a
   // calibration point was added
   calibrationEyesFeatures: [],
@@ -136,7 +67,11 @@ const state = {
   calibrationIsNeeded: true,
 };
 
-const _clickCalibrationHandler = ({ clientX: x, clientY: y }) => {
+const mapCoordinateToGaze = ({ x, y }) => {
+  if (!state.calibrating) {
+    console.warn('Can not calibrate outside of calibration phases');
+    return;
+  }
   if (!state.lastFrameEyesFeatures) {
     console.warn('Calibration was not performed due to missing eye features.');
     return;
@@ -216,10 +151,23 @@ const hideGazeEstimation = () => {
   webgazer.showPredictionPoints(false);
 }
 
+const clickToGazeCalibrationHandler = ({ clientX, clientY }) => {
+  mapCoordinateToGaze({
+    x: clientX,
+    y: clientY,
+  })
+};
+
 window.rastoc = {
   showGazeEstimation,
   hideGazeEstimation,
-  startCalibrationPhase() {
+  startCalibrationPhase(calibrationType) {
+    calibrationType = calibrationType || "click";
+    if (!["click", "external"].includes(calibrationType)) {
+      throw new Error(`calibration type (${calibrationType}) is not valid.`);
+    }
+
+    state.calibrating = true;
     document.dispatchEvent(new Event('rastoc:resetting-calibration'));
     webgazer.clearData();
     state.calibrationEyesFeatures = [];
@@ -232,7 +180,9 @@ window.rastoc = {
     // Ideally something like setImmediate could be used here but it does not
     // yet seem to be supported by most browsers.
     setTimeout(() => {
-      document.addEventListener('click', _clickCalibrationHandler);
+      if (calibrationType === "click") {
+        document.addEventListener('click', clickToGazeCalibrationHandler);
+      }
 
       // Enable gaze visualization after one click
       const fn = () => {
@@ -243,9 +193,25 @@ window.rastoc = {
 
       document.dispatchEvent(new Event('rastoc:calibration-started'));
     }, 0);
+
+    let res;
+    if (calibrationType === "external") {
+      res = ({ x, y }) => {
+        mapCoordinateToGaze(new Point(x, y));
+      };
+    }
+    return res;
   },
-  endCalibrationPhase() {
-    document.removeEventListener('click', _clickCalibrationHandler);
+  endCalibrationPhase(calibrationType) {
+    calibrationType = calibrationType || "click";
+    if (!["click", "external"].includes(calibrationType)) {
+      throw new Error(`calibration type (${calibrationType}) is not valid.`);
+    }
+
+    if (calibrationType === "click") {
+      document.removeEventListener('click', clickToGazeCalibrationHandler);
+    }
+
     hideGazeEstimation();
 
     let stillnessChecker;
@@ -268,6 +234,7 @@ window.rastoc = {
     } else {
       document.dispatchEvent(new Event('rastoc:calibration-failed'));
     }
+    state.calibrating = false;
   },
   get isCorrectlyCalibrated() {
     return !state.calibrationIsNeeded;
