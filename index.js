@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import webpack from 'webpack'
 
-const buildDir = 'build'
+const buildDir = 'www/build'
 fs.rmdirSync(buildDir, { recursive: true });
 
 const compiler = webpack({
@@ -10,7 +10,6 @@ const compiler = webpack({
   entry: {
     'rastoc': path.resolve(path.dirname(''), '/src/rastoc/index.js'),
     'rastoc-jspsych': path.resolve(path.dirname(''), '/src/rastoc-jspsych/index.js'),
-    'rastoc-lib': path.resolve(path.dirname(''), '/src/rastoc-lib/index.js'),
   },
   output: {
     path: path.resolve(path.dirname(''), buildDir),
@@ -18,7 +17,19 @@ const compiler = webpack({
   }
 });
 
-compiler.run((err, stats) => {
+// TODO: Distinguish build and watch
+//       Building has to be done by doing
+//         'compiler.run((err, stats) => {
+//
+//            ...
+//
+//            compiler.close((closeErr) => {
+//              if (closeErr) {
+//                console.error(closeErr);
+//              }
+//            })
+//         })'
+compiler.watch({}, (err, stats) => {
   if (err) {
     console.error(err.stack || err);
     if (err.details) {
@@ -38,9 +49,5 @@ compiler.run((err, stats) => {
     info.warnings.forEach(message => console.log(message));
   }
 
-  compiler.close((closeErr) => {
-    if (closeErr) {
-      console.error(closeErr);
-    }
-  })
+  console.log(`[${(new Date).toISOString()}] compiled`);
 });
