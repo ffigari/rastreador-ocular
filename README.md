@@ -1,5 +1,10 @@
 # rastreador-ocular
 
+## Development
+
+Run `node index.js` for build instructions.
+Check node version at `.nvmrc`.
+
 ## Desarollo
 
 ### módulos de js + plugins
