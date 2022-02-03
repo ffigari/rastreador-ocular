@@ -1,69 +1,121 @@
 # rastreador-ocular
 
-## Desarollo
+Rastoc is a study of browser based eye tracking's applicability in assisting the
+diagnosis of neuropsychological conditions.
+It built up from the ongoing research with
+[Juan Kamienkowski](https://liaa.dc.uba.ar/juan-kamienkowski/),
+[Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/) and
+[Gustavo Juantorena](https://liaa.dc.uba.ar/gustavo-juantorena-en/), who are
+directing my master thesis at LIAA, UBA on the same topic.
 
-### módulos de js + plugins
+Ideally this can become the seed of a research based open source browser based
+eye tracking tool usable in both neuro and not neuro contexts.
+It is hoped that by providing the development grounds, specialists from
+different areas could feel invited to contribute with their unique findings.  
+The project however is yet very green.
+At the moment for example, the tool crashes after ~10 to ~14 minutes on modern
+browsers run in a modern notebook due to a yet unknown reason.
 
-`./install.sh` para instalar las dependencias.  
-`node index.js` para buildear el js.
-La versión de `node` requerida está dentro del archivo `.nvmrc` por lo que puede
-usarse `nvm use` (luego de instalar al menos una vez con `nvm install`) para
-cambiar a la versión requerida (https://github.com/nvm-sh/nvm).
+[Webgazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
+estimation.
+A simple appearance based heuristic is provided to decide when the tool gets
+decalibrated.  
+A [JSPsych](https://www.jspsych.org/7.1/) interface was built, which relies on
+[psychophysics](https://jspsychophysics.hes.kyushu-u.ac.jp/) for stimulus
+drawing.
+It provides a couples of assist functions to insert calibration barriers inside
+JSPsych's timelines.
+This can for example be useful if you need to run multiples trials of a short
+task while guaranteeing some sort of re-calibration mechanism along the way.  
+By building the js (see below) and opening the `./www/index.html` file in your
+browser, you should be able to play around with a couple of ready to run
+examples.  
+Feel free to mess around with the repo.
+The issues' section is open in case you have any question or want to report a
+bug.
 
-Dps el entry point es `index.html`, con abrirlo en un navegador se pueden usar
-los experimentos armados. Se puede por ejemplo hacer `firefox index.html`.
+## Development
 
-### data analysis
+Run `./install.sh` to install dependencies.  
+Run `node index.js` for build instructions.
+Check node version at `.nvmrc`.
 
-Setear el entorno:
-```bash
-python -m venv rastoc-env  # para crear el entorno virtual, armado con Python3.9
-source rastoc-env/bin/activate  # para activar el entorno
-pip install -r requirements.txt  # para instalar las dependencias
+## Next steps
+
+#### Add confidence metric back
+
+A confidence metric should be provided.
+Low values should correlate with good estimations.  
+Ideally it could go directly inside the data added by the WG extension.
+It could also be exported at the end inside a big array.
+
+Code from before:
+```
+// La medida de confianza es una exponencial inversa en función de
+// la distancia promedio de los ojos a las posiciones válidas.
+// f(0)  = 1
+// f(5)  = 0.368
+// f(10) = 0.135
+const confidence = Math.pow(
+  Math.E,
+  - movementDetector.distanceToValidPosition() / 5
+);
+document.dispatchEvent(new CustomEvent('rastoc:gaze-estimated', {
+  detail: {
+    name: 'gaze-estimation',
+    ts: new Date,
+    x: prediction.x,
+    y: prediction.y,
+    confidence,
+  },
+}))
 ```
 
-Armar los heatmaps de un experimento:
-```python
-python src/data-analysis/main.py data/antisacadas.json
+#### Export rastoc events
+
+The history of each run should be "rebuildable".
+For this events like calibrations or met decalibration checks should be
+exported.
+
+#### Plot experiment's history
+
+Plotting the history of a run would allow to check the exported events make
+sense.
+
+#### Check user's system config
+
+Ensure the user meets some minimum reqirements about hardware.
+
+```
+  if (cameraIsAccessible) {
+    try {
+      const userMedia = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { min: MINIMUM_CAMERA_WIDTH },
+          height: { min: MINIMUM_CAMERA_HEIGHT },
+        },
+      });
+      const videoSettings = userMedia.getVideoTracks()[0].getSettings()
+      systemConfig.cameraWidth = videoSettings.width
+      systemConfig.cameraHeight = videoSettings.height
+    } catch (e) {
+      errors.push(
+        `Tu cámara web no tiene la resolución mínima necesaria de ${
+          MINIMUM_CAMERA_WIDTH
+        }x${
+          MINIMUM_CAMERA_HEIGHT
+        }.`
+      );
+    }
+  }
 ```
 
-## Utilización
+#### Add support for virtual-chinrest plugin
 
-Se provee una interfaz JSPsych para utilizar Rastoc. El
-experimento de antisacadas ([`html`](/experimentos/online-experiment.html),
-[`js`](/experimentos/online-experiment.js)) puede utilizarse como referencia.  
-Resumidamente, se debe:
-- importar los scripts necesarios (listados abajo)
-- llamar a `jsPsych.init` dentro de un listener para el evento `rastoc-ready`:
-```javascript
-document.addEventListener('rastoc:ready', () => {
-  jsPsych.init(...);
-})
-```
-- agregar los llamados a los plugins `webgazer-init-camera`, `rastoc-initialize`
-y `rastoc-finish`.
-- agregar a WebGazer como extensión.
-
-#### Scripts a importar
-
-```html
-<script src="https://unpkg.com/@tensorflow/tfjs-core@2.4.0/dist/tf-core.js"></script>
-<script src="https://unpkg.com/@tensorflow/tfjs-converter@2.4.0/dist/tf-converter.js"></script>
-<script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.4.0/dist/tf-backend-webgl.js"></script>
-<script src="https://unpkg.com/@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
-
-<link  href="../vendor/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
-<script src="../vendor/jspsych-6.3.1/jspsych.js"></script>
-<script src="../vendor/webgazer-jspsych-6.3.1/webgazer.js"></script>
-<script src="../vendor/jspsych-6.3.1/extensions/jspsych-ext-webgazer.js"></script>
-
-<script src="../build/rastoc.js"></script>
-<script src="../build/rastoc-jspsych.js"></script>
-```
-
-## Investigación
-
-En la carpeta [`/notas`](/notas/README.md) se encuentra un markdown en estilo
-informe que documenta algunas ideas relacionadas al trabajo. Hay también notas
-menos formales de algunos papers relacionados.  
-A partir de un momento las notas las fui subiendo a un drive.
+In neuro research it seems to be common to report the angles of the shown
+stimulus.
+Pixels values aren't usually reported.
+To allow for angle dependant calibrations, support for the 'virtual-chinrest'
+plugin should be added.
+This way the 'pixels to degrees' ratio will be available.

@@ -17,3 +17,5 @@ unzip $INSTALL_PATH/$PSYCHOPHYSICS_ZIP_NAME \
 rm $INSTALL_PATH/$PSYCHOPHYSICS_ZIP_NAME
 
 echo Done installing JSPsych-Psychophysics $PSYCHOPHYSICS_VERSION
+
+# TODO: Checkout wg fork, compile into www directory
