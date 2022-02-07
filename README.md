@@ -71,12 +71,6 @@ document.dispatchEvent(new CustomEvent('rastoc:gaze-estimated', {
 }))
 ```
 
-#### Export rastoc events
-
-The history of each run should be "rebuildable".
-For this events like calibrations or met decalibration checks should be
-exported.
-
 #### Plot experiment's history
 
 Plotting the history of a run would allow to check the exported events make
@@ -84,7 +78,9 @@ sense.
 
 #### Check user's system config
 
-Ensure the user meets some minimum reqirements about hardware.
+Ensure the user meets some minimum reqirements about hardware (
+https://www.jspsych.org/7.1/plugins/browser-check/).
+
 
 ```
   if (cameraIsAccessible) {

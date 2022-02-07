@@ -65,6 +65,7 @@ const state = {
   // eye features from last frame
   lastFrameEyesFeatures: null,
   calibrationIsNeeded: true,
+  events: null,
 };
 
 const mapCoordinateToGaze = ({ x, y }) => {
@@ -78,11 +79,11 @@ const mapCoordinateToGaze = ({ x, y }) => {
   }
   webgazer.recordScreenPosition(x, y, 'click');
   state.calibrationEyesFeatures.push(state.lastFrameEyesFeatures);
-  document.dispatchEvent(new Event('rastoc:point-calibrated'));
+  document.dispatchEvent(new CustomEvent('rastoc:point-calibrated', {
+    detail: { x, y },
+  }));
 };
 
-// TODO: This could be placed in a separate file dedicated to webgazer wrapper
-//       related stuff.
 document.addEventListener('webgazer:eye-features-update', ({
   detail: wgEyesFeature,
 }) => {
@@ -156,6 +157,49 @@ const clickToGazeCalibrationHandler = ({ clientX, clientY }) => {
     x: clientX,
     y: clientY,
   })
+};
+
+const getPayloadLessHandler = (eventName) => () => {
+  state.events.push({
+    timestamp: (new Date).toISOString(),
+    event_name: eventName,
+  });
+}
+const eventsHandlers = [
+  'rastoc:decalibration-detected',
+  'rastoc:stillness-position-recovered',
+  'rastoc:stillness-position-lost',
+  'rastoc:resetting-calibration',
+  'rastoc:calibration-started',
+  'rastoc:calibration-succeeded',
+  'rastoc:calibration-failed',
+].map((eventName) => [eventName, getPayloadLessHandler(eventName)]).concat([
+  [
+    'rastoc:point-calibrated',
+    ({ detail: { x, y } }) => state.events.push({
+      timestamp: (new Date).toISOString(),
+      event_name: 'rastoc:point-calibrated',
+      x,
+      y,
+    }),
+  ]
+]);
+const startTrackingEvents = () => {
+  if (state.events !== null) {
+    throw new Error('Events are already being tracked.');
+  }
+  state.events = [];
+  eventsHandlers.forEach(([eventName, handler]) => {
+    document.addEventListener(eventName, handler);
+  })
+};
+const stopTrackingEvents = () => {
+  eventsHandlers.forEach(([eventName, handler]) => {
+    document.removeEventListener(eventName, handler);
+  })
+  const events = state.events;
+  state.events = null;
+  return events;
 };
 
 window.rastoc = {
@@ -242,4 +286,6 @@ window.rastoc = {
   get calibrationPointsCount() {
     return state.calibrationEyesFeatures.length;
   },
+  startTrackingEvents,
+  stopTrackingEvents,
 };

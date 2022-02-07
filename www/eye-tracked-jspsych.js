@@ -5,12 +5,11 @@ const jsPsych = initJsPsych({
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
 
-// TODO: Hardware check should be done
-//       https://www.jspsych.org/7.1/plugins/browser-check/
-// TODO: Add usage of virtual-chinrest plugin to retrieve the angle of vision
-//       and draw stimulus accordingly
 jsPsych.run([{
   type: jsPsychWebgazerInitCamera,
+},
+{
+  type: rastocJSPsych.EventsTrackingStart,
 },
 rastocJSPsych.createEnsuredCalibrationNode("side-to-side"),
 {
@@ -72,4 +71,8 @@ rastocJSPsych.createEnsuredCalibrationNode("free"),
     },
   }],
   repetitions: 10,
-}]);
+},
+{
+  type: rastocJSPsych.EventsTrackingStop,
+},
+]);

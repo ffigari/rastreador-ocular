@@ -17,12 +17,38 @@ const getPsychophysiscCanvasCenter = () => {
   const y = Math.round(top + (height / 2));
   return new Point(x, y);
 }
-// TODO: Export rastoc events
-//         . create an object which captures rastoc events on an array and allow
-//           them to be retrieved later on
-//         . after each trial, add ocurred rastoc events to last trial so that
-//           behavior is more consistent with the current webgazer events
-// TODO: Check how to match js Date timestamps against JSP "time_elapsed" values
+
+class EventsTrackingStart {
+  static info = {
+    name: 'events-tracking-start',
+    parameters: {},
+  }
+  constructor(jsPsych) {
+    this.jsPsych = jsPsych;
+  }
+  trial() {
+    rastoc.startTrackingEvents();
+    jsPsych.finishTrial({
+      jspsych_start_time: this.jsPsych.getStartTime().toISOString(),
+    })
+  }
+}
+
+class EventsTrackingStop {
+  static info = {
+    name: 'events-tracking-stop',
+    parameters: {},
+  }
+  constructor(jsPsych) {
+    this.jsPsych = jsPsych;
+  }
+  trial() {
+    jsPsych.finishTrial({
+      events: rastoc.stopTrackingEvents(),
+    });
+  }
+}
+
 const createSideToSideCalibrationNode = () => {
   const totalCalibrationPoints = 9;
   let calibrationPointsCount = 0;
@@ -177,5 +203,7 @@ const createCalibrationBarrierNode = (calibrationType) => {
 window.rastocJSPsych = {
   createEnsuredCalibrationNode,
   createCalibrationBarrierNode,
+  EventsTrackingStart,
+  EventsTrackingStop,
 };
 
