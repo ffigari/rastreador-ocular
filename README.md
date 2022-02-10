@@ -6,18 +6,14 @@ It built up from the ongoing research with
 [Juan Kamienkowski](https://liaa.dc.uba.ar/juan-kamienkowski/),
 [Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/) and
 [Gustavo Juantorena](https://liaa.dc.uba.ar/gustavo-juantorena-en/), who are
-directing my master thesis at LIAA, UBA on the same topic.
-
-Ideally this can become the seed of a research based open source browser based
-eye tracking tool usable in both neuro and not neuro contexts.
-It is hoped that by providing the development grounds, specialists from
-different areas could feel invited to contribute with their unique findings.  
-The project however is yet very green.
-At the moment for example, the tool crashes after ~10 to ~14 minutes on modern
-browsers run in a modern notebook due to a yet unknown reason.
+directing [my](https://liaa.dc.uba.ar/francisco-figari-en/) master thesis at
+LIAA, UBA on the same topic.
 
 [Webgazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
 estimation.
+At the moment, this package has proven to be unreliable, with [unexpected
+crashes after a couple of minutes](
+https://github.com/jspsych/jsPsych/discussions/2490).
 A simple appearance based heuristic is provided to decide when the tool gets
 decalibrated.  
 A [JSPsych](https://www.jspsych.org/7.1/) interface was built, which relies on
