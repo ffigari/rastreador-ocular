@@ -261,6 +261,7 @@ window.rastoc = {
     let stillnessChecker;
     let correctlyCalibrated = false;
     try {
+      webgazer.computeRegressionCoefficients();
       stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
       correctlyCalibrated = true;
     } catch (e) {
