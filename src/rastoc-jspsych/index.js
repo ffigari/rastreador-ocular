@@ -1,6 +1,7 @@
 import { Point } from '../types/index.js';
+import { shuffle } from '../utils.js';
 
-const getPsychophysiscCanvasCenter = () => {
+const getPsychophysicsCanvasCenter = () => {
   // This assumes the canvas is always present. Note that if you run multiple
   // psychophysics stimulus in the same jspsych trial, then the canvas will be a
   // different one each time.
@@ -50,9 +51,36 @@ class EventsTrackingStop {
 }
 
 const createSideToSideCalibrationNode = () => {
-  const totalCalibrationPoints = 9;
-  let calibrationPointsCount = 0;
   let mapCoordinateToGaze;
+  const radius = 20;
+  // Coordinates of calibration stimulus are codified with respect to the center
+  // of the screen and are relative to the size of the viewport. Note that this
+  // last part is not consistent with related bibliography where usually
+  // stimulus positions are defined based in viewing angles.
+  const widthStep = Math.round((1 / 7) * (window.innerWidth / 2));
+  const heightStep = Math.round((1 / 7) * (window.innerHeight / 2));
+  const calibrationStimulusCoordinates = shuffle([
+    // First visit the borders of the viewport
+    [- 6 * widthStep, - 6 * heightStep],
+    [  0            , - 6 * heightStep],
+    [  6 * widthStep, - 6 * heightStep],
+    [- 6 * widthStep,   0             ],
+    [  6 * widthStep,   0             ],
+    [- 6 * widthStep,   6 * heightStep],
+    [  0            ,   6 * heightStep],
+    [  6 * widthStep,   6 * heightStep],
+  ].concat(...(
+    // ...and then particularly visit each region of interest in the horizontal
+    // middle line
+    [0, - 4 * widthStep, 4 * widthStep].map((x) => ([
+      [x            ,   0],
+      [x            , - heightStep],
+      [x            ,   heightStep],
+      [x - widthStep,   0],
+      [x + widthStep,   0],
+    ]))
+  )).map(([x, y]) => new Point(x, y)));
+  let calibrationPointsCount = 0;
   return {
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -74,21 +102,18 @@ const createSideToSideCalibrationNode = () => {
         type: jsPsychPsychophysics,
         stimuli: [{
           obj_type: 'circle',
-          radius: 20,
+          radius,
           origin_center: true,
           fill_color: 'blue',
           get startX() {
-            const x = Math.round((
-              Math.random() < 0.5 ? 1 : -1
-            ) * (
-              Math.random() * (window.innerWidth / 2 - 20)
-            ))
-            const y = 0;
+            const {
+              x, y
+            } = calibrationStimulusCoordinates[calibrationPointsCount];
             // The canvas won't be opened until after this runs...
             setTimeout(() => {
               let center;
               try {
-                center = getPsychophysiscCanvasCenter();
+                center = getPsychophysicsCanvasCenter();
               } catch (e) {
                 console.error(e)
                 throw new Error("Failed to store center coordinate of canvas");
@@ -105,7 +130,9 @@ const createSideToSideCalibrationNode = () => {
 
             return x;
           },
-          startY: 0,
+          get startY() {
+            return calibrationStimulusCoordinates[calibrationPointsCount].y;
+          },
           show_start_time: 400,
         }],
         response_type: 'key',
@@ -116,7 +143,8 @@ const createSideToSideCalibrationNode = () => {
         }
       }],
       loop_function() {
-        const keep_looping = calibrationPointsCount < totalCalibrationPoints
+        const keep_looping =
+          calibrationPointsCount < calibrationStimulusCoordinates.length;
         if (!keep_looping) {
           rastoc.endCalibrationPhase("external");
         }

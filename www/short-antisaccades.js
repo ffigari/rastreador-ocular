@@ -19,9 +19,6 @@ const getNValuesFrom = (
 const generateSaccadeNode = (trialId, isAntisaccade) => {
   const intraTrialBlankDuration = getRandomIntInclusive(500, 1000);
   const fixationDuration = getRandomIntInclusive(500, 1000);
-  // Para el RSI tendría sentido hacer una binormal porque en verdad importa
-  // estar por arriba o por debajo del valor ese de 200 ms que menciona el 
-  // artículo
   const interTrialBlankDuration = getRandomIntInclusive(150, 250); 
   const cueDuration = 700;
 
@@ -42,9 +39,10 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
     obj_type: 'circle',
     origin_center: true,
     get startX() {
-      // TODO: Rever esto en base a lo que cambie en la calibración
-      cueXDistance = (window.innerWidth / 3) - 2 * radius;
-      return (cueGoesLeft ? 1 : -1) * cueXDistance;
+      // This is computed following a logic similar to the one used to show the
+      // side to side calibration points
+      const step = Math.round((1 / 7) * (window.innerWidth / 2))
+      return (cueGoesLeft ? 1 : -1) * 4 * step;
     },
     startY: 0,
     show_start_time:
