@@ -42,13 +42,7 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
     obj_type: 'circle',
     origin_center: true,
     get startX() {
-      // TODO Add virtual chinrest support back
-      // const { px2deg } = jsPsych.data.get().values()
-      //   .find((t) => t.trial_type === "virtual-chinrest")
-      // cueXDistance = Math.round(Math.min(
-      //   (window.innerWidth / 2) - 2 * radius,
-      //   10 * px2deg
-      // ));
+      // TODO: Rever esto en base a lo que cambie en la calibración
       cueXDistance = (window.innerWidth / 3) - 2 * radius;
       return (cueGoesLeft ? 1 : -1) * cueXDistance;
     },
@@ -116,16 +110,19 @@ const generateNAntisaccadeNodes = (
 ) => generateNSaccadeNodes(n, gen, true);
 
 const TRAINING_TRIALS_COUNT = 10;
-const REAL_TRIALS_COUNT_PER_BLOCK = [50, 75, 75];
+const REAL_TRIALS_COUNT_PER_BLOCK = [50, 50, 50];
 
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('json','antisaccades.json');
+    jsPsych.data.get().localSave('json','short-antisaccades.json');
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
 
 jsPsych.run([
+  {
+    type: rastocJSPsych.EventsTrackingStart,
+  },
   {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
@@ -135,25 +132,16 @@ jsPsych.run([
         participar c:
       </p>
       <p>
-        En esta sesión vamos a realizar dos tipos de tareas (prosacada y
-        antisacada) en los cuales estaremos estimando qué punto de la
-        pantalla estás mirando. En total toma unos 20 minutos  y ocurre
-        además que nuestro sistema de estimación de mirada es muy vulnerable
-        a movimientos de cabeza. Es entonces importante que <b>te sientes en
-        un lugar cómodo</b> y posiciones la notebook tal que puedas estar en
-        la misma posición durante unos minutos. De todos modos entre medio va
-        a haber pausas para que puedas descansar un ratín.
-      </p>
-      <p>
-        <!--
-        Además, para que podamos determinar el tamaño de tu pantalla <b>vas a
-        necesitar una tarjeta tipo SUBE, DNI o tarjeta de débito</b>.
-        <br>
-        -->
-        Cuanto tengas todo dale click a "Continuar" y arrancamos.
+        En este experimento vas a realizar la tarea de antisacadas. Va a tomar
+        aproximadamente 10 minutos. Es entonces importante que <b>te sientes
+        cómodx</b>. Si estás con una notebook sentate tal que puedas estar en
+        la misma posición durante unos minutos. 
       </p>
     </div>
     `,
+    on_finish: function(data) {
+      data.user_agent = navigator.userAgent;
+    },
     choices: ["Continuar"],
   }, {
     type: jsPsychSurveyHtmlForm,
@@ -200,6 +188,17 @@ jsPsych.run([
             value="contacto"
           >
         </li>
+        <li>
+          Qué datos de hardware sabés de tu compu? Este campo es informal y
+          opcional pero cualquier dato sirve (cuánto RAM tenés? tenés placa de
+          video externa? qué CPU?) <br>
+
+          <input
+            type="text"
+            name="hardware"
+            id="hardware-input"
+          >
+        </li>
       </ul>
 
       <p>
@@ -240,59 +239,15 @@ jsPsych.run([
         Además vamos a cambiar a pantalla completa.
       </p>
       <p>
-        En el próximo paso <!--estimaremos la dimensión de tu pantalla y luego-->
-        veremos el tema de la calibración.
+        En el próximo paso veremos el tema de la calibración.
       </p>
     </div>`,
     button_label: "Continuar"
-  }, /*{
-    type: 'virtual-chinrest',
-    item_path: "card.png",
-    adjustment_prompt: `
-    <div style="text-align: left;">
-      <p>
-        Apoya la tarjeta que elegiste antes contra la imagen de acá arriba.
-        <br>
-        Después clickeá y arrastrá la esquina inferior derecha de la imagen
-        hasta que coincidan los tamaños.
-      </p>
-    <div>
-    `,
-    adjustment_button_prompt:
-      "Clickeá acá cuando el tamaño de la imagen sea el correcto",
-    blindspot_prompt: `
-    <div style="text-align: left">
-      <p>Ahora vamos a medir qué tan lejos de la pantalla estás.</p>
-      <ol>
-        <li>Poné tu mano izquierda sobre la <b>barra de espacio</b>.</li>
-        <li>Cubrí tu ojo derecho con tu mano derecha.</li>
-        <li>Usando tu ojo izquierdo, enfocá el cuadrado negro. Asegurate
-        de mantener el foco en él.</li>
-        <li>El <span style="color: red; font-weight: bold;">círculo
-        rojo</span> va a desaparecer mientras se mueve desde la derecha a
-        la izquierda. Presioná la barra de espacio cuando el círculo
-        desaparezca.</li>
-      </ol>
-      <p>Presioná la barra de espacio cuando estés listo para comenzar.</p>
-    </div>
-      `,
-    redo_measurement_button_label: "No, eso no parece correcto. Reintentar.",
-    blindspot_done_prompt: "Sí, esa distancia parece bien.",
-    blindspot_measurements_prompt: "Medidas restantes:",
-    viewing_distance_report: `
-      <p>
-        Basado en tus respuestas, estás sentandote a aproximadamente <span
-        id='distance-estimate' style='font-weight: bold;'></span> de la
-        pantalla.
-      </p>
-      <p>
-        Te parece que está bien esa estimación?
-      </p>
-    `
-  },*/ {
+  }, {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
     <div style="text-align: left">
+      <h3>Calibración</h3>
       <p>
         El sistema en cuestión requiere ser inicialmente calibrado para
         poder estimar la mirada. Además, cada vez que detectemos demasiado
@@ -329,48 +284,23 @@ jsPsych.run([
     stimulus: `
         <div style="text-align: left">
           <p>
-            Vamos a arrancar con una ronda de prueba para que te familiarices
-            con ambas tareas. Ahora tocan 10 repeticiones de cada una. Luego
-            para cada tarea haremos 250 repeticiones divididas en tres bloques.
+            Ahora vamos a hacer una ronda corta de la tarea de antisacadas para
+            que te familiarices con ella. Luego haremos 150 repeticiones
+            divididas en tres bloques con pausas entremedio.
           </p>
           <p>
-            La tarea de <span style="color: green; font-weight:
-            bold;">prosacada</span> consiste en primero fijar la mirada en una
+            La tarea consiste en primero fijar la mirada en una
             <b>cruz central negra</b> y luego mirar en la <span style="color:
-            green; font-weight: bold;">misma dirección</span> en la cual
-            aparece un <span style="color: green; font-weight: bold;">círculo
-            verde lateral</span>.
+            red; font-weight: bold;">dirección opuesta</span> en la cual
+            aparece un <span style="color: red; font-weight: bold;">círculo
+            rojo lateral</span>.
           </p>
           <p>
             Al hacer click en "Continuar" realizarás 10 repeticiones de prueba 
-            de la tarea de <span style="color: green; font-weight:
-            bold;">prosacada</span>.
+            de la tarea.
           </p>
         </div>
         `,
-    choices: ["Continuar"],
-  },
-  generateNProsaccadeNodes(TRAINING_TRIALS_COUNT, idsGenerator),
-  {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-        <div style="text-align: left">
-          <p>
-            Ahora vamos a practicar la tarea de <span style="color: red;
-            font-weight: bold;">antisacada</span>. Similar a la tarea anterior,
-            esta consiste en primero fijar la mirada en una <b>cruz central
-            negra</b> pero en luego mirar en la <span style="color: red;
-            font-weight: bold;">dirección opuesta</span> a la cual aparece un
-            <span style="color: red; font-weight: bold;">círculo rojo
-            lateral</span>.
-          </p>
-          <p>
-            Al hacer click en "Continuar" realizarás 10 repeticiones de prueba 
-            de la tarea de <span style="color: red; font-weight:
-            bold;">antisacada</span>.
-          </p>
-        </div>
-      `,
     choices: ["Continuar"],
   },
   generateNAntisaccadeNodes(TRAINING_TRIALS_COUNT, idsGenerator)
@@ -378,65 +308,40 @@ jsPsych.run([
   {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-          <p>
-            Ahora comenzaremos con los bloques reales, arrancando con uno de
-            prosacadas (mirar en la misma dirección).
-          </p>
-        `,
-    choices: ["Continuar"]
-  },
-  generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[0], idsGenerator),
-  {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-          <p>
-            Ahora toca el primer bloque de antisacadas (mirar en la dirección opuesta).
-          </p>
-        `,
+      <p>
+        Ahora arrancan las repeticiones reales de la tarea. Acordate que tenés
+        que mirar en la dirección <span style="color: red; font-weight:
+        bold;">opuesta</span>. Presioná "Continuar" para arrancar.
+      </p>
+    `,
     choices: ["Continuar"]
   },
   generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[0], idsGenerator),
   {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-          <p>
-            Segundo bloque de prosacada (mirar en la misma dirección).
-          </p>
-        `,
-    choices: ["Continuar"]
-  },
-  generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[1], idsGenerator),
-  {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-          <p>
-            Segundo bloque de antisacada (mirar en la dirección opuesta).
-          </p>
-        `,
+      <p>
+        Fin del primer bloque. Descansá los ojos y cuando estés listx
+        continuamos con el segundo bloque.
+      </p>
+    `,
     choices: ["Continuar"]
   },
   generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[1], idsGenerator),
   {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-          <p>
-            Último bloque de prosacada (mirar en la misma dirección).
-          </p>
-        `,
-    choices: ["Continuar"]
-  },
-  generateNProsaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[2], idsGenerator),
-  {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-          <p>
-            Último bloque de antisacadas (mirar en la dirección opuesta). Luego de este
-            bloque, cuando la pantalla quede en blanco habremos terminado y ahí
-            ya podés cerrar esta pestaña. Gracias nuevamente por haber
-            participado!
-          </p>
-        `,
+      <p>
+        Ya casi! Queda el último bloque. Luego de este bloque, cuando la
+        pantalla quede en blanco habremos terminado y ahí ya podés cerrar esta
+        pestaña. Gracias nuevamente por haber participado!
+      </p>
+    `,
     choices: ["Continuar"]
   },
   generateNAntisaccadeNodes(REAL_TRIALS_COUNT_PER_BLOCK[2], idsGenerator)
+).concat(
+  {
+    type: rastocJSPsych.EventsTrackingStop,
+  },
 ));

@@ -187,8 +187,8 @@ const createCalibrationBarrierNode = (calibrationType) => {
       choices: [' '],
       stimulus: `
       <p>
-        Decalibration detected.
-        Press <i>Space</i> to proceed with calibration
+        Descalibración detectada.
+        Presioná <i>Espacio</i> para proceder con la calibración.
       <p>
       `,
     }, createEnsuredCalibrationNode(calibrationType)],
@@ -198,8 +198,6 @@ const createCalibrationBarrierNode = (calibrationType) => {
   }
 };
 
-// TODO: Add side to side calibration
-//         . allow calibration method to be chosen via a parameter
 window.rastocJSPsych = {
   createEnsuredCalibrationNode,
   createCalibrationBarrierNode,
