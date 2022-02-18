@@ -228,13 +228,6 @@ window.rastoc = {
         document.addEventListener('click', clickToGazeCalibrationHandler);
       }
 
-      // Enable gaze visualization after one click
-      const fn = () => {
-        showGazeEstimation();
-        document.removeEventListener('click', fn);
-      };
-      document.addEventListener('click', fn);
-
       document.dispatchEvent(new Event('rastoc:calibration-started'));
     }, 0);
 
@@ -255,8 +248,6 @@ window.rastoc = {
     if (calibrationType === "click") {
       document.removeEventListener('click', clickToGazeCalibrationHandler);
     }
-
-    hideGazeEstimation();
 
     let stillnessChecker;
     let correctlyCalibrated = false;
