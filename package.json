@@ -6,10 +6,7 @@
     "webpack": "^5.64.4"
   },
   "dependencies": {
-    "@tensorflow-models/face-landmarks-detection": "0.0.3",
-    "@tensorflow/tfjs-backend-cpu": "^3.11.0",
-    "@tensorflow/tfjs-backend-webgl": "^3.11.0",
-    "@tensorflow/tfjs-converter": "^3.11.0",
-    "@tensorflow/tfjs-core": "^3.11.0"
+    "@tensorflow-models/facemesh": "0.0.3",
+    "@tensorflow/tfjs": "^2.0.1"
   }
 }
