@@ -189,7 +189,6 @@ document.addEventListener('rastoc:eye-features-update', ({
 
   const ctx = eyesBBoxesCanvas.getContext('2d');
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.globalAlpha = 0.5;
   ['left', 'right'].forEach((side) => {
     const { origin: { x, y }, width, height } = lastEyesFeatures.bboxes[side];
     ctx.globalAlpha = 0.4;
@@ -197,5 +196,4 @@ document.addEventListener('rastoc:eye-features-update', ({
     ctx.fillRect(x, y, width, height);
     ctx.globalAlpha = 1;
   })
-  ctx.globalAlpha = 1;
 })
