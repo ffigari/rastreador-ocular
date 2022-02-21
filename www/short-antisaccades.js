@@ -42,7 +42,8 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
       // This is computed following a logic similar to the one used to show the
       // side to side calibration points
       const step = Math.round((1 / 7) * (window.innerWidth / 2))
-      return (cueGoesLeft ? 1 : -1) * 4 * step;
+      cueXDistance = (cueGoesLeft ? 1 : -1) * 4 * step;
+      return cueXDistance;
     },
     startY: 0,
     show_start_time:
@@ -84,9 +85,6 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
         data.interTrialBlankDuration = interTrialBlankDuration;
         data.cueDuration = cueDuration;
 
-        // TODO: Is it needed for this value to be translated into a coordinate?
-        //       Storing the coordinates of the center of the viewport should be
-        //       enough
         data.cueXDistance = cueXDistance;
       }
     }]
@@ -139,6 +137,8 @@ jsPsych.run([
     `,
     on_finish: function(data) {
       data.user_agent = navigator.userAgent;
+      data.inner_width = window.innerWidth;
+      data.inner_height = window.innerHeight;
     },
     choices: ["Continuar"],
   }, {
@@ -266,7 +266,7 @@ jsPsych.run([
         <li>presionar la <b>barra de espacio</b></li>
       </ol>
       <p>
-        En el próximo paso relizarás la calibración inicial.
+        En el próximo paso realizarás la calibración inicial.
         <br>
         Si más adelante detectamos demasiado movimiento entoces te vamos a
         avisar así recalibramos el sistema.

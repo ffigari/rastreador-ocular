@@ -92,9 +92,6 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
         data.interTrialBlankDuration = interTrialBlankDuration;
         data.cueDuration = cueDuration;
 
-        // TODO: Is it needed for this value to be translated into a coordinate?
-        //       Storing the coordinates of the center of the viewport should be
-        //       enough
         data.cueXDistance = cueXDistance;
       }
     }]
@@ -118,6 +115,8 @@ const generateNAntisaccadeNodes = (
 const TRAINING_TRIALS_COUNT = 10;
 const REAL_TRIALS_COUNT_PER_BLOCK = [50, 75, 75];
 
+// TODO: If this exp is used it could use some updates based on what was added
+//       to the short antisaccades task
 const jsPsych = initJsPsych({
   on_finish: function() {
     jsPsych.data.get().localSave('json','antisaccades.json');
