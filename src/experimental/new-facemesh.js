@@ -1,10 +1,9 @@
 import '@tensorflow/tfjs-backend-webgl';
-import '@tensorflow/tfjs-backend-cpu';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
-import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import * as tf from '@tensorflow/tfjs-core';
 
 import { setUpInputVideo } from './utils.js';
+import { Point, BBox } from '../types/index.js'
 
 const paintEyesBBoxes = async (videoCanvasElement, videoElement) => {
   await tf.ready;
@@ -31,27 +30,47 @@ const paintEyesBBoxes = async (videoCanvasElement, videoElement) => {
     if (predictions.length > 0) {
       const { scaledMesh } = predictions[0];
 
-      // TODO: The election of these coordinates strongly impact on the shape of
-      //       the resulting bounding box. WG behavior should be imitated.
-      const topLeftOrigin = {
-        x: Math.round(scaledMesh[46][0]),
-        y: Math.round(scaledMesh[46][1]),
-      };
-      const botRightOrigin = {
-        x: Math.round(scaledMesh[128][0]),
-        y: Math.round(scaledMesh[128][1]),
-      };
-      const left = {
-        origin: topLeftOrigin,
-        width: botRightOrigin.x - topLeftOrigin.x,
-        height: botRightOrigin.y - topLeftOrigin.y,
-      }
+      [
+        // left
+        {
+          eyeTopArcKeypoints: [
+            25, 33, 246, 161, 160, 159, 158, 157, 173, 243,
+          ],
+          eyeBottomArcKeypoints: [
+            25, 110, 24, 23, 22, 26, 112, 243,
+          ],
+        },
+        // right
+        {
+          eyeTopArcKeypoints: [
+            463, 398, 384, 385, 386, 387, 388, 466, 263, 255,
+          ],
+          eyeBottomArcKeypoints: [
+            463, 341, 256, 252, 253, 254, 339, 255,
+          ],
+        },
+      ].forEach(({ eyeTopArcKeypoints, eyeBottomArcKeypoints }) => {
+        const topLeftOrigin = new Point(
+          Math.round(Math.min(...eyeTopArcKeypoints.map(k => scaledMesh[k][0]))),
+          Math.round(Math.min(...eyeTopArcKeypoints.map(k => scaledMesh[k][1])))
+        );
+        const bottomRightOrigin = new Point(
+          Math.round(Math.max(...eyeBottomArcKeypoints.map(k => scaledMesh[k][0]))),
+          Math.round(Math.max(...eyeBottomArcKeypoints.map(k => scaledMesh[k][1]))),
+        );
 
-      ctx.globalAlpha = 0.4;
-      ctx.fillStyle = 'red';
-      ctx.fillRect(left.origin.x, left.origin.y, left.width, left.height);
-      //ctx.fillRect(right.origin.x, right.origin.y, right.width, right.height);
-      ctx.globalAlpha = 1;
+        const eyeBBox = new BBox(
+          topLeftOrigin,
+          bottomRightOrigin.x - topLeftOrigin.x,
+          bottomRightOrigin.y - topLeftOrigin.y,
+        );
+
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(eyeBBox.origin.x, eyeBBox.origin.y, eyeBBox.width, eyeBBox.height);
+        ctx.globalAlpha = 1;
+      })
+
     }
     window.requestAnimationFrame(loop);
   }

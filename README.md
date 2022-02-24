@@ -52,8 +52,6 @@ To load the old model run:
 ```bash
 npm r \
   @tensorflow-models/face-landmarks-detection \
-  @tensorflow/tfjs-backend-cpu \
-  @tensorflow/tfjs-backend-wasm \
   @tensorflow/tfjs-backend-webgl \
   @tensorflow/tfjs-converter \
   @tensorflow/tfjs-core
@@ -71,8 +69,6 @@ npm r \
   wg-tf-facemesh
 npm i \
   @tensorflow-models/face-landmarks-detection \
-  @tensorflow/tfjs-backend-cpu \
-  @tensorflow/tfjs-backend-wasm \
   @tensorflow/tfjs-backend-webgl \
   @tensorflow/tfjs-converter \
   @tensorflow/tfjs-core
