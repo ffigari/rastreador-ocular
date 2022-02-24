@@ -5,4 +5,5 @@ __pycache__
 output
 www/build
 www/vendor
-www/facemeshes.js
+www/old-facemesh.js
+www/new-facemesh.js

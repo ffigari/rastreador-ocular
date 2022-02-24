@@ -1,44 +1,18 @@
-import * as tf from '@tensorflow/tfjs';
-import { load } from "@tensorflow-models/facemesh";
+import * as wgTf from 'wg-tfjs';
+import { load as wgFacemeshLoader } from 'wg-tf-facemesh';
 
-const setUpInputVideo = async () => {
-  const videoElement = document.getElementById("webcam-video");
-  const videoCanvasElement = document.getElementById("webcam-canvas");
-  videoElement.srcObject = await navigator.mediaDevices.getUserMedia({
-    video: {
-      width: { min: 320, ideal: 640, max: 1920 },
-      height: { min: 240, ideal: 480, max: 1080 },
-      facingMode: "user"
-    }
-  });
-  await new Promise((res) => {
-    const setUpCanvas = () => {
-      videoCanvasElement.width = videoElement.videoWidth;
-      videoCanvasElement.height = videoElement.videoHeight;
+import { setUpInputVideo } from './utils.js';
 
-      videoElement.removeEventListener('timeupdate', setUpCanvas)
-      res();
-    }
-    videoElement.addEventListener('timeupdate', setUpCanvas)
-  })
-  return { videoCanvasElement, videoElement };
-}
-
-  new Promise((res) => {
-});
-
-const main = async () => {
-  await tf.ready;
-  console.log('tf versions:', tf.version)
-  const facemeshModel = await load({"maxFaces": 1});
-  console.log('current tf backend:', tf.getBackend())
-
-  const { videoCanvasElement, videoElement } = await setUpInputVideo();
+const paintEyesBBoxes = async (videoCanvasElement, videoElement) => {
+  await wgTf.ready;
+  console.log('wgTf versions:', wgTf.version)
+  const facemeshModel = await wgFacemeshLoader({"maxFaces": 1});
+  console.log('current wgTf backend:', wgTf.getBackend())
 
   let right, left;
   let i = 0;
   const loop = async () => {
-    console.log(`${i++}-th iteration`);
+    console.log(`${i++}-th iteration of old predictor`);
     const ctx = videoCanvasElement.getContext('2d');
     ctx.drawImage(
       videoElement, 0, 0,
@@ -67,7 +41,7 @@ const main = async () => {
       const rightOriginX = Math.round(Math.min(scaledMesh[414][0], scaledMesh[463][0], scaledMesh[453][0]));
       const rightOriginY = Math.round(Math.min(scaledMesh[414][1], scaledMesh[257][1], scaledMesh[467][1]));
       right = {
-        origin: { x: rightOriginX, y: leftOriginY },
+        origin: { x: rightOriginX, y: rightOriginY },
         width: Math.round(Math.max(scaledMesh[467][0], scaledMesh[359][0], scaledMesh[255][0]) - rightOriginX),
         height: Math.round(Math.max(scaledMesh[341][1], scaledMesh[253][1], scaledMesh[255][1]) - rightOriginY),
       }
@@ -75,5 +49,9 @@ const main = async () => {
     window.requestAnimationFrame(loop);
   }
   window.requestAnimationFrame(loop);
-}
-document.addEventListener('DOMContentLoaded', main);
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const { videoCanvasElement, videoElement } = await setUpInputVideo();
+  await paintEyesBBoxes(videoCanvasElement, videoElement);
+});
