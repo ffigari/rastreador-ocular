@@ -15,6 +15,7 @@ const paintEyesBBoxes = async (videoCanvasElement, videoElement) => {
   console.log('current tf backend:', tf.getBackend());
 
   const ctx = videoCanvasElement.getContext('2d');
+  let i = 0;
   const loop = async () => {
     const predictions = await model.estimateFaces({
       input: videoElement,
@@ -28,6 +29,7 @@ const paintEyesBBoxes = async (videoCanvasElement, videoElement) => {
       videoCanvasElement.height
     );
     if (predictions.length > 0) {
+      console.log(`${i++}-th estimation`);
       const { scaledMesh } = predictions[0];
 
       [
