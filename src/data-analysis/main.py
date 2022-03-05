@@ -9,7 +9,6 @@ antisaccades_data_path = 'src/data-analysis/short-antisaccades'
 trials = []
 for file_path in os.listdir(antisaccades_data_path):
     p = re.compile('short-antisaccades_(\d{1,3}).csv')
-    print('\n', file_path)
     run_id = p.match(file_path).group(1)
     with open(os.path.join(antisaccades_data_path, file_path), 'r') as f:
         csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
@@ -78,7 +77,10 @@ def normalize(trial):
         x = (
             -1 if trial['cue_show_at_left'] else 1
         ) * (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
-        estimations.append({ 'x': x, 't': g['t'] })
+        estimations.append({
+            'x': x,
+            't': g['t']
+        })
     cue_t_start = \
         trial['pre_duration'] + \
         trial['fixation_duration'] + \
@@ -86,18 +88,63 @@ def normalize(trial):
     for e in estimations:
         e['t'] -= cue_t_start
     return {
-        "estimations": estimations
+        "run_id": trial["run_id"],
+        "trial_id": trial["trial_id"],
+        "estimations": estimations,
+        "pre_start": - cue_t_start,
+        "fixation_start": - cue_t_start + trial['pre_duration'],
+        "mid_start": - cue_t_start + trial['pre_duration'] + trial['fixation_duration'],
+        "cue_start": 0,
+        "cue_finish": trial['cue_duration']
     }
 
-d = [normalize(t) for t in trials]
+def has_enough_mid_estimations(trial):
+    return len([
+        e for e in trial['estimations'] if trial['mid_start'] <= e['t'] <= trial['cue_start']
+    ]) > 0
+
+def separate_into_phases(trial):
+    trial['pre_estimations'] = [
+        e for e in trial['estimations'] if trial['pre_start'] <= e['t'] <= trial['fixation_start']
+    ]
+    trial['fixation_estimations'] = [
+        e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
+    ]
+    trial['mid_estimations'] = [
+        e for e in trial['estimations'] if trial['mid_start'] <= e['t'] <= trial['cue_start']
+    ]
+    trial['cue_estimations'] = [
+        e for e in trial['estimations'] if trial['cue_start'] <= e['t'] <= trial['cue_finish']
+    ]
+    trial['pre_estimations'].append(trial['fixation_estimations'][0])
+    trial['fixation_estimations'].append(trial['mid_estimations'][0])
+    trial['mid_estimations'].append(trial['cue_estimations'][0])
+    return trial
+
+c = [normalize(t) for t in trials]
+d = [separate_into_phases(t) for t in c if has_enough_mid_estimations(t)]
+if len(c) - len(d):
+    print(
+        "%d trials out of %d were filtered out due to not having mid phase estimations" % (
+            len(c) - len(d),
+            len(c)
+        )
+    )
 fig, ax = plt.subplots()
 for t in d:
-    ax.plot(
-        [e['t'] for e in t['estimations']],
-        [e['x'] for e in t['estimations']],
-        alpha=0.4,
-        linewidth=0.7
-    )
+    for (phase, color) in [
+        ('pre_estimations', 'red'),
+        ('fixation_estimations', 'green'),
+        ('mid_estimations', 'blue'),
+        ('cue_estimations', 'black'),
+    ]:
+        ax.plot(
+            [e['t'] for e in t[phase]],
+            [e['x'] for e in t[phase]],
+            alpha=0.4,
+            linewidth=0.3,
+            color=color,
+        )
 ax.axvline( 0, linestyle="--", color='black', alpha=0.3)
 ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
 ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
