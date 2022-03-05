@@ -4,7 +4,26 @@ import os
 import json
 import matplotlib.pyplot as plt
 
-# Read trials results
+def plot_x_coordinate_in_function_of_time(ax, trials):
+    for t in d:
+        for (phase, color) in [
+            ('pre_estimations', 'red'),
+            ('fixation_estimations', 'green'),
+            ('mid_estimations', 'blue'),
+            ('cue_estimations', 'black'),
+        ]:
+            ax.plot(
+                [e['t'] for e in t[phase]],
+                [e['x'] for e in t[phase]],
+                alpha=0.4,
+                linewidth=0.3,
+                color=color,
+            )
+    ax.axvline( 0, linestyle="--", color='black', alpha=0.3)
+    ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
+    ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
+
+# Read
 antisaccades_data_path = 'src/data-analysis/short-antisaccades'
 trials = []
 for file_path in os.listdir(antisaccades_data_path):
@@ -55,16 +74,7 @@ for file_path in os.listdir(antisaccades_data_path):
             trial['inner_width'] = inner_width
         trials.extend(run_trials)
 
-#fig, ax = plt.subplots()
-#for trial in trials:
-#    ax.plot(
-#        [e['t'] for e in trial['gaze_estimations']],
-#        [e['x'] for e in trial['gaze_estimations']],
-#        alpha=0.4,
-#        linewidth=0.7
-#    )
-#plt.show()
-
+# Transform
 def normalize(trial):
     estimations = []
     for g in trial["gaze_estimations"]:
@@ -130,22 +140,31 @@ if len(c) - len(d):
             len(c)
         )
     )
-fig, ax = plt.subplots()
+
+#fig, ax = plt.subplots()
+#plot_x_coordinate_in_function_of_time(ax, d)
+#plt.show()
+
+# Filter
+trials_per_run = {}
 for t in d:
-    for (phase, color) in [
-        ('pre_estimations', 'red'),
-        ('fixation_estimations', 'green'),
-        ('mid_estimations', 'blue'),
-        ('cue_estimations', 'black'),
-    ]:
-        ax.plot(
-            [e['t'] for e in t[phase]],
-            [e['x'] for e in t[phase]],
-            alpha=0.4,
-            linewidth=0.3,
-            color=color,
-        )
-ax.axvline( 0, linestyle="--", color='black', alpha=0.3)
-ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
-ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
+    if t['run_id'] not in trials_per_run:
+        trials_per_run[t['run_id']] = []
+    trials_per_run[t['run_id']].append(t)
+
+i = 0
+def run_is_symmetrical(trials):
+    global i
+    i += 1
+    return i % 2 == 0
+symmetrical_trials = []
+asymmetrical_trials = []
+for _, run_trials in trials_per_run:
+    if run_is_symmetrical(run_trials):
+        symmetrical_trials.extend(run_trials)
+    else:
+        asymmetrical_trials.extend(run_trials)
+fig, axs = plt.subplots(ncols=1, nrows=2)
+plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
+plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
 plt.show()
