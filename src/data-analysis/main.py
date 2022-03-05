@@ -67,7 +67,7 @@ for file_path in os.listdir(antisaccades_data_path):
 #plt.show()
 
 def normalize(trial):
-    delta_xs = []
+    estimations = []
     for g in trial["gaze_estimations"]:
         # Center, normalize and mirror data
         # To prevent having to take into account the side in which the visual
@@ -78,18 +78,27 @@ def normalize(trial):
         x = (
             -1 if trial['cue_show_at_left'] else 1
         ) * (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
-        delta_xs.append({ 'x': x, 't': g['t'] })
+        estimations.append({ 'x': x, 't': g['t'] })
+    cue_t_start = \
+        trial['pre_duration'] + \
+        trial['fixation_duration'] + \
+        trial['mid_duration']
+    for e in estimations:
+        e['t'] -= cue_t_start
     return {
-        "delta_xs": delta_xs
+        "estimations": estimations
     }
 
 d = [normalize(t) for t in trials]
 fig, ax = plt.subplots()
 for t in d:
     ax.plot(
-        [e['t'] for e in t['delta_xs']],
-        [e['x'] for e in t['delta_xs']],
+        [e['t'] for e in t['estimations']],
+        [e['x'] for e in t['estimations']],
         alpha=0.4,
         linewidth=0.7
     )
+ax.axvline( 0, linestyle="--", color='black', alpha=0.3)
+ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
+ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
 plt.show()
