@@ -5,7 +5,7 @@ import json
 import matplotlib.pyplot as plt
 
 def plot_x_coordinate_in_function_of_time(ax, trials):
-    for t in d:
+    for t in trials:
         for (phase, color) in [
             ('pre_estimations', 'red'),
             ('fixation_estimations', 'green'),
@@ -23,7 +23,6 @@ def plot_x_coordinate_in_function_of_time(ax, trials):
     ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
     ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
 
-# Read
 antisaccades_data_path = 'src/data-analysis/short-antisaccades'
 trials = []
 for file_path in os.listdir(antisaccades_data_path):
@@ -48,7 +47,7 @@ for file_path in os.listdir(antisaccades_data_path):
 
         run_trials = []
         inner_width = None
-        # TODO: Hay que saltarse los trials iniciales de prueba
+        # TODO: Skip starting training trials
         for row in csv_rows_iterator:
             if row[inner_width_idx] != '"':
                 inner_width = json.loads(row[inner_width_idx])
@@ -58,7 +57,7 @@ for file_path in os.listdir(antisaccades_data_path):
                     "gaze_estimations": json.loads(row[wg_data_idx]),
                     "center_x": json.loads(row[center_x_idx]),
                     "center_y": json.loads(row[center_y_idx]),
-                    "cue_show_at_left": json.loads(row[cue_shown_at_left_idx]),
+                    "cue_shown_at_left": json.loads(row[cue_shown_at_left_idx]),
                     "cue_abs_x_delta": abs(json.loads(row[cue_x_delta_idx])),
                     "pre_duration": json.loads(row[pre_trial_duration_idx]),
                     "fixation_duration": json.loads(row[fixation_duration_idx]),
@@ -74,39 +73,58 @@ for file_path in os.listdir(antisaccades_data_path):
             trial['inner_width'] = inner_width
         trials.extend(run_trials)
 
-# Transform
+def format(trial):
+    return {
+        "run_id": trial["run_id"],
+        "trial_id": trial["trial_id"],
+        "estimations": trial['gaze_estimations'],
+        "center_x": trial["center_x"],
+
+        "pre_start": 0,
+        "fixation_start": trial['pre_duration'],
+        "mid_start": \
+            trial['pre_duration'] + \
+            trial['fixation_duration'],
+        "cue_start": \
+            trial['pre_duration'] + \
+            trial['fixation_duration'] + \
+            trial['mid_duration'],
+        "cue_finish": \
+            trial['pre_duration'] + \
+            trial['fixation_duration'] + \
+            trial['mid_duration'] + \
+            trial['cue_duration'],
+
+        "cue_shown_at_left": trial["cue_shown_at_left"],
+        "cue_abs_x_delta": trial["cue_abs_x_delta"]
+    }
+trials = [format(t) for t in trials]
+
 def normalize(trial):
     estimations = []
-    for g in trial["gaze_estimations"]:
-        # Center, normalize and mirror data
-        # To prevent having to take into account the side in which the visual
-        # cue is shown, we mirror the data when it gets shown in the left side.
-        # Then the coordinate gets also centered and normalized so that we can
-        # assume that on every trial and for every subject the coordinate in 
-        # which the stimulus was shown is x = 1
-        x = (
-            -1 if trial['cue_show_at_left'] else 1
-        ) * (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
+    for g in trial["estimations"]:
+        # Center and normalize x coordinate so that we can assume that on every
+        # trial and for every subject the coordinate in which the stimulus was
+        # shown is x = 1
+        x = (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
         estimations.append({
             'x': x,
             't': g['t']
         })
-    cue_t_start = \
-        trial['pre_duration'] + \
-        trial['fixation_duration'] + \
-        trial['mid_duration']
-    for e in estimations:
-        e['t'] -= cue_t_start
-    return {
-        "run_id": trial["run_id"],
-        "trial_id": trial["trial_id"],
-        "estimations": estimations,
-        "pre_start": - cue_t_start,
-        "fixation_start": - cue_t_start + trial['pre_duration'],
-        "mid_start": - cue_t_start + trial['pre_duration'] + trial['fixation_duration'],
-        "cue_start": 0,
-        "cue_finish": trial['cue_duration']
-    }
+    trial['estimations'] = estimations
+
+    # Shift time values so that all trials are aligned at the start of the 
+    # visual cuet
+    cue_start = trial['cue_start']
+    for e in trial['estimations']:
+        e['t'] -= cue_start
+    trial["pre_start"] -= cue_start
+    trial["fixation_start"] -= cue_start
+    trial["mid_start"] -= cue_start
+    trial["cue_start"] -= cue_start
+    trial["cue_finish"] -= cue_start
+    return trial
+trials = [normalize(t) for t in trials]
 
 def has_enough_mid_estimations(trial):
     return len([
@@ -131,35 +149,39 @@ def separate_into_phases(trial):
     trial['mid_estimations'].append(trial['cue_estimations'][0])
     return trial
 
-c = [normalize(t) for t in trials]
-d = [separate_into_phases(t) for t in c if has_enough_mid_estimations(t)]
-if len(c) - len(d):
+d = [separate_into_phases(t) for t in trials if has_enough_mid_estimations(t)]
+if len(trials) - len(d):
     print(
         "%d trials out of %d were filtered out due to not having mid phase estimations" % (
-            len(c) - len(d),
-            len(c)
+            len(trials) - len(d),
+            len(trials)
         )
     )
+trials = d
 
-#fig, ax = plt.subplots()
-#plot_x_coordinate_in_function_of_time(ax, d)
-#plt.show()
+fix, ax = plt.subplots()
+plot_x_coordinate_in_function_of_time(ax, trials)
+plt.show()
 
-# Filter
 trials_per_run = {}
-for t in d:
+for t in trials:
     if t['run_id'] not in trials_per_run:
         trials_per_run[t['run_id']] = []
     trials_per_run[t['run_id']].append(t)
 
-i = 0
 def run_is_symmetrical(trials):
-    global i
-    i += 1
-    return i % 2 == 0
+    mean_mean_x = 0
+    for t in trials:
+        mean_x = 0
+        for e in t['estimations']:
+            mean_x += e['x']
+        mean_x = mean_x / len(t['estimations'])
+        mean_mean_x += mean_x
+    mean_mean_x = mean_mean_x / len(trials)
+    return abs(mean_mean_x) < 0.3
 symmetrical_trials = []
 asymmetrical_trials = []
-for _, run_trials in trials_per_run:
+for _, run_trials in trials_per_run.items():
     if run_is_symmetrical(run_trials):
         symmetrical_trials.extend(run_trials)
     else:
@@ -167,4 +189,18 @@ for _, run_trials in trials_per_run:
 fig, axs = plt.subplots(ncols=1, nrows=2)
 plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
 plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
+plt.show()
+trials = symmetrical_trials
+
+def mirror(trial):
+    for e in trial['estimations']:
+        e['x'] = (
+            -1 if trial['cue_shown_at_left'] else 1
+        ) * e['x']
+    return trial
+
+fig, axs = plt.subplots(ncols=1, nrows=2)
+plot_x_coordinate_in_function_of_time(axs[0], trials)
+trials = [mirror(t) for t in trials]
+plot_x_coordinate_in_function_of_time(axs[1], trials)
 plt.show()
