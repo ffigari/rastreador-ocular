@@ -159,9 +159,10 @@ if len(trials) - len(d):
     )
 trials = d
 
-fix, ax = plt.subplots()
-plot_x_coordinate_in_function_of_time(ax, trials)
-plt.show()
+#fix, ax = plt.subplots()
+#plot_x_coordinate_in_function_of_time(ax, trials)
+#ax.set_title("normalized data")
+#plt.show()
 
 trials_per_run = {}
 for t in trials:
@@ -186,10 +187,19 @@ for _, run_trials in trials_per_run.items():
         symmetrical_trials.extend(run_trials)
     else:
         asymmetrical_trials.extend(run_trials)
-fig, axs = plt.subplots(ncols=1, nrows=2)
-plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
-plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
-plt.show()
+#fig, axs = plt.subplots(ncols=1, nrows=2)
+#plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
+#axs[0].set_title("symmetrical runs' trials")
+#plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
+#axs[1].set_title("asymmetrical runs' trials")
+#plt.show()
+if len(asymmetrical_trials) > 0:
+    print(
+        "%d trials out of %d were filtered out due to belonging to asymmetrical runs" % (
+            len(asymmetrical_trials),
+            len(asymmetrical_trials) + len(symmetrical_trials)
+        )
+    )
 trials = symmetrical_trials
 
 def mirror(trial):
@@ -201,6 +211,8 @@ def mirror(trial):
 
 fig, axs = plt.subplots(ncols=1, nrows=2)
 plot_x_coordinate_in_function_of_time(axs[0], trials)
+axs[0].set_title("non mirrored data")
 trials = [mirror(t) for t in trials]
 plot_x_coordinate_in_function_of_time(axs[1], trials)
+axs[1].set_title("mirrored data")
 plt.show()
