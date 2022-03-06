@@ -105,7 +105,7 @@ def normalize(trial):
     for g in trial["estimations"]:
         # Center and normalize x coordinate so that we can assume that on every
         # trial and for every subject the coordinate in which the stimulus was
-        # shown is x = 1
+        # shown is x = 1 or x = -1
         x = (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
         estimations.append({
             'x': x,
@@ -204,15 +204,42 @@ trials = symmetrical_trials
 
 def mirror(trial):
     for e in trial['estimations']:
+        # Mirror data so that we can assume the stimulus was shown at x = 1
         e['x'] = (
             -1 if trial['cue_shown_at_left'] else 1
         ) * e['x']
     return trial
 
+#fig, axs = plt.subplots(ncols=1, nrows=2)
+#plot_x_coordinate_in_function_of_time(axs[0], trials)
+#axs[0].set_title("non mirrored data")
+#trials = [mirror(t) for t in trials]
+#plot_x_coordinate_in_function_of_time(axs[1], trials)
+#axs[1].set_title("mirrored data")
+#plt.show()
+
+def fixation_marker_is_focused(trial):
+    x_after_saccade_time = [
+        abs(e['x'])
+        for e
+        in trial['fixation_estimations']
+        if trial['fixation_start'] + 200 <= e['t'] <= trial['mid_start']
+    ]
+    avg_x = sum(x_after_saccade_time) / len(x_after_saccade_time)
+    return avg_x < 0.15
+
+fixation_focused_trials = []
+fixation_non_focused_trials = []
+for t in trials:
+    if fixation_marker_is_focused(t):
+        fixation_focused_trials.append(t)
+    else:
+        fixation_non_focused_trials.append(t)
+print(len(trials), len(fixation_focused_trials), len(fixation_non_focused_trials))
 fig, axs = plt.subplots(ncols=1, nrows=2)
-plot_x_coordinate_in_function_of_time(axs[0], trials)
-axs[0].set_title("non mirrored data")
-trials = [mirror(t) for t in trials]
-plot_x_coordinate_in_function_of_time(axs[1], trials)
-axs[1].set_title("mirrored data")
+plot_x_coordinate_in_function_of_time(axs[0], fixation_focused_trials)
+axs[0].set_title("fixation was focused")
+plot_x_coordinate_in_function_of_time(axs[1], fixation_non_focused_trials)
+axs[1].set_title("fixation was not focused")
 plt.show()
+trials = fixation_focused_trials
