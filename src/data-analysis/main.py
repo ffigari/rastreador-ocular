@@ -164,12 +164,6 @@ trials = d
 #ax.set_title("normalized data")
 #plt.show()
 
-trials_per_run = {}
-for t in trials:
-    if t['run_id'] not in trials_per_run:
-        trials_per_run[t['run_id']] = []
-    trials_per_run[t['run_id']].append(t)
-
 def run_is_symmetrical(trials):
     mean_mean_x = 0
     for t in trials:
@@ -180,13 +174,19 @@ def run_is_symmetrical(trials):
         mean_mean_x += mean_x
     mean_mean_x = mean_mean_x / len(trials)
     return abs(mean_mean_x) < 0.3
-symmetrical_trials = []
-asymmetrical_trials = []
+
+trials_per_run = {}
+for t in trials:
+    if t['run_id'] not in trials_per_run:
+        trials_per_run[t['run_id']] = []
+    trials_per_run[t['run_id']].append(t)
 for _, run_trials in trials_per_run.items():
-    if run_is_symmetrical(run_trials):
-        symmetrical_trials.extend(run_trials)
-    else:
-        asymmetrical_trials.extend(run_trials)
+    is_symmetrical = run_is_symmetrical(run_trials)
+    for t in run_trials:
+        t['belongs_to_symmetric_run'] = is_symmetrical
+
+symmetrical_trials = [t for t in trials if t['belongs_to_symmetric_run']]
+asymmetrical_trials = [t for t in trials if not t['belongs_to_symmetric_run']]
 #fig, axs = plt.subplots(ncols=1, nrows=2)
 #plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
 #axs[0].set_title("symmetrical runs' trials")
@@ -213,7 +213,7 @@ def mirror(trial):
 #fig, axs = plt.subplots(ncols=1, nrows=2)
 #plot_x_coordinate_in_function_of_time(axs[0], trials)
 #axs[0].set_title("non mirrored data")
-#trials = [mirror(t) for t in trials]
+trials = [mirror(t) for t in trials]
 #plot_x_coordinate_in_function_of_time(axs[1], trials)
 #axs[1].set_title("mirrored data")
 #plt.show()
@@ -226,16 +226,16 @@ def fixation_marker_is_focused(trial):
         if trial['fixation_start'] + 200 <= e['t'] <= trial['mid_start']
     ]
     avg_x = sum(x_after_saccade_time) / len(x_after_saccade_time)
-    return avg_x < 0.15
-
-fixation_focused_trials = []
-fixation_non_focused_trials = []
+    return avg_x < 0.4
 for t in trials:
-    if fixation_marker_is_focused(t):
-        fixation_focused_trials.append(t)
-    else:
-        fixation_non_focused_trials.append(t)
-print(len(trials), len(fixation_focused_trials), len(fixation_non_focused_trials))
+    t['fixation_marker_was_focused'] = fixation_marker_is_focused(t)
+
+fixation_focused_trials = [
+    t for t in trials if t['fixation_marker_was_focused']
+]
+fixation_non_focused_trials = [
+    t for t in trials if not t['fixation_marker_was_focused']
+]
 fig, axs = plt.subplots(ncols=1, nrows=2)
 plot_x_coordinate_in_function_of_time(axs[0], fixation_focused_trials)
 axs[0].set_title("fixation was focused")
