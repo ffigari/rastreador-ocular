@@ -36,6 +36,13 @@ Run `./install.sh` to install dependencies.
 Run `node index.js` for build instructions.
 Check node version at `.nvmrc`.
 
+To setup Python env:
+```sh
+python -m venv py-env
+source py-env/bin/activate
+pip install -r requirements.txt
+```
+
 ### Old facemesh
 
 At `./src/experimental/old-facemesh-behavior/` you can find a couple of
