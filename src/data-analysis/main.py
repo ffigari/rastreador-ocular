@@ -47,11 +47,16 @@ for file_path in os.listdir(antisaccades_data_path):
 
         run_trials = []
         inner_width = None
-        # TODO: Skip starting training trials
+        i = 0
         for row in csv_rows_iterator:
             if row[inner_width_idx] != '"':
                 inner_width = json.loads(row[inner_width_idx])
             if row[exp_name_idx] == "antisaccade":
+                i += 1
+                if i < 10:
+                    # skip 10 first trials which are training trials
+                    continue
+
                 run_trials.append({
                     "trial_id": json.loads(row[trial_id_idx]),
                     "gaze_estimations": json.loads(row[wg_data_idx]),
@@ -128,7 +133,11 @@ trials = [normalize(t) for t in trials]
 
 def has_enough_mid_estimations(trial):
     return len([
+        e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
+    ]) > 0 and len([
         e for e in trial['estimations'] if trial['mid_start'] <= e['t'] <= trial['cue_start']
+    ]) > 0 and len([
+        e for e in trial['estimations'] if trial['cue_start'] <= e['t'] <= trial['cue_finish']
     ]) > 0
 
 def separate_into_phases(trial):
@@ -159,10 +168,10 @@ if len(trials) - len(d):
     )
 trials = d
 
-#fix, ax = plt.subplots()
-#plot_x_coordinate_in_function_of_time(ax, trials)
-#ax.set_title("normalized data")
-#plt.show()
+fix, ax = plt.subplots()
+plot_x_coordinate_in_function_of_time(ax, trials)
+ax.set_title("normalized data")
+plt.show()
 
 def run_is_symmetrical(trials):
     mean_mean_x = 0
@@ -187,12 +196,12 @@ for _, run_trials in trials_per_run.items():
 
 symmetrical_trials = [t for t in trials if t['belongs_to_symmetric_run']]
 asymmetrical_trials = [t for t in trials if not t['belongs_to_symmetric_run']]
-#fig, axs = plt.subplots(ncols=1, nrows=2)
-#plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
-#axs[0].set_title("symmetrical runs' trials")
-#plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
-#axs[1].set_title("asymmetrical runs' trials")
-#plt.show()
+fig, axs = plt.subplots(ncols=1, nrows=2)
+plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
+axs[0].set_title("symmetrical runs' trials")
+plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
+axs[1].set_title("asymmetrical runs' trials")
+plt.show()
 if len(asymmetrical_trials) > 0:
     print(
         "%d trials out of %d were filtered out due to belonging to asymmetrical runs" % (
