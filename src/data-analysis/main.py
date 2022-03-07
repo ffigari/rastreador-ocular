@@ -4,6 +4,7 @@ import os
 import json
 import matplotlib.pyplot as plt
 
+MINIMUM_SAMPLING_FREQUENCY = 15
 def plot_x_coordinate_in_function_of_time(ax, trials):
     for t in trials:
         for (phase, color) in [
@@ -79,10 +80,17 @@ for file_path in os.listdir(antisaccades_data_path):
         trials.extend(run_trials)
 
 def format(trial):
+    estimations = trial['gaze_estimations']
+    total_duration_in_ms = \
+        trial['pre_duration'] + \
+        trial['fixation_duration'] + \
+        trial['mid_duration'] + \
+        trial['cue_duration']
     return {
         "run_id": trial["run_id"],
         "trial_id": trial["trial_id"],
-        "estimations": trial['gaze_estimations'],
+        "estimations": estimations,
+        "sampling_frequency": len(estimations) / (total_duration_in_ms / 1000),
         "center_x": trial["center_x"],
 
         "pre_start": 0,
@@ -94,16 +102,54 @@ def format(trial):
             trial['pre_duration'] + \
             trial['fixation_duration'] + \
             trial['mid_duration'],
-        "cue_finish": \
-            trial['pre_duration'] + \
-            trial['fixation_duration'] + \
-            trial['mid_duration'] + \
-            trial['cue_duration'],
+        "cue_finish": total_duration_in_ms,
 
         "cue_shown_at_left": trial["cue_shown_at_left"],
         "cue_abs_x_delta": trial["cue_abs_x_delta"]
     }
 trials = [format(t) for t in trials]
+
+# Compute and filter by sampling frequency
+frequencies_grouped_per_run = {}
+for t in trials:
+    if t['run_id'] not in frequencies_grouped_per_run:
+        frequencies_grouped_per_run[t['run_id']] = []
+    frequencies_grouped_per_run[t['run_id']].append(t['sampling_frequency'])
+fig, ax = plt.subplots()
+frequencies_per_run = {}
+for k, v in frequencies_grouped_per_run.items():
+    frequencies_per_run[k] = sum(v) / len(v)
+ax.hist(
+    [v for _, v in frequencies_per_run.items()],
+    ec="black"
+)
+plt.show()
+ids_of_runs_without_enough_frequency = [
+    k
+    for k, v
+    in frequencies_per_run.items()
+    if v < MINIMUM_SAMPLING_FREQUENCY
+]
+previous_len = len(trials)
+trials = [
+    t
+    for t
+    in trials
+    if t['run_id'] not in ids_of_runs_without_enough_frequency
+]
+dropped_count = previous_len - len(trials)
+if dropped_count > 0:
+    print(
+        "trials from %d runs (%d trials out of %d) were dropped due to not having enough sampling frequency (minimum of Hz)" % (
+            len(ids_of_runs_without_enough_frequency),
+            dropped_count,
+            previous_len,
+            MINIMUM_SAMPLING_FREQUENCY
+        )
+    )
+
+# TODO: Perform uniform sampling
+
 
 def normalize(trial):
     estimations = []
@@ -131,7 +177,7 @@ def normalize(trial):
     return trial
 trials = [normalize(t) for t in trials]
 
-def has_enough_mid_estimations(trial):
+def has_enough_estimations(trial):
     return len([
         e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
     ]) > 0 and len([
@@ -158,10 +204,10 @@ def separate_into_phases(trial):
     trial['mid_estimations'].append(trial['cue_estimations'][0])
     return trial
 
-d = [separate_into_phases(t) for t in trials if has_enough_mid_estimations(t)]
+d = [separate_into_phases(t) for t in trials if has_enough_estimations(t)]
 if len(trials) - len(d):
     print(
-        "%d trials out of %d were filtered out due to not having mid phase estimations" % (
+        "%d trials out of %d were filtered out due to not having enough estimations" % (
             len(trials) - len(d),
             len(trials)
         )
