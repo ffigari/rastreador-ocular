@@ -3,6 +3,7 @@ import re
 import os 
 import json
 import matplotlib.pyplot as plt
+from statistics import mean, stdev
 
 MINIMUM_SAMPLING_FREQUENCY = 15
 def plot_x_coordinate_in_function_of_time(ax, trials):
@@ -118,17 +119,32 @@ for t in trials:
 fig, ax = plt.subplots()
 frequencies_per_run = {}
 for k, v in frequencies_grouped_per_run.items():
-    frequencies_per_run[k] = sum(v) / len(v)
+    frequencies_per_run[k] = {
+        'mean': mean(v),
+        'std': stdev(v)
+    }
+    
 ax.hist(
-    [v for _, v in frequencies_per_run.items()],
+    [v['mean'] for _, v in frequencies_per_run.items()],
     ec="black"
 )
+ax.set_title("Mean sampling frequency grouped by run")
+print('\n== sampling frequency')
+print('run id | mean | stdev')
+for k, v in frequencies_per_run.items():
+    print("%d | %f | %f" % (int(k), v['mean'], v['std']))
+print('==')
+print('mean | %f | %f' % (
+    mean([v['mean'] for k, v in frequencies_per_run.items()]),
+    mean([v['std'] for k, v in frequencies_per_run.items()])
+))
+print('====')
 plt.show()
 ids_of_runs_without_enough_frequency = [
     k
     for k, v
     in frequencies_per_run.items()
-    if v < MINIMUM_SAMPLING_FREQUENCY
+    if v['mean'] < MINIMUM_SAMPLING_FREQUENCY
 ]
 previous_len = len(trials)
 trials = [
@@ -140,7 +156,7 @@ trials = [
 dropped_count = previous_len - len(trials)
 if dropped_count > 0:
     print(
-        "trials from %d runs (%d trials out of %d) were dropped due to not having enough sampling frequency (minimum of Hz)" % (
+        "trials from %d runs (%d trials out of %d) were dropped due to not having enough sampling frequency (minimum of %d Hz)" % (
             len(ids_of_runs_without_enough_frequency),
             dropped_count,
             previous_len,
@@ -149,7 +165,6 @@ if dropped_count > 0:
     )
 
 # TODO: Perform uniform sampling
-
 
 def normalize(trial):
     estimations = []
