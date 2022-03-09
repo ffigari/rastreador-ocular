@@ -170,6 +170,39 @@ if dropped_count > 0:
         )
     )
 
+def pre_estimations(trial):
+    return [
+        e for e in trial['estimations'] if trial['pre_start'] <= e['t'] <= trial['fixation_start']
+    ]
+def fixation_estimations(trial):
+    return [
+        e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
+    ]
+def mid_estimations(trial):
+    return [
+        e for e in trial['estimations'] if trial['mid_start'] <= e['t'] <= trial['cue_start']
+    ]
+def cue_estimations(trial):
+    return [
+        e for e in trial['estimations'] if trial['cue_start'] <= e['t'] <= trial['cue_finish']
+    ]
+def has_enough_estimations(trial):
+    return \
+        len(pre_estimations(trial)) > 0 and \
+        len(fixation_estimations(trial)) > 0 and \
+        len(mid_estimations(trial)) > 0 and \
+        len(cue_estimations(trial)) > 0
+
+d = [t for t in trials if has_enough_estimations(t)]
+if len(trials) - len(d):
+    print(
+        "%d trials out of %d were filtered out due to not having enough estimations" % (
+            len(trials) - len(d),
+            len(trials)
+        )
+    )
+trials = d
+
 def normalize(trial):
     estimations = []
     for g in trial["estimations"]:
@@ -246,16 +279,6 @@ def uniformize_sampling(trial):
 trials = [uniformize_sampling(t) for t in trials]
 print('sampling rate frequency uniformized to %d Hz' % TARGET_SAMPLING_FREQUENCY_IN_HZ)
 
-# TODO: Creo que esto puedo mandarlo a antes de normalizar
-def has_enough_estimations(trial):
-    return len([
-        e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
-    ]) > 0 and len([
-        e for e in trial['estimations'] if trial['mid_start'] <= e['t'] <= trial['cue_start']
-    ]) > 0 and len([
-        e for e in trial['estimations'] if trial['cue_start'] <= e['t'] <= trial['cue_finish']
-    ]) > 0
-
 def separate_into_phases(trial):
     trial['pre_estimations'] = [
         e for e in trial['estimations'] if trial['pre_start'] <= e['t'] <= trial['fixation_start']
@@ -273,16 +296,7 @@ def separate_into_phases(trial):
     trial['fixation_estimations'].append(trial['mid_estimations'][0])
     trial['mid_estimations'].append(trial['cue_estimations'][0])
     return trial
-
-d = [separate_into_phases(t) for t in trials if has_enough_estimations(t)]
-if len(trials) - len(d):
-    print(
-        "%d trials out of %d were filtered out due to not having enough estimations" % (
-            len(trials) - len(d),
-            len(trials)
-        )
-    )
-trials = d
+trials = [separate_into_phases(t) for t in trials]
 
 if SHOW_STUFF:
     fix, ax = plt.subplots()
