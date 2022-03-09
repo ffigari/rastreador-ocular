@@ -360,8 +360,11 @@ for t in trials:
     if t['run_id'] not in trials_per_run:
         trials_per_run[t['run_id']] = []
     trials_per_run[t['run_id']].append(t)
+asymmetrical_runs_count = 0
 for _, run_trials in trials_per_run.items():
     is_symmetrical = run_is_symmetrical(run_trials)
+    if not is_symmetrical:
+        asymmetrical_runs_count += 1
     for t in run_trials:
         t['belongs_to_symmetric_run'] = is_symmetrical
 
@@ -373,12 +376,12 @@ if SHOW_STUFF:
     axs[0].set_title("symmetrical runs' trials")
     plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials, already_mirrored=False)
     axs[1].set_title("asymmetrical runs' trials")
-    print(plt.rcParams["figure.subplot.hspace"])
     fig.subplots_adjust(hspace = 0.5)
     plt.show()
 if len(asymmetrical_trials) > 0:
     print(
-        "%d trials out of %d were filtered out due to belonging to asymmetrical runs" % (
+        "trials from %d runs (in total %d out of %d) were filtered out due to belonging to asymmetrical runs" % (
+            asymmetrical_runs_count,
             len(asymmetrical_trials),
             len(asymmetrical_trials) + len(symmetrical_trials)
         )
