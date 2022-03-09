@@ -197,7 +197,56 @@ def normalize(trial):
     trial["cue_finish"] -= cue_start
     return trial
 trials = [normalize(t) for t in trials]
+print('data normalized')
 
+def uniformize_sampling(trial):
+    t0 = trial['estimations'][0]['t']
+    tn = trial['estimations'][-1]['t']
+
+    def interpolate_between(x, xa, ya, xb, yb):
+        # Here x and y are not used as the screen coordinates but as the
+        # classic horizontal vs vertical axis.
+        # Check https://en.wikipedia.org/wiki/Interpolation#Linear_interpolation
+        if not xa <= x <= xb:
+            raise Exception('can not interpolate outside of input points')
+        return ya + (yb - ya) * (x - xa) / (xb - xa)
+
+    def interpolate(t, axis):
+        if t >= tn + TARGET_SAMPLING_PERIOD_IN_MS:
+            raise Exception('input time is too big to interpolate')
+        if t >= tn:
+            return trial['estimations'][-1][axis]
+
+        # find first bucket in which `t` is contained
+        for i in range(1, len(trial['estimations'])):
+            if trial['estimations'][i]['t'] > t:
+                past_estimation = trial['estimations'][i - 1]
+                # at this point `t < tn` so i != len(estimations)
+                future_estimation = trial['estimations'][i]
+                # this is the bucket since estimations are sorted by time
+                return interpolate_between(
+                    t,
+                    past_estimation['t'], past_estimation[axis],
+                    future_estimation['t'], future_estimation[axis],
+                )
+        raise Exception('you should not be here')
+
+    resampled_estimations = []
+    t = t0
+    while t < tn + TARGET_SAMPLING_PERIOD_IN_MS:
+        resampled_estimations.append({
+            'x': interpolate(t, 'x'),
+            'y': interpolate(t, 'y'),
+            't': t
+        })
+        t += TARGET_SAMPLING_PERIOD_IN_MS
+    
+    trial['estimations'] = resampled_estimations
+    return trial
+trials = [uniformize_sampling(t) for t in trials]
+print('sampling rate frequency uniformized to %d Hz' % TARGET_SAMPLING_FREQUENCY_IN_HZ)
+
+# TODO: Creo que esto puedo mandarlo a antes de normalizar
 def has_enough_estimations(trial):
     return len([
         e for e in trial['estimations'] if trial['fixation_start'] <= e['t'] <= trial['mid_start']
