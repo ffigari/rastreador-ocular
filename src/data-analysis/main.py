@@ -91,7 +91,10 @@ for file_path in os.listdir(antisaccades_data_path):
                     "gaze_estimations": json.loads(row[wg_data_idx]),
                     "center_x": json.loads(row[center_x_idx]),
                     "center_y": json.loads(row[center_y_idx]),
-                    "cue_shown_at_left": json.loads(row[cue_shown_at_left_idx]),
+                    # The following variable was incorrectly named when the
+                    # experiment was set up
+                    # Check line 47 of www/short-antisaccades.js
+                    "cue_shown_at_left": not json.loads(row[cue_shown_at_left_idx]),
                     "cue_abs_x_delta": abs(json.loads(row[cue_x_delta_idx])),
                     "pre_duration": json.loads(row[pre_trial_duration_idx]),
                     "fixation_duration": json.loads(row[fixation_duration_idx]),

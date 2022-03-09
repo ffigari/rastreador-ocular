@@ -42,6 +42,8 @@ const generateSaccadeNode = (trialId, isAntisaccade) => {
       // This is computed following a logic similar to the one used to show the
       // side to side calibration points
       const step = Math.round((1 / 7) * (window.innerWidth / 2))
+      // the usage of the `cueGoesLeft` was the opposite of what its name
+      // suggest. When true, the cue es getting shown to the right
       cueXDistance = (cueGoesLeft ? 1 : -1) * 4 * step;
       return cueXDistance;
     },
