@@ -5,7 +5,11 @@ import json
 import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
-MINIMUM_SAMPLING_FREQUENCY = 15
+MINIMUM_SAMPLING_FREQUENCY_IN_HZ = 15
+TARGET_SAMPLING_FREQUENCY_IN_HZ = 25
+TARGET_SAMPLING_PERIOD_IN_MS = 1000 * (1 / TARGET_SAMPLING_FREQUENCY_IN_HZ)
+SHOW_STUFF = False
+
 def plot_x_coordinate_in_function_of_time(ax, trials):
     for t in trials:
         for (phase, color) in [
@@ -116,7 +120,6 @@ for t in trials:
     if t['run_id'] not in frequencies_grouped_per_run:
         frequencies_grouped_per_run[t['run_id']] = []
     frequencies_grouped_per_run[t['run_id']].append(t['sampling_frequency'])
-fig, ax = plt.subplots()
 frequencies_per_run = {}
 for k, v in frequencies_grouped_per_run.items():
     frequencies_per_run[k] = {
@@ -124,27 +127,30 @@ for k, v in frequencies_grouped_per_run.items():
         'std': stdev(v)
     }
     
-ax.hist(
-    [v['mean'] for _, v in frequencies_per_run.items()],
-    ec="black"
-)
-ax.set_title("Mean sampling frequency grouped by run")
-print('\n== sampling frequency')
-print('run id | mean | stdev')
-for k, v in frequencies_per_run.items():
-    print("%d | %f | %f" % (int(k), v['mean'], v['std']))
-print('==')
-print('mean | %f | %f' % (
-    mean([v['mean'] for k, v in frequencies_per_run.items()]),
-    mean([v['std'] for k, v in frequencies_per_run.items()])
-))
-print('====')
-plt.show()
+if SHOW_STUFF:
+    fig, ax = plt.subplots()
+    ax.hist(
+        [v['mean'] for _, v in frequencies_per_run.items()],
+        ec="black"
+    )
+    ax.set_title("Mean sampling frequency grouped by run")
+    print('\n== sampling frequency')
+    print('run id | mean | stdev')
+    for k, v in frequencies_per_run.items():
+        print("%d | %f | %f" % (int(k), v['mean'], v['std']))
+    print('==')
+    print('mean | %f | %f' % (
+        mean([v['mean'] for k, v in frequencies_per_run.items()]),
+        mean([v['std'] for k, v in frequencies_per_run.items()])
+    ))
+    print('====')
+    plt.show()
+
 ids_of_runs_without_enough_frequency = [
     k
     for k, v
     in frequencies_per_run.items()
-    if v['mean'] < MINIMUM_SAMPLING_FREQUENCY
+    if v['mean'] < MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 ]
 previous_len = len(trials)
 trials = [
@@ -160,11 +166,9 @@ if dropped_count > 0:
             len(ids_of_runs_without_enough_frequency),
             dropped_count,
             previous_len,
-            MINIMUM_SAMPLING_FREQUENCY
+            MINIMUM_SAMPLING_FREQUENCY_IN_HZ
         )
     )
-
-# TODO: Perform uniform sampling
 
 def normalize(trial):
     estimations = []
@@ -229,10 +233,11 @@ if len(trials) - len(d):
     )
 trials = d
 
-fix, ax = plt.subplots()
-plot_x_coordinate_in_function_of_time(ax, trials)
-ax.set_title("normalized data")
-plt.show()
+if SHOW_STUFF:
+    fix, ax = plt.subplots()
+    plot_x_coordinate_in_function_of_time(ax, trials)
+    ax.set_title("normalized data")
+    plt.show()
 
 def run_is_symmetrical(trials):
     mean_mean_x = 0
@@ -257,12 +262,13 @@ for _, run_trials in trials_per_run.items():
 
 symmetrical_trials = [t for t in trials if t['belongs_to_symmetric_run']]
 asymmetrical_trials = [t for t in trials if not t['belongs_to_symmetric_run']]
-fig, axs = plt.subplots(ncols=1, nrows=2)
-plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
-axs[0].set_title("symmetrical runs' trials")
-plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
-axs[1].set_title("asymmetrical runs' trials")
-plt.show()
+if SHOW_STUFF:
+    fig, axs = plt.subplots(ncols=1, nrows=2)
+    plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
+    axs[0].set_title("symmetrical runs' trials")
+    plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
+    axs[1].set_title("asymmetrical runs' trials")
+    plt.show()
 if len(asymmetrical_trials) > 0:
     print(
         "%d trials out of %d were filtered out due to belonging to asymmetrical runs" % (
@@ -280,13 +286,15 @@ def mirror(trial):
         ) * e['x']
     return trial
 
-#fig, axs = plt.subplots(ncols=1, nrows=2)
-#plot_x_coordinate_in_function_of_time(axs[0], trials)
-#axs[0].set_title("non mirrored data")
+if SHOW_STUFF:
+    fig, axs = plt.subplots(ncols=1, nrows=2)
+    plot_x_coordinate_in_function_of_time(axs[0], trials)
+    axs[0].set_title("non mirrored data")
 trials = [mirror(t) for t in trials]
-#plot_x_coordinate_in_function_of_time(axs[1], trials)
-#axs[1].set_title("mirrored data")
-#plt.show()
+if SHOW_STUFF:
+    plot_x_coordinate_in_function_of_time(axs[1], trials)
+    axs[1].set_title("mirrored data")
+    plt.show()
 
 def fixation_marker_is_focused(trial):
     x_after_saccade_time = [
