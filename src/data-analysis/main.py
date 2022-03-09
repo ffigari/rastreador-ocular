@@ -8,9 +8,9 @@ from statistics import mean, stdev
 MINIMUM_SAMPLING_FREQUENCY_IN_HZ = 15
 TARGET_SAMPLING_FREQUENCY_IN_HZ = 25
 TARGET_SAMPLING_PERIOD_IN_MS = 1000 * (1 / TARGET_SAMPLING_FREQUENCY_IN_HZ)
-SHOW_STUFF = False
+SHOW_STUFF = True
 
-def plot_x_coordinate_in_function_of_time(ax, trials):
+def plot_x_coordinate_in_function_of_time(ax, trials, already_mirrored=True):
     for t in trials:
         for (phase, color) in [
             ('pre_estimations', 'red'),
@@ -25,9 +25,32 @@ def plot_x_coordinate_in_function_of_time(ax, trials):
                 linewidth=0.3,
                 color=color,
             )
-    ax.axvline( 0, linestyle="--", color='black', alpha=0.3)
-    ax.axhline( 1, linestyle="--", color='black', alpha=0.3)
-    ax.axhline(-1, linestyle="--", color='black', alpha=0.3)
+    ax.axvline(
+        0,
+        linestyle="--",
+        color='black',
+        alpha=0.3,
+        label="apparition of visual cue"
+    )
+    ax.axhline(
+        1,
+        linestyle="--",
+        color='red',
+        alpha=0.3,
+        label='position of visual cue' if already_mirrored else 'position of right visual cue'
+    )
+    if not already_mirrored:
+        ax.axhline(
+            -1,
+            linestyle="--",
+            color='blue',
+            alpha=0.3,
+            label='position of left visual cue'
+        )
+    ax.set_xlabel('time (in ms)')
+    ax.set_ylabel('x coordinate of estimation')
+    ax.set_title("evolution of estimation's x coordinate")
+    ax.legend(loc='upper left')
 
 antisaccades_data_path = 'src/data-analysis/short-antisaccades'
 trials = []
@@ -133,6 +156,23 @@ if SHOW_STUFF:
         [v['mean'] for _, v in frequencies_per_run.items()],
         ec="black"
     )
+    ax.axvline(
+        MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
+        linestyle="--",
+        color='red',
+        alpha=0.3,
+        label="minimum sampling frequency"
+    )
+    ax.axvline(
+        TARGET_SAMPLING_FREQUENCY_IN_HZ,
+        linestyle="--",
+        color='black',
+        alpha=0.3,
+        label="target sampling frequency"
+    )
+    ax.legend()
+    ax.set_xlabel('frequency (in Hz)')
+    ax.set_ylabel('amount of runs')
     ax.set_title("Mean sampling frequency grouped by run")
     print('\n== sampling frequency')
     print('run id | mean | stdev')
@@ -300,7 +340,7 @@ trials = [separate_into_phases(t) for t in trials]
 
 if SHOW_STUFF:
     fix, ax = plt.subplots()
-    plot_x_coordinate_in_function_of_time(ax, trials)
+    plot_x_coordinate_in_function_of_time(ax, trials, already_mirrored=False)
     ax.set_title("normalized data")
     plt.show()
 
@@ -329,10 +369,12 @@ symmetrical_trials = [t for t in trials if t['belongs_to_symmetric_run']]
 asymmetrical_trials = [t for t in trials if not t['belongs_to_symmetric_run']]
 if SHOW_STUFF:
     fig, axs = plt.subplots(ncols=1, nrows=2)
-    plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials)
+    plot_x_coordinate_in_function_of_time(axs[0], symmetrical_trials, already_mirrored=False)
     axs[0].set_title("symmetrical runs' trials")
-    plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials)
+    plot_x_coordinate_in_function_of_time(axs[1], asymmetrical_trials, already_mirrored=False)
     axs[1].set_title("asymmetrical runs' trials")
+    print(plt.rcParams["figure.subplot.hspace"])
+    fig.subplots_adjust(hspace = 0.5)
     plt.show()
 if len(asymmetrical_trials) > 0:
     print(
@@ -353,7 +395,7 @@ def mirror(trial):
 
 if SHOW_STUFF:
     fig, axs = plt.subplots(ncols=1, nrows=2)
-    plot_x_coordinate_in_function_of_time(axs[0], trials)
+    plot_x_coordinate_in_function_of_time(axs[0], trials, already_mirrored=False)
     axs[0].set_title("non mirrored data")
 trials = [mirror(t) for t in trials]
 if SHOW_STUFF:
