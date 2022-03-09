@@ -179,6 +179,8 @@ def normalize(trial):
         x = (g['x'] - trial['center_x']) / trial['cue_abs_x_delta']
         estimations.append({
             'x': x,
+            # i'm leavin `y` unchanged since atm it's not used later on
+            'y': g['y'],
             't': g['t']
         })
     trial['estimations'] = estimations
