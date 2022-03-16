@@ -129,8 +129,8 @@ def tag_artifacted_trials(trials):
         # This assumes the data has already been centered around the visual cue. 
         too_many_estimations = t['estimations'][-1]['t'] > 800
 
-        # Run 26 seems to be pure noise
-        is_noisy = t['run_id'] == 26
+        # Run 26 seems to be pure noise and 54 is pretty asymmetric
+        is_noisy = t['run_id'] in [26, 54]
 
         if too_many_estimations or is_noisy:
             count += 1
