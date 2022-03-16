@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
-from utils import load_trials
-from utils import uniformize_sampling
 from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 from constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
+from utils import center_trial_time_around_visual_cue_start
+from utils import load_trials
+from utils import uniformize_sampling
 
 SHOW_STUFF = True
 
@@ -174,17 +175,7 @@ def normalize(trial):
         })
     trial['estimations'] = estimations
 
-    # Shift time values so that all trials are aligned at the start of the 
-    # visual cuet
-    cue_start = trial['cue_start']
-    for e in trial['estimations']:
-        e['t'] -= cue_start
-    trial["pre_start"] -= cue_start
-    trial["fixation_start"] -= cue_start
-    trial["mid_start"] -= cue_start
-    trial["cue_start"] -= cue_start
-    trial["cue_finish"] -= cue_start
-    return trial
+    return center_trial_time_around_visual_cue_start(trial)
 trials = [normalize(t) for t in trials]
 print('data normalized')
 

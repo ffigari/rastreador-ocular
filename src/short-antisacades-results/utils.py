@@ -145,3 +145,17 @@ def uniformize_trial_sampling(trial):
 
 def uniformize_sampling(trials):
     return [uniformize_trial_sampling(t) for t in trials]
+
+def center_trial_time_around_visual_cue_start(trial):
+    cue_start = trial['cue_start']
+    for e in trial['estimations']:
+        e['t'] -= cue_start
+    trial["pre_start"] -= cue_start
+    trial["fixation_start"] -= cue_start
+    trial["mid_start"] -= cue_start
+    trial["cue_start"] -= cue_start
+    trial["cue_finish"] -= cue_start
+    return trial
+
+def center_time_around_visual_cues_start(trials):
+    return [center_trial_time_around_visual_cue_start(t) for t in trials]
