@@ -2,6 +2,7 @@ import os
 import json
 import re
 import csv
+from statistics import mean, stdev
 
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.sampling import tag_low_frecuency_trials
@@ -88,6 +89,7 @@ def load_trials():
     
                     "cue_shown_at_left": trial["cue_shown_at_left"],
                     "cue_abs_x_delta": trial["cue_abs_x_delta"],
+                    "inner_width": inner_width,
                     "outlier": False  # This boolean will be modified as filters
                                       # are applied to indicate whether the
                                       # trial should be discarded
@@ -141,10 +143,42 @@ def tag_artifacted_trials(trials):
         ))
     return trials
 
+def compute_deviation(all_trials):
+    trials_by_run = group_by_run(all_trials)
+    for run_id, trials in trials_by_run.items():
+        center_x = trials[0]['center_x']
+        for t in trials:
+            if t['center_x'] != center_x:
+                raise Exception(
+                    'different center x values were found inside the same run'
+                )
+
+        mean_fixations = []
+        for t in trials:
+            trial_mean_fixation_estimation = mean([
+                e['x']
+                for e
+                in t['estimations']
+                if t['fixation_start'] + 200 <= e['t'] <= t['mid_start']
+            ])
+            t['mean_fixation_estimation'] = trial_mean_fixation_estimation
+            mean_fixations.append(trial_mean_fixation_estimation)
+        estimated_center_mean = mean(mean_fixations)
+
+        center_deviation_factor = estimated_center_mean / center_x
+        for t in trials:
+            t['run_center_x'] = center_x
+            t['run_estimated_center_mean'] = estimated_center_mean
+            t['run_estimated_center_stdev'] = stdev(mean_fixations)
+            t['run_deviation_factor'] = center_deviation_factor
+    return all_trials
+
 def load_cleaned_up_trials():
     return \
+        compute_deviation(
         tag_artifacted_trials(
         center_time_around_visual_cues_start(
         uniformize_sampling(
         tag_low_frecuency_trials(
-        load_trials()))))
+        load_trials())))))
+
