@@ -34,14 +34,20 @@ bug.
 
 Run `./install.sh` to install dependencies.  
 Run `node index.js` for build instructions.
-Check node version at `.nvmrc`.
+Check node version at `.nvmrc`.  
+At `src/rastoc/` and `src/rastoc-jspsych/` you can find the entry points of the
+main code.
 
 To setup Python env:
 ```sh
 python -m venv py-env
 source py-env/bin/activate
 pip install -r requirements.txt
-```
+```  
+`src/short-antisaccades-results/` contains a couple of scripts which plot the
+analysis of the obtained data.
+To run them, enable the python env and then use
+`python src/short-antisaccades-results/<script>`.
 
 ### Old facemesh
 
