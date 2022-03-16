@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
 from utils import load_trials
+from utils import uniformize_sampling
+from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from constants import TARGET_SAMPLING_PERIOD_IN_MS
 
-MINIMUM_SAMPLING_FREQUENCY_IN_HZ = 15
-TARGET_SAMPLING_FREQUENCY_IN_HZ = 25
-TARGET_SAMPLING_PERIOD_IN_MS = 1000 * (1 / TARGET_SAMPLING_FREQUENCY_IN_HZ)
 SHOW_STUFF = True
 
 def plot_x_coordinate_in_function_of_time(ax, trials, already_mirrored=True):
@@ -187,51 +188,7 @@ def normalize(trial):
 trials = [normalize(t) for t in trials]
 print('data normalized')
 
-def uniformize_sampling(trial):
-    t0 = trial['estimations'][0]['t']
-    tn = trial['estimations'][-1]['t']
-
-    def interpolate_between(x, xa, ya, xb, yb):
-        # Here x and y are not used as the screen coordinates but as the
-        # classic horizontal vs vertical axis.
-        # Check https://en.wikipedia.org/wiki/Interpolation#Linear_interpolation
-        if not xa <= x <= xb:
-            raise Exception('can not interpolate outside of input points')
-        return ya + (yb - ya) * (x - xa) / (xb - xa)
-
-    def interpolate(t, axis):
-        if t >= tn + TARGET_SAMPLING_PERIOD_IN_MS:
-            raise Exception('input time is too big to interpolate')
-        if t >= tn:
-            return trial['estimations'][-1][axis]
-
-        # find first bucket in which `t` is contained
-        for i in range(1, len(trial['estimations'])):
-            if trial['estimations'][i]['t'] > t:
-                past_estimation = trial['estimations'][i - 1]
-                # at this point `t < tn` so i != len(estimations)
-                future_estimation = trial['estimations'][i]
-                # this is the bucket since estimations are sorted by time
-                return interpolate_between(
-                    t,
-                    past_estimation['t'], past_estimation[axis],
-                    future_estimation['t'], future_estimation[axis],
-                )
-        raise Exception('you should not be here')
-
-    resampled_estimations = []
-    t = t0
-    while t < tn + TARGET_SAMPLING_PERIOD_IN_MS:
-        resampled_estimations.append({
-            'x': interpolate(t, 'x'),
-            'y': interpolate(t, 'y'),
-            't': t
-        })
-        t += TARGET_SAMPLING_PERIOD_IN_MS
-    
-    trial['estimations'] = resampled_estimations
-    return trial
-trials = [uniformize_sampling(t) for t in trials]
+trials = uniformize_sampling(trials)
 print('sampling rate frequency uniformized to %d Hz' % TARGET_SAMPLING_FREQUENCY_IN_HZ)
 
 def separate_into_phases(trial):
