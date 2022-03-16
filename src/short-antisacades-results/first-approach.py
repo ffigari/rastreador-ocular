@@ -4,9 +4,9 @@ from statistics import mean, stdev
 from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 from constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
-from utils import center_trial_time_around_visual_cue_start
-from utils import load_trials
-from utils import uniformize_sampling
+from utils.main import center_trial_time_around_visual_cue_start
+from utils.main import load_trials
+from utils.sampling import uniformize_sampling
 
 SHOW_STUFF = True
 
@@ -59,7 +59,7 @@ frequencies_grouped_per_run = {}
 for t in trials:
     if t['run_id'] not in frequencies_grouped_per_run:
         frequencies_grouped_per_run[t['run_id']] = []
-    frequencies_grouped_per_run[t['run_id']].append(t['sampling_frequency'])
+    frequencies_grouped_per_run[t['run_id']].append(t['original_sampling_frecuency_in_hz'])
 frequencies_per_run = {}
 for k, v in frequencies_grouped_per_run.items():
     frequencies_per_run[k] = {

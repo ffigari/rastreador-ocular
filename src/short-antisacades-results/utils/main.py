@@ -3,8 +3,6 @@ import json
 import re
 import csv
 
-from constants import TARGET_SAMPLING_PERIOD_IN_MS
-
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
     trials = []
@@ -70,7 +68,7 @@ def load_trials():
                     "run_id": run_id,
                     "trial_id": trial["trial_id"],
                     "estimations": estimations,
-                    "sampling_frequency": len(estimations) / (total_duration_in_ms / 1000),
+                    "original_sampling_frecuency_in_hz": len(estimations) / (total_duration_in_ms / 1000),
                     "center_x": trial["center_x"],
     
                     "pre_start": 0,
@@ -85,7 +83,10 @@ def load_trials():
                     "cue_finish": total_duration_in_ms,
     
                     "cue_shown_at_left": trial["cue_shown_at_left"],
-                    "cue_abs_x_delta": trial["cue_abs_x_delta"]
+                    "cue_abs_x_delta": trial["cue_abs_x_delta"],
+                    "outlier": False  # This boolean will be modified as filters
+                                      # are applied to indicate whether the
+                                      # trial should be discarded
                 }
                 trials.append(formatted_trial)
     return trials
@@ -98,53 +99,6 @@ def group_by_run(trials):
             d[r] = []
         d[r].append(t)
     return d
-
-def uniformize_trial_sampling(trial):
-    t0 = trial['estimations'][0]['t']
-    tn = trial['estimations'][-1]['t']
-
-    def interpolate_between(x, xa, ya, xb, yb):
-        # Here x and y are not used as the screen coordinates but as the
-        # classic horizontal vs vertical axis.
-        # Check https://en.wikipedia.org/wiki/Interpolation#Linear_interpolation
-        if not xa <= x <= xb:
-            raise Exception('can not interpolate outside of input points')
-        return ya + (yb - ya) * (x - xa) / (xb - xa)
-
-    def interpolate(t, axis):
-        if t >= tn + TARGET_SAMPLING_PERIOD_IN_MS:
-            raise Exception('input time is too big to interpolate')
-        if t >= tn:
-            return trial['estimations'][-1][axis]
-
-        # find first bucket in which `t` is contained
-        for i in range(1, len(trial['estimations'])):
-            if trial['estimations'][i]['t'] > t:
-                # this is the bucket since estimations are sorted by time
-                past_estimation = trial['estimations'][i - 1]
-                future_estimation = trial['estimations'][i]
-                return interpolate_between(
-                    t,
-                    past_estimation['t'], past_estimation[axis],
-                    future_estimation['t'], future_estimation[axis],
-                )
-        raise Exception('you should not be here')
-
-    resampled_estimations = []
-    t = t0
-    while t < tn + TARGET_SAMPLING_PERIOD_IN_MS:
-        resampled_estimations.append({
-            'x': interpolate(t, 'x'),
-            'y': interpolate(t, 'y'),
-            't': t
-        })
-        t += TARGET_SAMPLING_PERIOD_IN_MS
-    
-    trial['estimations'] = resampled_estimations
-    return trial
-
-def uniformize_sampling(trials):
-    return [uniformize_trial_sampling(t) for t in trials]
 
 def center_trial_time_around_visual_cue_start(trial):
     cue_start = trial['cue_start']
