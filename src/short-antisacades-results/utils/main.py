@@ -4,6 +4,8 @@ import re
 import csv
 
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
+from utils.sampling import tag_low_frecuency_trials
+from utils.sampling import uniformize_sampling
 
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
@@ -125,3 +127,11 @@ def tag_artifacted_trials(trials):
         if t['estimations'][-1]['t'] > 800:
             t['outlier'] = True
     return trials
+
+def load_cleaned_up_trials():
+    return \
+        tag_artifacted_trials(
+        center_time_around_visual_cues_start(
+        uniformize_sampling(
+        tag_low_frecuency_trials(
+        load_trials()))))
