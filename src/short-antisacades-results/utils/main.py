@@ -12,7 +12,7 @@ def load_trials():
     trials = []
     for file_path in os.listdir(antisaccades_data_path):
         p = re.compile('short-antisaccades_(\d{1,3}).csv')
-        run_id = p.match(file_path).group(1)
+        run_id = int(p.match(file_path).group(1))
         with open(os.path.join(antisaccades_data_path, file_path), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
@@ -120,12 +120,25 @@ def center_time_around_visual_cues_start(trials):
 
 # Kind of an ad-hoc function to filter trials with artifacts
 def tag_artifacted_trials(trials):
+    count = 0
     for t in trials:
         # Estimations should not go beyond 700ms since that's the amount of time
         # the visual cue is shown.
         # This assumes the data has already been centered around the visual cue. 
-        if t['estimations'][-1]['t'] > 800:
+        too_many_estimations = t['estimations'][-1]['t'] > 800
+
+        # Run 26 seems to be pure noise
+        is_noisy = t['run_id'] == 26
+
+        if too_many_estimations or is_noisy:
+            count += 1
             t['outlier'] = True
+    if count > 0:
+        print(
+            "%d trials out of %d were tagged as outliers due to having artifacts" % (
+            count,
+            len(trials)
+        ))
     return trials
 
 def load_cleaned_up_trials():

@@ -57,7 +57,7 @@ def tag_low_frecuency_trials(trials):
         t['outlier'] = True
     if low_frecuency_count > 0:
         print(
-            "%d trials out of %d were tagged as invalid due to low frecuency" % (
+            "%d trials out of %d were tagged as outliers due to low frecuency" % (
             low_frecuency_count,
             len(trials)
         ))

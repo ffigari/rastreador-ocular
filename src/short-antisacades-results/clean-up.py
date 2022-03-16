@@ -33,4 +33,5 @@ for i, (run_id, trials) in enumerate(trials_by_run.items()):
             color="black",
             alpha=0.1
         )
+    ax.set_title("%d" % run_id)
 plt.show()
