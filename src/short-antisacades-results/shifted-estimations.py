@@ -7,17 +7,19 @@ print(
     seed
 ))
 random.seed(seed)
-from utils.main import load_trials
-from utils.main import group_by_run
 from utils.main import center_time_around_visual_cues_start
-from utils.sampling import uniformize_sampling
+from utils.main import group_by_run
+from utils.main import load_trials
+from utils.main import tag_artifacted_trials
 from utils.sampling import tag_low_frecuency_trials
+from utils.sampling import uniformize_sampling
 
 trials = \
+    tag_artifacted_trials(
     center_time_around_visual_cues_start(
     uniformize_sampling(
     tag_low_frecuency_trials(
-    load_trials())))
+    load_trials()))))
 NROWS = 5
 NCOLS = 4
 SHOWN_RUNS_AMOUNT = NCOLS * NROWS  # To show them as a grid

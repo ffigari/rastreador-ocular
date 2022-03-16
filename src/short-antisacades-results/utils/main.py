@@ -3,6 +3,8 @@ import json
 import re
 import csv
 
+from constants import TARGET_SAMPLING_PERIOD_IN_MS
+
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
     trials = []
@@ -113,3 +115,13 @@ def center_trial_time_around_visual_cue_start(trial):
 
 def center_time_around_visual_cues_start(trials):
     return [center_trial_time_around_visual_cue_start(t) for t in trials]
+
+# Kind of an ad-hoc function to filter trials with artifacts
+def tag_artifacted_trials(trials):
+    for t in trials:
+        # Estimations should not go beyond 700ms since that's the amount of time
+        # the visual cue is shown.
+        # This assumes the data has already been centered around the visual cue. 
+        if t['estimations'][-1]['t'] > 800:
+            t['outlier'] = True
+    return trials
