@@ -21,7 +21,6 @@ def normalize_trial(trial):
 def normalize(ts):
     return [normalize_trial(t) for t in ts]
 
-
 def tag_non_centered_trial(t):
     return t
 

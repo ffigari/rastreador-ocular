@@ -7,6 +7,8 @@ from statistics import mean, stdev
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.sampling import tag_low_frecuency_trials
 from utils.sampling import uniformize_sampling
+from utils.normalize import normalize
+from utils.normalize import tag_non_centered
 
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
@@ -186,6 +188,6 @@ def load_normalized_trials():
     return [
         t
         for t
-        in tag_non_centered(normalize(load_cleaned_up_trials))
+        in tag_non_centered(normalize(load_cleaned_up_trials()))
         if not t['outlier']
     ]
