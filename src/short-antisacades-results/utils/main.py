@@ -182,3 +182,10 @@ def load_cleaned_up_trials():
         tag_low_frecuency_trials(
         load_trials())))))
 
+def load_normalized_trials():
+    return [
+        t
+        for t
+        in tag_non_centered(normalize(load_cleaned_up_trials))
+        if not t['outlier']
+    ]
