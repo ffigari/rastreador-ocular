@@ -4,7 +4,6 @@ from utils.main import compute_deviation
 from utils.main import group_by_run
 from utils.main import load_cleaned_up_trials
 from utils.normalize import normalize
-from utils.normalize import tag_non_centered
 from utils.plotting import plot_distinguished_outliers
 
 trials = [
@@ -61,12 +60,6 @@ for i, run_id in enumerate(some_run_ids):
             alpha=0.1
         )
     ax.set_title("run %d after normalization" % run_id)
-plt.show()
-
-trials = tag_non_centered(trials)
-trials_by_run = group_by_run(trials)
-fig, axs = plt.subplots(ncols=NCOLS, nrows=NROWS)
-plot_distinguished_outliers(axs, trials_by_run, NROWS, NCOLS)
 plt.show()
 
 fix, ax = plt.subplots()

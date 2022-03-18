@@ -5,10 +5,10 @@ import csv
 from statistics import mean, stdev
 
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
+from constants import MINIMUM_TIME_FOR_SACCADE_IN_MS
 from utils.sampling import tag_low_frecuency_trials
 from utils.sampling import uniformize_sampling
 from utils.normalize import normalize
-from utils.normalize import tag_non_centered
 
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
@@ -161,7 +161,7 @@ def compute_deviation(all_trials):
                 e['x']
                 for e
                 in t['estimations']
-                if t['fixation_start'] + 200 <= e['t'] <= t['mid_start']
+                if t['fixation_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS <= e['t'] <= t['mid_start']
             ])
             t['mean_fixation_estimation'] = trial_mean_fixation_estimation
             mean_fixations.append(trial_mean_fixation_estimation)
@@ -188,6 +188,6 @@ def load_normalized_trials():
     return [
         t
         for t
-        in tag_non_centered(normalize(load_cleaned_up_trials()))
+        in normalize(load_cleaned_up_trials())
         if not t['outlier']
     ]

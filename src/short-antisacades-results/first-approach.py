@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
 from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from constants import MINIMUM_TIME_FOR_SACCADE_IN_MS
 from constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 from constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.main import center_trial_time_around_visual_cue_start
@@ -274,7 +275,7 @@ def fixation_marker_is_focused(trial):
         abs(e['x'])
         for e
         in trial['fixation_estimations']
-        if trial['fixation_start'] + 200 <= e['t'] <= trial['mid_start']
+        if trial['fixation_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS <= e['t'] <= trial['mid_start']
     ]
     avg_x = sum(x_after_saccade_time) / len(x_after_saccade_time)
     return avg_x < 0.4
