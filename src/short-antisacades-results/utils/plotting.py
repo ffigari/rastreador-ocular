@@ -13,7 +13,8 @@ def plot_distinguished_outliers(axs, trials_by_run, NROWS, NCOLS):
                 [e['t'] for e in t['estimations']],
                 [e['x'] for e in t['estimations']],
                 color="red",
-                alpha=0.1
+                alpha=0.1,
+                label="repeticiones descartadas"
             )
         for t in run_trials:
             if t['outlier']:
@@ -22,5 +23,6 @@ def plot_distinguished_outliers(axs, trials_by_run, NROWS, NCOLS):
                 [e['t'] for e in t['estimations']],
                 [e['x'] for e in t['estimations']],
                 color="black",
-                alpha=0.1
+                alpha=0.1,
+                label="repeticiones conservadas"
             )
