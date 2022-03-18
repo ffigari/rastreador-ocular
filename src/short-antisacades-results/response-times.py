@@ -7,6 +7,7 @@ from constants import POST_NORMALIZATION_FIXATION_TRESHOLD
 from constants import POST_NORMALIZATION_REACTION_TRESHOLD
 from constants import VISUAL_CUE_DURATION_IN_MS
 from utils.main import load_normalized_trials
+from utils.plotting import show_common_legend
 
 trials = load_normalized_trials()
 
@@ -78,11 +79,11 @@ for (label, color, ts) in [
             [e['t'] for e in t['estimations']],
             [e['x'] for e in t['estimations']],
             color=color,
-            alpha=0.2,
+            alpha=0.2 if color not in ["black", "red"] else 0.05,
             **label_kwarg
         )
 ax.set_title("Descarte de repeticiones")
-fig.legend()
+show_common_legend(fig, [[ax]])
 plt.show()
 
 def mirror_trial(t):
