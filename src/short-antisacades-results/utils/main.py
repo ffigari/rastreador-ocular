@@ -10,17 +10,19 @@ from utils.sampling import tag_low_frecuency_trials
 from utils.sampling import uniformize_sampling
 from utils.normalize import normalize
 
+run_id_regex = re.compile('short-antisaccades_(\d{1,3}).csv')
+empty_hardware_regex = re.compile('(\{.*),"hardware":"(\})')
 antisaccades_data_path = 'src/short-antisacades-results/data'
 def load_trials():
     trials = []
     for file_path in os.listdir(antisaccades_data_path):
-        p = re.compile('short-antisaccades_(\d{1,3}).csv')
-        run_id = int(p.match(file_path).group(1))
+        run_id = int(run_id_regex.match(file_path).group(1))
         with open(os.path.join(antisaccades_data_path, file_path), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
     
             trial_id_idx = headers.index('trialId')
+            trial_index_idx = headers.index('trial_index')
             inner_width_idx = headers.index('inner_width')
             wg_data_idx = headers.index('webgazer_data')
             exp_name_idx = headers.index('experimentName')
@@ -32,13 +34,22 @@ def load_trials():
             fixation_duration_idx = headers.index('fixationDuration')
             mid_blank_duration_idx = headers.index('interTrialBlankDuration')
             cue_duration_idx = headers.index('cueDuration')
+            response_idx = headers.index('response')
     
             run_trials = []
             inner_width = None
             i = 0
+            subject_data = None
             for row in csv_rows_iterator:
                 if row[inner_width_idx] != '"':
                     inner_width = json.loads(row[inner_width_idx])
+                if json.loads(row[trial_index_idx]) == 2:
+                    r = row[response_idx]
+                    m = empty_hardware_regex.match(r)
+                    if m is None:
+                        subject_data = json.loads(r)
+                    else:
+                        subject_data = json.loads(m.group(1) + m.group(2))
                 if row[exp_name_idx] == "antisaccade":
                     i += 1
                     if i < 10:
@@ -72,6 +83,7 @@ def load_trials():
                     trial['mid_duration'] + \
                     trial['cue_duration']
                 formatted_trial = {
+                    "subject_data": subject_data,
                     "run_id": run_id,
                     "trial_id": trial["trial_id"],
                     "estimations": estimations,
