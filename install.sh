@@ -14,12 +14,12 @@ rm -rf ./$SRC_PATH/webgazer
 git clone -b develop https://github.com/ffigari/WebGazer $SRC_PATH/webgazer
 
 (
-  . ~/.nvm/nvm.sh
-  nvm use 14
+  nvm install
+  nvm use
   cd $SRC_PATH/webgazer
   npm i
   npm run build
-  cp dist/webgazer.js ../$DIST_PATH/
+  cp dist/webgazer.js ../../../$DIST_PATH/
 )
 
 # Psychophysics

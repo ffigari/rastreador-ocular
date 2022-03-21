@@ -32,9 +32,9 @@ bug.
 
 ## Development
 
-Run `./install.sh` to install dependencies.  
+First make sure [`nvm`](https://github.com/nvm-sh/nvm) is installed.
+Then run `./install.sh` to install dependencies.  
 Run `node index.js` for build instructions.
-Check node version at `.nvmrc`.  
 At `src/rastoc/` and `src/rastoc-jspsych/` you can find the entry points of the
 main code.
 
