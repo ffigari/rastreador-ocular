@@ -23,6 +23,7 @@ class EyesFeatures {
   }
 }
 
+const STILLNESS_RESIZE_FACTOR = 1.8;
 class StillnessChecker {
   constructor(calibrationEyesFeatures) {
     const calibrationBBoxes = calibrationEyesFeatures.map(ef => ef.bboxes)
@@ -36,7 +37,7 @@ class StillnessChecker {
 
       this.stillnessMultiBBoxes[side] = new MultiBBox(sideBBoxes.map((
         bbox
-      ) => BBox.createResizedFromCenter(bbox, 1.8)));
+      ) => BBox.createResizedFromCenter(bbox, STILLNESS_RESIZE_FACTOR)));
     });
   }
   areEyesInOriginalPosition(eyesFeatures) {
