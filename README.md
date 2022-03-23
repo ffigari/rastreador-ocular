@@ -32,9 +32,13 @@ bug.
 
 ## Development
 
-First make sure [`nvm`](https://github.com/nvm-sh/nvm) is installed.
+Node 14 is recommended.
+You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since a
+`.nvmrc` file is provided.
 Then run `./install.sh` to install dependencies.  
 Run `node index.js` for build instructions.
+The project's entry point is situated at `www/index.html`.
+You can for example open it with `firefox www/index.html`.
 At `src/rastoc/` and `src/rastoc-jspsych/` you can find the entry points of the
 main code.
 

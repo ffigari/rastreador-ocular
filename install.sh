@@ -14,8 +14,6 @@ rm -rf ./$SRC_PATH/webgazer
 git clone -b develop https://github.com/ffigari/WebGazer $SRC_PATH/webgazer
 
 (
-  nvm install
-  nvm use
   cd $SRC_PATH/webgazer
   npm i
   npm run build
