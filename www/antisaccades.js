@@ -42,24 +42,27 @@ const saccade = ({ anti }) => {
     },
   }
 
-  // TODO: Estos dos markers andan pero no se distinguen tanto
-  //       Se podría ver de armar algo con raf_func
-  //       https://jspsychophysics.hes.kyushu-u.ac.jp/pluginParams/
-  //       pero no sé si es compatible con otros estímulos así que en una de
-  //       esas hay que dibujar todo a mano
-  //
-  //       Si no con 'manual' debería salir
-  //       https://jspsychophysics.hes.kyushu-u.ac.jp/objectProperties/#obj_type-manual
-  const fixationMarker = anti ? {
-    obj_type: 'cross',
-    origin_center: true,
-    line_length: 30,
-  } : {
-    obj_type: 'circle',
-    origin_center: true,
-    line_color: 'red',
-    radius: 30,
-  };
+  const fixationMarker = {
+      obj_type: 'manual',
+      drawFunc: (stim, canvas, ctx, elapsedTime, sumOfStep) => {
+        // cx = canvas' center
+        const cx = Math.round(canvas.width / 2);
+        const cy = Math.round(canvas.height / 2);
+
+        ctx.beginPath();
+        ctx.lineWidth = 6;
+        const size = 15
+        if (anti) {
+          ctx.moveTo(cx - size, cy - size);
+          ctx.lineTo(cx + size, cy + size);
+          ctx.moveTo(cx - size, cy + size);
+          ctx.lineTo(cx + size, cy - size);
+        } else {
+          ctx.arc(cx, cy, size, 0, 2 * Math.PI, false);
+        }
+        ctx.stroke();
+      }
+  }
   const _placeholder = {
     obj_type: 'rect',
     origin_center: true,
@@ -115,13 +118,6 @@ const saccade = ({ anti }) => {
       show_start_time: durations.intraEnd,
       show_end_time: durations.visualEnd,
       ...visualCue
-    }, {
-      show_start_time: durations.intraEnd,
-      show_end_time: durations.visualEnd,
-      obj_type: 'manual',
-      drawFunc: (stim, canvas, ctx, elapsedTime, sumOfStep) => {
-        console.log(stim, elapsedTime, sumOfStep)
-      }
     }],
     response_ends_trial: false,
     trial_duration: durations.total,
