@@ -9,8 +9,8 @@ const getRandomBoolean = () => {
 
 const jsPsych = initJsPsych({
   on_finish: function() {
-    console.log('fin')
-    //jsPsych.data.get().localSave('json','antisaccades.json');
+    console.log('fin', jsPsych.data.get())
+    //.localSave('json','antisaccades.json');
   }
 });
 
@@ -63,7 +63,7 @@ const saccade = ({ anti }) => {
         ctx.stroke();
       }
   }
-  const _placeholder = {
+  const placeholder = {
     obj_type: 'rect',
     origin_center: true,
     line_color: 'black',
@@ -71,23 +71,14 @@ const saccade = ({ anti }) => {
     height: 45,
     startY: 0,
   }
-  const delta = window.innerWidth / 4
-  const leftPlaceholder = {
-    ..._placeholder,
-    startX: - delta,
-  }
-  const rightPlaceholder = {
-    ..._placeholder,
-    startX: delta,
-  }
   const visualCue = {
     obj_type: 'circle',
     origin_center: true,
     fill_color: 'black',
     radius: 20,
     startY: 0,
-    startX: (showVisualCueAtLeft ? -1 : 1) * delta,
   }
+  const delta = () => Math.round(2 * window.innerWidth / 6);
   return {
     type: jsPsychPsychophysics,
     stimuli: [{
@@ -99,32 +90,72 @@ const saccade = ({ anti }) => {
       show_end_time: durations.responseEnd,
       ...fixationMarker
     }, {
+      // left placeholder
       show_start_time: durations.itiEnd,
       show_end_time: durations.fixEnd,
-      ...leftPlaceholder
+      ...placeholder,
+      get startX() {
+        return - delta();
+      },
     }, {
+      // left placeholder
       show_start_time: durations.intraEnd,
       show_end_time: durations.responseEnd,
-      ...leftPlaceholder
+      ...placeholder,
+      get startX() {
+        return - delta();
+      },
     }, {
+      // right placeholder
       show_start_time: durations.itiEnd,
       show_end_time: durations.fixEnd,
-      ...rightPlaceholder
+      ...placeholder,
+      get startX() {
+        return delta();
+      },
     }, {
+      // right placeholder
       show_start_time: durations.intraEnd,
       show_end_time: durations.responseEnd,
-      ...rightPlaceholder
+      ...placeholder,
+      get startX() {
+        return delta();
+      },
     }, {
       show_start_time: durations.intraEnd,
       show_end_time: durations.visualEnd,
-      ...visualCue
+      ...visualCue,
+      get startX() {
+        return (showVisualCueAtLeft ? -1 : 1) * delta();
+      },
     }],
     response_ends_trial: false,
     trial_duration: durations.total,
+    on_finish(data) {
+      // TODO: Si quiero dar feedback en la validación tendría que chequear si
+      //       acá ya están las estimaciones, aunque si no llega a estar acá no
+      //       sería un problema
+      data.isSaccadeExperiment = true;
+      data.typeOfSaccade = anti ? 'antisaccade' : 'prosaccade';
+      data.cueShownAtLeft = showVisualCueAtLeft;
+
+      data.itiEnd = durations.itiEnd;
+      data.fixEnd = durations.fixEnd;
+      data.intraEnd = durations.intraEnd;
+      data.visualEnd = durations.visualEnd;
+      data.responseEnd = durations.responseEnd;
+
+      // viewport dimensions to check if the size of the screen changed since
+      // last calibration
+      data.viewportWidth = window.innerWidth;
+      data.viewportHeight = window.innerHeight;
+
+      // TODO: Acá tendría que chequear el estado de caliración 
+    },
   }
 };
 
-const REPETITIONS_PER_BLOCK = 3;
+const REPETITIONS_PER_BLOCK = 2;
 const nSaccades = ({ anti }) => {
   const n = REPETITIONS_PER_BLOCK;
 
@@ -137,12 +168,15 @@ const nSaccades = ({ anti }) => {
 };
 
 jsPsych.run([
+  { type: jsPsychWebgazerInitCamera },
+  { type: rastocJSPsych.EventsTrackingStart },
   {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: "Bloque de sacada",
+    stimulus: "Bloque de prosacada",
     choices: "NO_KEYS",
     trial_duration: 1000,
   },
+  rastocJSPsych.ensureCalibration({ performValidation: true }),
   ...nSaccades({ anti: false }),
   {
     type: jsPsychHtmlKeyboardResponse,
@@ -150,5 +184,7 @@ jsPsych.run([
     choices: "NO_KEYS",
     trial_duration: 1000,
   },
+  rastocJSPsych.ensureCalibration({ performValidation: true }),
   ...nSaccades({ anti: true }),
+  { type: rastocJSPsych.EventsTrackingStop }
 ])
