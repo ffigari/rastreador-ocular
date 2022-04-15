@@ -11,7 +11,7 @@ jsPsych.run([{
 {
   type: rastocJSPsych.EventsTrackingStart,
 },
-rastocJSPsych.createEnsuredCalibrationNode("side-to-side"),
+rastocJSPsych.calibrateAssistedly(),
 {
   on_start() {
     rastoc.showGazeEstimation();
@@ -23,7 +23,7 @@ rastocJSPsych.createEnsuredCalibrationNode("side-to-side"),
     rastoc.hideGazeEstimation();
   },
 },
-rastocJSPsych.createEnsuredCalibrationNode("free"),
+rastocJSPsych.calibrateFreely(),
 {
   type: jsPsychHtmlButtonResponse,
   stimulus: `
@@ -45,7 +45,7 @@ rastocJSPsych.createEnsuredCalibrationNode("free"),
   }],
   choices: ["Continue"],
 }, {
-  timeline: [rastocJSPsych.createCalibrationBarrierNode("free"), {
+  timeline: [rastocJSPsych.ensureCalibration({ calibrationType: "free" }), {
     type: jsPsychPsychophysics,
     on_start() {
       rastoc.showGazeEstimation();

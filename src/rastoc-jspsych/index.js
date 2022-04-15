@@ -50,48 +50,46 @@ class EventsTrackingStop {
   }
 }
 
-const createSideToSideCalibrationNode = () => {
-  let mapCoordinateToGaze;
-  const radius = 20;
+const calibrateAssistedly = () => {
   // Coordinates of calibration stimulus are codified with respect to the center
   // of the screen and are relative to the size of the viewport. Note that this
   // last part is not consistent with related bibliography where usually
   // stimulus positions are defined based in viewing angles.
-  const widthStep = Math.round((1 / 7) * (window.innerWidth / 2));
-  const heightStep = Math.round((1 / 7) * (window.innerHeight / 2));
-  const calibrationStimulusCoordinates = shuffle([
+  const calibrationSteps = shuffle([
     // First visit the borders of the viewport
-    [- 6 * widthStep, - 6 * heightStep],
-    [  0            , - 6 * heightStep],
-    [  6 * widthStep, - 6 * heightStep],
-    [- 6 * widthStep,   0             ],
-    [  6 * widthStep,   0             ],
-    [- 6 * widthStep,   6 * heightStep],
-    [  0            ,   6 * heightStep],
-    [  6 * widthStep,   6 * heightStep],
+    [- 6, - 6],
+    [  0, - 6],
+    [  6, - 6],
+    [- 6,   0],
+    [  6,   0],
+    [- 6,   6],
+    [  0,   6],
+    [  6,   6],
   ].concat(...(
     // ...and then particularly visit each region of interest in the horizontal
     // middle line
-    [0, - 4 * widthStep, 4 * widthStep].map((x) => ([
-      [x            ,   0],
-      [x            , - heightStep],
-      [x            ,   heightStep],
-      [x - widthStep,   0],
-      [x + widthStep,   0],
+    [0, - 4, 4].map((x) => ([
+      [x    ,   0],
+      [x    , - 1],
+      [x    ,   1],
+      [x - 1,   0],
+      [x + 1,   0],
     ]))
-  )).map(([x, y]) => new Point(x, y)));
+  )).map(([x, y]) => new Point(x, y)))
+  const widthDelta = () => Math.round((1 / 7) * (window.innerWidth / 2));
+  const heightDelta = () => Math.round((1 / 7) * (window.innerHeight / 2));
   let calibrationPointsCount = 0;
+  let mapCoordinateToGaze;
   return {
     timeline: [{
       type: jsPsychHtmlButtonResponse,
       stimulus: `
-      <h3>
-        Calibración lado a lado
-      </h3>
-      <p>
-        En la próxima pantalla van a ir apareciendo puntos azules. Cada vez que
-        aparezca uno, fijá la mirada en él y presiona la barra de espacio.
-      </p>
+        <h3>Calibración asistida</h3>
+        <p>
+          En la próxima pantalla van a aparecer una serie de círculos. Cada vez
+          que aparezca uno, fijá la mirada en él y luego presioná la barra de 
+          espacio mientras seguís mirándolo.
+        </p>
       `,
       choices: ["Continuar"],
       on_finish() {
@@ -102,14 +100,20 @@ const createSideToSideCalibrationNode = () => {
         type: jsPsychPsychophysics,
         stimuli: [{
           obj_type: 'circle',
-          radius,
           origin_center: true,
-          fill_color: 'blue',
+          fill_color: 'black',
+          radius: 20,
+          get startY() {
+            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+          },
           get startX() {
             const {
-              x, y
-            } = calibrationStimulusCoordinates[calibrationPointsCount];
-            // The canvas won't be opened until after this runs...
+              x: stepX,
+              y: stepY,
+            } = calibrationSteps[calibrationPointsCount];
+            const x = stepX * widthDelta();
+            const y = stepY * heightDelta();
+            // The canvas won't be opened until after this current callback ends
             setTimeout(() => {
               let center;
               try {
@@ -127,16 +131,12 @@ const createSideToSideCalibrationNode = () => {
               };
               document.addEventListener('keydown', fn);
             }, 0)
-
             return x;
           },
-          get startY() {
-            return calibrationStimulusCoordinates[calibrationPointsCount].y;
-          },
-          show_start_time: 400,
+          show_start_time: 200,
         }],
         response_type: 'key',
-        response_start_time: 400,
+        response_start_time: 200,
         choices: [' '],
         on_finish() {
           calibrationPointsCount++;
@@ -144,7 +144,7 @@ const createSideToSideCalibrationNode = () => {
       }],
       loop_function() {
         const keep_looping =
-          calibrationPointsCount < calibrationStimulusCoordinates.length;
+          calibrationPointsCount < calibrationSteps.length;
         if (!keep_looping) {
           rastoc.endCalibrationPhase("external");
         }
@@ -155,8 +155,11 @@ const createSideToSideCalibrationNode = () => {
       return !rastoc.isCorrectlyCalibrated;
     },
   }
-};
-const createFreeCalibrationNode = () => {
+}
+
+// Calibrate system by clicking freely over the screen and until space is
+// pressed.
+const calibrateFreely = () => {
   return {
     timeline: [{
       type: jsPsychHtmlKeyboardResponse,
@@ -195,41 +198,67 @@ const createFreeCalibrationNode = () => {
     },
   };
 };
-const createEnsuredCalibrationNode = (calibrationType) => {
-  if (calibrationType === "free") {
-    return createFreeCalibrationNode();
-  } else if (calibrationType === "side-to-side") {
-    return createSideToSideCalibrationNode();
-  } else {
-    throw new Error(`'${calibrationType}' is not a valid calibration type.`);
-  }
-};
 
-const createCalibrationBarrierNode = (calibrationType) => {
+// Validates current calibration by checking relative positioning of
+// estimations.
+const validateCalibration = () => {
+  throw new Error('TODO: not implemented');
+  // TODO: push result of validation
+}
+
+// If the system is not calibrate, loops over calibration nodes until system is
+// calibrated
+const ensureCalibration = (options) => {
+  options = options || {};
+  options.calibrationType = options.calibrationType || "assisted";
+  options.performValidation = options.performValidation || false;
+
+  const body = [];
+  if (options.calibrationType === "assisted") {
+    body.push(calibrateAssistedly());
+  } else if (options.calibrationType === "free") {
+    body.push(calibrateFreely());
+  } else {
+    throw new Error(`Unrecognized calibrationType=${options.calibrationType}`);
+  }
+  if (options.performValidation) {
+    body.push(validateCalibration());
+  }
+
   return {
     conditional_function() {
+      console.log(`Ensuring calibration: type=${
+        options.calibrationType
+      }; validate=${
+        options.performValidation
+      }; calibrated=${
+        rastoc.isCorrectlyCalibrated
+      }`);
       return !rastoc.isCorrectlyCalibrated;
     },
     timeline: [{
       type: jsPsychHtmlKeyboardResponse,
-      choices: [' '],
-      stimulus: `
-      <p>
-        Descalibración detectada.
-        Presioná <i>Espacio</i> para proceder con la calibración.
-      <p>
-      `,
-    }, createEnsuredCalibrationNode(calibrationType)],
-    loop_function() {
-      return !rastoc.isCorrectlyCalibrated;
-    }
+      stimulus: "Descalibración detectada",
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+    }, {
+      timeline: body,
+      loop_function() {
+        // TODO: If relevant (`options.performValidation`), check last
+        //       validation result
+        const lastValidationFailed = false;  // TODO
+        return !rastoc.isCorrectlyCalibrated || lastValidationFailed;
+      },
+    }],
   }
-};
+}
+
 
 window.rastocJSPsych = {
-  createEnsuredCalibrationNode,
-  createCalibrationBarrierNode,
   EventsTrackingStart,
   EventsTrackingStop,
+  calibrateAssistedly,
+  calibrateFreely,
+  ensureCalibration,
 };
 
