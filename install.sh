@@ -21,7 +21,7 @@ git clone -b develop https://github.com/ffigari/WebGazer $SRC_PATH/webgazer
 )
 
 # Psychophysics
-PSYCHOPHYSICS_VERSION=3.1.0
+PSYCHOPHYSICS_VERSION=3.2.0
 PSYCHOPHYSICS_ZIP_NAME=jspsych-psychophysics-$PSYCHOPHYSICS_VERSION.zip
 
 wget \

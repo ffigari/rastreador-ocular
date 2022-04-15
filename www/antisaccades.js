@@ -115,6 +115,13 @@ const saccade = ({ anti }) => {
       show_start_time: durations.intraEnd,
       show_end_time: durations.visualEnd,
       ...visualCue
+    }, {
+      show_start_time: durations.intraEnd,
+      show_end_time: durations.visualEnd,
+      obj_type: 'manual',
+      drawFunc: (stim, canvas, ctx, elapsedTime, sumOfStep) => {
+        console.log(stim, elapsedTime, sumOfStep)
+      }
     }],
     response_ends_trial: false,
     trial_duration: durations.total,
