@@ -11,6 +11,21 @@ jsPsych.run([{
 {
   type: rastocJSPsych.EventsTrackingStart,
 },
+rastocJSPsych.ensureCalibration({
+  calibrationType: "free",
+  performValidation: true,
+}),
+{
+  on_start() {
+    rastoc.showGazeEstimation();
+  },
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "bla",
+  choices: ['Continue'],
+  on_finish() {
+    rastoc.hideGazeEstimation();
+  },
+},
 rastocJSPsych.calibrateAssistedly(),
 {
   on_start() {

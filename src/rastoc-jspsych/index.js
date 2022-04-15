@@ -202,12 +202,85 @@ const calibrateFreely = () => {
 // Validates current calibration by checking relative positioning of
 // estimations.
 const validateCalibration = () => {
-  throw new Error('TODO: not implemented');
-  // TODO: push result of validation
+  const steps = [
+    [0, 0],
+    ...shuffle([
+      [-1, -1],
+      [-1,  1],
+      [ 1, -1],
+      [ 1,  1],
+    ]),
+    [ 0,  0],
+  ].map(([x, y]) => new Point(x, y));
+  const delta = () => 2 * window.innerWidth / 6;
+  let stepsIdx = 0;
+  let x, y;
+  return {
+    on_timeline_start() {
+      rastoc.showGazeEstimation();
+    },
+    timeline: [{
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <h3>Validación</h3>
+        <p>
+          En la próxima pantalla van a aparecer una serie de círculos. Cada vez
+          que aparezca uno, fijá la mirada en él y luego presioná la barra de 
+          espacio mientras seguís mirándolo.
+        </p>
+      `,
+      choices: ["Continuar"],
+    }, {
+      timeline: [{
+        type: jsPsychPsychophysics,
+        stimuli: [{
+          obj_type: 'circle',
+          origin_center: true,
+          fill_color: 'blue',
+          radius: 20,
+          get startX() {
+            return steps[stepsIdx].x * delta();
+          },
+          get startY() {
+            return steps[stepsIdx].y * delta();
+          },
+          show_start_time: 200,
+        }],
+        response_type: 'key',
+        response_start_time: 200,
+        choices: [' '],
+        extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
+        on_finish(data) {
+          const lastEstimations = data.webgazer_data.filter(({
+            t
+          }) => data.rt - 300 < t && t < data.rt)
+          const [avgX, avgY] = ['x', 'y'].map((
+            axis
+          ) => {
+            const values = lastEstimations.map((e) => e[axis])
+            const total = values.reduce((acc, cur) => acc + cur);
+            return total / values.length;
+          })
+          // TODO: Store relevant data about this validation point
+          console.log(`validation: step=<${
+            steps[stepsIdx].x}, ${steps[stepsIdx].y
+            }>; avgX=${avgX}; avgY=${avgY}`);
+          stepsIdx++;
+        }
+      }],
+      loop_function() {
+        return stepsIdx < steps.length;
+      },
+    }],
+    on_timeline_finish() {
+      // TODO: Make validation checks
+      rastoc.hideGazeEstimation();
+    },
+  }
 }
 
-// If the system is not calibrate, loops over calibration nodes until system is
-// calibrated
+// If the system is not calibrated, loops over calibration node until system is
+// calibrated. Optionally, perform a validation after calibrating.
 const ensureCalibration = (options) => {
   options = options || {};
   options.calibrationType = options.calibrationType || "assisted";
