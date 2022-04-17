@@ -202,21 +202,22 @@ const calibrateFreely = () => {
 // Validates current calibration by checking relative positioning of
 // estimations.
 const validateCalibration = () => {
-  const steps = [
-    [0, 0],
-    ...shuffle([
-      [-1, -1],
-      [-1,  1],
-      [ 1, -1],
-      [ 1,  1],
-    ]),
-    [ 0,  0],
-  ].map(([x, y]) => new Point(x, y));
-  const delta = () => 2 * window.innerWidth / 6;
-  let stepsIdx = 0;
-  let x, y;
+  const widthDelta = () => 2 * window.innerWidth / 6;
+  const heightDelta  = () => 2 * window.innerHeight / 6;
+  let steps, stepsIdx, x, y;
   return {
     on_timeline_start() {
+      stepsIdx = 0;
+      steps = [
+        [0, 0],
+        ...shuffle([
+          [-1, -1],
+          [-1,  1],
+          [ 1, -1],
+          [ 1,  1],
+        ]),
+        [ 0,  0],
+      ].map(([x, y]) => new Point(x, y))
       rastoc.showGazeEstimation();
     },
     timeline: [{
@@ -239,10 +240,10 @@ const validateCalibration = () => {
           fill_color: 'blue',
           radius: 20,
           get startX() {
-            return steps[stepsIdx].x * delta();
+            return steps[stepsIdx].x * widthDelta();
           },
           get startY() {
-            return steps[stepsIdx].y * delta();
+            return steps[stepsIdx].y * heightDelta();
           },
           show_start_time: 200,
         }],
@@ -274,6 +275,11 @@ const validateCalibration = () => {
     }],
     on_timeline_finish() {
       // TODO: Make validation checks
+      const validationSucceded = true;
+      jsPsych.data.get().addToLast({
+        type: 'validation-results',
+        validationSucceded,
+      })
       rastoc.hideGazeEstimation();
     },
   }
@@ -286,7 +292,18 @@ const ensureCalibration = (options) => {
   options.calibrationType = options.calibrationType || "assisted";
   options.performValidation = options.performValidation || false;
 
-  const body = [];
+  let unsucessfulCalibration = false;
+  const body = [{
+    conditional_function() {
+      return unsucessfulCalibration;
+    },
+    timeline: [{
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "Hubo un problema con la última calibración, reintentando.",
+      choices: "NO_KEYS",
+      trial_duration: 2000,
+    }],
+  }];
   if (options.calibrationType === "assisted") {
     body.push(calibrateAssistedly());
   } else if (options.calibrationType === "free") {
@@ -300,13 +317,6 @@ const ensureCalibration = (options) => {
 
   return {
     conditional_function() {
-      console.log(`Ensuring calibration: type=${
-        options.calibrationType
-      }; validate=${
-        options.performValidation
-      }; calibrated=${
-        rastoc.isCorrectlyCalibrated
-      }`);
       return !rastoc.isCorrectlyCalibrated;
     },
     timeline: [{
@@ -317,10 +327,14 @@ const ensureCalibration = (options) => {
     }, {
       timeline: body,
       loop_function() {
-        // TODO: If relevant (`options.performValidation`), check last
-        //       validation result
-        const lastValidationFailed = false;  // TODO
-        return !rastoc.isCorrectlyCalibrated || lastValidationFailed;
+        unsucessfulCalibration = !rastoc.isCorrectlyCalibrated;
+        if (options.performValidation) {
+          // TODO: Check last validation result
+          const lastValidationFailed = false;
+          unsucessfulCalibration =
+            unsucessfulCalibration || lastValidationFailed
+        };
+        return unsucessfulCalibration;
       },
     }],
   }
