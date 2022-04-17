@@ -204,9 +204,10 @@ const calibrateFreely = () => {
 const validateCalibration = () => {
   const widthDelta = () => 2 * window.innerWidth / 6;
   const heightDelta  = () => 2 * window.innerHeight / 6;
-  let steps, stepsIdx, x, y;
+  let steps, stepsIdx, x, y, results;
   return {
     on_timeline_start() {
+      results = []
       stepsIdx = 0;
       steps = [
         [0, 0],
@@ -255,17 +256,11 @@ const validateCalibration = () => {
           const lastEstimations = data.webgazer_data.filter(({
             t
           }) => data.rt - 300 < t && t < data.rt)
-          const [avgX, avgY] = ['x', 'y'].map((
-            axis
-          ) => {
-            const values = lastEstimations.map((e) => e[axis])
-            const total = values.reduce((acc, cur) => acc + cur);
-            return total / values.length;
-          })
-          // TODO: Store relevant data about this validation point
-          console.log(`validation: step=<${
-            steps[stepsIdx].x}, ${steps[stepsIdx].y
-            }>; avgX=${avgX}; avgY=${avgY}`);
+          results.push({
+            xStep: steps[stepsIdx].x,
+            yStep: steps[stepsIdx].y,
+            lastEstimations,
+          });
           stepsIdx++;
         }
       }],
@@ -274,10 +269,31 @@ const validateCalibration = () => {
       },
     }],
     on_timeline_finish() {
-      // TODO: Make validation checks
-      const validationSucceded = true;
+      results = results.map(r => {
+        const [avgX, avgY] = ['x', 'y'].map((
+          axis
+        ) => {
+          const values = r.lastEstimations.map((e) => e[axis])
+          const total = values.reduce((acc, cur) => acc + cur);
+          return total / values.length;
+        })
+        r.avgX = avgX;
+        r.avgY = avgY;
+        return r;
+      })
+
+      const firstCenter = results[0];
+      const lastCenter = results[results.length - 1];
+      const centersCoincide = 
+        Math.abs(firstCenter.avgX - lastCenter.avgX) < 100 &&
+        Math.abs(firstCenter.avgY - lastCenter.avgY) < 100;
+
+      const validationSucceded =
+        centersCoincide;
+
       jsPsych.data.get().addToLast({
         type: 'validation-results',
+        // TODO: Store metrics about estimates
         validationSucceded,
       })
       rastoc.hideGazeEstimation();
@@ -329,10 +345,12 @@ const ensureCalibration = (options) => {
       loop_function() {
         unsucessfulCalibration = !rastoc.isCorrectlyCalibrated;
         if (options.performValidation) {
-          // TODO: Check last validation result
-          const lastValidationFailed = false;
+          const validations = jsPsych.data.get().trials.filter((
+            x
+          ) => x.type === 'validation-results')
+          const lastValidation = validations[validations.length - 1];
           unsucessfulCalibration =
-            unsucessfulCalibration || lastValidationFailed
+            unsucessfulCalibration || !lastValidation.validationSucceded;
         };
         return unsucessfulCalibration;
       },
