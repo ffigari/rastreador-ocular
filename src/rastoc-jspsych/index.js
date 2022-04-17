@@ -51,36 +51,38 @@ class EventsTrackingStop {
 }
 
 const calibrateAssistedly = () => {
+  const widthDelta = () => Math.round((1 / 7) * (window.innerWidth / 2));
+  const heightDelta = () => Math.round((1 / 7) * (window.innerHeight / 2));
   // Coordinates of calibration stimulus are codified with respect to the center
   // of the screen and are relative to the size of the viewport. Note that this
   // last part is not consistent with related bibliography where usually
   // stimulus positions are defined based in viewing angles.
-  const calibrationSteps = shuffle([
-    // First visit the borders of the viewport
-    [- 6, - 6],
-    [  0, - 6],
-    [  6, - 6],
-    [- 6,   0],
-    [  6,   0],
-    [- 6,   6],
-    [  0,   6],
-    [  6,   6],
-  ].concat(...(
-    // ...and then particularly visit each region of interest in the horizontal
-    // middle line
-    [0, - 4, 4].map((x) => ([
-      [x    ,   0],
-      [x    , - 1],
-      [x    ,   1],
-      [x - 1,   0],
-      [x + 1,   0],
-    ]))
-  )).map(([x, y]) => new Point(x, y)))
-  const widthDelta = () => Math.round((1 / 7) * (window.innerWidth / 2));
-  const heightDelta = () => Math.round((1 / 7) * (window.innerHeight / 2));
-  let calibrationPointsCount = 0;
-  let mapCoordinateToGaze;
+  let calibrationSteps, calibrationPointsCount, mapCoordinateToGaze;
   return {
+    on_timeline_start() {
+      calibrationPointsCount = 0;
+      calibrationSteps = shuffle([
+        // First visit the borders of the viewport
+        [- 6, - 6],
+        [  0, - 6],
+        [  6, - 6],
+        [- 6,   0],
+        [  6,   0],
+        [- 6,   6],
+        [  0,   6],
+        [  6,   6],
+      ].concat(...(
+        // ...and then particularly visit each region of interest in the horizontal
+        // middle line
+        [0, - 4, 4].map((x) => ([
+          [x    ,   0],
+          [x    , - 1],
+          [x    ,   1],
+          [x - 1,   0],
+          [x + 1,   0],
+        ]))
+      )).map(([x, y]) => new Point(x, y)))
+    },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
       stimulus: `
@@ -219,7 +221,6 @@ const validateCalibration = () => {
         ]),
         [ 0,  0],
       ].map(([x, y]) => new Point(x, y))
-      rastoc.showGazeEstimation();
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -306,7 +307,6 @@ const validateCalibration = () => {
         centersCoincide,
         validationSucceded,
       })
-      rastoc.hideGazeEstimation();
     },
   }
 }
