@@ -257,8 +257,7 @@ const validateCalibration = () => {
             t
           }) => data.rt - 300 < t && t < data.rt)
           results.push({
-            xStep: steps[stepsIdx].x,
-            yStep: steps[stepsIdx].y,
+            step: steps[stepsIdx],
             lastEstimations,
           });
           stepsIdx++;
@@ -282,18 +281,29 @@ const validateCalibration = () => {
         return r;
       })
 
+      const topLeft  = results.find(r => r.step.x === -1 && r.step.y === -1);
+      const topRight = results.find(r => r.step.x ===  1 && r.step.y === -1);
+      const botLeft  = results.find(r => r.step.x === -1 && r.step.y ===  1);
+      const botRight = results.find(r => r.step.x ===  1 && r.step.y ===  1);
+      const correctRelativePositions =
+        topLeft.avgX  < topRight.avgX &&
+        topRight.avgY < botRight.avgY &&
+        botRight.avgX > botLeft.avgX  &&
+        botLeft.avgY  > topLeft.avgY;
+
       const firstCenter = results[0];
       const lastCenter = results[results.length - 1];
       const centersCoincide = 
         Math.abs(firstCenter.avgX - lastCenter.avgX) < 100 &&
         Math.abs(firstCenter.avgY - lastCenter.avgY) < 100;
 
-      const validationSucceded =
-        centersCoincide;
+      const validationSucceded = centersCoincide && correctRelativePositions;
 
       jsPsych.data.get().addToLast({
         type: 'validation-results',
-        // TODO: Store metrics about estimates
+        results,
+        correctRelativePositions,
+        centersCoincide,
         validationSucceded,
       })
       rastoc.hideGazeEstimation();
@@ -347,7 +357,7 @@ const ensureCalibration = (options) => {
         if (options.performValidation) {
           const validations = jsPsych.data.get().trials.filter((
             x
-          ) => x.type === 'validation-results')
+          ) => x.type === 'validation-results');
           const lastValidation = validations[validations.length - 1];
           unsucessfulCalibration =
             unsucessfulCalibration || !lastValidation.validationSucceded;
