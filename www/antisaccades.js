@@ -7,11 +7,20 @@ const getRandomBoolean = () => {
   return Math.random() < 0.5;
 }
 
+const displayMsg = (msg, ms) => {
+  return {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: msg,
+    choices: "NO_KEYS",
+    trial_duration: ms,
+  }
+}
+
 const jsPsych = initJsPsych({
   on_finish: function() {
-    console.log('fin', jsPsych.data.get())
-    //.localSave('json','antisaccades.json');
-  }
+    jsPsych.data.get().localSave('json', 'antisaccades.json');
+  },
+  extensions: [{ type: jsPsychExtensionWebgazer }],
 });
 
 const saccade = ({ anti }) => {
@@ -132,9 +141,6 @@ const saccade = ({ anti }) => {
     response_ends_trial: false,
     trial_duration: durations.total,
     on_finish(data) {
-      // TODO: Si quiero dar feedback en la validación tendría que chequear si
-      //       acá ya están las estimaciones, aunque si no llega a estar acá no
-      //       sería un problema
       data.isSaccadeExperiment = true;
       data.typeOfSaccade = anti ? 'antisaccade' : 'prosaccade';
       data.cueShownAtLeft = showVisualCueAtLeft;
@@ -150,7 +156,7 @@ const saccade = ({ anti }) => {
       data.viewportWidth = window.innerWidth;
       data.viewportHeight = window.innerHeight;
 
-      // TODO: Acá tendría que chequear el estado de caliración 
+      data.systemIsStillCalibrated = rastoc.isCorrectlyCalibrated;
     },
   }
 };
@@ -163,28 +169,239 @@ const nSaccades = ({ anti }) => {
   for (let i = 0; i < n; ++i) {
     saccades.push(saccade({ anti }));
   }
-  // TODO: Return trial data
   return saccades
 };
 
+const htmlCross  = `<span style="font-size:48px;"><b>&#10799;</b></span>`;
+const htmlCircle = `<span style="font-size:28px;"><b>&#9711;</b></span>`;
+
+const proReminder = `${htmlCircle} = mirar en la misma dirección`;
+const antiReminder = `${htmlCross} = mirar en la dirección opuesta`;
+
+const saccadesBlocksPair = () => {
+  return {
+    timeline: [
+      rastocJSPsych.ensureCalibration({ performValidation: true }),
+      displayMsg(`
+        <h3>Bloque de prosacada</h3>
+        <p>${proReminder}<p>
+      `, 3000),
+      ...nSaccades({ anti: false }),
+      rastocJSPsych.ensureCalibration({ performValidation: true }),
+      displayMsg(`
+        <h3>Bloque de antisacadas</h3>
+        <p>${antiReminder}<p>
+      `, 3000),
+      ...nSaccades({ anti: true }),
+    ]
+  }
+}
+
+const tutorial = () => {
+  // TODO: Ask to retry if it was not clear
+  return {
+    timeline: [{
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="text-align: left">
+        <h2>Tutorial</h2>
+  
+        <h3>Prosacadas y antisacadas</h3>
+        <p>
+          Vas a realizar tareas de prosacadas y antisacadas. En ambas tareas va a
+          aparecer un estímulo central y luego un estímulo lateral. La diferencia
+          entre ambas es que en la tarea de <b>ANTISACADAS tenés que mirar en la
+          dirección OPUESTA</b> a la que aparece el estímulo. En la tarea de
+          <b>PROSACADAS tenés que mirar en la MISMA dirección</b>.
+        </p>
+        <p>
+          Vamos a usar un círculo (${htmlCircle}) para referirnos a las tareas de
+          prosacadas y una (${htmlCross}) para las tareas de antisacadas. Al
+          principio de cada bloque te vamos a recordar qué tarea toca hacer.
+        </p>
+  
+        <h3>Calibración</h3>
+        <p>
+          El sistema en cuestión requiere ser inicialmente calibrado para
+          poder estimar la mirada. Además, cada vez que detectemos demasiado
+          movimiento procederemos a recalibrar. Tené en cuenta que <b>rotar
+          la cabeza también cuenta como movimiento</b>. Idealmente durante
+          los experimentos tendrías que estar <b>moviendo únicamente tus
+          ojos</b>.
+        </p>
+        <p>
+          La calibración consiste en fijar la mirada en <span style="color:
+          blue; font-weight: bold;">círculos</span> que van a aparecer
+          en la pantalla.
+          <br>
+          Cada vez que aparezca uno tenés que
+        </p>
+        <ol>
+          <li>fijar la mirada en él</li>
+          <li>esperar que le aparezca un círculo alrededor mientras se continua
+          con la fijación</li>
+          <li>presionar la <b>barra de espacio</b></li>
+        </ol>
+      </div>`,
+      choices: ["continuar"],
+    }, {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="text-align: left">
+        <p>
+          Así que acordate
+          <ul>
+            <li>prosacada = ${proReminder}</li>
+            <li>antisacada = ${antiReminder}</li>
+            <li>para calibrar, fijá la mirada en el círculo, esperá un cachín y
+            presioná la barra de espacio</li>
+          </ul>
+        </p>
+      </div>`,
+      choices: ["continuar"],
+    },
+    saccadesBlocksPair(),
+    ],
+  };
+};
+
+const pause = () => {
+  return {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <h3>descanso</h3>
+    <p>
+      Tomate unos segundos para descansar los ojos y cuando estés listx hacé
+      click en <i>continuar</i>.
+    </p>
+    `,
+    choices: ["continuar"],
+  }
+}
+
+let breakEarlier = false;
+const earlyFinish = {
+  yes: "cortar ahora",
+  no: "seguir con otra ronda",
+  get choices() {
+    return [this.yes, this.no];
+  },
+  check(r) {
+    return this.yes === this.choices[r]
+  },
+};
 jsPsych.run([
-  { type: jsPsychWebgazerInitCamera },
-  { type: rastocJSPsych.EventsTrackingStart },
   {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: "Bloque de prosacada",
-    choices: "NO_KEYS",
-    trial_duration: 1000,
+    // TODO: Pasar esto a un survey para anteojos, tipo cámara / compu
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="text-align: left">
+      <p>
+        Bienvenidx a este experimento de eye tracking.
+      </p>
+      <p>
+        Utilizando tu cámara web, vamos a intentar estimar dónde estás mirando
+        en la pantalla. El experimento va durar aproximadamente 20 minutos
+        aunque por la mitad tendrás la opción de cortar tempranamente.
+        <br>
+        El sistema que armamos es muy vulnerable a movimientos de cabeza, por lo 
+        que es importante que <b>te sientes cómodx</b>.
+      </p>
+    </div>
+    `,
+    choices: ["comenzar"],
+  }, {
+    type: rastocJSPsych.EventsTrackingStart
+  }, {
+    type: jsPsychWebgazerInitCamera,
+    instructions: `
+    <div style="text-align: left;">
+      <p>
+        Corregí la posición de la webcam para que se alinie con tus ojos y estos
+        queden bien enfocados. Tu cabeza debería quedar en el centro del
+        recuadro que aparece acá arriba.
+        <br>
+        Itentá que tus ojos se distingan correctamente. Si tenés luces atrás
+        tuyo probá apagarlas.
+      </p>
+      <p>
+        Cuando el recuadro se pinte de verde podés hacer click en
+        <i>"continuar"</i>.
+      </p>
+    </div>
+    `,
+    button_text: "continuar"
+  }, {
+    type: jsPsychFullscreen,
+    message: `
+    <div style="text-align: left;">
+      <p>
+        Para evitar distracciones te pedimos también que en la medida de lo
+        posible durante la duración del experimento cierres aplicaciones que
+        generen notificaciones y pongas el teléfono en modo no molestar.
+        <br>
+        Además vamos a cambiar a pantalla completa.
+      </p>
+    </div>`,
+    button_label: "continuar"
   },
-  rastocJSPsych.ensureCalibration({ performValidation: true }),
-  ...nSaccades({ anti: false }),
+  tutorial(),
   {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: "Bloque de antisacada",
-    choices: "NO_KEYS",
-    trial_duration: 1000,
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="text-align: left">
+      <p>
+        Ahora arrancan las tareas reales. Presioná "comenzar" cuando estés
+        listx.
+      </p>
+    </div>
+    `,
+    choices: ["comenzar"],
   },
-  rastocJSPsych.ensureCalibration({ performValidation: true }),
-  ...nSaccades({ anti: true }),
-  { type: rastocJSPsych.EventsTrackingStop }
+  saccadesBlocksPair(),
+  saccadesBlocksPair(),
+  pause(),
+  saccadesBlocksPair(),
+  saccadesBlocksPair(),
+  {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="text-align: left">
+      <p>
+        Ahí llegamos a la mitad del experimento. <br>
+        Si todavía estás con energías hacemos una segunda ronda y si no podés
+        cortar acá.
+      </p>
+    </div>
+    `,
+    choices: earlyFinish.choices,
+    on_finish(data) {
+      breakEarlier = earlyFinish.check(data.response);
+    },
+  },
+  {
+    conditional_function() {
+      return !breakEarlier;
+    },
+    timeline: [
+      displayMsg("Seguimos entonces :)", 2000),
+      saccadesBlocksPair(),
+      saccadesBlocksPair(),
+      pause(),
+      saccadesBlocksPair(),
+      saccadesBlocksPair(),
+    ],
+  },
+  {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <p>
+      Fin del experimento. Presioná <i>finalizar</i> y esperá a que la pantalla
+      quede en blanco. Luego podés cerrar la pestaña. <br>
+      Muchas gracias por participar c:
+    </p>
+    `,
+    choices: ["finalizar"],
+  },
+  { type: rastocJSPsych.EventsTrackingStop },
 ])
