@@ -14,6 +14,7 @@ jsPsych.run([{
 rastocJSPsych.ensureCalibration({
   calibrationType: "assisted",
   performValidation: true,
+  maxRetries: 1,
 }),
 {
   on_start() {

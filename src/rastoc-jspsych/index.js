@@ -349,6 +349,7 @@ const ensureCalibration = (options) => {
   options = options || {};
   options.calibrationType = options.calibrationType || "assisted";
   options.performValidation = options.performValidation || false;
+  options.maxRetries = options.maxRetries || 3;
 
   let unsucessfulCalibration = false;
   const body = [{
@@ -373,9 +374,13 @@ const ensureCalibration = (options) => {
     body.push(validateCalibration());
   }
 
+  let calibrationsCounts;
   return {
     conditional_function() {
       return !rastoc.isCorrectlyCalibrated;
+    },
+    on_timeline_start() {
+      calibrationsCounts = 0;
     },
     timeline: [{
       type: jsPsychHtmlKeyboardResponse,
@@ -385,6 +390,8 @@ const ensureCalibration = (options) => {
     }, {
       timeline: body,
       loop_function() {
+        calibrationsCounts++;
+
         unsucessfulCalibration = !rastoc.isCorrectlyCalibrated;
         if (options.performValidation) {
           const validations = jsPsych.data.get().trials.filter((
@@ -394,7 +401,7 @@ const ensureCalibration = (options) => {
           unsucessfulCalibration =
             unsucessfulCalibration || !lastValidation.validationSucceded;
         };
-        return unsucessfulCalibration;
+        return calibrationsCounts <= options.maxRetries && unsucessfulCalibration;
       },
     }],
   }

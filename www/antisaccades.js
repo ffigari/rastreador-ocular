@@ -181,10 +181,11 @@ const antiReminder = `${htmlCross} = mirar en la dirección OPUESTA`;
 
 const saccadesBlocksPair = () => {
   return {
-    // TODO: After readjusting validation, change this so that at most one retry
-    //       is done per calibration
     timeline: [
-      rastocJSPsych.ensureCalibration({ performValidation: true }),
+      rastocJSPsych.ensureCalibration({
+        performValidation: true,
+        maxRetries: 1,
+      }),
       displayMsg(`
         <h3>Bloque de prosacada</h3>
         <p>${proReminder}<p>
@@ -203,6 +204,12 @@ const saccadesBlocksPair = () => {
 const tutorial = () => {
   let retry = false;
   const retryChoices = {
+    html: `
+      <div style="text-align: left">
+        <p>
+          Ahí terminamos el tutorial. Querés hacerlo de vuelta?
+        </p>
+      </div>`,
     yes: "sí, quiero hacer nuevamente el tutorial",
     no: "no, ya quedó claro",
     get choices() {
@@ -274,13 +281,7 @@ const tutorial = () => {
     saccadesBlocksPair(),
     {
       type: jsPsychHtmlButtonResponse,
-      stimulus: `
-      <div style="text-align: left">
-        <p>
-          Ahí terminamos el tutorial. Querés hacerlo de vuelta?
-        </p>
-      </div>
-      `,
+      stimulus: retryChoices.html,
       choices: retryChoices.choices,
       on_finish(data) {
         retry = retryChoices.check(data.response);
@@ -308,6 +309,14 @@ const pause = () => {
 
 let breakEarlier = false;
 const earlyFinish = {
+  html: `
+    <div style="text-align: left">
+      <p>
+        Ahí llegamos a la mitad del experimento. <br>
+        Si todavía estás con energías hacemos una segunda ronda y si no podés
+        cortar acá.
+      </p>
+    </div>`,
   yes: "cortar ahora",
   no: "seguir con otra ronda",
   get choices() {
@@ -442,15 +451,7 @@ jsPsych.run([
   saccadesBlocksPair(),
   {
     type: jsPsychHtmlButtonResponse,
-    stimulus: `
-    <div style="text-align: left">
-      <p>
-        Ahí llegamos a la mitad del experimento. <br>
-        Si todavía estás con energías hacemos una segunda ronda y si no podés
-        cortar acá.
-      </p>
-    </div>
-    `,
+    stimulus: earlyFinish.html,
     choices: earlyFinish.choices,
     on_finish(data) {
       breakEarlier = earlyFinish.check(data.response);
