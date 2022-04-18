@@ -12,7 +12,7 @@ jsPsych.run([{
   type: rastocJSPsych.EventsTrackingStart,
 },
 rastocJSPsych.ensureCalibration({
-  calibrationType: "free",
+  calibrationType: "assisted",
   performValidation: true,
 }),
 {

@@ -140,6 +140,7 @@ const saccade = ({ anti }) => {
     }],
     response_ends_trial: false,
     trial_duration: durations.total,
+    extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
     on_finish(data) {
       data.isSaccadeExperiment = true;
       data.typeOfSaccade = anti ? 'antisaccade' : 'prosaccade';
@@ -161,7 +162,7 @@ const saccade = ({ anti }) => {
   }
 };
 
-const REPETITIONS_PER_BLOCK = 2;
+const REPETITIONS_PER_BLOCK = 10;
 const nSaccades = ({ anti }) => {
   const n = REPETITIONS_PER_BLOCK;
 
@@ -175,11 +176,13 @@ const nSaccades = ({ anti }) => {
 const htmlCross  = `<span style="font-size:48px;"><b>&#10799;</b></span>`;
 const htmlCircle = `<span style="font-size:28px;"><b>&#9711;</b></span>`;
 
-const proReminder = `${htmlCircle} = mirar en la misma dirección`;
-const antiReminder = `${htmlCross} = mirar en la dirección opuesta`;
+const proReminder = `${htmlCircle} = mirar en la MISMA dirección`;
+const antiReminder = `${htmlCross} = mirar en la dirección OPUESTA`;
 
 const saccadesBlocksPair = () => {
   return {
+    // TODO: After readjusting validation, change this so that at most one retry
+    //       is done per calibration
     timeline: [
       rastocJSPsych.ensureCalibration({ performValidation: true }),
       displayMsg(`
@@ -198,7 +201,17 @@ const saccadesBlocksPair = () => {
 }
 
 const tutorial = () => {
-  // TODO: Ask to retry if it was not clear
+  let retry = false;
+  const retryChoices = {
+    yes: "sí, quiero hacer nuevamente el tutorial",
+    no: "no, ya quedó claro",
+    get choices() {
+      return [this.yes, this.no];
+    },
+    check(r) {
+      return this.yes === this.choices[r]
+    },
+  };
   return {
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -216,11 +229,11 @@ const tutorial = () => {
         </p>
         <p>
           Vamos a usar un círculo (${htmlCircle}) para referirnos a las tareas de
-          prosacadas y una (${htmlCross}) para las tareas de antisacadas. Al
-          principio de cada bloque te vamos a recordar qué tarea toca hacer.
+          prosacadas y una cruz (${htmlCross}) para las tareas de antisacadas.
+          Al principio de cada bloque te vamos a recordar qué tarea toca hacer.
         </p>
   
-        <h3>Calibración</h3>
+        <h3>Calibración y validación</h3>
         <p>
           El sistema en cuestión requiere ser inicialmente calibrado para
           poder estimar la mirada. Además, cada vez que detectemos demasiado
@@ -230,16 +243,14 @@ const tutorial = () => {
           ojos</b>.
         </p>
         <p>
-          La calibración consiste en fijar la mirada en <span style="color:
-          blue; font-weight: bold;">círculos</span> que van a aparecer
-          en la pantalla.
+          La calibración consiste en fijar la mirada en <b>círculos</b> que van
+          a aparecer en la pantalla.
           <br>
           Cada vez que aparezca uno tenés que
         </p>
         <ol>
           <li>fijar la mirada en él</li>
-          <li>esperar que le aparezca un círculo alrededor mientras se continua
-          con la fijación</li>
+          <li>esperar que cambie de color mientras seguís mirándolo</li>
           <li>presionar la <b>barra de espacio</b></li>
         </ol>
       </div>`,
@@ -253,15 +264,31 @@ const tutorial = () => {
           <ul>
             <li>prosacada = ${proReminder}</li>
             <li>antisacada = ${antiReminder}</li>
-            <li>para calibrar, fijá la mirada en el círculo, esperá un cachín y
-            presioná la barra de espacio</li>
+            <li>para calibrar, fijá la mirada en el círculo y presioná la barra
+            de espacio</li>
           </ul>
         </p>
       </div>`,
       choices: ["continuar"],
     },
     saccadesBlocksPair(),
-    ],
+    {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="text-align: left">
+        <p>
+          Ahí terminamos el tutorial. Querés hacerlo de vuelta?
+        </p>
+      </div>
+      `,
+      choices: retryChoices.choices,
+      on_finish(data) {
+        retry = retryChoices.check(data.response);
+      },
+    }],
+    loop_function() {
+      return retry;
+    }
   };
 };
 
@@ -294,7 +321,7 @@ jsPsych.run([
   {
     type: jsPsychSurveyHtmlForm,
     button_label: 'comenzar',
-    stimulus: `
+    html: `
     <div style="text-align: left">
       <p>
         Bienvenidx a este experimento de eye tracking.
@@ -305,11 +332,11 @@ jsPsych.run([
         aunque por la mitad tendrás la opción de cortar tempranamente.
         <br>
         El sistema que armamos es muy vulnerable a movimientos de cabeza, por lo 
-        que es importante que <b>te sientes cómodx</b>.
+        que es importante que te sientes cómodx.
       </p>
 
       <p>
-        Completá este par de datos
+        Para arrancar te pedimos este par de datos tuyos y de tu compu.
       </p>
       <ul>
         <li>
@@ -354,6 +381,7 @@ jsPsych.run([
             type="text"
             name="hardware"
             id="hardware-input"
+            size="80"
           >
         </li>
       </ul>

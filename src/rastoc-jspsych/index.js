@@ -86,12 +86,15 @@ const calibrateAssistedly = () => {
     timeline: [{
       type: jsPsychHtmlButtonResponse,
       stimulus: `
-        <h3>Calibración asistida</h3>
+        <h3>Calibración</h3>
         <p>
-          En la próxima pantalla van a aparecer una serie de círculos. Cada vez
-          que aparezca uno, fijá la mirada en él y luego presioná la barra de 
-          espacio mientras seguís mirándolo.
+          Para cada punto que aparezca
         </p>
+        <ol>
+          <li>fijá la mirada en él</li>
+          <li>esperá a que cambie de color, manteniendo fija la mirada</li>
+          <li>presioná la barra de espacio</li>
+        </ol>
       `,
       choices: ["Continuar"],
       on_finish() {
@@ -103,7 +106,7 @@ const calibrateAssistedly = () => {
         stimuli: [{
           obj_type: 'circle',
           origin_center: true,
-          fill_color: 'black',
+          fill_color: 'blue',
           radius: 20,
           get startY() {
             return calibrationSteps[calibrationPointsCount].y * heightDelta();
@@ -135,10 +138,23 @@ const calibrateAssistedly = () => {
             }, 0)
             return x;
           },
-          show_start_time: 200,
+          show_start_time: 50,
+          show_end_time: 550,
+        }, {
+          obj_type: 'circle',
+          origin_center: true,
+          fill_color: 'black',
+          radius: 20,
+          get startY() {
+            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+          },
+          get startX() {
+            return calibrationSteps[calibrationPointsCount].x * widthDelta();
+          },
+          show_start_time: 550,
         }],
         response_type: 'key',
-        response_start_time: 200,
+        response_start_time: 550,
         choices: [' '],
         on_finish() {
           calibrationPointsCount++;
@@ -227,10 +243,13 @@ const validateCalibration = () => {
       stimulus: `
         <h3>Validación</h3>
         <p>
-          En la próxima pantalla van a aparecer una serie de círculos. Cada vez
-          que aparezca uno, fijá la mirada en él y luego presioná la barra de 
-          espacio mientras seguís mirándolo.
+          Para cada punto que aparezca
         </p>
+        <ol>
+          <li>fijá la mirada en él</li>
+          <li>esperá a que cambie de color, manteniendo fija la mirada</li>
+          <li>presioná la barra de espacio</li>
+        </ol>
       `,
       choices: ["Continuar"],
     }, {
@@ -247,16 +266,29 @@ const validateCalibration = () => {
           get startY() {
             return steps[stepsIdx].y * heightDelta();
           },
-          show_start_time: 200,
+          show_start_time: 50,
+          show_end_time: 750,
+        }, {
+          obj_type: 'circle',
+          origin_center: true,
+          fill_color: 'black',
+          radius: 20,
+          get startX() {
+            return steps[stepsIdx].x * widthDelta();
+          },
+          get startY() {
+            return steps[stepsIdx].y * heightDelta();
+          },
+          show_start_time: 750,
         }],
         response_type: 'key',
-        response_start_time: 200,
+        response_start_time: 750,
         choices: [' '],
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
           const lastEstimations = data.webgazer_data.filter(({
             t
-          }) => data.rt - 300 < t && t < data.rt)
+          }) => data.rt - 250 < t && t < data.rt)
           results.push({
             step: steps[stepsIdx],
             lastEstimations,
