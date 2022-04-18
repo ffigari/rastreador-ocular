@@ -292,8 +292,8 @@ const earlyFinish = {
 };
 jsPsych.run([
   {
-    // TODO: Pasar esto a un survey para anteojos, tipo cámara / compu
-    type: jsPsychHtmlButtonResponse,
+    type: jsPsychSurveyHtmlForm,
+    button_label: 'comenzar',
     stimulus: `
     <div style="text-align: left">
       <p>
@@ -307,9 +307,58 @@ jsPsych.run([
         El sistema que armamos es muy vulnerable a movimientos de cabeza, por lo 
         que es importante que <b>te sientes cómodx</b>.
       </p>
+
+      <p>
+        Completá este par de datos
+      </p>
+      <ul>
+        <li>
+          Vas a estar usando anteojos ahora durante el experimento? (si usás no
+          es necesario que te los saques)<br>
+
+          <label for="no-anteojos-input">No</label>
+          <input
+            type="radio"
+            name="anteojos"
+            id="no-anteojos-input"
+            value="no"
+            checked
+          >
+          &nbsp;
+
+          <label for="anteojos-input">Sí</label>
+          <input
+            type="radio"
+            name="anteojos"
+            id="anteojos-input"
+            value="si"
+          >
+          &nbsp;
+
+          <label for="lentes-de-contacto-input">Voy a usar lentes de contacto</label>
+          <input
+            type="radio"
+            name="anteojos"
+            id="lentes-de-contacto-input"
+            value="contacto"
+          >
+        </li>
+        <li>
+          Qué datos de hardware sabés de tu compu? Este campo es informal y
+          opcional pero cualquier dato sirve: notebook o compu de escritorio?
+          cuánto RAM tenés? tenés placa de video externa? qué CPU? tu cámara web
+          es de la notebook o la tenés aparte? dónde está localizada (a un
+          costado, arriba del monitor, abajo del monitor)?<br>
+
+          <input
+            type="text"
+            name="hardware"
+            id="hardware-input"
+          >
+        </li>
+      </ul>
     </div>
     `,
-    choices: ["comenzar"],
   }, {
     type: rastocJSPsych.EventsTrackingStart
   }, {
