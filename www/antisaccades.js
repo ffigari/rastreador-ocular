@@ -335,6 +335,8 @@ jsPsych.run([
       <p>
         Bienvenidx a este experimento de eye tracking.
       </p>
+      <img src="antisaccade.gif" alt="antisaccade instructions" /> 
+      <img src="prosaccade.gif" alt="prosaccade instructions" /> 
       <p>
         Utilizando tu cámara web, vamos a intentar estimar dónde estás mirando
         en la pantalla. El experimento va durar aproximadamente 20 minutos
