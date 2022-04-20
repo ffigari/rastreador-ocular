@@ -26,11 +26,11 @@ const jsPsych = initJsPsych({
 const saccade = ({ anti }) => {
   const showVisualCueAtLeft = getRandomBoolean();
   const durations = {
-    interTrial: 950,
+    interTrial: 925,
     fixation: getRandomIntInclusive(900, 1500),
-    intraTrial: 50,
-    visualCue: 100,
-    responseAwait: 700,
+    intraTrial: 75,
+    visualCue: 150,
+    responseAwait: 650,
     get total() {
       return this.responseEnd;
     },
@@ -162,13 +162,14 @@ const saccade = ({ anti }) => {
   }
 };
 
-const REPETITIONS_PER_BLOCK = 10;
-const nSaccades = ({ anti }) => {
-  const n = REPETITIONS_PER_BLOCK;
+// TODO: Poner esto en 20
+const REPETITIONS_PER_BLOCK = 2;
+const nSaccades = (options) => {
+  options.n = options.n || REPETITIONS_PER_BLOCK;
 
   let saccades = [];
-  for (let i = 0; i < n; ++i) {
-    saccades.push(saccade({ anti }));
+  for (let i = 0; i < options.n; ++i) {
+    saccades.push(saccade({ anti: options.anti }));
   }
   return saccades
 };
@@ -179,24 +180,29 @@ const htmlCircle = `<span style="font-size:28px;"><b>&#9711;</b></span>`;
 const proReminder = `${htmlCircle} = mirar en la MISMA dirección`;
 const antiReminder = `${htmlCross} = mirar en la dirección OPUESTA`;
 
-const saccadesBlocksPair = () => {
+const saccadesBlocksPair = (options) => {
+  options = options || {};
   return {
     timeline: [
       rastocJSPsych.ensureCalibration({
         performValidation: true,
+        forceCalibration: options.forceCalibration,
         maxRetries: 1,
       }),
       displayMsg(`
         <h3>Bloque de prosacada</h3>
         <p>${proReminder}<p>
       `, 3000),
-      ...nSaccades({ anti: false }),
-      rastocJSPsych.ensureCalibration({ performValidation: true }),
+      ...nSaccades({ anti: false, n: options.n }),
+      rastocJSPsych.ensureCalibration({
+        performValidation: true,
+        maxRetries: 1,
+      }),
       displayMsg(`
         <h3>Bloque de antisacadas</h3>
         <p>${antiReminder}<p>
       `, 3000),
-      ...nSaccades({ anti: true }),
+      ...nSaccades({ anti: true, n: options.n }),
     ]
   }
 }
@@ -301,7 +307,10 @@ const tutorial = () => {
       </div>`,
       choices: ["continuar"],
     },
-    saccadesBlocksPair(),
+    saccadesBlocksPair({
+      n: 2,  // TODO: Poner esto en 10
+      forceCalibration: true,
+    }),
     {
       type: jsPsychHtmlButtonResponse,
       stimulus: retryChoices.html,
