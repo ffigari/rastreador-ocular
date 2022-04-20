@@ -162,8 +162,7 @@ const saccade = ({ anti }) => {
   }
 };
 
-// TODO: Poner esto en 20
-const REPETITIONS_PER_BLOCK = 2;
+const REPETITIONS_PER_BLOCK = 20;
 const nSaccades = (options) => {
   options.n = options.n || REPETITIONS_PER_BLOCK;
 
@@ -208,6 +207,28 @@ const saccadesBlocksPair = (options) => {
 }
 
 const gifsInstructions = `
+  <style>
+    .tasks-gifs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 20px;
+    }
+    .gif-instruction {
+      border: 2px solid black;
+      padding-right: 10px;
+      padding-left: 10px;
+      margin-bottom: 10px;
+    }
+    .gif-instruction > img {
+      width: 70%;
+      height: auto;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid black;
+    }
+  </style>
+
   <div class="tasks-gifs">
     <div class="gif-instruction">
       <h4>Prosacada</h4>
@@ -308,7 +329,7 @@ const tutorial = () => {
       choices: ["continuar"],
     },
     saccadesBlocksPair({
-      n: 2,  // TODO: Poner esto en 10
+      n: 10,
       forceCalibration: true,
     }),
     {
