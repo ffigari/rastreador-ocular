@@ -288,7 +288,7 @@ const validateCalibration = () => {
         on_finish(data) {
           const lastEstimations = data.webgazer_data.filter(({
             t
-          }) => data.rt - 250 < t && t < data.rt)
+          }) => data.rt - 175 < t && t < data.rt)
           results.push({
             step: steps[stepsIdx],
             lastEstimations,
@@ -318,17 +318,17 @@ const validateCalibration = () => {
       const topRight = results.find(r => r.step.x ===  1 && r.step.y === -1);
       const botLeft  = results.find(r => r.step.x === -1 && r.step.y ===  1);
       const botRight = results.find(r => r.step.x ===  1 && r.step.y ===  1);
+      // To allow for smoother ux I'm validating only the X coordinate since the
+      // Y coordinate is not relevant to the antisaccades tasks
       const correctRelativePositions =
-        topLeft.avgX  < topRight.avgX &&
-        topRight.avgY < botRight.avgY &&
-        botRight.avgX > botLeft.avgX  &&
-        botLeft.avgY  > topLeft.avgY;
+        topLeft.avgX < topRight.avgX &&
+        botRight.avgX > botLeft.avgX;
 
       const firstCenter = results[0];
       const lastCenter = results[results.length - 1];
       const centersCoincide = 
-        Math.abs(firstCenter.avgX - lastCenter.avgX) < 100 &&
-        Math.abs(firstCenter.avgY - lastCenter.avgY) < 100;
+        Math.abs(firstCenter.avgX - lastCenter.avgX) < 300 &&
+        Math.abs(firstCenter.avgY - lastCenter.avgY) < 300;
 
       const validationSucceded = centersCoincide && correctRelativePositions;
 
