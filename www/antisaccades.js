@@ -201,6 +201,21 @@ const saccadesBlocksPair = () => {
   }
 }
 
+const gifsInstructions = `
+  <div class="tasks-gifs">
+    <div class="gif-instruction">
+      <h4>Prosacada</h4>
+      <img src="prosaccade.gif" alt="prosaccade instructions" /> 
+      <p>Mirar hacia el mismo lado</p>
+    </div>
+    <div class="gif-instruction">
+      <h4>Antisacada</h4>
+      <img src="antisaccade.gif" alt="antisaccade instructions" /> 
+      <p>Mirar hacia el lado contrario</p>
+    </div>
+  </div>
+`;
+
 const tutorial = () => {
   let retry = false;
   const retryChoices = {
@@ -239,6 +254,14 @@ const tutorial = () => {
           prosacadas y una cruz (${htmlCross}) para las tareas de antisacadas.
           Al principio de cada bloque te vamos a recordar qué tarea toca hacer.
         </p>
+        ${gifsInstructions}
+      </div>`,
+      choices: ["continuar"],
+    }, {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="text-align: left">
+        <h2>Tutorial</h2>
   
         <h3>Calibración y validación</h3>
         <p>
@@ -302,6 +325,7 @@ const pause = () => {
       Tomate unos segundos para descansar los ojos y cuando estés listx hacé
       click en <i>continuar</i>.
     </p>
+    ${gifsInstructions}
     `,
     choices: ["continuar"],
   }
@@ -335,8 +359,7 @@ jsPsych.run([
       <p>
         Bienvenidx a este experimento de eye tracking.
       </p>
-      <img src="antisaccade.gif" alt="antisaccade instructions" /> 
-      <img src="prosaccade.gif" alt="prosaccade instructions" /> 
+  
       <p>
         Utilizando tu cámara web, vamos a intentar estimar dónde estás mirando
         en la pantalla. El experimento va durar aproximadamente 20 minutos
