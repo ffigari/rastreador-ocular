@@ -252,12 +252,16 @@ window.rastoc = {
 
     let stillnessChecker;
     let correctlyCalibrated = false;
-    try {
-      webgazer.computeRegressionCoefficients();
-      stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
-      correctlyCalibrated = true;
-    } catch (e) {
-      console.error('calibration failed:', e);
+    if (state.calibrationEyesFeatures.length === 0) {
+      console.error('calibration failed: no training points were provided')
+    } else {
+      try {
+        webgazer.computeRegressionCoefficients();
+        stillnessChecker = new StillnessChecker(state.calibrationEyesFeatures);
+        correctlyCalibrated = true;
+      } catch (e) {
+        console.error('calibration failed:', e);
+      }
     }
 
     if (correctlyCalibrated) {
