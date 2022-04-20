@@ -348,6 +348,7 @@ const validateCalibration = () => {
 const ensureCalibration = (options) => {
   options = options || {};
   options.calibrationType = options.calibrationType || "assisted";
+  options.forceCalibration = options.forceCalibration || false;
   options.performValidation = options.performValidation || false;
   options.maxRetries = options.maxRetries || 3;
 
@@ -377,14 +378,14 @@ const ensureCalibration = (options) => {
   let calibrationsCounts;
   return {
     conditional_function() {
-      return !rastoc.isCorrectlyCalibrated;
+      return !rastoc.isCorrectlyCalibrated || options.forceCalibration;
     },
     on_timeline_start() {
       calibrationsCounts = 0;
     },
     timeline: [{
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: "Descalibración detectada",
+      stimulus: "Calibrando",
       choices: "NO_KEYS",
       trial_duration: 2000,
     }, {
