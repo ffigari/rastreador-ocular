@@ -90,6 +90,7 @@ const saccade = ({ anti }) => {
   const delta = () => Math.round(2 * window.innerWidth / 6);
   return {
     type: jsPsychPsychophysics,
+    background_color: '#d3d3d3',
     stimuli: [{
       show_start_time: durations.itiEnd,
       show_end_time: durations.fixEnd,

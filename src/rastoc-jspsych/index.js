@@ -103,6 +103,7 @@ const calibrateAssistedly = () => {
     }, {
       timeline: [{
         type: jsPsychPsychophysics,
+        background_color: '#d3d3d3',
         stimuli: [{
           obj_type: 'circle',
           origin_center: true,
@@ -255,6 +256,7 @@ const validateCalibration = () => {
     }, {
       timeline: [{
         type: jsPsychPsychophysics,
+        background_color: '#d3d3d3',
         stimuli: [{
           obj_type: 'circle',
           origin_center: true,
