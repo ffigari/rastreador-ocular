@@ -50,31 +50,39 @@ class EventsTrackingStop {
   }
 }
 
+const quarterOfVerticalSpace = () => Math.round((1 / 4) * window.innerHeight);
+const sixthOfVerticalSpace = () => Math.round((1 / 6) * window.innerHeight)
+const thirdOfHorizontalSpace = () => Math.round((1 / 3) * window.innerWidth);
+const quarterOfHorizontalSpace = () => Math.round((1 / 4) * window.innerWidth);
+
+// Region of interest is now hardcoded to this 3 xs coordinates below since only
+// horizontal coordinates are relevant for the antisaccades task.
+const interestRegionsXs = () => [
+  0,
+  - thirdOfHorizontalSpace(),
+  thirdOfHorizontalSpace()
+]
+
 // Positions of calibration stimulus are specified in pixels. This goes against
 // what's mostly found in the bibliography, where distances are usually defined
 // in degrees.
 const calibrateAssistedly = () => {
-  const verticalDelta = () => Math.round((1 / 2) * (window.innerHeight / 2));
-  const horizontalDelta = () => Math.round((1 / 2) * (window.innerWidth / 2));
-  let interestRegionsXs;
   let calibrationPointsCount, calibrationStimulusCoordinates;
   let mapCoordinateToGaze;
   return {
     on_timeline_start() {
-      interestRegionsXs = [
-        0,
-        - horizontalDelta(),
-        horizontalDelta()
-      ];
-
       calibrationPointsCount = 0;
       calibrationStimulusCoordinates = [
-        new Point(0, - verticalDelta()),
-        new Point(0, verticalDelta()),
+        new Point(0, - quarterOfVerticalSpace()),
+        new Point(0, quarterOfVerticalSpace()),
       ];
-      shuffle([0, - horizontalDelta() / 4, horizontalDelta() / 4]).forEach((
+      shuffle([
+        0,
+        - quarterOfHorizontalSpace() / 4,
+        quarterOfHorizontalSpace() / 4,
+      ]).forEach((
         d
-      ) => interestRegionsXs.forEach((
+      ) => interestRegionsXs().forEach((
         x
       ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
     },
@@ -216,21 +224,21 @@ const calibrateFreely = () => {
 const validateCalibration = () => {
   const widthDelta = () => 2 * window.innerWidth / 6;
   const heightDelta  = () => 2 * window.innerHeight / 6;
-  let steps, stepsIdx, x, y, results;
+  let results;
+  let validationPointsCount, validationStimulusCoordinates;
   return {
     on_timeline_start() {
       results = []
-      stepsIdx = 0;
-      steps = [
-        [0, 0],
-        ...shuffle([
-          [-1, -1],
-          [-1,  1],
-          [ 1, -1],
-          [ 1,  1],
-        ]),
-        [ 0,  0],
-      ].map(([x, y]) => new Point(x, y))
+      validationPointsCount = 0;
+      validationStimulusCoordinates = [];
+      [
+        sixthOfVerticalSpace(),
+        - sixthOfVerticalSpace()
+      ].forEach((
+        y
+      ) => interestRegionsXs().forEach((
+        x
+      ) => validationStimulusCoordinates.push(new Point(x, y))));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -256,10 +264,10 @@ const validateCalibration = () => {
           fill_color: 'blue',
           radius: 20,
           get startX() {
-            return steps[stepsIdx].x * widthDelta();
+            return validationStimulusCoordinates[validationPointsCount].x;
           },
           get startY() {
-            return steps[stepsIdx].y * heightDelta();
+            return validationStimulusCoordinates[validationPointsCount].y;
           },
           show_start_time: 50,
           show_end_time: 750,
@@ -269,10 +277,10 @@ const validateCalibration = () => {
           fill_color: 'black',
           radius: 20,
           get startX() {
-            return steps[stepsIdx].x * widthDelta();
+            return validationStimulusCoordinates[validationPointsCount].x;
           },
           get startY() {
-            return steps[stepsIdx].y * heightDelta();
+            return validationStimulusCoordinates[validationPointsCount].y;
           },
           show_start_time: 750,
         }],
@@ -283,16 +291,19 @@ const validateCalibration = () => {
         on_finish(data) {
           const lastEstimations = data.webgazer_data.filter(({
             t
-          }) => data.rt - 175 < t && t < data.rt)
+          }) => data.rt - 250 < t && t < data.rt)
           results.push({
-            step: steps[stepsIdx],
+            stimulusCenter: {
+              x: validationStimulusCoordinates[validationPointsCount].x,
+              y: validationStimulusCoordinates[validationPointsCount].y,
+            },
             lastEstimations,
           });
-          stepsIdx++;
+          validationPointsCount++;
         }
       }],
       loop_function() {
-        return stepsIdx < steps.length;
+        return validationPointsCount < validationStimulusCoordinates.length;
       },
     }],
     on_timeline_finish() {
