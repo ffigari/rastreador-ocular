@@ -50,38 +50,33 @@ class EventsTrackingStop {
   }
 }
 
+// Positions of calibration stimulus are specified in pixels. This goes against
+// what's mostly found in the bibliography, where distances are usually defined
+// in degrees.
 const calibrateAssistedly = () => {
-  const widthDelta = () => Math.round((1 / 7) * (window.innerWidth / 2));
-  const heightDelta = () => Math.round((1 / 7) * (window.innerHeight / 2));
-  // Coordinates of calibration stimulus are codified with respect to the center
-  // of the screen and are relative to the size of the viewport. Note that this
-  // last part is not consistent with related bibliography where usually
-  // stimulus positions are defined based in viewing angles.
-  let calibrationSteps, calibrationPointsCount, mapCoordinateToGaze;
+  const verticalDelta = () => Math.round((1 / 2) * (window.innerHeight / 2));
+  const horizontalDelta = () => Math.round((1 / 2) * (window.innerWidth / 2));
+  let interestRegionsXs;
+  let calibrationPointsCount, calibrationStimulusCoordinates;
+  let mapCoordinateToGaze;
   return {
     on_timeline_start() {
+      interestRegionsXs = [
+        0,
+        - horizontalDelta(),
+        horizontalDelta()
+      ];
+
       calibrationPointsCount = 0;
-      calibrationSteps = shuffle([
-        // First visit the borders of the viewport
-        [- 6, - 6],
-        [  0, - 6],
-        [  6, - 6],
-        [- 6,   0],
-        [  6,   0],
-        [- 6,   6],
-        [  0,   6],
-        [  6,   6],
-      ].concat(...(
-        // ...and then particularly visit each region of interest in the horizontal
-        // middle line
-        [0, - 4, 4].map((x) => ([
-          [x    ,   0],
-          [x    , - 1],
-          [x    ,   1],
-          [x - 1,   0],
-          [x + 1,   0],
-        ]))
-      )).map(([x, y]) => new Point(x, y)))
+      calibrationStimulusCoordinates = [
+        new Point(0, - verticalDelta()),
+        new Point(0, verticalDelta()),
+      ];
+      shuffle([0, - horizontalDelta() / 4, horizontalDelta() / 4]).forEach((
+        d
+      ) => interestRegionsXs.forEach((
+        x
+      ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -110,15 +105,13 @@ const calibrateAssistedly = () => {
           fill_color: 'blue',
           radius: 20,
           get startY() {
-            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].y;
           },
           get startX() {
             const {
-              x: stepX,
-              y: stepY,
-            } = calibrationSteps[calibrationPointsCount];
-            const x = stepX * widthDelta();
-            const y = stepY * heightDelta();
+              x,
+              y,
+            } = calibrationStimulusCoordinates[calibrationPointsCount];
             // The canvas won't be opened until after this current callback ends
             setTimeout(() => {
               let center;
@@ -147,10 +140,10 @@ const calibrateAssistedly = () => {
           fill_color: 'black',
           radius: 20,
           get startY() {
-            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].y;
           },
           get startX() {
-            return calibrationSteps[calibrationPointsCount].x * widthDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].x;
           },
           show_start_time: 550,
         }],
@@ -163,7 +156,7 @@ const calibrateAssistedly = () => {
       }],
       loop_function() {
         const keep_looping =
-          calibrationPointsCount < calibrationSteps.length;
+          calibrationPointsCount < calibrationStimulusCoordinates.length;
         if (!keep_looping) {
           rastoc.endCalibrationPhase("external");
         }
