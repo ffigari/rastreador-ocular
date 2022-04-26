@@ -1,6 +1,6 @@
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('json','eye-tracked-jspsych.json');
+    jsPsych.data.get().localSave('csv','eye-tracked-jspsych.csv');
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
@@ -14,7 +14,7 @@ jsPsych.run([{
 rastocJSPsych.ensureCalibration({
   calibrationType: "assisted",
   performValidation: true,
-  maxRetries: 1,
+  maxRetries: 3,
 }),
 {
   on_start() {

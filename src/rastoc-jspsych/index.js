@@ -57,15 +57,16 @@ const quarterOfHorizontalSpace = () => Math.round((1 / 4) * window.innerWidth);
 
 // Region of interest is now hardcoded to this 3 xs coordinates below since only
 // horizontal coordinates are relevant for the antisaccades task.
+// Positions of calibration stimulus are specified in pixels. This goes against
+// what's mostly found in the bibliography, where distances are usually defined
+// in degrees.
 const interestRegionsXs = () => [
   0,
   - thirdOfHorizontalSpace(),
   thirdOfHorizontalSpace()
 ]
 
-// Positions of calibration stimulus are specified in pixels. This goes against
-// what's mostly found in the bibliography, where distances are usually defined
-// in degrees.
+let calibrationId = 0
 const calibrateAssistedly = () => {
   let calibrationPointsCount, calibrationStimulusCoordinates;
   let mapCoordinateToGaze;
@@ -158,7 +159,16 @@ const calibrateAssistedly = () => {
         response_type: 'key',
         response_start_time: 550,
         choices: [' '],
-        on_finish() {
+        on_finish(data) {
+          data["rastoc-type"] = "calibration-stimulus";
+          data["stimulus-coordinate"] = {
+            x: calibrationStimulusCoordinates[calibrationPointsCount].x,
+            y: calibrationStimulusCoordinates[calibrationPointsCount].y,
+          };
+          data["calibration-id"] = calibrationId
+          data["calibration-point-id"] = calibrationPointsCount;
+          data["inner-width"] = window.innerWidth;
+          data["inner-height"] = window.innerHeight;
           calibrationPointsCount++;
         }
       }],
@@ -171,8 +181,8 @@ const calibrateAssistedly = () => {
         return keep_looping;
       },
     }],
-    loop_function() {
-      return !rastoc.isCorrectlyCalibrated;
+    on_timeline_finish() {
+      calibrationId++;
     },
   }
 }
@@ -221,14 +231,11 @@ const calibrateFreely = () => {
 
 // Validates current calibration by checking relative positioning of
 // estimations.
+let validationId = 0;
 const validateCalibration = () => {
-  const widthDelta = () => 2 * window.innerWidth / 6;
-  const heightDelta  = () => 2 * window.innerHeight / 6;
-  let results;
   let validationPointsCount, validationStimulusCoordinates;
   return {
     on_timeline_start() {
-      results = []
       validationPointsCount = 0;
       validationStimulusCoordinates = [];
       [
@@ -289,16 +296,18 @@ const validateCalibration = () => {
         choices: [' '],
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
-          const lastEstimations = data.webgazer_data.filter(({
+          data["rastoc-type"] = "validation-stimulus";
+          data["stimulus-coordinate"] = {
+            x: validationStimulusCoordinates[validationPointsCount].x,
+            y: validationStimulusCoordinates[validationPointsCount].y,
+          };
+          data["validation-id"] = validationId
+          data["validation-point-id"] = validationPointsCount;
+          data["last-estimations"] = data.webgazer_data.filter(({
             t
           }) => data.rt - 250 < t && t < data.rt)
-          results.push({
-            stimulusCenter: {
-              x: validationStimulusCoordinates[validationPointsCount].x,
-              y: validationStimulusCoordinates[validationPointsCount].y,
-            },
-            lastEstimations,
-          });
+          data["inner-width"] = window.innerWidth;
+          data["inner-height"] = window.innerHeight;
           validationPointsCount++;
         }
       }],
@@ -307,44 +316,44 @@ const validateCalibration = () => {
       },
     }],
     on_timeline_finish() {
-      results = results.map(r => {
-        const [avgX, avgY] = ['x', 'y'].map((
-          axis
-        ) => {
-          const values = r.lastEstimations.map((e) => e[axis])
-          const total = values.reduce((acc, cur) => acc + cur);
-          return total / values.length;
-        })
-        r.avgX = avgX;
-        r.avgY = avgY;
-        return r;
-      })
+      const results = jsPsych.data.get().trials.filter((
+        t
+      ) => t["rastoc-type"] === "validation-stimulus" && t["validation-id"] === validationId);
 
-      const topLeft  = results.find(r => r.step.x === -1 && r.step.y === -1);
-      const topRight = results.find(r => r.step.x ===  1 && r.step.y === -1);
-      const botLeft  = results.find(r => r.step.x === -1 && r.step.y ===  1);
-      const botRight = results.find(r => r.step.x ===  1 && r.step.y ===  1);
-      // To allow for smoother ux I'm validating only the X coordinate since the
-      // Y coordinate is not relevant to the antisaccades tasks
-      const correctRelativePositions =
-        topLeft.avgX < topRight.avgX &&
-        botRight.avgX > botLeft.avgX;
+      let relativePositionsAreCorrect = true;
+      const avgX = (r) => (r['last-estimations'].reduce((
+        acc, { x }
+      ) => acc + x, 0)) / r['last-estimations'].length;
+      results.forEach((r1, i) => results.forEach((r2, j) => {
+        if (j <= i) {
+          return;
+        }
+        const r1X = r1["stimulus-coordinate"].x;
+        const r2X = r2["stimulus-coordinate"].x;
+        if (r1X === r2X) {
+          return;
+        }
 
-      const firstCenter = results[0];
-      const lastCenter = results[results.length - 1];
-      const centersCoincide = 
-        Math.abs(firstCenter.avgX - lastCenter.avgX) < 300 &&
-        Math.abs(firstCenter.avgY - lastCenter.avgY) < 300;
-
-      const validationSucceded = centersCoincide && correctRelativePositions;
-
+        const r1AvgX = avgX(r1);
+        const r2AvgX = avgX(r2);
+        let pairHasCorrectPosition;
+        if (r1X > r2X) {
+          pairHasCorrectPosition = r1AvgX > r2AvgX;
+        } else {
+          pairHasCorrectPosition = r1AvgX < r2AvgX;
+        }
+        if (!pairHasCorrectPosition) {
+          console.warn("Incorrect relative position detected", r1, r2);
+        }
+        relativePositionsAreCorrect =
+          relativePositionsAreCorrect && pairHasCorrectPosition;
+      }))
       jsPsych.data.get().addToLast({
-        type: 'validation-results',
-        results,
-        correctRelativePositions,
-        centersCoincide,
-        validationSucceded,
-      })
+        "validation-results": {
+          relativePositionsAreCorrect
+        },
+      });
+      validationId++;
     },
   }
 }
@@ -401,12 +410,13 @@ const ensureCalibration = (options) => {
 
         unsucessfulCalibration = !rastoc.isCorrectlyCalibrated;
         if (options.performValidation) {
-          const validations = jsPsych.data.get().trials.filter((
+          const validationsResults = jsPsych.data.get().trials.filter((
             x
-          ) => x.type === 'validation-results');
-          const lastValidation = validations[validations.length - 1];
-          unsucessfulCalibration =
-            unsucessfulCalibration || !lastValidation.validationSucceded;
+          ) => x["rastoc-type"] === 'validation-stimulus' && !!x["validation-results"]);
+          const lastValidation =
+            validationsResults[validationsResults.length - 1];
+          unsucessfulCalibration = unsucessfulCalibration ||
+            !lastValidation["validation-results"].relativePositionsAreCorrect;
         };
         return calibrationsCounts <= options.maxRetries && unsucessfulCalibration;
       },
