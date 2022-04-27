@@ -19,6 +19,7 @@ const displayMsg = (msg, ms) => {
 const jsPsych = initJsPsych({
   on_finish: function() {
     jsPsych.data.get().localSave('json', 'antisaccades.json');
+    location.href = "https://neuropruebas.org/";
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
@@ -277,10 +278,14 @@ const tutorial = () => {
         <h3>Prosacadas y antisacadas</h3>
         <p>
           Vas a realizar tareas de prosacadas y antisacadas. En ambas tareas va a
-          aparecer un estímulo central y luego un estímulo lateral. La diferencia
-          entre ambas es que en la tarea de <b>ANTISACADAS tenés que mirar en la
-          dirección OPUESTA</b> a la que aparece el estímulo. En la tarea de
-          <b>PROSACADAS tenés que mirar en la MISMA dirección</b>.
+          aparecer un estímulo central y luego un estímulo lateral. Cuando
+          aparezca el estímulo central fijá y mantené la mirada en él. Cuando
+          aparezca el estímulo lateral, en el caso de <b>ANTISACADAS tenés que
+          mirar en la dirección OPUESTA</b> a la que este aparece mientras que
+          en el caso de <b>PROSACADAS tenés que mirar en la MISMA dirección</b>.
+          Reaparecerá luego nuevamente el estímulo central para continuar con la
+          próxima repetición, por lo que tendrás que fijar nuevamente la mirada
+          en él.
         </p>
         <p>
           Vamos a usar un círculo (${htmlCircle}) para referirnos a las tareas de
@@ -314,7 +319,8 @@ const tutorial = () => {
         <ol>
           <li>fijar la mirada en él</li>
           <li>esperar que cambie de color mientras seguís mirándolo</li>
-          <li>presionar la <b>barra de espacio</b></li>
+          <li>apenas cambie de color el estímulo, presionar la <b>barra de
+          espacio</b></li>
         </ol>
       </div>`,
       choices: ["continuar"],
@@ -455,8 +461,17 @@ jsPsych.run([
           >
         </li>
       </ul>
+      <br>
+      <p>
+        En la próxima pantalla vamos a activar tu cámara web. Asegurate de
+        tenerla correctamente enchufada y de otorgar los permisos cuando te 
+        sean solicitados.
+      </p>
     </div>
     `,
+  }, {
+    type: jsPsychPreload,
+    images: ['antisaccade.gif', 'prosaccade.gif'],
   }, {
     type: rastocJSPsych.EventsTrackingStart
   }, {
