@@ -30,6 +30,14 @@ Feel free to mess around with the repo.
 The issues' section is open in case you have any question or want to report a
 bug.
 
+This project was built around the antisaccades task (Hallett 1978) in which
+only center, left and right over an horizontal axis are of interest. Because of
+that the provided JSPsych utilities for calibration and validation focus on
+those three regions of interests. In this sense, tasks which require other
+regions of interest might have their estimations worsened. Work could however
+be done to generalize how regions of interest are codified, allowing then for
+more general calibration and validation mechanisms.
+
 ## Development
 
 Node 14 is recommended.

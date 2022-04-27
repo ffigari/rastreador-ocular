@@ -50,38 +50,42 @@ class EventsTrackingStop {
   }
 }
 
+const quarterOfVerticalSpace = () => Math.round((1 / 4) * window.innerHeight);
+const sixthOfVerticalSpace = () => Math.round((1 / 6) * window.innerHeight)
+const thirdOfHorizontalSpace = () => Math.round((1 / 3) * window.innerWidth);
+const quarterOfHorizontalSpace = () => Math.round((1 / 4) * window.innerWidth);
+
+// Region of interest is now hardcoded to this 3 xs coordinates below since only
+// horizontal coordinates are relevant for the antisaccades task.
+// Positions of calibration stimulus are specified in pixels. This goes against
+// what's mostly found in the bibliography, where distances are usually defined
+// in degrees.
+const interestRegionsXs = () => [
+  0,
+  - thirdOfHorizontalSpace(),
+  thirdOfHorizontalSpace()
+]
+
+let calibrationId = 0
 const calibrateAssistedly = () => {
-  const widthDelta = () => Math.round((1 / 7) * (window.innerWidth / 2));
-  const heightDelta = () => Math.round((1 / 7) * (window.innerHeight / 2));
-  // Coordinates of calibration stimulus are codified with respect to the center
-  // of the screen and are relative to the size of the viewport. Note that this
-  // last part is not consistent with related bibliography where usually
-  // stimulus positions are defined based in viewing angles.
-  let calibrationSteps, calibrationPointsCount, mapCoordinateToGaze;
+  let calibrationPointsCount, calibrationStimulusCoordinates;
+  let mapCoordinateToGaze;
   return {
     on_timeline_start() {
       calibrationPointsCount = 0;
-      calibrationSteps = shuffle([
-        // First visit the borders of the viewport
-        [- 6, - 6],
-        [  0, - 6],
-        [  6, - 6],
-        [- 6,   0],
-        [  6,   0],
-        [- 6,   6],
-        [  0,   6],
-        [  6,   6],
-      ].concat(...(
-        // ...and then particularly visit each region of interest in the horizontal
-        // middle line
-        [0, - 4, 4].map((x) => ([
-          [x    ,   0],
-          [x    , - 1],
-          [x    ,   1],
-          [x - 1,   0],
-          [x + 1,   0],
-        ]))
-      )).map(([x, y]) => new Point(x, y)))
+      calibrationStimulusCoordinates = [
+        new Point(0, - quarterOfVerticalSpace()),
+        new Point(0, quarterOfVerticalSpace()),
+      ];
+      shuffle([
+        0,
+        - quarterOfHorizontalSpace() / 4,
+        quarterOfHorizontalSpace() / 4,
+      ]).forEach((
+        d
+      ) => interestRegionsXs().forEach((
+        x
+      ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -110,15 +114,13 @@ const calibrateAssistedly = () => {
           fill_color: 'blue',
           radius: 20,
           get startY() {
-            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].y;
           },
           get startX() {
             const {
-              x: stepX,
-              y: stepY,
-            } = calibrationSteps[calibrationPointsCount];
-            const x = stepX * widthDelta();
-            const y = stepY * heightDelta();
+              x,
+              y,
+            } = calibrationStimulusCoordinates[calibrationPointsCount];
             // The canvas won't be opened until after this current callback ends
             setTimeout(() => {
               let center;
@@ -147,31 +149,40 @@ const calibrateAssistedly = () => {
           fill_color: 'black',
           radius: 20,
           get startY() {
-            return calibrationSteps[calibrationPointsCount].y * heightDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].y;
           },
           get startX() {
-            return calibrationSteps[calibrationPointsCount].x * widthDelta();
+            return calibrationStimulusCoordinates[calibrationPointsCount].x;
           },
           show_start_time: 550,
         }],
         response_type: 'key',
         response_start_time: 550,
         choices: [' '],
-        on_finish() {
+        on_finish(data) {
+          data["rastoc-type"] = "calibration-stimulus";
+          data["stimulus-coordinate"] = {
+            x: calibrationStimulusCoordinates[calibrationPointsCount].x,
+            y: calibrationStimulusCoordinates[calibrationPointsCount].y,
+          };
+          data["calibration-id"] = calibrationId
+          data["calibration-point-id"] = calibrationPointsCount;
+          data["inner-width"] = window.innerWidth;
+          data["inner-height"] = window.innerHeight;
           calibrationPointsCount++;
         }
       }],
       loop_function() {
         const keep_looping =
-          calibrationPointsCount < calibrationSteps.length;
+          calibrationPointsCount < calibrationStimulusCoordinates.length;
         if (!keep_looping) {
           rastoc.endCalibrationPhase("external");
         }
         return keep_looping;
       },
     }],
-    loop_function() {
-      return !rastoc.isCorrectlyCalibrated;
+    on_timeline_finish() {
+      calibrationId++;
     },
   }
 }
@@ -220,24 +231,23 @@ const calibrateFreely = () => {
 
 // Validates current calibration by checking relative positioning of
 // estimations.
+let validationId = 0;
 const validateCalibration = () => {
-  const widthDelta = () => 2 * window.innerWidth / 6;
-  const heightDelta  = () => 2 * window.innerHeight / 6;
-  let steps, stepsIdx, x, y, results;
+  let validationPointsCount, validationStimulusCoordinates;
+  const responseStartTimeInMs = 750;
+  const checkedTimeInMs = 250;
   return {
     on_timeline_start() {
-      results = []
-      stepsIdx = 0;
-      steps = [
-        [0, 0],
-        ...shuffle([
-          [-1, -1],
-          [-1,  1],
-          [ 1, -1],
-          [ 1,  1],
-        ]),
-        [ 0,  0],
-      ].map(([x, y]) => new Point(x, y))
+      validationPointsCount = 0;
+      validationStimulusCoordinates = [];
+      [
+        sixthOfVerticalSpace(),
+        - sixthOfVerticalSpace()
+      ].forEach((
+        y
+      ) => interestRegionsXs().forEach((
+        x
+      ) => validationStimulusCoordinates.push(new Point(x, y))));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -263,10 +273,10 @@ const validateCalibration = () => {
           fill_color: 'blue',
           radius: 20,
           get startX() {
-            return steps[stepsIdx].x * widthDelta();
+            return validationStimulusCoordinates[validationPointsCount].x;
           },
           get startY() {
-            return steps[stepsIdx].y * heightDelta();
+            return validationStimulusCoordinates[validationPointsCount].y;
           },
           show_start_time: 50,
           show_end_time: 750,
@@ -276,71 +286,85 @@ const validateCalibration = () => {
           fill_color: 'black',
           radius: 20,
           get startX() {
-            return steps[stepsIdx].x * widthDelta();
+            return validationStimulusCoordinates[validationPointsCount].x;
           },
           get startY() {
-            return steps[stepsIdx].y * heightDelta();
+            return validationStimulusCoordinates[validationPointsCount].y;
           },
-          show_start_time: 750,
+          show_start_time: responseStartTimeInMs,
         }],
         response_type: 'key',
-        response_start_time: 750,
+        response_start_time: responseStartTimeInMs,
         choices: [' '],
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
-          const lastEstimations = data.webgazer_data.filter(({
+          data["rastoc-type"] = "validation-stimulus";
+          data["stimulus-coordinate"] = {
+            x: validationStimulusCoordinates[validationPointsCount].x,
+            y: validationStimulusCoordinates[validationPointsCount].y,
+          };
+          data["validation-id"] = validationId
+          data["validation-point-id"] = validationPointsCount;
+          data["last-estimations"] = data.webgazer_data.filter(({
             t
-          }) => data.rt - 175 < t && t < data.rt)
-          results.push({
-            step: steps[stepsIdx],
-            lastEstimations,
-          });
-          stepsIdx++;
+          }) =>
+            // `data.rt` is relative to `response_start_time`
+            // https://jspsychophysics.hes.kyushu-u.ac.jp/pluginParams/#data-generated
+            responseStartTimeInMs + data.rt - checkedTimeInMs < t
+            && t < responseStartTimeInMs + data.rt
+          );
+          data["inner-width"] = window.innerWidth;
+          data["inner-height"] = window.innerHeight;
+          validationPointsCount++;
         }
       }],
       loop_function() {
-        return stepsIdx < steps.length;
+        return validationPointsCount < validationStimulusCoordinates.length;
       },
     }],
     on_timeline_finish() {
-      results = results.map(r => {
-        const [avgX, avgY] = ['x', 'y'].map((
-          axis
-        ) => {
-          const values = r.lastEstimations.map((e) => e[axis])
-          const total = values.reduce((acc, cur) => acc + cur);
-          return total / values.length;
-        })
-        r.avgX = avgX;
-        r.avgY = avgY;
-        return r;
-      })
+      const results = jsPsych.data.get().trials.filter((
+        t
+      ) => t["rastoc-type"] === "validation-stimulus" && t["validation-id"] === validationId);
 
-      const topLeft  = results.find(r => r.step.x === -1 && r.step.y === -1);
-      const topRight = results.find(r => r.step.x ===  1 && r.step.y === -1);
-      const botLeft  = results.find(r => r.step.x === -1 && r.step.y ===  1);
-      const botRight = results.find(r => r.step.x ===  1 && r.step.y ===  1);
-      // To allow for smoother ux I'm validating only the X coordinate since the
-      // Y coordinate is not relevant to the antisaccades tasks
-      const correctRelativePositions =
-        topLeft.avgX < topRight.avgX &&
-        botRight.avgX > botLeft.avgX;
+      let relativePositionsAreCorrect = true;
+      const avgX = (r) => (r['last-estimations'].reduce((
+        acc, { x }
+      ) => acc + x, 0)) / r['last-estimations'].length;
+      results.forEach((r1, i) => results.forEach((r2, j) => {
+        if (j <= i) {
+          return;
+        }
+        const r1X = r1["stimulus-coordinate"].x;
+        const r2X = r2["stimulus-coordinate"].x;
+        if (r1X === r2X) {
+          return;
+        }
 
-      const firstCenter = results[0];
-      const lastCenter = results[results.length - 1];
-      const centersCoincide = 
-        Math.abs(firstCenter.avgX - lastCenter.avgX) < 300 &&
-        Math.abs(firstCenter.avgY - lastCenter.avgY) < 300;
-
-      const validationSucceded = centersCoincide && correctRelativePositions;
-
+        const r1AvgX = avgX(r1);
+        const r2AvgX = avgX(r2);
+        let pairHasCorrectPosition;
+        if (r1X > r2X) {
+          pairHasCorrectPosition = r1AvgX > r2AvgX;
+        } else {
+          pairHasCorrectPosition = r1AvgX < r2AvgX;
+        }
+        if (!pairHasCorrectPosition) {
+          console.warn(
+            `Incorrect relative position detected (i=${i}, j=${j})`,
+            r1,
+            r2
+          );
+        }
+        relativePositionsAreCorrect =
+          relativePositionsAreCorrect && pairHasCorrectPosition;
+      }))
       jsPsych.data.get().addToLast({
-        type: 'validation-results',
-        results,
-        correctRelativePositions,
-        centersCoincide,
-        validationSucceded,
-      })
+        "validation-results": {
+          relativePositionsAreCorrect
+        },
+      });
+      validationId++;
     },
   }
 }
@@ -397,12 +421,13 @@ const ensureCalibration = (options) => {
 
         unsucessfulCalibration = !rastoc.isCorrectlyCalibrated;
         if (options.performValidation) {
-          const validations = jsPsych.data.get().trials.filter((
+          const validationsResults = jsPsych.data.get().trials.filter((
             x
-          ) => x.type === 'validation-results');
-          const lastValidation = validations[validations.length - 1];
-          unsucessfulCalibration =
-            unsucessfulCalibration || !lastValidation.validationSucceded;
+          ) => x["rastoc-type"] === 'validation-stimulus' && !!x["validation-results"]);
+          const lastValidation =
+            validationsResults[validationsResults.length - 1];
+          unsucessfulCalibration = unsucessfulCalibration ||
+            !lastValidation["validation-results"].relativePositionsAreCorrect;
         };
         return calibrationsCounts <= options.maxRetries && unsucessfulCalibration;
       },
