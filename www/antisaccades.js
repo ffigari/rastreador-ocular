@@ -87,6 +87,11 @@ const saccade = ({ anti }) => {
     radius: 20,
     startY: 0,
   }
+  // This already coincides with the positions in which the calibration points
+  // are shown but ideally the regions of interest should be abstracted somehow
+  // so that these distances do not have to be redefined.
+  // Check `interestRegionsXs` object at `src/rastoc-jspsych/index.js` for more
+  // info.
   const delta = () => Math.round(2 * window.innerWidth / 6);
   return {
     type: jsPsychPsychophysics,
