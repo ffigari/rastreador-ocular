@@ -234,6 +234,8 @@ const calibrateFreely = () => {
 let validationId = 0;
 const validateCalibration = () => {
   let validationPointsCount, validationStimulusCoordinates;
+  const responseStartTimeInMs = 750;
+  const checkedTimeInMs = 250;
   return {
     on_timeline_start() {
       validationPointsCount = 0;
@@ -289,10 +291,10 @@ const validateCalibration = () => {
           get startY() {
             return validationStimulusCoordinates[validationPointsCount].y;
           },
-          show_start_time: 750,
+          show_start_time: responseStartTimeInMs,
         }],
         response_type: 'key',
-        response_start_time: 750,
+        response_start_time: responseStartTimeInMs,
         choices: [' '],
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
@@ -305,7 +307,12 @@ const validateCalibration = () => {
           data["validation-point-id"] = validationPointsCount;
           data["last-estimations"] = data.webgazer_data.filter(({
             t
-          }) => data.rt - 250 < t && t < data.rt)
+          }) =>
+            // `data.rt` is relative to `response_start_time`
+            // https://jspsychophysics.hes.kyushu-u.ac.jp/pluginParams/#data-generated
+            responseStartTimeInMs + data.rt - checkedTimeInMs < t
+            && t < responseStartTimeInMs + data.rt
+          );
           data["inner-width"] = window.innerWidth;
           data["inner-height"] = window.innerHeight;
           validationPointsCount++;
@@ -343,7 +350,11 @@ const validateCalibration = () => {
           pairHasCorrectPosition = r1AvgX < r2AvgX;
         }
         if (!pairHasCorrectPosition) {
-          console.warn("Incorrect relative position detected", r1, r2);
+          console.warn(
+            `Incorrect relative position detected (i=${i}, j=${j})`,
+            r1,
+            r2
+          );
         }
         relativePositionsAreCorrect =
           relativePositionsAreCorrect && pairHasCorrectPosition;
