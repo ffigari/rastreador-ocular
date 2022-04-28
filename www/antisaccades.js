@@ -18,7 +18,7 @@ const displayMsg = (msg, ms) => {
 
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('json', 'antisaccades.json');
+    jsPsych.data.get().localSave('csv', 'antisaccades.csv');
     location.href = "https://neuropruebas.org/";
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
