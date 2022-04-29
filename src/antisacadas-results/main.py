@@ -2,11 +2,13 @@ import os, re, csv, json
 import matplotlib.pyplot as plt
 
 from normalizer import Normalizer
+from trials_collection import TrialsCollection
 from utils.sampling import uniformize_sampling
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
 data_path = 'src/antisacadas-results/data'
 
+parsed_trials = []
 for file_name in os.listdir(data_path):
     run_id = int(run_id_regex.match(file_name).group(1))
     print('== %s ==' % file_name)
@@ -28,6 +30,7 @@ for file_name in os.listdir(data_path):
         saccade_type_idx = headers.index('typeOfSaccade')
         webgazer_data_idx = headers.index('webgazer_data')
         intra_end_idx = headers.index('intraEnd')
+        response_end_idx = headers.index('responseEnd')
         cue_was_shown_at_left_idx = headers.index('cueShownAtLeft')
 
         # Only coordinate x will be parsed and normalized since we don't need to
@@ -73,21 +76,8 @@ for file_name in os.listdir(data_path):
                         break
 
             if row[saccade_type_idx] != '':
-                # TODO: Parse trials
-                #         - Estimations should be interpolated and normalized
-                #         - Trials from the tutorial should not be included in
-                #           the analysis but its validation must be considered
-                print(
-                    run_id,
-                    row[trial_index_idx],
-                    '%s trial;' % row[saccade_type_idx],
-                    'intra end = %s;' % row[intra_end_idx],
-                    'cue was shown at left: %s' % row[cue_was_shown_at_left_idx],
-                    type(row[cue_was_shown_at_left_idx]),
-                    json.loads(row[cue_was_shown_at_left_idx])
-                )
                 original_estimates = json.loads(row[webgazer_data_idx])
-                trial_total_time = original_estimates[-1]['t']
+                trial_duration_in_ms = int(row[response_end_idx])
                 parsed_trial = {
                     'run_id': run_id,
                     'saccade_type': \
@@ -96,13 +86,15 @@ for file_name in os.listdir(data_path):
                     'cue_was_shown_at_left': \
                         json.loads(row[cue_was_shown_at_left_idx]),
                     'original_frequency': \
-                        trial_total_time / len(original_estimates)
+                        len(original_estimates) / (trial_duration_in_ms / 1000)
                 }
 
+                # Normalize estimates
                 normalized_x_estimates = normalizer.normalize_estimates([
                     { 'x': e['x'], 't': e['t'] }
                     for e in original_estimates
                 ])
+
                 # Estimate will be mirrored so that we can assume that the trial
                 # visual cue was shown to the right in all trials
                 if parsed_trial['cue_was_shown_at_left']:
@@ -110,21 +102,54 @@ for file_name in os.listdir(data_path):
                         { 'x': -e['x'], 't': e['t'] }
                         for e in normalized_x_estimates
                     ]
+
+                # Uniformize sampling
                 interpolated_x_estimates = \
                     uniformize_sampling(normalized_x_estimates)
-                fix, axs = plt.subplots(nrows=2)
-                axs[0].plot(
-                    [e['t'] for e in normalized_x_estimates],
-                    [e['x'] for e in normalized_x_estimates]
-                )
-                axs[1].plot(
-                    [e['t'] for e in interpolated_x_estimates],
-                    [e['x'] for e in interpolated_x_estimates]
-                )
-                plt.show()
+
+                # Center time axis of estimations so that we can assume that t=0
+                # corresponds to when the visual cue appears
+                cue_start_in_ms = int(row[intra_end_idx])
+                centered_x_estimates = [
+                    {
+                        'x': e['x'],
+                        't': e['t'] - cue_start_in_ms
+                    }
+                    for e in interpolated_x_estimates
+                ]
+
+                # Save trial
+                parsed_trial['estimates'] = centered_x_estimates
+                parsed_trials.append(parsed_trial)
 
             else:
                 print(
                     run_id,
                     row[trial_index_idx]
                 )
+
+trials = TrialsCollection(parsed_trials)
+
+fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count)
+for i, run_id in enumerate(trials.runs_ids):
+    for j, saccade_type in enumerate(['pro', 'anti']):
+        for t in trials.get_trials_by(run_id, saccade_type):
+            es = t['estimates']
+            axs[i][j].plot(
+                [e['t'] for e in es],
+                [e['x'] for e in es],
+                color="black",
+                alpha=0.2
+            )
+            axs[i][j].set_title("%ssaccades of run %d" % (
+                t['saccade_type'],
+                t['run_id']
+            ))
+            axs[i][j].axvline(
+                0,
+                linestyle="--",
+                color='black',
+                alpha=0.1,
+                label="apparition of visual cue"
+            )
+plt.show()
