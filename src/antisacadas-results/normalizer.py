@@ -2,9 +2,6 @@ from utils.interpolate import interpolate_with
 
 class Normalizer:
     def __init__(self, stimulus_results, validation_was_successful):
-        print('producing new normalizer', validation_was_successful)
-        [print(s) for s in stimulus_results]
-
         regions_of_interest = ['center', 'left', 'right']
         validated_positions_average_x_estimate = dict()
         validated_positions_real_x = dict()
@@ -18,11 +15,6 @@ class Normalizer:
         for p in regions_of_interest:
             validated_positions_average_x_estimate[p] /= 2
 
-        # TODO: Real coordinates (eg, the ones from stimulus) and estimated
-        #       coordinates should be normalized distinctly using the two
-        #       variables below
-        print(validated_positions_average_x_estimate)
-        print(validated_positions_real_x)
         self.center_mapping = (
             validated_positions_average_x_estimate['center'],
             0
@@ -37,7 +29,6 @@ class Normalizer:
         )
 
         self.is_sketchy_normalizer = not validation_was_successful
-        print('boop')
 
     def normalize_estimates(self, raw_estimates):
         normalized_estimates = []
