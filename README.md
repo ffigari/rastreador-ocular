@@ -11,16 +11,17 @@ LIAA, UBA on the same topic.
 
 [Webgazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
 estimation.
-At the moment, this package has proven to be unreliable, with [unexpected
-crashes after a couple of minutes](
-https://github.com/jspsych/jsPsych/discussions/2490).
+Originally this package [proved to be unreliable for long sessions](
+https://github.com/brownhci/WebGazer/issues/171
+) but we were able to [diagnose the underlying issue and get it fixed](
+https://github.com/jspsych/jsPsych/discussions/2490
+).
 A simple appearance based heuristic is provided to decide when the tool gets
 decalibrated.  
 A [JSPsych](https://www.jspsych.org/7.1/) interface was built, which relies on
 [psychophysics](https://jspsychophysics.hes.kyushu-u.ac.jp/) for stimulus
 drawing.
-It provides a couples of assist functions to insert calibration barriers inside
-JSPsych's timelines.
+It provides utilities for calibration and decalibration detection.
 This can for example be useful if you need to run multiples trials of a short
 task while guaranteeing some sort of re-calibration mechanism along the way.  
 By building the js (see below) and opening the `./www/index.html` file in your
