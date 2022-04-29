@@ -1,5 +1,8 @@
 import os, re, csv, json
+import matplotlib.pyplot as plt
+
 from normalizer import Normalizer
+from utils.sampling import uniformize_sampling
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
 data_path = 'src/antisacadas-results/data'
@@ -25,6 +28,7 @@ for file_name in os.listdir(data_path):
         saccade_type_idx = headers.index('typeOfSaccade')
         webgazer_data_idx = headers.index('webgazer_data')
         intra_end_idx = headers.index('intraEnd')
+        cue_was_shown_at_left_idx = headers.index('cueShownAtLeft')
 
         # Only coordinate x will be parsed and normalized since we don't need to
         # analyze vertical coordinate
@@ -77,14 +81,48 @@ for file_name in os.listdir(data_path):
                     run_id,
                     row[trial_index_idx],
                     '%s trial;' % row[saccade_type_idx],
-                    'intra end = %s' % row[intra_end_idx]
+                    'intra end = %s;' % row[intra_end_idx],
+                    'cue was shown at left: %s' % row[cue_was_shown_at_left_idx],
+                    type(row[cue_was_shown_at_left_idx]),
+                    json.loads(row[cue_was_shown_at_left_idx])
                 )
-                raw_x_estimates = [
+                original_estimates = json.loads(row[webgazer_data_idx])
+                trial_total_time = original_estimates[-1]['t']
+                parsed_trial = {
+                    'run_id': run_id,
+                    'saccade_type': \
+                        'pro' if row[saccade_type_idx] == 'prosaccade' \
+                        else 'anti',
+                    'cue_was_shown_at_left': \
+                        json.loads(row[cue_was_shown_at_left_idx]),
+                    'original_frequency': \
+                        trial_total_time / len(original_estimates)
+                }
+
+                normalized_x_estimates = normalizer.normalize_estimates([
                     { 'x': e['x'], 't': e['t'] }
-                    for e in json.loads(row[webgazer_data_idx])
-                ]
-                normalized_x_estimates = \
-                    normalizer.normalize_estimates(raw_x_estimates)
+                    for e in original_estimates
+                ])
+                # Estimate will be mirrored so that we can assume that the trial
+                # visual cue was shown to the right in all trials
+                if parsed_trial['cue_was_shown_at_left']:
+                    normalized_x_estimates = [
+                        { 'x': -e['x'], 't': e['t'] }
+                        for e in normalized_x_estimates
+                    ]
+                interpolated_x_estimates = \
+                    uniformize_sampling(normalized_x_estimates)
+                fix, axs = plt.subplots(nrows=2)
+                axs[0].plot(
+                    [e['t'] for e in normalized_x_estimates],
+                    [e['x'] for e in normalized_x_estimates]
+                )
+                axs[1].plot(
+                    [e['t'] for e in interpolated_x_estimates],
+                    [e['x'] for e in interpolated_x_estimates]
+                )
+                plt.show()
+
             else:
                 print(
                     run_id,
