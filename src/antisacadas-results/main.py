@@ -13,12 +13,18 @@ for file_name in os.listdir(data_path):
 
         trial_index_idx = headers.index('trial_index')
         type_idx = headers.index('rastoc-type')
+
         center_x_idx = headers.index('center_x')
         stimulus_coordinate_idx = headers.index('stimulus-coordinate')
+
         validation_id_idx = headers.index('validation-id')
         validation_point_id_idx = headers.index('validation-point-id')
         validation_results_idx = headers.index('validation-results')
         validation_last_results_idx = headers.index('last-estimations')
+
+        saccade_type_idx = headers.index('typeOfSaccade')
+        webgazer_data_idx = headers.index('webgazer_data')
+        intra_end_idx = headers.index('intraEnd')
 
         # Only coordinate x will be parsed and normalized since we don't need to
         # analyze vertical coordinate
@@ -61,11 +67,26 @@ for file_name in os.listdir(data_path):
                             validation_was_successful
                         )
                         break
-            print(
-                run_id,
-                row[trial_index_idx]
-            )
-            # TODO: Parse trials
-            #         - Estimations should be interpolated and normalized
-            #         - Trials from the tutorial should not be included in the
-            #           analysis but its validation must be considered
+
+            if row[saccade_type_idx] != '':
+                # TODO: Parse trials
+                #         - Estimations should be interpolated and normalized
+                #         - Trials from the tutorial should not be included in
+                #           the analysis but its validation must be considered
+                print(
+                    run_id,
+                    row[trial_index_idx],
+                    '%s trial;' % row[saccade_type_idx],
+                    'intra end = %s' % row[intra_end_idx]
+                )
+                raw_x_estimates = [
+                    { 'x': e['x'], 't': e['t'] }
+                    for e in json.loads(row[webgazer_data_idx])
+                ]
+                normalized_x_estimates = \
+                    normalizer.normalize_estimates(raw_x_estimates)
+            else:
+                print(
+                    run_id,
+                    row[trial_index_idx]
+                )
