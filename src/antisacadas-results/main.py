@@ -18,6 +18,7 @@ for file_name in os.listdir(data_path):
 
         trial_index_idx = headers.index('trial_index')
         type_idx = headers.index('rastoc-type')
+        is_tutorial_idx = headers.index('isTutorial')
 
         center_x_idx = headers.index('center_x')
         stimulus_coordinate_idx = headers.index('stimulus-coordinate')
@@ -57,7 +58,7 @@ for file_name in os.listdir(data_path):
                             'left' if stimulus_delta < 0 else \
                             'right',
                         'real-stimulus-x': \
-                            int(row[center_x_idx]) + stimulus_delta,
+                            round(float(row[center_x_idx])) + stimulus_delta,
                         'last-estimates': \
                             json.loads(row[validation_last_results_idx])
                     })
@@ -78,6 +79,8 @@ for file_name in os.listdir(data_path):
             if row[saccade_type_idx] != '':
                 original_estimates = json.loads(row[webgazer_data_idx])
                 trial_duration_in_ms = int(row[response_end_idx])
+                if json.loads(row[is_tutorial_idx]):
+                    continue
                 parsed_trial = {
                     'run_id': run_id,
                     'saccade_type': \
