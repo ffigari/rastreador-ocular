@@ -4,8 +4,7 @@ import random
 from math import ceil
 
 from utils.parsing import parse_trials
-from filters import drop_unfocused_trials
-
+from fixated_trials import drop_non_fixated_trials
 
 def compute_saccades_in_place(trials):
     for t in trials.all():
@@ -47,7 +46,7 @@ def compute_saccades_in_place(trials):
         t['velocities'] = velocities
 
 if __name__ == "__main__":
-    trials = drop_unfocused_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials())
     compute_saccades_in_place(trials)
     tss = trials.all()
     random.shuffle(tss)
