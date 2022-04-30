@@ -83,6 +83,7 @@ def parse_trials():
                         continue
                     parsed_trial = {
                         'run_id': run_id,
+                        'trial_id': int(row[trial_index_idx]),
                         'saccade_type': \
                             'pro' if row[saccade_type_idx] == 'prosaccade' \
                             else 'anti',
