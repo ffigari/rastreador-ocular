@@ -4,6 +4,7 @@ from utils.parsing import parse_trials
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
+from non_response_trials import drop_non_response_trials
 
 def plot_trials_by_run_and_saccade_type(trials):
     fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count)
@@ -30,18 +31,11 @@ def plot_trials_by_run_and_saccade_type(trials):
                 )
     plt.show()
 
+# TODO: On each step report dropped trials in total and by subject
 trials = parse_trials()
-original_trials_count = len(trials.all())
-# TODO: Count trials per subject too
-
-trials = drop_non_fixated_trials(trials)
 plot_trials_by_run_and_saccade_type(trials)
+trials = drop_non_fixated_trials(trials)
 compute_saccades_in_place(trials)
-
 trials = drop_early_saccade_trials(trials)
-focused_trials_count = len(trials.all())
-print(
-    "%d trials out of %d were dropped due to the fixation marker bot being properly fixated before visual cue appeareance" % (
-    original_trials_count - focused_trials_count,
-    original_trials_count
-))
+trials = drop_non_response_trials(trials)
+plot_trials_by_run_and_saccade_type(trials)
