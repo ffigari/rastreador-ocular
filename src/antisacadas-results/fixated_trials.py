@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-from constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
-from trials_collection import TrialsCollection
+from utils.constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
+from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 
 def _divide_trials_by_focus_on_center(trials):

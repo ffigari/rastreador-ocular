@@ -1,9 +1,9 @@
 import os, re, csv, json
 
-from normalizer import Normalizer
-from trials_collection import TrialsCollection
+from utils.normalizer import Normalizer
+from utils.trials_collection import TrialsCollection
 from utils.sampling import uniformize_sampling
-from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from utils.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
 data_path = 'src/antisacadas-results/data'

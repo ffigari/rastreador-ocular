@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
-from constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
-from constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
-from trials_collection import TrialsCollection
+from utils.constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
+from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
+from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place

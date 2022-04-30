@@ -1,4 +1,4 @@
-from constants import TARGET_SAMPLING_PERIOD_IN_MS
+from utils.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.interpolate import interpolate_with
 
 def uniformize_sampling(es):
