@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 from utils.parsing import parse_trials
-from utils.filters import drop_unfocused_trials
+from filters import drop_unfocused_trials
 
 trials = drop_unfocused_trials(parse_trials())
 

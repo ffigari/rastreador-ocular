@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 
 from constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE
 from trials_collection import TrialsCollection
+from utils.parsing import parse_trials
 
-def drop_unfocused_trials(trials):
+def _divide_trials_by_focus_on_center(trials):
     focused_trials, unfocused_trials = [], []
     for t in trials.all():
         xs_before_visual_cue = [
@@ -21,7 +22,15 @@ def drop_unfocused_trials(trials):
 
     focused_trials = TrialsCollection(focused_trials)
     unfocused_trials = TrialsCollection(unfocused_trials)
+    return focused_trials, unfocused_trials
 
+def drop_unfocused_trials(trials):
+    focused_trials, _ = _divide_trials_by_focus_on_center(trials)
+    return focused_trials
+
+if __name__ == "__main__":
+    trials = parse_trials()
+    focused_trials, unfocused_trials = _divide_trials_by_focus_on_center(trials)
     fig, axs = plt.subplots(ncols=2, nrows=2)
     for j, saccade_type in enumerate(['pro', 'anti']):
         for t in focused_trials.get_trials_by_saccade(saccade_type):
@@ -41,5 +50,3 @@ def drop_unfocused_trials(trials):
                 alpha=0.3
             )
     plt.show()
-
-    return focused_trials
