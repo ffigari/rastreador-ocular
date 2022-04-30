@@ -7,8 +7,7 @@ from utils.parsing import parse_trials
 from filters import drop_unfocused_trials
 
 
-def compute_saccades_for(trials):
-    trials_saccades = []
+def compute_saccades_in_place(trials):
     for t in trials.all():
         es = t['estimates']
         velocities = [
@@ -44,13 +43,18 @@ def compute_saccades_for(trials):
                 saccades_intervals.append((i, j + 1))
             i = j + 1
 
-        trials_saccades.append((saccades_intervals, velocities))
-    return trials_saccades
+        t['saccades_intervals'] = saccades_intervals
+        t['velocities'] = velocities
 
 if __name__ == "__main__":
     trials = drop_unfocused_trials(parse_trials())
-    for t, (saccades_intervals, velocities) in zip(trials.all(), compute_saccades_for(trials)):
+    compute_saccades_in_place(trials)
+    tss = trials.all()
+    random.shuffle(tss)
+    for t in tss:
         es = t['estimates']
+        saccades_intervals = t['saccades_intervals']
+        velocities = t['velocities']
         fig, ax = plt.subplots()
         print(saccades_intervals)
         for (i, j) in saccades_intervals:
