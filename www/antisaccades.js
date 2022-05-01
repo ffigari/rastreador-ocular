@@ -18,13 +18,13 @@ const displayMsg = (msg, ms) => {
 
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('json', 'antisaccades.json');
+    jsPsych.data.get().localSave('csv', 'antisaccades.csv');
     location.href = "https://neuropruebas.org/";
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
 
-const saccade = ({ anti }) => {
+const saccade = ({ anti, isTutorial }) => {
   const showVisualCueAtLeft = getRandomBoolean();
   const durations = {
     interTrial: 925,
@@ -151,6 +151,8 @@ const saccade = ({ anti }) => {
     on_finish(data) {
       data.isSaccadeExperiment = true;
       data.typeOfSaccade = anti ? 'antisaccade' : 'prosaccade';
+      data.isTutorial = isTutorial;
+
       data.cueShownAtLeft = showVisualCueAtLeft;
 
       data.itiEnd = durations.itiEnd;
@@ -172,10 +174,16 @@ const saccade = ({ anti }) => {
 const REPETITIONS_PER_BLOCK = 20;
 const nSaccades = (options) => {
   options.n = options.n || REPETITIONS_PER_BLOCK;
+  options.isTutorial = options.isTutorial === undefined
+    ? false
+    : options.isTutorial;
 
   let saccades = [];
   for (let i = 0; i < options.n; ++i) {
-    saccades.push(saccade({ anti: options.anti }));
+    saccades.push(saccade({
+      anti: options.anti,
+      isTutorial: options.isTutorial,
+    }));
   }
   return saccades
 };
@@ -199,7 +207,7 @@ const saccadesBlocksPair = (options) => {
         <h3>Bloque de prosacada</h3>
         <p>${proReminder}<p>
       `, 3000),
-      ...nSaccades({ anti: false, n: options.n }),
+      ...nSaccades({ anti: false, n: options.n, isTutorial: options.isTutorial }),
       rastocJSPsych.ensureCalibration({
         performValidation: true,
         maxRetries: 1,
@@ -208,7 +216,7 @@ const saccadesBlocksPair = (options) => {
         <h3>Bloque de antisacadas</h3>
         <p>${antiReminder}<p>
       `, 3000),
-      ...nSaccades({ anti: true, n: options.n }),
+      ...nSaccades({ anti: true, n: options.n, isTutorial: options.isTutorial }),
     ]
   }
 }
@@ -343,6 +351,7 @@ const tutorial = () => {
     saccadesBlocksPair({
       n: 10,
       forceCalibration: true,
+      isTutorial: true,
     }),
     {
       type: jsPsychHtmlButtonResponse,
