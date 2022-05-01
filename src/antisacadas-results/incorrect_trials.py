@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
-from utils.trial_utilities import relevant_saccades
+from utils.trial_utilities import first_saccade_interval
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
@@ -15,7 +15,7 @@ NON_CUE = "non_cue_directed"
 def _divide_trials_by_correctness(trials):
     correct_trials, incorrect_trials = [], []
     for t in trials.all():
-        (i, j) = relevant_saccades(t)[0]
+        (i, j) = first_saccade_interval(t)
         saccade_x_start = t['estimates'][i]['x']
         saccade_x_end = t['estimates'][j]['x']
         saccade_direction = \

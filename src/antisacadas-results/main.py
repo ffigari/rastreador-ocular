@@ -6,6 +6,7 @@ from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
 from non_response_trials import drop_non_response_trials
 from incorrect_trials import drop_incorrect_trials
+from trials_response_times import compute_response_times_in_place
 
 def plot_trials_by_run_and_saccade_type(trials):
     fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count)
@@ -41,3 +42,4 @@ trials = drop_early_saccade_trials(trials)
 trials = drop_non_response_trials(trials)
 trials = drop_incorrect_trials(trials)
 plot_trials_by_run_and_saccade_type(trials)
+compute_response_times_in_place(trials)
