@@ -22,6 +22,12 @@ class TrialsCollection:
             if t['saccade_type'] == saccade_type
         ]
 
+    def get_trials_by_run(self, run_id):
+        return [
+            t for t in self.parsed_trials
+            if t['run_id'] == run_id
+        ]
+
     def all(self):
         return self.parsed_trials
 
