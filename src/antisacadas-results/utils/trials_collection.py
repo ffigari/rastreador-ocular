@@ -24,3 +24,7 @@ class TrialsCollection:
 
     def all(self):
         return self.parsed_trials
+
+    @property
+    def count(self):
+        return len(self.parsed_trials)

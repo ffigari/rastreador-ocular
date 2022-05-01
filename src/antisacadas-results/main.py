@@ -33,13 +33,23 @@ def plot_trials_by_run_and_saccade_type(trials):
                 )
     plt.show()
 
-# TODO: On each step report dropped trials in total and by subject
+def drop_and_report(fn, trials, filter_name):
+    original_count = trials.count
+    print(">> Applying '%s' filter" % filter_name)
+    filtered_trials = fn(trials)
+    print("%d trials (out of %d) were dropped" % (
+        original_count - filtered_trials.count,
+        original_count
+    ))
+    # TODO: Drop trials of subjects whose trials count fall behind a minimum
+    return filtered_trials
+
 trials = parse_trials()
-plot_trials_by_run_and_saccade_type(trials)
-trials = drop_non_fixated_trials(trials)
+#plot_trials_by_run_and_saccade_type(trials)
+trials = drop_and_report(drop_non_fixated_trials, trials, "non fixated")
 compute_saccades_in_place(trials)
-trials = drop_early_saccade_trials(trials)
-trials = drop_non_response_trials(trials)
-trials = drop_incorrect_trials(trials)
-plot_trials_by_run_and_saccade_type(trials)
+trials = drop_and_report(drop_early_saccade_trials, trials, "early saccade")
+trials = drop_and_report(drop_non_response_trials, trials, "non respones")
+trials = drop_and_report(drop_incorrect_trials, trials, "incorrect trials")
+#plot_trials_by_run_and_saccade_type(trials)
 compute_response_times_in_place(trials)
