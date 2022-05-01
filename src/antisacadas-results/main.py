@@ -67,7 +67,16 @@ def drop_and_report(fn, original_trials, filter_name):
     return filtered_trials
 
 trials = parse_trials()
-#plot_trials_by_run_and_saccade_type(trials)
+metrics_per_run = dict()
+for run_id in trials.runs_ids:
+    metrics_per_run[run_id] = {
+        'original_trials_count': len(trials.get_trials_by_run(run_id)),
+        'original_antisaccades_trials_count': \
+            len(trials.get_trials_by_run_by_saccade(run_id, 'anti')),
+        'original_prosaccades_trials_count': \
+            len(trials.get_trials_by_run_by_saccade(run_id, 'pro')),
+    }
+
 trials = drop_and_report(drop_non_fixated_trials, trials, "non fixated")
 compute_saccades_in_place(trials)
 trials = drop_and_report(drop_early_saccade_trials, trials, "early saccade")
@@ -75,3 +84,38 @@ trials = drop_and_report(drop_non_response_trials, trials, "non respones")
 trials = drop_and_report(drop_incorrect_trials, trials, "incorrect trials")
 plot_trials_by_run_and_saccade_type(trials)
 compute_response_times_in_place(trials)
+
+for run_id in metrics_per_run.keys():
+    metrics_per_run[run_id]['dropped'] = False
+    if run_id not in trials.runs_ids:
+        metrics_per_run[run_id]['dropped'] = True
+    else:
+        metrics_per_run[run_id]['correct_trials_count'] = \
+            len(trials.get_trials_by_run(run_id))
+        for saccade_type in ["pro", "anti"]:
+            ts = trials.get_trials_by_run_by_saccade(run_id, saccade_type)
+            metrics_per_run[run_id][
+                'correct_%ssaccades_trials_count' % saccade_type
+            ] = len(ts)
+            metrics_per_run[run_id][
+                '%ssaccades_correctness_ratio' % saccade_type
+            ] = metrics_per_run[run_id][
+                'correct_%ssaccades_trials_count' % saccade_type
+            ] / metrics_per_run[run_id][
+                'original_%ssaccades_trials_count' % saccade_type
+            ]
+            rts = [t['response_time'] for t in ts]
+            metrics_per_run[run_id][
+                '%ssaccade_average_response_time' % saccade_type
+            ] = sum(rts) / len(rts)
+
+print('>> Results after filtering')
+print('run_id | task | correctness_ratio | average_response_time')
+for (run_id, run_metrics) in metrics_per_run.items():
+    for saccade_type in ["pro", "anti"]:
+        print('%d | %s | %f | %f' % (
+            run_id,
+            saccade_type,
+            run_metrics['%ssaccades_correctness_ratio' % saccade_type],
+            run_metrics['%ssaccade_average_response_time' % saccade_type]
+        ))
