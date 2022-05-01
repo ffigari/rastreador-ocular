@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
-from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
+from utils.trial_utilities import relevant_saccades
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
@@ -10,11 +10,7 @@ from early_saccade_trials import drop_early_saccade_trials
 def _divide_trials_by_non_response(trials):
     response_trials, non_response_trials = [], []
     for t in trials.all():
-        responses = [
-            (i, j) for (i, j) in t['saccades_intervals']
-            if t['estimates'][i]['t'] > EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
-        ]
-        if len(responses) > 0:
+        if len(relevant_saccades(t)) > 0:
             response_trials.append(t)
         else:
             non_response_trials.append(t)
