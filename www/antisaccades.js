@@ -206,6 +206,7 @@ const saccadesBlocksPair = (options) => {
       displayMsg(`
         <h3>Bloque de prosacada</h3>
         <p>${proReminder}<p>
+        ${prosaccadeGifInstructions}
       `, 3000),
       ...nSaccades({ anti: false, n: options.n, isTutorial: options.isTutorial }),
       rastocJSPsych.ensureCalibration({
@@ -215,19 +216,15 @@ const saccadesBlocksPair = (options) => {
       displayMsg(`
         <h3>Bloque de antisacadas</h3>
         <p>${antiReminder}<p>
+        ${antisaccadeGifInstructions}
       `, 3000),
       ...nSaccades({ anti: true, n: options.n, isTutorial: options.isTutorial }),
     ]
   }
 }
 
-const gifsInstructions = `
+const gifInstructionsCSS = `
   <style>
-    .tasks-gifs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-gap: 20px;
-    }
     .gif-instruction {
       border: 2px solid black;
       padding-right: 10px;
@@ -243,18 +240,21 @@ const gifsInstructions = `
       border: 1px solid black;
     }
   </style>
-
-  <div class="tasks-gifs">
-    <div class="gif-instruction">
-      <h4>Prosacada</h4>
-      <img src="prosaccade.gif" alt="prosaccade instructions" /> 
-      <p>Mirar hacia el mismo lado</p>
-    </div>
-    <div class="gif-instruction">
-      <h4>Antisacada</h4>
-      <img src="antisaccade.gif" alt="antisaccade instructions" /> 
-      <p>Mirar hacia el lado contrario</p>
-    </div>
+`;
+const prosaccadeGifInstructions = `
+  ${gifInstructionsCSS}
+  <div class="gif-instruction">
+    <h4>Prosacada</h4>
+    <img src="prosaccade.gif" alt="prosaccade instructions" /> 
+    <p>Mirar hacia el mismo lado</p>
+  </div>
+`;
+const antisaccadeGifInstructions = `
+  ${gifInstructionsCSS}
+  <div class="gif-instruction">
+    <h4>Antisacada</h4>
+    <img src="antisaccade.gif" alt="antisaccade instructions" /> 
+    <p>Mirar hacia el lado contrario</p>
   </div>
 `;
 
@@ -262,7 +262,7 @@ const tutorial = () => {
   let retry = false;
   const retryChoices = {
     html: `
-      <div style="text-align: left">
+      <div style="left: calc(50% - 400px); width:800px;">
         <p>
           Ahí terminamos el tutorial. Querés hacerlo de vuelta?
         </p>
@@ -280,35 +280,50 @@ const tutorial = () => {
     timeline: [{
       type: jsPsychHtmlButtonResponse,
       stimulus: `
-      <div style="text-align: left">
+      <div style="left: calc(50% - 400px); width:800px;">
         <h2>Tutorial</h2>
-  
-        <h3>Prosacadas y antisacadas</h3>
         <p>
-          Vas a realizar tareas de prosacadas y antisacadas. En ambas tareas va a
-          aparecer un estímulo central y luego un estímulo lateral. Cuando
-          aparezca el estímulo central fijá y mantené la mirada en él. Cuando
-          aparezca el estímulo lateral, en el caso de <b>ANTISACADAS tenés que
-          mirar en la dirección OPUESTA</b> a la que este aparece mientras que
-          en el caso de <b>PROSACADAS tenés que mirar en la MISMA dirección</b>.
-          Reaparecerá luego nuevamente el estímulo central para continuar con la
-          próxima repetición, por lo que tendrás que fijar nuevamente la mirada
-          en él.
+          A lo largo de este experimento vas a realizar muchas repeticiones de
+          tareas de prosacadas y antisacadas. Cada una de estas repeticiones
+          dura menos de tres segundos. En cada una va a aparecer un estímulo
+          central y luego uno lateral. Cada vez que aparezca el estímulo
+          central, fijá la mirada en él hasta que desaparezca.
         </p>
-        <p>
-          Vamos a usar un círculo (${htmlCircle}) para referirnos a las tareas de
-          prosacadas y una cruz (${htmlCross}) para las tareas de antisacadas.
-          Al principio de cada bloque te vamos a recordar qué tarea toca hacer.
-        </p>
-        ${gifsInstructions}
       </div>`,
       choices: ["continuar"],
     }, {
       type: jsPsychHtmlButtonResponse,
       stimulus: `
-      <div style="text-align: left">
+      <div style="left: calc(50% - 400px); width:800px;">
         <h2>Tutorial</h2>
-  
+        <h3>Prosacadas</h3>
+        <p>
+          En la tarea de prosacada tenés que mirar en la MISMA dirección en la 
+          cual aparezca el estímulo lateral. Cuando el estímulo central sea un
+          círculo (${htmlCircle}), estamos ante una tarea de prosacadas.
+        </p>
+        ${prosaccadeGifInstructions}
+      </div>`,
+      choices: ["continuar"],
+    }, {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="left: calc(50% - 400px); width:800px;">
+        <h2>Tutorial</h2>
+        <h3>Antisacadas</h3>
+        <p>
+          En cambio, en la tarea de antisacadas tenés que mirar en la dirección
+          OPUESTA en la cual aparece el estímulo lateral. Para estas tareas el
+          estímulo central va ser una cruz (${htmlCross}).
+        </p>
+        ${antisaccadeGifInstructions}
+      </div>`,
+      choices: ["continuar"],
+    }, {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="left: calc(50% - 400px); width:800px;">
+        <h2>Tutorial</h2>
         <h3>Calibración y validación</h3>
         <p>
           El sistema en cuestión requiere ser inicialmente calibrado para
@@ -318,6 +333,14 @@ const tutorial = () => {
           los experimentos tendrías que estar <b>moviendo únicamente tus
           ojos</b>.
         </p>
+      </div>`,
+      choices: ["continuar"],
+    }, {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+      <div style="left: calc(50% - 400px); width:800px;">
+        <h2>Tutorial</h2>
+        <h3>Calibración y validación</h3>
         <p>
           La calibración consiste en fijar la mirada en <b>círculos</b> que van
           a aparecer en la pantalla.
@@ -330,19 +353,25 @@ const tutorial = () => {
           <li>apenas cambie de color el estímulo, presionar la <b>barra de
           espacio</b></li>
         </ol>
+        <p>
+          Luego de cada calibración va a haber otra ronda de estímulos de
+          validación. Con estos vamos a estar verificando los resultados de tu
+          calibración anterior. Tenés que hacer lo mismo: fijar la mirada,
+          esperar que cambie de color y presionar la barra de espacio.
+        </p>
       </div>`,
       choices: ["continuar"],
     }, {
       type: jsPsychHtmlButtonResponse,
       stimulus: `
-      <div style="text-align: left">
+      <div style="left: calc(50% - 400px); width:800px;">
         <p>
           Así que acordate
           <ul>
             <li>prosacada = ${proReminder}</li>
             <li>antisacada = ${antiReminder}</li>
-            <li>para calibrar, fijá la mirada en el círculo y presioná la barra
-            de espacio</li>
+            <li>para calibrar y validar, fijá la mirada en el círculo y
+            presioná la barra de espacio</li>
           </ul>
         </p>
       </div>`,
@@ -376,7 +405,6 @@ const pause = () => {
       Tomate unos segundos para descansar los ojos y cuando estés listx hacé
       click en <i>continuar</i>.
     </p>
-    ${gifsInstructions}
     `,
     choices: ["continuar"],
   }
@@ -385,7 +413,7 @@ const pause = () => {
 let breakEarlier = false;
 const earlyFinish = {
   html: `
-    <div style="text-align: left">
+    <div style="left: calc(50% - 400px); width:800px;">
       <p>
         Ahí llegamos a la mitad del experimento. <br>
         Si todavía estás con energías hacemos una segunda ronda y si no podés
@@ -403,10 +431,10 @@ const earlyFinish = {
 };
 jsPsych.run([
   {
-    type: jsPsychSurveyHtmlForm,
-    button_label: 'comenzar',
-    html: `
-    <div style="text-align: left">
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="left: calc(50% - 400px); width:800px;">
+      <h2>Intro</h2>
       <p>
         Bienvenidx a este experimento de eye tracking.
       </p>
@@ -419,7 +447,16 @@ jsPsych.run([
         El sistema que armamos es muy vulnerable a movimientos de cabeza, por lo 
         que es importante que te sientes cómodx.
       </p>
-
+    </div>
+    `,
+    choices: ["continuar"],
+  },
+  {
+    type: jsPsychSurveyHtmlForm,
+    button_label: 'continuar',
+    html: `
+    <div style="left: calc(50% - 400px); width:800px;">
+      <h2>Intro</h2>
       <p>
         Para arrancar te pedimos este par de datos tuyos y de tu compu.
       </p>
@@ -470,7 +507,13 @@ jsPsych.run([
           >
         </li>
       </ul>
-      <br>
+    </div>
+    `,
+  }, {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="left: calc(50% - 400px); width:800px;">
+      <h2>Intro</h2>
       <p>
         En la próxima pantalla vamos a activar tu cámara web. Asegurate de
         tenerla correctamente enchufada y de otorgar los permisos cuando te 
@@ -478,6 +521,7 @@ jsPsych.run([
       </p>
     </div>
     `,
+    choices: ["continuar"],
   }, {
     type: jsPsychPreload,
     images: ['antisaccade.gif', 'prosaccade.gif'],
@@ -486,7 +530,7 @@ jsPsych.run([
   }, {
     type: jsPsychWebgazerInitCamera,
     instructions: `
-    <div style="text-align: left;">
+    <div style="left: calc(50% - 400px); width:800px;">
       <p>
         Corregí la posición de la webcam para que se alinie con tus ojos y estos
         queden bien enfocados. Tu cabeza debería quedar en el centro del
@@ -505,7 +549,8 @@ jsPsych.run([
   }, {
     type: jsPsychFullscreen,
     message: `
-    <div style="text-align: left;">
+    <div style="left: calc(50% - 400px); width:800px;">
+      <h2>Intro</h2>
       <p>
         Para evitar distracciones te pedimos también que en la medida de lo
         posible durante la duración del experimento cierres aplicaciones que
@@ -520,7 +565,7 @@ jsPsych.run([
   {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
-    <div style="text-align: left">
+    <div style="left: calc(50% - 400px); width:800px;">
       <p>
         Ahora arrancan las tareas reales. Presioná "comenzar" cuando estés
         listx.
