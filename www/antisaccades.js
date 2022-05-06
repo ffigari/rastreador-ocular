@@ -373,6 +373,10 @@ const tutorial = () => {
             <li>para calibrar y validar, fijá la mirada en el círculo y
             presioná la barra de espacio</li>
           </ul>
+          <p>
+            A continuación toca calibrar el sistema y realizar una serie de
+            repeticiones de prueba de ambas tareas.
+          </p>
         </p>
       </div>`,
       choices: ["continuar"],
@@ -441,8 +445,11 @@ jsPsych.run([
   
       <p>
         Utilizando tu cámara web, vamos a intentar estimar dónde estás mirando
-        en la pantalla. El experimento va durar aproximadamente 20 minutos
-        aunque por la mitad tendrás la opción de cortar tempranamente.
+        en la pantalla. El experimento va durar aproximadamente 20 minutos.
+        Incluye una pequeña introducción, un tutorial de unos 5 minutos y luego
+        dos bloques de unos 8 minutos. Al final del primer bloque vas a tener la
+        opción de cortar tempranamente. A lo largo del experimento también van a
+        haber pausas para que puedas descansar la mirada.
         <br>
         El sistema que armamos es muy vulnerable a movimientos de cabeza, por lo 
         que es importante que te sientes cómodx.
@@ -604,8 +611,8 @@ jsPsych.run([
     type: jsPsychHtmlButtonResponse,
     stimulus: `
     <p>
-      Fin del experimento. Presioná <i>finalizar</i> y esperá a que la pantalla
-      quede en blanco. Luego podés cerrar la pestaña. <br>
+      Fin del experimento. Presioná <i>finalizar</i> y esperá unos segundos a
+      que la pantalla quede en blanco. Luego podés cerrar la pestaña. <br>
       Muchas gracias por participar c:
     </p>
     `,
