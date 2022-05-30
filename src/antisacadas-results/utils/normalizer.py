@@ -3,17 +3,27 @@ from utils.interpolate import interpolate_with
 class Normalizer:
     def __init__(self, stimulus_results, validation_was_successful):
         regions_of_interest = ['center', 'left', 'right']
-        validated_positions_average_x_estimate = dict()
+        position_grouped_average_estimates = dict()
         validated_positions_real_x = dict()
         for p in regions_of_interest:
-            validated_positions_average_x_estimate[p] = 0
+            position_grouped_average_estimates[p] = []
         for p in regions_of_interest:
             for r in [r for r in stimulus_results if r['position'] == p]:
                 validated_positions_real_x[p] = r['real-stimulus-x']
                 es = [e['x'] for e in r['last-estimates']]
-                validated_positions_average_x_estimate[p] += sum(es) / len(es)
+                if len(es) == 0:
+                    continue
+                position_grouped_average_estimates[p].append(sum(es) / len(es))
+
+        validated_positions_average_x_estimate = dict()
         for p in regions_of_interest:
-            validated_positions_average_x_estimate[p] /= 2
+            if len(position_grouped_average_estimates[p]) > 0:
+                validated_positions_average_x_estimate[p] = \
+                    sum(position_grouped_average_estimates[p]) / \
+                    len(position_grouped_average_estimates[p])
+            else:
+                validated_positions_average_x_estimate[p] = \
+                    validated_positions_real_x[p]
 
         self.center_mapping = (
             validated_positions_average_x_estimate['center'],
