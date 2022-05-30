@@ -12,7 +12,7 @@ from non_response_trials import drop_non_response_trials
 CUE = "cue_directed"
 NON_CUE = "non_cue_directed"
 
-def _divide_trials_by_correctness(trials):
+def divide_trials_by_correctness(trials):
     correct_trials, incorrect_trials = [], []
     for t in trials.all():
         (i, j) = first_saccade_interval(t)
@@ -34,13 +34,13 @@ def _divide_trials_by_correctness(trials):
         TrialsCollection(incorrect_trials)
 
 def drop_incorrect_trials(trials):
-    return _divide_trials_by_correctness(trials)[0]
+    return divide_trials_by_correctness(trials)[0]
 
 if __name__ == "__main__":
     trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     trials = drop_non_response_trials(drop_early_saccade_trials(trials))
-    correct_trials, incorrect_trials = _divide_trials_by_correctness(trials)
+    correct_trials, incorrect_trials = divide_trials_by_correctness(trials)
 
     fig, axes = plt.subplots(nrows=2)
     for j, saccade_type in enumerate(['pro', 'anti']):

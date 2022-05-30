@@ -7,7 +7,7 @@ from fixated_trials import divide_trials_by_focus_on_center
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import divide_trials_by_early_saccade
 from non_response_trials import divide_trials_by_non_response
-from incorrect_trials import drop_incorrect_trials
+from incorrect_trials import divide_trials_by_correctness
 from trials_response_times import compute_response_times_in_place
 
 def plot_trials_by_run_and_saccade_type(trials):
@@ -102,7 +102,7 @@ for run_id in counts_per_run.keys():
             counts_per_run[run_id][st]['non_response_drop_count']
 
 runs_without_enough_valid_trials = []
-print('>> Preprocessing drop count report')
+print('>> Preprocessing drop count report:')
 print('---------------------------------------------------------------------------------------------------------------------------')
 print('       || counts                                                                                        ||                 ')
 print('run_id || original   || low frecuency | unfocused  | early saccade | non response || post preprocessing || is below minimum')
@@ -147,21 +147,75 @@ if len(runs_without_enough_valid_trials) > 0:
         t for t in trials.all()
         if t['run_id'] not in runs_without_enough_valid_trials
     ])
-plot_trials_by_run_and_saccade_type(trials)
-asd
 
-# TODO: Drop subjects with low amount of trials
-# TODO: Keep incorrect trials
-#       Their RT has to be reported
-#       Besides, a detail of how many trials are dropped in each stage should be
-#       accumulated
-trials = drop_and_report(drop_incorrect_trials, trials, "incorrect trials")
-plot_trials_by_run_and_saccade_type(trials)
 compute_response_times_in_place(trials)
+correct_trials, incorrect_trials = divide_trials_by_correctness(trials)
+#plot_trials_by_run_and_saccade_type(correct_trials)
+#plot_trials_by_run_and_saccade_type(incorrect_trials)
 
-print('TODO: Report error rate')
+trials_per_correctness = dict()
+for run_id in trials.runs_ids:
+    trials_per_correctness[run_id] = dict()
+    for st in saccade_types:
+        trials_per_correctness[run_id][st] = {
+            'correct': TrialsCollection(
+                correct_trials.get_trials_by_run_by_saccade(run_id, st)),
+            'incorrect': TrialsCollection(
+                incorrect_trials.get_trials_by_run_by_saccade(run_id, st)),
+        }
+
+print('>> Correctness report:')
+print('--------------------------------------------------------')
+print('run id || # correct   | # incorrect  | correctness ratio')
+print('       || pro  ~ anti | pro  ~ anti  | pro     ~ anti   ')
+print('--------------------------------------------------------')
+for run_id in trials.runs_ids:
+    print('{:6d} || {:4d} ~ {:4d} | {:4d} ~ {:4d}  | {:1.2f}    ~ {:1.2f}   '.format(
+        run_id,
+        trials_per_correctness[run_id]['pro']['correct'].count,
+        trials_per_correctness[run_id]['anti']['correct'].count,
+        trials_per_correctness[run_id]['pro']['incorrect'].count,
+        trials_per_correctness[run_id]['anti']['incorrect'].count,
+        trials_per_correctness[run_id]['pro']['correct'].count / (
+            trials_per_correctness[run_id]['pro']['correct'].count + \
+            trials_per_correctness[run_id]['pro']['incorrect'].count),
+        trials_per_correctness[run_id]['anti']['correct'].count / (
+            trials_per_correctness[run_id]['anti']['correct'].count + \
+            trials_per_correctness[run_id]['anti']['incorrect'].count)
+    ))
+print('--------------------------------------------------------')
+total_pro_correct_count = sum([
+    trials_per_correctness[run_id]['pro']['correct'].count
+    for run_id in trials.runs_ids
+])
+total_anti_correct_count = sum([
+    trials_per_correctness[run_id]['anti']['correct'].count
+    for run_id in trials.runs_ids
+])
+total_pro_incorrect_count = sum([
+    trials_per_correctness[run_id]['pro']['incorrect'].count
+    for run_id in trials.runs_ids
+])
+total_anti_incorrect_count = sum([
+    trials_per_correctness[run_id]['anti']['incorrect'].count
+    for run_id in trials.runs_ids
+])
+print(' total || {:4d} ~ {:4d} | {:4d} ~ {:4d}  | {:1.2f}    ~ {:1.2f}   '.format(
+    total_pro_correct_count,
+    total_anti_correct_count,
+    total_pro_incorrect_count,
+    total_anti_incorrect_count,
+    total_pro_correct_count / (total_pro_correct_count + total_pro_incorrect_count),
+    total_anti_correct_count / (total_anti_correct_count + total_anti_incorrect_count)
+))
+print('--------------------------------------------------------')
+
+print('>> Mean response time report:')
 print('TODO: Report mean RT for prosaccades')
 print('TODO: Report mean RT for correct antisaccades')
 print('TODO: Report mean RT for incorrect antisaccades')
-print('TODO: Report mean ratio of incorrect antisaccades with a correction')
+
 print('TODO: Report distributions of RT?')
+
+print('TODO: For incorrect antisaccades, compute RT of correction if it exists')
+print('TODO: Report mean ratio of incorrect antisaccades with a correction')
