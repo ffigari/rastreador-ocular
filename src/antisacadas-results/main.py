@@ -137,7 +137,18 @@ for run_id, counts in sorted(
     ))
 print('---------------------------------------------------------------------------------------------------------------------------')
 
-trials_of_runs_with_enough_trials = []
+if len(runs_without_enough_valid_trials) > 0:
+    print('>> Trials of {:d} runs (ids=[{:s}]) were dropped due to having less than {:d} trials per task after preprocessing'.format(
+        len(runs_without_enough_valid_trials),
+        ', '.join([str(i) for i in runs_without_enough_valid_trials]),
+        MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
+    ))
+    trials = TrialsCollection([
+        t for t in trials.all()
+        if t['run_id'] not in runs_without_enough_valid_trials
+    ])
+plot_trials_by_run_and_saccade_type(trials)
+asd
 
 # TODO: Drop subjects with low amount of trials
 # TODO: Keep incorrect trials
