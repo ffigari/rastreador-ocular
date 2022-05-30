@@ -8,3 +8,8 @@ def relevant_saccades(t):
 
 def first_saccade_interval(t):
     return relevant_saccades(t)[0]
+
+def second_saccade_interval(t):
+    if len(relevant_saccades(t)) <= 1:
+        return None
+    return relevant_saccades(t)[1]

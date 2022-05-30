@@ -4,6 +4,7 @@ from statistics import mean, stdev
 from utils.parsing import parse_trials
 from utils.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from utils.trials_collection import TrialsCollection
+from utils.trial_utilities import second_saccade_interval
 from fixated_trials import divide_trials_by_focus_on_center
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import divide_trials_by_early_saccade
@@ -254,7 +255,126 @@ print(' total || {:6.2f} ({:6.2f}) ~ {:6.2f} ({:6.2f}) | {:6.2f} ({:6.2f}) ~ {:6
 ))
 print('-------------------------------------------------------------------------------')
 
-print('TODO: Report distributions of RT?')
+min_rt = min(
+    min(pro_correct_rts),
+    min(anti_correct_rts),
+    min(pro_incorrect_rts),
+    min(anti_incorrect_rts)
+)
+max_rt = max(
+    max(pro_correct_rts),
+    max(anti_correct_rts),
+    max(pro_incorrect_rts),
+    max(anti_incorrect_rts)
+)
+buckets_amount = 20
+bucket_size = (max_rt - min_rt) / buckets_amount
+bucketed_rts = dict()
+for st in saccade_types:
+    bucketed_rts[st] = dict()
+    for c in ['correct', 'incorrect']:
+        bucketed_rts[st][c] = [list() for _ in range(buckets_amount)]
+def rt_to_bucket_idx(rt):
+    if rt < min_rt:
+        raise Exception('rt too low')
+    if rt > max_rt:
+        raise Exception('rt too low')
+    if rt == max_rt:
+        return buckets_amount - 1
+    return int((rt - min_rt) // bucket_size)
 
-print('TODO: For incorrect antisaccades, compute RT of correction if it exists')
-print('TODO: Report mean ratio of incorrect antisaccades with a correction')
+for rt in pro_correct_rts:
+    bucketed_rts['pro']['correct'][rt_to_bucket_idx(rt)].append(rt)
+for rt in anti_correct_rts:
+    bucketed_rts['anti']['correct'][rt_to_bucket_idx(rt)].append(rt)
+for rt in pro_incorrect_rts:
+    bucketed_rts['pro']['incorrect'][rt_to_bucket_idx(rt)].append(rt)
+for rt in anti_incorrect_rts:
+    bucketed_rts['anti']['incorrect'][rt_to_bucket_idx(rt)].append(rt)
+
+buckets_middle_values = [
+    ((min_rt + i * bucket_size) + (min_rt + (i + 1) * bucket_size)) / 2
+    for i in range(buckets_amount)
+]
+fig, ax = plt.subplots()
+plt.plot(
+    buckets_middle_values,
+    [
+        len(bucket) / total_pro_correct_count
+        for bucket in bucketed_rts['pro']['correct']
+    ],
+    label="correct prosaccades",
+    lw=0.5,
+    color="black",
+    marker="."
+)
+plt.plot(
+    buckets_middle_values,
+    [
+        len(bucket) / total_pro_incorrect_count
+        for bucket in bucketed_rts['pro']['incorrect']
+    ],
+    label="incorrect prosaccades",
+    lw=0.5,
+    ls="--",
+    color="black",
+    marker="o"
+)
+plt.plot(
+    buckets_middle_values,
+    [
+        len(bucket) / total_anti_correct_count
+        for bucket in bucketed_rts['anti']['correct']
+    ],
+    label="correct antisaccades",
+    lw=0.5,
+    color="black",
+    marker="x"
+)
+plt.plot(
+    buckets_middle_values,
+    [
+        len(bucket) / total_anti_incorrect_count
+        for bucket in bucketed_rts['anti']['incorrect']
+    ],
+    label="incorrect antisaccades",
+    lw=0.5,
+    ls="--",
+    color="black",
+    marker="X"
+)
+fig.suptitle("""Trials distribution (accumulated in buckets with size of {:.2f} ms)
+Incorrect trials show quicker responses than correct trials.
+Correct antisaccades show slower responses than correct antisaccades.""".format(bucket_size))
+plt.xlabel('response time (in ms)')
+plt.ylabel('proportion per category')
+plt.legend()
+plt.show()
+
+def compute_correction_time_in_place(trials):
+    for t in trials.all():
+        second_saccade_indexes = second_saccade_interval(t)
+        t['correction_time'] = \
+            t['estimates'][second_saccade_indexes[0]]['t'] \
+            if second_saccade_indexes is not None \
+            else None
+compute_correction_time_in_place(incorrect_trials)
+
+corrected_trials = [
+    t for t in incorrect_trials.all()
+    if t['correction_time'] is not None
+]
+correction_delays = [
+    t['correction_time'] - t['response_time']
+    for t in corrected_trials
+]
+print('')
+print('>> Incorrect antisaccades correction report')
+print('# total | # corrected | correction proportion | mean correction delay (std)')
+print(' {:4d}   | {:4d}        | {:4.2f}                  | {:6.2f}                ({:6.2f})'.format(
+    incorrect_trials.count,
+    len(corrected_trials),
+    len(corrected_trials) / incorrect_trials.count,
+    mean(correction_delays),
+    stdev(correction_delays),
+))
