@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from statistics import mean, stdev
 
 from utils.parsing import parse_trials
 from utils.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
@@ -34,37 +35,6 @@ def plot_trials_by_run_and_saccade_type(trials):
                     label="apparition of visual cue"
                 )
     plt.show()
-
-def drop_and_report(fn, original_trials, filter_name):
-    print(">> Applying '%s' filter" % filter_name)
-    filtered_trials = fn(original_trials)
-    print("%d trials (out of %d) were dropped" % (
-        original_trials.count - filtered_trials.count,
-        original_trials.count
-    ))
-
-    small_N_runs_ids = []
-    for run_id in original_trials.runs_ids:
-        run_filtered_pro_trials = \
-            filtered_trials.get_trials_by_run_by_saccade(run_id, "pro")
-        run_filtered_anti_trials = \
-            filtered_trials.get_trials_by_run_by_saccade(run_id, "anti")
-        pro_count_is_below_limit = \
-            len(run_filtered_pro_trials) < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
-        anti_count_is_below_limit = \
-            len(run_filtered_anti_trials) < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
-        if pro_count_is_below_limit or anti_count_is_below_limit:
-            small_N_runs_ids.append(run_id)
-    if len(small_N_runs_ids) > 0:
-        print(
-            "Dropping trials from runs whose trial count fell below limit (run_ids=[%s])" % ", ".join([str(run_id) for run_id in small_N_runs_ids]),
-        )
-        filtered_trials = TrialsCollection([
-            t for t in filtered_trials.all()
-            if t['run_id'] not in small_N_runs_ids
-        ])
-
-    return filtered_trials
 
 saccade_types = ['pro', 'anti']
 trials, counts_per_run = parse_trials()
@@ -138,6 +108,7 @@ for run_id, counts in sorted(
 print('---------------------------------------------------------------------------------------------------------------------------')
 
 if len(runs_without_enough_valid_trials) > 0:
+    print('')
     print('>> Trials of {:d} runs (ids=[{:s}]) were dropped due to having less than {:d} trials per task after preprocessing'.format(
         len(runs_without_enough_valid_trials),
         ', '.join([str(i) for i in runs_without_enough_valid_trials]),
@@ -164,6 +135,7 @@ for run_id in trials.runs_ids:
                 incorrect_trials.get_trials_by_run_by_saccade(run_id, st)),
         }
 
+print('')
 print('>> Correctness report:')
 print('--------------------------------------------------------')
 print('run id || # correct   | # incorrect  | correctness ratio')
@@ -209,11 +181,78 @@ print(' total || {:4d} ~ {:4d} | {:4d} ~ {:4d}  | {:1.2f}    ~ {:1.2f}   '.forma
     total_anti_correct_count / (total_anti_correct_count + total_anti_incorrect_count)
 ))
 print('--------------------------------------------------------')
+print('')
 
-print('>> Mean response time report:')
-print('TODO: Report mean RT for prosaccades')
-print('TODO: Report mean RT for correct antisaccades')
-print('TODO: Report mean RT for incorrect antisaccades')
+print('>> Mean response time report (value of 0 indicates there was not enough data to compute the value):')
+print('-------------------------------------------------------------------------------')
+print('run id || correct mean RT (std)             | incorrect mean RT (std)')
+print('       || pro             ~ anti            | pro             ~ anti      ')
+print('-------------------------------------------------------------------------------')
+for run_id in trials.runs_ids:
+    run_pro_correct_rts = [
+        t['response_time']
+        for t
+        in trials_per_correctness[run_id]['pro']['correct'].all()
+    ]
+    run_anti_correct_rts = [
+        t['response_time']
+        for t
+        in trials_per_correctness[run_id]['anti']['correct'].all()
+    ]
+    run_pro_incorrect_rts = [
+        t['response_time']
+        for t
+        in trials_per_correctness[run_id]['pro']['incorrect'].all()
+    ]
+    run_anti_incorrect_rts = [
+        t['response_time']
+        for t
+        in trials_per_correctness[run_id]['anti']['incorrect'].all()
+    ]
+    for l in [run_pro_correct_rts, run_anti_correct_rts, run_pro_incorrect_rts, run_anti_incorrect_rts]:
+        if len(l) == 0:
+            l.append(0)
+        if len(l) == 1:
+            l.append(l[0])
+    print('{:6d} || {:6.2f} ({:6.2f}) ~ {:6.2f} ({:6.2f}) | {:6.2f} ({:6.2f}) ~ {:6.2f} ({:6.2f})'.format(
+        run_id,
+        mean(run_pro_correct_rts), stdev(run_pro_correct_rts),
+        mean(run_anti_correct_rts), stdev(run_anti_correct_rts),
+        mean(run_pro_incorrect_rts), stdev(run_pro_incorrect_rts),
+        mean(run_anti_incorrect_rts), stdev(run_anti_incorrect_rts)
+    ))
+print('-------------------------------------------------------------------------------')
+pro_correct_rts = [
+    t['response_time']
+    for run_id in trials_per_correctness.keys()
+    for t
+    in trials_per_correctness[run_id]['pro']['correct'].all()
+]
+anti_correct_rts = [
+    t['response_time']
+    for run_id in trials_per_correctness.keys()
+    for t
+    in trials_per_correctness[run_id]['anti']['correct'].all()
+]
+pro_incorrect_rts = [
+    t['response_time']
+    for run_id in trials_per_correctness.keys()
+    for t
+    in trials_per_correctness[run_id]['pro']['incorrect'].all()
+]
+anti_incorrect_rts = [
+    t['response_time']
+    for run_id in trials_per_correctness.keys()
+    for t
+    in trials_per_correctness[run_id]['anti']['incorrect'].all()
+]
+print(' total || {:6.2f} ({:6.2f}) ~ {:6.2f} ({:6.2f}) | {:6.2f} ({:6.2f}) ~ {:6.2f} ({:6.2f})'.format(
+    mean(pro_correct_rts), stdev(pro_correct_rts),
+    mean(anti_correct_rts), stdev(anti_correct_rts),
+    mean(pro_incorrect_rts), stdev(pro_incorrect_rts),
+    mean(anti_incorrect_rts), stdev(anti_incorrect_rts)
+))
+print('-------------------------------------------------------------------------------')
 
 print('TODO: Report distributions of RT?')
 
