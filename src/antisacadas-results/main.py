@@ -3,15 +3,15 @@ import matplotlib.pyplot as plt
 from utils.parsing import parse_trials
 from utils.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from utils.trials_collection import TrialsCollection
-from fixated_trials import drop_non_fixated_trials
+from fixated_trials import divide_trials_by_focus_on_center
 from saccade_detection import compute_saccades_in_place
-from early_saccade_trials import drop_early_saccade_trials
-from non_response_trials import drop_non_response_trials
+from early_saccade_trials import divide_trials_by_early_saccade
+from non_response_trials import divide_trials_by_non_response
 from incorrect_trials import drop_incorrect_trials
 from trials_response_times import compute_response_times_in_place
 
 def plot_trials_by_run_and_saccade_type(trials):
-    fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count)
+    fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count, sharex=True)
     for i, run_id in enumerate(trials.runs_ids):
         for j, saccade_type in enumerate(['pro', 'anti']):
             for t in trials.get_trials_by_run_by_saccade(run_id, saccade_type):
@@ -66,22 +66,79 @@ def drop_and_report(fn, original_trials, filter_name):
 
     return filtered_trials
 
+saccade_types = ['pro', 'anti']
 trials, counts_per_run = parse_trials()
-print(counts_per_run)
-metrics_per_run = dict()
-for run_id in trials.runs_ids:
-    metrics_per_run[run_id] = {
-        'original_trials_count': len(trials.get_trials_by_run(run_id)),
-        'original_antisaccades_trials_count': \
-            len(trials.get_trials_by_run_by_saccade(run_id, 'anti')),
-        'original_prosaccades_trials_count': \
-            len(trials.get_trials_by_run_by_saccade(run_id, 'pro')),
-    }
 
-trials = drop_and_report(drop_non_fixated_trials, trials, "non fixated")
+trials, unfocused_trials = divide_trials_by_focus_on_center(trials)
+for run_id in counts_per_run.keys():
+    for st in saccade_types:
+        counts_per_run[run_id][st]['unfocused_drop_count'] = len([
+            t for t in unfocused_trials.get_trials_by_run_by_saccade(run_id, st)
+        ])
+
 compute_saccades_in_place(trials)
-trials = drop_and_report(drop_early_saccade_trials, trials, "early saccade")
-trials = drop_and_report(drop_non_response_trials, trials, "non response")
+
+trials, early_saccade_trials = divide_trials_by_early_saccade(trials)
+for run_id in counts_per_run.keys():
+    for st in saccade_types:
+        counts_per_run[run_id][st]['early_saccade_drop_count'] = len([
+            t for t in early_saccade_trials.get_trials_by_run_by_saccade(run_id, st)
+        ])
+
+trials, non_response_trials = divide_trials_by_non_response(trials)
+for run_id in counts_per_run.keys():
+    for st in saccade_types:
+        counts_per_run[run_id][st]['non_response_drop_count'] = len([
+            t for t in non_response_trials.get_trials_by_run_by_saccade(run_id, st)
+        ])
+
+for run_id in counts_per_run.keys():
+    for st in saccade_types:
+        counts_per_run[run_id][st]['post_preprocessing_count'] = \
+            counts_per_run[run_id][st]['original_count'] - \
+            counts_per_run[run_id][st]['low_frequency_drop_count'] - \
+            counts_per_run[run_id][st]['unfocused_drop_count'] - \
+            counts_per_run[run_id][st]['early_saccade_drop_count'] - \
+            counts_per_run[run_id][st]['non_response_drop_count']
+
+runs_without_enough_valid_trials = []
+print('>> Preprocessing drop count report')
+print('---------------------------------------------------------------------------------------------------------------------------')
+print('       || counts                                                                                        ||                 ')
+print('run_id || original   || low frecuency | unfocused  | early saccade | non response || post preprocessing || is below minimum')
+print('       || pro ~ anti || pro   ~ anti  | pro ~ anti | pro   ~ anti  | pro  ~ anti  || pro     ~ anti     ||                 ')
+print('---------------------------------------------------------------------------------------------------------------------------')
+for run_id, counts in sorted(
+        counts_per_run.items(),
+        key=lambda e: e[1]['pro']['post_preprocessing_count'] + e[1]['anti']['post_preprocessing_count']
+    ):
+    is_below_minimum = \
+        counts['pro']['post_preprocessing_count'] < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK or \
+        counts['anti']['post_preprocessing_count'] < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
+
+    if is_below_minimum:
+        runs_without_enough_valid_trials.append(run_id)
+
+    print('{:6d} || {:3d} ~ {:4d} || {:3d}   ~ {:4d}  | {:3d} ~ {:4d} | {:3d}   ~ {:4d}  | {:3d}   ~ {:4d} || {:3d}     ~ {:4d}     || {}'.format(
+        run_id,
+        counts['pro']['original_count'],
+        counts['anti']['original_count'],
+        counts['pro']['low_frequency_drop_count'],
+        counts['anti']['low_frequency_drop_count'],
+        counts['pro']['unfocused_drop_count'],
+        counts['anti']['unfocused_drop_count'],
+        counts['pro']['early_saccade_drop_count'],
+        counts['anti']['early_saccade_drop_count'],
+        counts['pro']['non_response_drop_count'],
+        counts['anti']['non_response_drop_count'],
+        counts['pro']['post_preprocessing_count'],
+        counts['anti']['post_preprocessing_count'],
+        is_below_minimum
+    ))
+print('---------------------------------------------------------------------------------------------------------------------------')
+
+trials_of_runs_with_enough_trials = []
+
 # TODO: Drop subjects with low amount of trials
 # TODO: Keep incorrect trials
 #       Their RT has to be reported
@@ -91,37 +148,9 @@ trials = drop_and_report(drop_incorrect_trials, trials, "incorrect trials")
 plot_trials_by_run_and_saccade_type(trials)
 compute_response_times_in_place(trials)
 
-for run_id in metrics_per_run.keys():
-    metrics_per_run[run_id]['dropped'] = False
-    if run_id not in trials.runs_ids:
-        metrics_per_run[run_id]['dropped'] = True
-    else:
-        metrics_per_run[run_id]['correct_trials_count'] = \
-            len(trials.get_trials_by_run(run_id))
-        for saccade_type in ["pro", "anti"]:
-            ts = trials.get_trials_by_run_by_saccade(run_id, saccade_type)
-            metrics_per_run[run_id][
-                'correct_%ssaccades_trials_count' % saccade_type
-            ] = len(ts)
-            metrics_per_run[run_id][
-                '%ssaccades_correctness_ratio' % saccade_type
-            ] = metrics_per_run[run_id][
-                'correct_%ssaccades_trials_count' % saccade_type
-            ] / metrics_per_run[run_id][
-                'original_%ssaccades_trials_count' % saccade_type
-            ]
-            rts = [t['response_time'] for t in ts]
-            metrics_per_run[run_id][
-                '%ssaccade_average_response_time' % saccade_type
-            ] = sum(rts) / len(rts)
-
-print('>> Results after filtering')
-print('run_id | task | correctness_ratio | average_response_time')
-for (run_id, run_metrics) in metrics_per_run.items():
-    for saccade_type in ["pro", "anti"]:
-        print('%d | %s | %f | %f' % (
-            run_id,
-            saccade_type,
-            run_metrics['%ssaccades_correctness_ratio' % saccade_type],
-            run_metrics['%ssaccade_average_response_time' % saccade_type]
-        ))
+print('TODO: Report error rate')
+print('TODO: Report mean RT for prosaccades')
+print('TODO: Report mean RT for correct antisaccades')
+print('TODO: Report mean RT for incorrect antisaccades')
+print('TODO: Report mean ratio of incorrect antisaccades with a correction')
+print('TODO: Report distributions of RT?')

@@ -7,7 +7,7 @@ from utils.parsing import parse_trials
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 
-def _divide_trials_by_early_saccade(trials):
+def divide_trials_by_early_saccade(trials):
     non_early_saccade_trials, early_saccade_trials = [], []
     for t in trials.all():
         es = t['estimates']
@@ -33,14 +33,14 @@ def _divide_trials_by_early_saccade(trials):
         TrialsCollection(early_saccade_trials)
 
 def drop_early_saccade_trials(trials):
-    non_early_saccade_trials, _ = _divide_trials_by_early_saccade(trials)
+    non_early_saccade_trials, _ = divide_trials_by_early_saccade(trials)
     return non_early_saccade_trials
 
 if __name__ == "__main__":
     trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     non_early_saccade_trials, early_saccade_trials = \
-        _divide_trials_by_early_saccade(trials)
+        divide_trials_by_early_saccade(trials)
     fig, ax = plt.subplots()
     for t in non_early_saccade_trials.all():
         es = t['estimates']

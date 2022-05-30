@@ -14,8 +14,12 @@ def parse_trials():
     for file_name in os.listdir(data_path):
         run_id = int(run_id_regex.match(file_name).group(1))
         counts_per_run[run_id] = dict()
-        counts_per_run[run_id]['original_count'] = 0
-        counts_per_run[run_id]['low_frequency_drop_count'] = 0
+        counts_per_run[run_id]['pro'] = dict()
+        counts_per_run[run_id]['pro']['original_count'] = 0
+        counts_per_run[run_id]['pro']['low_frequency_drop_count'] = 0
+        counts_per_run[run_id]['anti'] = dict()
+        counts_per_run[run_id]['anti']['original_count'] = 0
+        counts_per_run[run_id]['anti']['low_frequency_drop_count'] = 0
         with open(os.path.join(data_path, file_name), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
@@ -85,7 +89,6 @@ def parse_trials():
                     trial_duration_in_ms = int(row[response_end_idx])
                     if json.loads(row[is_tutorial_idx]):
                         continue
-                    counts_per_run[run_id]['original_count'] += 1
                     parsed_trial = {
                         'run_id': run_id,
                         'trial_id': int(row[trial_index_idx]),
@@ -97,6 +100,7 @@ def parse_trials():
                         'original_frequency': \
                             len(original_estimates) / (trial_duration_in_ms / 1000)
                     }
+                    counts_per_run[run_id][parsed_trial['saccade_type']]['original_count'] += 1
     
                     # Normalize estimates
                     normalized_x_estimates = normalizer.normalize_estimates([
@@ -116,7 +120,7 @@ def parse_trials():
                     if parsed_trial[
                         'original_frequency'
                     ] < MINIMUM_SAMPLING_FREQUENCY_IN_HZ:
-                        counts_per_run[run_id]['low_frequency_drop_count'] += 1
+                        counts_per_run[run_id][parsed_trial['saccade_type']]['low_frequency_drop_count'] += 1
                         continue
 
                     # Uniformize sampling

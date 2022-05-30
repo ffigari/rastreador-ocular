@@ -4,7 +4,7 @@ from utils.constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
 from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 
-def _divide_trials_by_focus_on_center(trials):
+def divide_trials_by_focus_on_center(trials):
     focused_trials, unfocused_trials = [], []
     for t in trials.all():
         xs_before_visual_cue = [
@@ -23,12 +23,12 @@ def _divide_trials_by_focus_on_center(trials):
     return TrialsCollection(focused_trials), TrialsCollection(unfocused_trials)
 
 def drop_non_fixated_trials(trials):
-    focused_trials, _ = _divide_trials_by_focus_on_center(trials)
+    focused_trials, _ = divide_trials_by_focus_on_center(trials)
     return focused_trials
 
 if __name__ == "__main__":
     trials, _ = parse_trials()
-    focused_trials, unfocused_trials = _divide_trials_by_focus_on_center(trials)
+    focused_trials, unfocused_trials = divide_trials_by_focus_on_center(trials)
     fig, axs = plt.subplots(ncols=2, nrows=2)
     for j, saccade_type in enumerate(['pro', 'anti']):
         for t in focused_trials.get_trials_by_saccade(saccade_type):
