@@ -345,7 +345,7 @@ plt.plot(
 )
 fig.suptitle("""Trials distribution (accumulated in buckets with size of {:.2f} ms)
 Incorrect trials show quicker responses than correct trials.
-Correct antisaccades show slower responses than correct antisaccades.""".format(bucket_size))
+Correct antisaccades show slower responses than correct prosaccades.""".format(bucket_size))
 plt.xlabel('response time (in ms)')
 plt.ylabel('proportion per category')
 plt.legend()
@@ -370,7 +370,9 @@ correction_delays = [
 ]
 print('')
 print('>> Incorrect antisaccades correction report')
+print('------------------------------------------------------------------------------')
 print('# total | # corrected | correction proportion | mean correction delay (std)')
+print('------------------------------------------------------------------------------')
 print(' {:4d}   | {:4d}        | {:4.2f}                  | {:6.2f}                ({:6.2f})'.format(
     incorrect_trials.count,
     len(corrected_trials),
@@ -378,3 +380,4 @@ print(' {:4d}   | {:4d}        | {:4.2f}                  | {:6.2f}             
     mean(correction_delays),
     stdev(correction_delays),
 ))
+print('------------------------------------------------------------------------------')
