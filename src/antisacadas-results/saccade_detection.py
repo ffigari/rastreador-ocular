@@ -46,7 +46,7 @@ def compute_saccades_in_place(trials):
         t['velocities'] = velocities
 
 if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     tss = trials.all()
     random.shuffle(tss)
