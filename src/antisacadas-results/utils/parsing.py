@@ -10,8 +10,12 @@ data_path = 'src/antisacadas-results/data'
 
 def parse_trials():
     parsed_trials = []
+    counts_per_run = dict()
     for file_name in os.listdir(data_path):
         run_id = int(run_id_regex.match(file_name).group(1))
+        counts_per_run[run_id] = dict()
+        counts_per_run[run_id]['original_count'] = 0
+        counts_per_run[run_id]['low_frequency_drop_count'] = 0
         with open(os.path.join(data_path, file_name), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
@@ -81,6 +85,7 @@ def parse_trials():
                     trial_duration_in_ms = int(row[response_end_idx])
                     if json.loads(row[is_tutorial_idx]):
                         continue
+                    counts_per_run[run_id]['original_count'] += 1
                     parsed_trial = {
                         'run_id': run_id,
                         'trial_id': int(row[trial_index_idx]),
@@ -107,16 +112,14 @@ def parse_trials():
                             for e in normalized_x_estimates
                         ]
     
-                    # Uniformize sampling
+                    # Skip trial if frecuency is below the established minimum
                     if parsed_trial[
                         'original_frequency'
                     ] < MINIMUM_SAMPLING_FREQUENCY_IN_HZ:
-                        raise Exception(
-                            'frecuencia de sampleo inferior a la mínima (run_id=%d, original_frequency=%f)' % (
-                                parsed_trial['run_id'],
-                                parsed_trial['original_frequency']
-                            )
-                        )
+                        counts_per_run[run_id]['low_frequency_drop_count'] += 1
+                        continue
+
+                    # Uniformize sampling
                     interpolated_x_estimates = \
                         uniformize_sampling(normalized_x_estimates)
     
@@ -138,4 +141,4 @@ def parse_trials():
                 else:
                     pass
     
-    return TrialsCollection(parsed_trials)
+    return TrialsCollection(parsed_trials), counts_per_run

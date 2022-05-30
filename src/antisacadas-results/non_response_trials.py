@@ -23,7 +23,7 @@ def drop_non_response_trials(trials):
     return _divide_trials_by_non_response(trials)[0]
 
 if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     trials = drop_early_saccade_trials(trials)
     response_trials, non_response_trials = \

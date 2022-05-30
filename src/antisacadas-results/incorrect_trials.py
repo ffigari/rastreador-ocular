@@ -37,7 +37,7 @@ def drop_incorrect_trials(trials):
     return _divide_trials_by_correctness(trials)[0]
 
 if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     trials = drop_non_response_trials(drop_early_saccade_trials(trials))
     correct_trials, incorrect_trials = _divide_trials_by_correctness(trials)

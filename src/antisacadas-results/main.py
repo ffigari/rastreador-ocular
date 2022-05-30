@@ -66,7 +66,8 @@ def drop_and_report(fn, original_trials, filter_name):
 
     return filtered_trials
 
-trials = parse_trials()
+trials, counts_per_run = parse_trials()
+print(counts_per_run)
 metrics_per_run = dict()
 for run_id in trials.runs_ids:
     metrics_per_run[run_id] = {
@@ -80,7 +81,12 @@ for run_id in trials.runs_ids:
 trials = drop_and_report(drop_non_fixated_trials, trials, "non fixated")
 compute_saccades_in_place(trials)
 trials = drop_and_report(drop_early_saccade_trials, trials, "early saccade")
-trials = drop_and_report(drop_non_response_trials, trials, "non respones")
+trials = drop_and_report(drop_non_response_trials, trials, "non response")
+# TODO: Drop subjects with low amount of trials
+# TODO: Keep incorrect trials
+#       Their RT has to be reported
+#       Besides, a detail of how many trials are dropped in each stage should be
+#       accumulated
 trials = drop_and_report(drop_incorrect_trials, trials, "incorrect trials")
 plot_trials_by_run_and_saccade_type(trials)
 compute_response_times_in_place(trials)

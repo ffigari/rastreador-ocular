@@ -37,7 +37,7 @@ def drop_early_saccade_trials(trials):
     return non_early_saccade_trials
 
 if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     non_early_saccade_trials, early_saccade_trials = \
         _divide_trials_by_early_saccade(trials)

@@ -18,7 +18,7 @@ def compute_response_times_in_place(trials):
         t['response_time'] = t['estimates'][i]['t']
 
 if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials())
+    trials = drop_non_fixated_trials(parse_trials()[0])
     compute_saccades_in_place(trials)
     trials = \
         drop_incorrect_trials(

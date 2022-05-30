@@ -27,7 +27,7 @@ def drop_non_fixated_trials(trials):
     return focused_trials
 
 if __name__ == "__main__":
-    trials = parse_trials()
+    trials, _ = parse_trials()
     focused_trials, unfocused_trials = _divide_trials_by_focus_on_center(trials)
     fig, axs = plt.subplots(ncols=2, nrows=2)
     for j, saccade_type in enumerate(['pro', 'anti']):
