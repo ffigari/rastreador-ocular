@@ -45,10 +45,17 @@ def parse_trials():
             normalizer = None
             validations_count = 0
     
+            run_age = None
             while True:
                 row = next(csv_rows_iterator, None)
                 if row is None:
                     break
+
+                if int(row[trial_index_idx]) == 1:
+                    d = json.loads(row[headers.index('response')])
+                    if 'age' in d:
+                        run_age = int(d['age'])
+                    continue
     
                 # If a validation is found, consume its rows to update the
                 # coordinates normalizer
@@ -90,6 +97,7 @@ def parse_trials():
                     parsed_trial = {
                         'run_id': run_id,
                         'trial_id': int(row[trial_index_idx]),
+                        'age': run_age,
                         'saccade_type': \
                             'pro' if row[saccade_type_idx] == 'prosaccade' \
                             else 'anti',
