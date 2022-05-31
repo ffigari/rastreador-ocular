@@ -11,6 +11,7 @@ from early_saccade_trials import divide_trials_by_early_saccade
 from non_response_trials import divide_trials_by_non_response
 from incorrect_trials import divide_trials_by_correctness
 from trials_response_times import compute_response_times_in_place
+from sampling_frequencies import divide_trials_by_low_frequency
 
 def plot_trials_by_run_and_saccade_type(trials):
     fig, axs = plt.subplots(ncols=2, nrows=trials.runs_count, sharex=True)
@@ -39,6 +40,13 @@ def plot_trials_by_run_and_saccade_type(trials):
 
 saccade_types = ['pro', 'anti']
 trials, counts_per_run = parse_trials()
+
+trials, low_frequency_trials = divide_trials_by_low_frequency(trials)
+for run_id in counts_per_run.keys():
+    for st in saccade_types:
+        counts_per_run[run_id][st]['low_frequency_drop_count'] = len([
+            t for t in low_frequency_trials.get_trials_by_run_by_saccade(run_id, st)
+        ])
 
 trials, unfocused_trials = divide_trials_by_focus_on_center(trials)
 for run_id in counts_per_run.keys():

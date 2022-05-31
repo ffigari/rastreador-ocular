@@ -16,10 +16,8 @@ def parse_trials():
         counts_per_run[run_id] = dict()
         counts_per_run[run_id]['pro'] = dict()
         counts_per_run[run_id]['pro']['original_count'] = 0
-        counts_per_run[run_id]['pro']['low_frequency_drop_count'] = 0
         counts_per_run[run_id]['anti'] = dict()
         counts_per_run[run_id]['anti']['original_count'] = 0
-        counts_per_run[run_id]['anti']['low_frequency_drop_count'] = 0
         with open(os.path.join(data_path, file_name), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
@@ -116,13 +114,6 @@ def parse_trials():
                             for e in normalized_x_estimates
                         ]
     
-                    # Skip trial if frecuency is below the established minimum
-                    if parsed_trial[
-                        'original_frequency'
-                    ] < MINIMUM_SAMPLING_FREQUENCY_IN_HZ:
-                        counts_per_run[run_id][parsed_trial['saccade_type']]['low_frequency_drop_count'] += 1
-                        continue
-
                     # Uniformize sampling
                     interpolated_x_estimates = \
                         uniformize_sampling(normalized_x_estimates)
