@@ -3,6 +3,9 @@ from utils.normalize import normalize
 from response_times import drop_invalid_trials
 from response_times import mirror_trials
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
+from common.plots import plot_sampling_frequencies
+from common.plots import plot_ages
+from common.plots import plot_widths
 
 trials = mirror_trials(normalize(load_cleaned_up_trials()))
 print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
@@ -51,5 +54,28 @@ print('>> {:.2f} % of trials dropped; {:.2f} % of runs dropped'.format(
         / len(set([t['run_id'] for t in trials]))
     )
 ))
+
+frequencies, ages, widths = [], [], []
+for kept, ts in [(True, kept_trials), (False, dropped_trials)]:
+    for t in ts:
+        frequencies.append({
+            'frequency': t['original_sampling_frecuency_in_hz'],
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+        ages.append({
+            'ages': int(t['subject_data']['edad']),
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+        widths.append({
+            'width': t['inner_width'],
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+
+plot_sampling_frequencies(frequencies)
+plot_ages(ages)
+plot_widths(widths)
 
 trials = kept_trials
