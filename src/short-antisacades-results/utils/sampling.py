@@ -1,5 +1,5 @@
-from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
-from constants import TARGET_SAMPLING_PERIOD_IN_MS
+from common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.interpolate import interpolate_between
 
 def uniformize_trial_sampling(trial):

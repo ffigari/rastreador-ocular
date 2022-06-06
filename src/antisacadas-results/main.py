@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
+from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from utils.parsing import parse_trials
-from utils.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from utils.constants import saccade_types
 from utils.trials_collection import TrialsCollection
 from utils.trial_utilities import second_saccade_interval
@@ -36,6 +36,7 @@ def plot_trials_by_run_and_saccade_type(trials):
     plt.show()
 
 trials, counts_per_run = parse_trials()
+original_trials_count = trials.count
 trials, counts_per_run = clean(trials, counts_per_run)
 
 runs_without_enough_valid_trials = []
@@ -85,6 +86,9 @@ if len(runs_without_enough_valid_trials) > 0:
         t for t in trials.all()
         if t['run_id'] not in runs_without_enough_valid_trials
     ])
+    print('>> {:d} trials left from the {:d} starting ones'.format(
+        trials.count, original_trials_count
+    ))
 
 compute_response_times_in_place(trials)
 correct_trials, incorrect_trials = divide_trials_by_correctness(trials)

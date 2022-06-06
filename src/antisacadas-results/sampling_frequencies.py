@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
 from utils.parsing import parse_trials
-from utils.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
-from utils.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 from utils.trials_collection import TrialsCollection
 from utils.trial_utilities import second_saccade_interval
 from fixated_trials import divide_trials_by_focus_on_center
