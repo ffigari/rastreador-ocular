@@ -30,3 +30,26 @@ print('>> Post minimum per run count: {:d} trials distributed in {:d} subjects'.
     len(trials_with_enough_per_run),
     len(list(set([t['run_id'] for t in trials_with_enough_per_run])))
 ))
+
+kept_trials, dropped_trials = [], []
+kept_runs_ids = []
+for t in trials:
+    is_kept = len([
+        te
+        for te in trials_with_enough_per_run
+        if te['run_id'] == t['run_id'] and te['trial_id'] == t['trial_id']
+    ])
+    if is_kept:
+        kept_trials.append(t)
+        kept_runs_ids.append(t['run_id'])
+    else:
+        dropped_trials.append(t)
+print('>> {:.2f} % of trials dropped; {:.2f} % of runs dropped'.format(
+    100 * (len(dropped_trials) / len(trials)),
+    100 * (
+        (len(set([t['run_id'] for t in trials])) - len(set(kept_runs_ids))) \
+        / len(set([t['run_id'] for t in trials]))
+    )
+))
+
+trials = kept_trials
