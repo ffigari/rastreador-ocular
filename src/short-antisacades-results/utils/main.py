@@ -149,12 +149,6 @@ def tag_artifacted_trials(trials):
         if too_many_estimations or is_noisy:
             count += 1
             t['outlier'] = True
-    if count > 0:
-        print(
-            "%d trials out of %d were tagged as outliers due to having artifacts" % (
-            count,
-            len(trials)
-        ))
     return trials
 
 def compute_deviation(all_trials):
