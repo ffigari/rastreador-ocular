@@ -64,7 +64,7 @@ for kept, ts in [(True, kept_trials), (False, dropped_trials)]:
             'kept': kept,
         })
         ages.append({
-            'ages': int(t['subject_data']['edad']),
+            'age': int(t['subject_data']['edad']),
             'run_id': t['run_id'],
             'kept': kept,
         })
