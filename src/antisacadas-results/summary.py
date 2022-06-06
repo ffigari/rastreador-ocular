@@ -2,6 +2,9 @@ from utils.parsing import parse_trials
 from utils.cleaning import clean
 from main import drop_runs_without_enough
 from utils.trials_collection import TrialsCollection
+from common.plots import plot_sampling_frequencies
+from common.plots import plot_ages
+from common.plots import plot_widths
 
 trials, counts_per_run = parse_trials()
 print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
@@ -38,5 +41,28 @@ print('>> {:.2f} % of trials dropped; {:.2f} % of runs dropped'.format(
         / len(set([t['run_id'] for t in trials.all()]))
     )
 ))
+
+frequencies, ages, widths = [], [], []
+for kept, ts in [(True, kept_trials), (False, dropped_trials)]:
+    for t in ts:
+        frequencies.append({
+            'frequency': t['original_frequency'],
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+        ages.append({
+            'age': t['age'],
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+        widths.append({
+            'width': t['viewport_width'],
+            'run_id': t['run_id'],
+            'kept': kept,
+        })
+
+plot_sampling_frequencies(frequencies)
+plot_ages(ages)
+plot_widths(widths)
 
 trials = TrialsCollection(kept_trials)

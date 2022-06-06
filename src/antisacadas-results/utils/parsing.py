@@ -38,6 +38,7 @@ def parse_trials():
             intra_end_idx = headers.index('intraEnd')
             response_end_idx = headers.index('responseEnd')
             cue_was_shown_at_left_idx = headers.index('cueShownAtLeft')
+            viewport_width_idx = headers.index('viewportWidth')
     
             # Only coordinate x will be parsed and normalized since we don't need to
             # analyze vertical coordinate
@@ -93,6 +94,8 @@ def parse_trials():
                     trial_duration_in_ms = int(row[response_end_idx])
                     if json.loads(row[is_tutorial_idx]):
                         continue
+                    if run_age is None:
+                        continue
                     parsed_trial = {
                         'run_id': run_id,
                         'trial_id': int(row[trial_index_idx]),
@@ -103,7 +106,8 @@ def parse_trials():
                         'cue_was_shown_at_left': \
                             json.loads(row[cue_was_shown_at_left_idx]),
                         'original_frequency': \
-                            len(original_estimates) / (trial_duration_in_ms / 1000)
+                            len(original_estimates) / (trial_duration_in_ms / 1000),
+                        'viewport_width': int(row[viewport_width_idx])
                     }
                     counts_per_run[run_id][parsed_trial['saccade_type']]['original_count'] += 1
     
