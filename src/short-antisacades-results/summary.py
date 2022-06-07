@@ -2,10 +2,12 @@ from utils.main import load_cleaned_up_trials
 from utils.normalize import normalize
 from response_times import drop_invalid_trials
 from response_times import mirror_trials
+from response_times import compute_correcteness_in_place
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
+from common.plots import plot_post_processing_trials
 
 trials = mirror_trials(normalize(load_cleaned_up_trials()))
 print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
@@ -78,4 +80,15 @@ plot_sampling_frequencies(frequencies)
 plot_ages(ages)
 plot_widths(widths)
 
-trials = kept_trials
+compute_correcteness_in_place(kept_trials)
+trials = [t for t in kept_trials if t['subject_reacted']]
+
+correct_anti = [{
+    'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
+    'response_time': t['reaction_time'],
+} for t in trials if t['correct_reaction']]
+incorrect_anti = [{
+    'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
+    'response_time': t['reaction_time'],
+} for t in trials if not t['correct_reaction']]
+plot_post_processing_trials(correct_anti, incorrect_anti, 'anti')

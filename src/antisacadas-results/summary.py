@@ -5,6 +5,9 @@ from utils.trials_collection import TrialsCollection
 from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
+from common.plots import plot_post_processing_trials
+from trials_response_times import compute_response_times_in_place
+from incorrect_trials import divide_trials_by_correctness
 
 trials, counts_per_run = parse_trials()
 print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
@@ -66,3 +69,24 @@ plot_ages(ages)
 plot_widths(widths)
 
 trials = TrialsCollection(kept_trials)
+
+compute_response_times_in_place(trials)
+correct_trials, incorrect_trials = divide_trials_by_correctness(trials)
+correct_anti = [{
+    'estimations': t['estimates'],
+    'response_time': t['response_time']
+} for t in correct_trials.all() if t['saccade_type'] == "anti"]
+incorrect_anti = [{
+    'estimations': t['estimates'],
+    'response_time': t['response_time']
+} for t in incorrect_trials.all() if t['saccade_type'] == "anti"]
+correct_pro = [{
+    'estimations': t['estimates'],
+    'response_time': t['response_time']
+} for t in correct_trials.all() if t['saccade_type'] == "pro"]
+incorrect_pro = [{
+    'estimations': t['estimates'],
+    'response_time': t['response_time']
+} for t in incorrect_trials.all() if t['saccade_type'] == "pro"]
+plot_post_processing_trials(correct_anti, incorrect_anti, 'anti')
+plot_post_processing_trials(correct_pro, incorrect_pro, 'pro')

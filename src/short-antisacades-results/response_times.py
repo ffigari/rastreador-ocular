@@ -66,6 +66,19 @@ def mirror_trial(t):
 def mirror_trials(trials):
     return [mirror_trial(t) for t in trials]
 
+def compute_correcteness_in_place(trials):
+    for t in trials:
+        t['subject_reacted'] = False
+        for e in t['estimations']:
+            if e['t'] < t['cue_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS:
+                continue
+            if abs(e['x']) < POST_NORMALIZATION_REACTION_TRESHOLD:
+                continue
+            t['subject_reacted'] = True
+            t['reaction_time'] = e['t']
+            t['correct_reaction'] = e['x'] < 0
+            break
+
 if __name__ == "__main__":
     trials = load_normalized_trials()
     previous_count = len(trials)
@@ -117,17 +130,7 @@ if __name__ == "__main__":
     ax.set_title("Espejado de estimaciones")
     plt.show()
 
-    for t in trials:
-        t['subject_reacted'] = False
-        for e in t['estimations']:
-            if e['t'] < t['cue_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS:
-                continue
-            if abs(e['x']) < POST_NORMALIZATION_REACTION_TRESHOLD:
-                continue
-            t['subject_reacted'] = True
-            t['reaction_time'] = e['t']
-            t['correct_reaction'] = e['x'] < 0
-            break
+    compute_correcteness_in_place(trials)
 
     no_reaction_trials = [
         t

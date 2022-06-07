@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from statistics import mean, stdev
+
 from common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 from common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 
@@ -76,4 +78,57 @@ def plot_widths(widths):
     separated_hist(ax1, ax2, widths, 'width')
     for ax in [ax1, ax2]:
         ax.legend()
+    plt.show()
+
+def plot_post_processing_trials(correct_ts, incorrect_ts, task_type):
+    BUCKETS_AMOUNT = 5
+    max_t = max([
+        t['response_time']
+        for l in [incorrect_ts, correct_ts]
+        for t in l])
+    axes_with_at_least_one_trial = set()
+    fig, axes = plt.subplots(nrows=BUCKETS_AMOUNT, ncols=2, sharex=True)
+    fig.suptitle('''Tareas de {}
+Los ejes temporales de las repeticiones han sido alineados para que el valor t=0
+corresponda a la aparición del estímulo visual. Las estimaciones de las
+coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
+        # http://stackoverflow.com/questions/34937048/ddg#44123579
+        r"$\bf{" + ('antisacadas' if task_type == 'anti' else 'prosacadas') + "}$"
+    ))
+    for j, (task_result, ts) in enumerate([
+        ('correctas', correct_ts), ('incorrectas', incorrect_ts)
+    ]):
+        axes[0][j].set_title('Repeticiones {}'.format(task_result))
+        axes[BUCKETS_AMOUNT - 1][j].set_xlabel('Tiempo (en ms)')
+        for t in ts:
+            i = min(
+                BUCKETS_AMOUNT - 1,
+                int(t[
+                    'response_time'
+                ] // (max_t // BUCKETS_AMOUNT))
+            )
+            axes[i][j].plot(
+                [e['t'] for e in t['estimations']],
+                [e['x'] for e in t['estimations']],
+                color="black",
+                alpha=0.1
+            )
+            axes_with_at_least_one_trial.add((i, j))
+    size = max_t / BUCKETS_AMOUNT
+    for i in range(BUCKETS_AMOUNT):
+        axes[i][0].set_ylabel(
+            'Estimación de\nla coordenada x\npost normalización\nRespuesta iniciada en\nrango [{:.2f}, {:.2f}] ms'.format(
+                i * size,
+                (i + 1) * size
+            ),
+            rotation='horizontal',
+            ha='right'
+        )
+    ylim = 2
+    for (i, j) in axes_with_at_least_one_trial:
+        axes[i][j].add_patch(Rectangle(
+            (i * size, ylim), size, -(2 * ylim),
+            color='red', alpha=0.1
+        ))
+    [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     plt.show()
