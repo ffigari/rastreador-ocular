@@ -8,6 +8,7 @@ from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
+from common.plots import plot_anti_task_responses_times_distributions
 
 trials = mirror_trials(normalize(load_cleaned_up_trials()))
 print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
@@ -92,3 +93,4 @@ incorrect_anti = [{
     'response_time': t['reaction_time'],
 } for t in trials if not t['correct_reaction']]
 plot_post_processing_trials(correct_anti, incorrect_anti, 'anti')
+plot_anti_task_responses_times_distributions(correct_anti, incorrect_anti)

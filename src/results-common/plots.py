@@ -132,3 +132,109 @@ coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     plt.show()
+
+def _plot_responses_times_distributions(trials_results):
+    min_rt, max_rt = [f([
+        trial['response_time']
+        for task_type in trials_results.keys()
+        for correcteness in trials_results[task_type].keys()
+        for trial in trials_results[task_type][correcteness]
+    ]) for f in [min, max]]
+    buckets_amount = 20
+    bucket_size = (max_rt - min_rt) / buckets_amount
+
+    def rt_to_bucket_idx(rt):
+        if rt < min_rt:
+            raise Exception('rt too low')
+        if rt > max_rt:
+            raise Exception('rt too low')
+        if rt == max_rt:
+            return buckets_amount - 1
+        return int((rt - min_rt) // bucket_size)
+
+    bucketed_rts = dict()
+    for task_type in trials_results.keys():
+        bucketed_rts[task_type] = dict()
+        for correcteness in trials_results[task_type].keys():
+            bucketed_rts[task_type][correcteness] = list()
+            for _ in range(buckets_amount):
+                bucketed_rts[task_type][correcteness].append(list())
+            for rt in [
+                t['response_time'] for t in trials_results[task_type][correcteness]
+            ]:
+                bucketed_rts[task_type][correcteness][
+                    rt_to_bucket_idx(rt)
+                ].append(rt)
+    buckets_middle_values = [
+        ((min_rt + i * bucket_size) + (min_rt + (i + 1) * bucket_size)) / 2
+        for i in range(buckets_amount)
+    ]
+
+    fig, ax = plt.subplots()
+    params = {
+        'pro': {
+            'correct': {
+                'label': 'correct prosaccades',
+                'marker': ".",
+                'ls': '-'
+            },
+            'incorrect': {
+                'label': 'incorrect prosaccades',
+                'marker': "o",
+                'ls': '--'
+            }
+        },
+        'anti': {
+            'correct': {
+                'label': 'correct antisaccades',
+                'marker': "x",
+                'ls': '-'
+            },
+            'incorrect': {
+                'label': 'incorrect antisaccades',
+                'marker': "X",
+                'ls': '--'
+            }
+        },
+    }
+    for task_type in bucketed_rts.keys():
+        for correcteness in bucketed_rts[task_type].keys():
+            buckets = bucketed_rts[task_type][correcteness]
+            p = params[task_type][correcteness]
+            total = sum([len(b) for b in buckets])
+            plt.plot(
+                buckets_middle_values,
+                [len(b) / total for b in buckets],
+                label=p['label'],
+                color='black',
+                lw=0.5,
+                ls=p['ls'],
+                marker=p['marker']
+            )
+    ax.set_ylabel('Proporción del total')
+    ax.set_xlabel('Tiempo de respuesta (en ms)')
+    plt.title('''Distribución de tiempos de respuesta
+Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'''.format(
+        bucket_size
+    ))
+    plt.legend()
+    plt.show()
+
+def plot_pro_anti_task_responses_times_distributions(
+    correct_pro,
+    incorrect_pro,
+    correct_anti,
+    incorrect_anti
+):
+    _plot_responses_times_distributions({
+        'pro': { 'correct': correct_pro, 'incorrect': incorrect_pro },
+        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+    })
+
+def plot_anti_task_responses_times_distributions(
+    correct_anti,
+    incorrect_anti
+):
+    _plot_responses_times_distributions({
+        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+    })
