@@ -12,6 +12,8 @@ def parse_trials():
     counts_per_run = dict()
     for file_name in os.listdir(data_path):
         run_id = int(run_id_regex.match(file_name).group(1))
+        if run_id == 56:
+            continue
         counts_per_run[run_id] = dict()
         counts_per_run[run_id]['pro'] = dict()
         counts_per_run[run_id]['pro']['original_count'] = 0
