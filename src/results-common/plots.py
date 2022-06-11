@@ -12,7 +12,7 @@ def separated_hist(ax1, ax2, values, key):
     for ax, title, kept_freqs, dropped_freqs in [
         (
             ax1,
-            'por sujeto (promediado en base a sus repeticiones)',
+            'con repeticiones agrupadas por sujeto',
             [
                 mean([
                     d[key] for d in values if d['run_id'] == run_id
@@ -26,7 +26,7 @@ def separated_hist(ax1, ax2, values, key):
         ),
         (
             ax2,
-            'individualmente por repetición',
+            'con repeticiones miradas individualmente',
             [d[key] for d in values if d['kept']],
             [d[key] for d in values if not d['kept']]
         )
@@ -44,6 +44,10 @@ def plot_sampling_frequencies(frequencies):
     fig.suptitle('Distribución de frecuencias de sampleo')
 
     separated_hist(ax1, ax2, frequencies, 'frequency')
+
+    ax1.set_ylabel('Cantidad de sujetos')
+    ax2.set_ylabel('Cantidad de repeticiones')
+    ax2.set_xlabel('Frecuencia (en Hz)')
 
     for ax in [ax1, ax2]:
         ax.axvline(
@@ -67,6 +71,11 @@ def plot_sampling_frequencies(frequencies):
 def plot_ages(ages):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
     fig.suptitle('Distribución de edades')
+
+    ax1.set_ylabel('Cantidad de sujetos')
+    ax2.set_ylabel('Cantidad de repeticiones')
+    ax2.set_xlabel('Edad')
+
     separated_hist(ax1, ax2, ages, 'age')
     for ax in [ax1, ax2]:
         ax.legend()
@@ -75,6 +84,11 @@ def plot_ages(ages):
 def plot_widths(widths):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
     fig.suptitle('Distribución de anchos de pantalla')
+
+    ax1.set_ylabel('Cantidad de sujetos')
+    ax2.set_ylabel('Cantidad de repeticiones')
+    ax2.set_xlabel('Ancho de pantalla (en píxeles)')
+
     separated_hist(ax1, ax2, widths, 'width')
     for ax in [ax1, ax2]:
         ax.legend()
