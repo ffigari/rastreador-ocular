@@ -5,7 +5,7 @@ from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 from utils.trial_utilities import first_saccade_interval
 from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
-from utils.constants import TARGET_SAMPLING_PERIOD_IN_MS
+from common.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials

@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
-from constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from common.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from constants import MINIMUM_TIME_FOR_SACCADE_IN_MS
-from constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
-from constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.main import center_trial_time_around_visual_cue_start
 from utils.main import load_trials
 from utils.sampling import uniformize_sampling
