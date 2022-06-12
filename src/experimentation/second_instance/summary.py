@@ -13,15 +13,14 @@ from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
-from common.plots import plot_pro_anti_task_responses_times_distributions
+from common.plots import plot_responses_times_distributions
 from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
+from common.parsing import parse_parsing_callbacks
 
-def parse_second_instance():
-    print('TODO: implement parse_second_instance')
-    return []
+def parse_second_instance(cbs=None):
+    cbs = parse_parsing_callbacks(cbs)
 
-if __name__ == "__main__":
     trials, counts_per_run = parse_trials()
     print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
         trials.count, trials.runs_count
@@ -77,12 +76,10 @@ if __name__ == "__main__":
                 'kept': kept,
             })
 
-    plot_sampling_frequencies(frequencies)
-    plot_ages(ages)
-    plot_widths(widths)
+
+    cbs['after_filtering'](frequencies, ages, widths)
 
     trials = TrialsCollection(kept_trials)
-
     compute_response_times_in_place(trials)
     correct_trials, incorrect_trials = divide_trials_by_correctness(trials)
     correct_anti = [{
@@ -101,11 +98,27 @@ if __name__ == "__main__":
         'estimations': t['estimates'],
         'response_time': t['response_time']
     } for t in incorrect_trials.all() if t['saccade_type'] == "pro"]
+    return {
+        'anti': {
+            'correct': correct_anti,
+            'incorrect': incorrect_anti,
+        },
+        'pro': {
+            'correct': correct_pro,
+            'incorrect': incorrect_pro,
+        }
+    }
 
-    plot_post_processing_trials(correct_anti, incorrect_anti, 'anti')
-    plot_post_processing_trials(correct_pro, incorrect_pro, 'pro')
+if __name__ == "__main__":
+    def after_filtering(frequencies, ages, widths):
+        plot_sampling_frequencies(frequencies)
+        plot_ages(ages)
+        plot_widths(widths)
 
-    plot_pro_anti_task_responses_times_distributions(
-        correct_pro, incorrect_pro,
-        correct_anti, incorrect_anti
-    )
+    saccades = parse_second_instance(
+        {
+            'after_filtering': after_filtering
+        })
+    plot_post_processing_trials(saccades, 'anti')
+    plot_post_processing_trials(saccades, 'pro')
+    plot_responses_times_distributions(saccades)

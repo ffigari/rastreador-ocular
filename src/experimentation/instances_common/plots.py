@@ -94,7 +94,9 @@ def plot_widths(widths):
         ax.legend()
     plt.show()
 
-def plot_post_processing_trials(correct_ts, incorrect_ts, task_type):
+def plot_post_processing_trials(saccades, task_type):
+    correct_ts = saccades['anti']['correct']
+    incorrect_ts = saccades['anti']['incorrect']
     BUCKETS_AMOUNT = 5
     max_t = max([
         t['response_time']
@@ -147,7 +149,7 @@ coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     plt.show()
 
-def _plot_responses_times_distributions(trials_results):
+def plot_responses_times_distributions(trials_results):
     min_rt, max_rt = [f([
         trial['response_time']
         for task_type in trials_results.keys()
@@ -233,22 +235,3 @@ Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'''.format(
     ))
     plt.legend()
     plt.show()
-
-def plot_pro_anti_task_responses_times_distributions(
-    correct_pro,
-    incorrect_pro,
-    correct_anti,
-    incorrect_anti
-):
-    _plot_responses_times_distributions({
-        'pro': { 'correct': correct_pro, 'incorrect': incorrect_pro },
-        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
-    })
-
-def plot_anti_task_responses_times_distributions(
-    correct_anti,
-    incorrect_anti
-):
-    _plot_responses_times_distributions({
-        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
-    })
