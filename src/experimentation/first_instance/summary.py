@@ -95,7 +95,11 @@ def parse_first_instance(cbs=None):
                 'kept': kept,
             })
 
-    cbs['after_filtering'](frequencies, ages, widths)
+    post_filtering_metrics = dict()
+    post_filtering_metrics['frequencies'] = frequencies
+    post_filtering_metrics['ages'] = ages
+    post_filtering_metrics['widths'] = widths
+    cbs['after_filtering'](post_filtering_metrics)
 
     compute_correcteness_in_place(kept_trials)
     trials = [t for t in kept_trials if t['subject_reacted']]
@@ -108,17 +112,19 @@ def parse_first_instance(cbs=None):
         'response_time': t['reaction_time'],
     } for t in trials if not t['correct_reaction']]
     return {
-        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+        'post_filtering_metrics': post_filtering_metrics,
+        'saccades': {
+            'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+        }
     }
 
 if __name__ == "__main__":
-    def after_filtering(frequencies, ages, widths):
-        plot_sampling_frequencies(frequencies)
-        plot_ages(ages)
-        plot_widths(widths)
+    def after_filtering(post_filtering_metrics):
+        plot_sampling_frequencies(post_filtering_metrics['frequencies'])
+        plot_ages(post_filtering_metrics['ages'])
+        plot_widths(post_filtering_metrics['widths'])
 
-    saccades = parse_first_instance(
-        { 'after_filtering': after_filtering }
-    )
+    instance = parse_first_instance({ 'after_filtering': after_filtering })
+    saccades = instance['saccades']
     plot_post_processing_trials(saccades, 'anti')
     plot_responses_times_distributions(saccades)

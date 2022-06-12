@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from statistics import mean, stdev
 
-from common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
-from common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from .constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from .constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 
 def separated_hist(ax1, ax2, values, key):
     run_ids = list(set([f['run_id'] for f in values]))
@@ -39,6 +39,22 @@ def separated_hist(ax1, ax2, values, key):
             label=['conservadas', 'descartadas']
         )
 
+def draw_sampling_frequecies_marks(ax):
+    ax.axvline(
+        MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
+        linestyle="--",
+        color='red',
+        alpha=0.3,
+        label="frecuencia mínima de sampleo"
+    )
+    ax.axvline(
+        TARGET_SAMPLING_FREQUENCY_IN_HZ,
+        linestyle="--",
+        color='black',
+        alpha=0.3,
+        label="frecuencia target de sampleo"
+    )
+
 def plot_sampling_frequencies(frequencies):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
     fig.suptitle('Distribución de frecuencias de sampleo')
@@ -50,22 +66,9 @@ def plot_sampling_frequencies(frequencies):
     ax2.set_xlabel('Frecuencia (en Hz)')
 
     for ax in [ax1, ax2]:
-        ax.axvline(
-            MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
-            linestyle="--",
-            color='red',
-            alpha=0.3,
-            label="frecuencia mínima de sampleo"
-        )
-        ax.axvline(
-            TARGET_SAMPLING_FREQUENCY_IN_HZ,
-            linestyle="--",
-            color='black',
-            alpha=0.3,
-            label="frecuencia target de sampleo"
-        )
-        ax.legend()
+        draw_sampling_frequecies_marks(ax)
 
+    ax2.legend()
     plt.show()
 
 def plot_ages(ages):
