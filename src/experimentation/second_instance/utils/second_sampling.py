@@ -1,7 +1,7 @@
 from common.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from utils.second_interpolate import interpolate_with
 
-def uniformize_sampling(es):
+def second_uniformize_sampling(es):
     t0 = es[0]['t']
     tn = es[-1]['t']
 

@@ -19,11 +19,14 @@ from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
 from common.plots import plot_responses_times_distributions
+from common.parsing import parse_parsing_callbacks
 
 if modified:
     sys.path = sys_path_before
 
-def parse_first_instance(cbs):
+def parse_first_instance(cbs=None):
+    cbs = parse_parsing_callbacks(cbs)
+
     trials = mirror_trials(normalize(load_cleaned_up_trials()))
     print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
         len(trials), len(list(set([t['run_id'] for t in trials])))

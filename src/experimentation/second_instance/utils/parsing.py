@@ -2,7 +2,7 @@ import os, re, csv, json
 
 from utils.normalizer import Normalizer
 from utils.trials_collection import TrialsCollection
-from utils.sampling import uniformize_sampling
+from utils.second_sampling import second_uniformize_sampling
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
 data_path = 'src/experimentation/second_instance/data'
@@ -129,7 +129,7 @@ def parse_trials():
     
                     # Uniformize sampling
                     interpolated_x_estimates = \
-                        uniformize_sampling(normalized_x_estimates)
+                        second_uniformize_sampling(normalized_x_estimates)
     
                     # Center time axis of estimations so that we can assume that t=0
                     # corresponds to when the visual cue appears
