@@ -20,7 +20,7 @@ def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name
         field_name
     )
 
-if __name__ == "__main__":
+def draw_descriptive_histograms(instances, target, scope):
     config = { 'frequencies': {
         'title': 'Distribución de frecuencias de sampleo',
         'metric_name': 'frequencies',
@@ -36,33 +36,7 @@ if __name__ == "__main__":
         'metric_name': 'ages',
         'key_name': 'age',
         'unit_label': 'Edad'
-    }}
-
-    if len(sys.argv) < 2:
-        print('missing target', file=sys.stderr)
-        sys.exit(-1)
-
-    target = sys.argv[1]
-    if target not in config.keys():
-        print(
-            'unkown target, valid ones are [{}]'.format(', '.join(config.keys())),
-            file=sys.stderr
-        )
-        sys.exit(-1)
-
-    allowed_scopes = ['both', 'first', 'second']
-    if len(sys.argv) < 3:
-        raise Exception(
-            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
-        )
-    scope = sys.argv[2]
-    if scope not in allowed_scopes:
-        raise Exception(
-            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
-        )
-
-    instances = parse_instances()
-    
+    }, 'post_processing': {}}
     nrows = 2
     ncols = 1
     if scope == 'both':
@@ -112,4 +86,38 @@ if __name__ == "__main__":
         axes[0].legend()
 
     plt.show()
+
+if __name__ == "__main__":
+
+    allowed_targets = ['frequencies', 'resolutions', 'ages', 'post_processing']
+    if len(sys.argv) < 2:
+        print('missing target', file=sys.stderr)
+        sys.exit(-1)
+    target = sys.argv[1]
+    if target not in allowed_targets:
+        print(
+            'unkown target, valid ones are [{}]'.format(', '.join(config.keys())),
+            file=sys.stderr
+        )
+        sys.exit(-1)
+
+    allowed_scopes = ['both', 'first', 'second']
+    if target == 'post_processing':
+        allowed_scopes.remove('both')
+    if len(sys.argv) < 3:
+        raise Exception(
+            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
+        )
+    scope = sys.argv[2]
+    if scope not in allowed_scopes:
+        raise Exception(
+            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
+        )
+
+    instances = parse_instances()
+    if target != 'post_processing':
+        draw_descriptive_histograms(instances, target, scope)
+    else:
+        raise Exception('not implemented')
+    
 
