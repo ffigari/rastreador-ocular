@@ -21,10 +21,6 @@ def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name
     )
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print('missing action', file=sys.stderr)
-        sys.exit(-1)
-
     config = { 'frequencies': {
         'title': 'Distribución de frecuencias de sampleo',
         'metric_name': 'frequencies',
@@ -42,23 +38,28 @@ if __name__ == "__main__":
         'unit_label': 'Edad'
     }}
 
-    action = sys.argv[1]
-    if action not in config.keys():
+    if len(sys.argv) < 2:
+        print('missing target', file=sys.stderr)
+        sys.exit(-1)
+
+    target = sys.argv[1]
+    if target not in config.keys():
         print(
-            'unkown action, valid ones are [{}]'.format(', '.join(config.keys())),
+            'unkown target, valid ones are [{}]'.format(', '.join(config.keys())),
             file=sys.stderr
         )
         sys.exit(-1)
 
-    scope = 'both'
-    if len(sys.argv) >= 3:
-        if sys.argv[2] == 'first':
-            scope = 'first'
-        elif sys.argv[2] == 'second':
-            scope = 'second'
-        else:
-            print('unkown scope', file=sys.stderr)
-            sys.exit(-1)
+    allowed_scopes = ['both', 'first', 'second']
+    if len(sys.argv) < 3:
+        raise Exception(
+            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
+        )
+    scope = sys.argv[2]
+    if scope not in allowed_scopes:
+        raise Exception(
+            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
+        )
 
     instances = parse_instances()
     
@@ -68,26 +69,26 @@ if __name__ == "__main__":
         ncols = 2
 
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols)
-    fig.suptitle(config[action]['title'])
+    fig.suptitle(config[target]['title'])
     if scope == 'both':
         for j, name in enumerate(['first', 'second']):
             draw_compared_metric(
                 instances[name],
                 axes[0][j],
                 axes[1][j],
-                config[action]['metric_name'],
-                config[action]['key_name']
+                config[target]['metric_name'],
+                config[target]['key_name']
             )
         axes[0][0].set_ylabel('Cantidad de sujetos')
         axes[1][0].set_ylabel('Cantidad de repeticiones')
-        axes[1][0].set_xlabel(config[action]['unit_label'])
-        axes[1][1].set_xlabel(config[action]['unit_label'])
+        axes[1][0].set_xlabel(config[target]['unit_label'])
+        axes[1][1].set_xlabel(config[target]['unit_label'])
     
         axes[0][0].set_title('Primera instancia, repeticiones agrupadas por sujeto')
         axes[1][0].set_title('Primera instancia, repeticiones miradas individualmente')
         axes[0][1].set_title('Segunda instancia, repeticiones agrupadas por sujeto')
         axes[1][1].set_title('Segunda instancia, repeticiones miradas individualmente')
-        if action == 'frequencies':
+        if target == 'frequencies':
             draw_sampling_frequecies_marks(axes[0][0])
             draw_sampling_frequecies_marks(axes[1][0])
             draw_sampling_frequecies_marks(axes[0][1])
@@ -98,12 +99,12 @@ if __name__ == "__main__":
             instances[scope],
             axes[0],
             axes[1],
-            config[action]['metric_name'],
-            config[action]['key_name']
+            config[target]['metric_name'],
+            config[target]['key_name']
         )
         axes[0].set_ylabel('Cantidad de sujetos')
         axes[1].set_ylabel('Cantidad de repeticiones')
-        axes[1].set_xlabel(config[action]['unit_label'])
+        axes[1].set_xlabel(config[target]['unit_label'])
 
         instance_label = 'Primera' if scope == 'first' else 'Segunda'
         axes[0].set_title('{} instancia, repeticiones agrupadas por sujeto'.format(instance_label))
