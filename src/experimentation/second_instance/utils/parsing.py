@@ -5,7 +5,7 @@ from utils.trials_collection import TrialsCollection
 from utils.sampling import uniformize_sampling
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
-data_path = 'src/antisacadas-results/data'
+data_path = 'src/experimentation/second_instance/data'
 
 def parse_trials():
     parsed_trials = []

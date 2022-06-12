@@ -12,7 +12,7 @@ from utils.normalize import normalize
 
 run_id_regex = re.compile('short-antisaccades_(\d{1,3}).csv')
 empty_hardware_regex = re.compile('(\{.*),"hardware":"(\})')
-antisaccades_data_path = 'src/short-antisacades-results/data'
+antisaccades_data_path = 'src/experimentation/first_instance/data'
 def load_trials():
     trials = []
     for file_path in os.listdir(antisaccades_data_path):

@@ -1,3 +1,10 @@
+import sys, os
+unwanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
+wanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation/second_instance'
+if unwanted in sys.path:
+    sys.path.remove(unwanted)
+    sys.path = [wanted] + sys.path
+
 import matplotlib.pyplot as plt
 from statistics import mean, stdev
 

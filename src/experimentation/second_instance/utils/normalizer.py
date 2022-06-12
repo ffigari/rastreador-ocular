@@ -1,4 +1,5 @@
-from utils.interpolate import interpolate_with
+import os, sys
+from utils.second_interpolate import interpolate_with
 
 class Normalizer:
     def __init__(self, stimulus_results, validation_was_successful):
