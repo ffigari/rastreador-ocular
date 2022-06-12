@@ -12,37 +12,44 @@ def parse_instances():
         'second': parse_second_instance()
     }
 
-if __name__ == "__main__":
-    instances = parse_instances()
-
-    fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
-    fig.suptitle('Distribución de frecuencias de sampleo')
+def draw_metric(instances):
     for j, name in enumerate(['first', 'second']):
         perRunAx = axes[0][j]
         perTrialAx = axes[1][j]
         frequencies = instances[name]['post_filtering_metrics']['frequencies']
         separated_hist(perRunAx, perTrialAx, frequencies, 'frequency')
 
-    axes[0][0].set_ylabel('Cantidad de sujetos')
-    axes[1][0].set_ylabel('Cantidad de repeticiones')
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print('missing action', file=sys.stderr)
+        sys.exit(-1)
 
-    axes[1][0].set_ylabel('Frecuencia (en Hz)')
-    axes[1][1].set_ylabel('Frecuencia (en Hz)')
+    instances = parse_instances()
+    fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
+    if sys.argv[1] == 'frequencies':
+        fig.suptitle('Distribución de frecuencias de sampleo')
+        draw_metric(instances)
 
-    axes[0][0].set_title('Primera instancia, repeticiones agrupadas por sujeto')
-    axes[1][0].set_title('Primera instancia, repeticiones miradas individualmente')
-    axes[0][1].set_title('Segunda instancia, repeticiones agrupadas por sujeto')
-    axes[1][1].set_title('Segunda instancia, repeticiones miradas individualmente')
+        axes[0][0].set_ylabel('Cantidad de sujetos')
+        axes[1][0].set_ylabel('Cantidad de repeticiones')
 
-    draw_sampling_frequecies_marks(axes[0][0])
-    draw_sampling_frequecies_marks(axes[1][0])
-    draw_sampling_frequecies_marks(axes[0][1])
-    draw_sampling_frequecies_marks(axes[1][1])
+        axes[1][0].set_ylabel('Frecuencia (en Hz)')
+        axes[1][1].set_ylabel('Frecuencia (en Hz)')
 
-    axes[0][1].legend()
+        axes[0][0].set_title('Primera instancia, repeticiones agrupadas por sujeto')
+        axes[1][0].set_title('Primera instancia, repeticiones miradas individualmente')
+        axes[0][1].set_title('Segunda instancia, repeticiones agrupadas por sujeto')
+        axes[1][1].set_title('Segunda instancia, repeticiones miradas individualmente')
 
-    print('TODO: Polish this plot')
+        draw_sampling_frequecies_marks(axes[0][0])
+        draw_sampling_frequecies_marks(axes[1][0])
+        draw_sampling_frequecies_marks(axes[0][1])
+        draw_sampling_frequecies_marks(axes[1][1])
+
+        axes[0][1].legend()
+
+    elif sys.argv[1] == 'resolutions':
+        print('TODO: Make figure with screen resolution per run and per trial')
+
     plt.show()
-    print('TODO: Make figure with screen resolution per run and per trial')
-
 
