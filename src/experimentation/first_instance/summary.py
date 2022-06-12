@@ -23,11 +23,7 @@ from common.plots import plot_anti_task_responses_times_distributions
 if modified:
     sys.path = sys_path_before
 
-def parse_first_instance():
-    print('TODO: implement parse_first_instance')
-    return []
-
-if __name__ == "__main__":
+def parse_first_instance(cbs):
     trials = mirror_trials(normalize(load_cleaned_up_trials()))
     print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
         len(trials), len(list(set([t['run_id'] for t in trials])))
@@ -39,12 +35,12 @@ if __name__ == "__main__":
         len(trials_pre_processing),
         len(list(set([t['run_id'] for t in trials_pre_processing])))
     ))
+
     count_per_run = dict()
     for t in trials_pre_processing:
         if t['run_id'] not in count_per_run:
             count_per_run[t['run_id']] = 0
         count_per_run[t['run_id']] += 1
-
     trials_with_enough_per_run = [
         t
         for t in trials_pre_processing
@@ -76,6 +72,7 @@ if __name__ == "__main__":
         )
     ))
 
+
     frequencies, ages, widths = [], [], []
     for kept, ts in [(True, kept_trials), (False, dropped_trials)]:
         for t in ts:
@@ -95,13 +92,10 @@ if __name__ == "__main__":
                 'kept': kept,
             })
 
-    plot_sampling_frequencies(frequencies)
-    plot_ages(ages)
-    plot_widths(widths)
+    cbs['after_filtering'](frequencies, ages, widths)
 
     compute_correcteness_in_place(kept_trials)
     trials = [t for t in kept_trials if t['subject_reacted']]
-
     correct_anti = [{
         'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
         'response_time': t['reaction_time'],
@@ -110,5 +104,26 @@ if __name__ == "__main__":
         'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
         'response_time': t['reaction_time'],
     } for t in trials if not t['correct_reaction']]
-    plot_post_processing_trials(correct_anti, incorrect_anti, 'anti')
-    plot_anti_task_responses_times_distributions(correct_anti, incorrect_anti)
+    return {
+        'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+    }
+
+if __name__ == "__main__":
+    def after_filtering(frequencies, ages, widths):
+        plot_sampling_frequencies(frequencies)
+        plot_ages(ages)
+        plot_widths(widths)
+
+    saccades = parse_first_instance(
+        { 'after_filtering': after_filtering }
+    )
+
+    plot_post_processing_trials(
+        saccades['anti']['correct'],
+        saccades['anti']['incorrect'],
+        'anti'
+    )
+    plot_anti_task_responses_times_distributions(
+        saccades['anti']['correct'],
+        saccades['anti']['incorrect']
+    )
