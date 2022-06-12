@@ -18,7 +18,7 @@ from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
-from common.plots import plot_anti_task_responses_times_distributions
+from common.plots import plot_responses_times_distributions
 
 if modified:
     sys.path = sys_path_before
@@ -117,13 +117,5 @@ if __name__ == "__main__":
     saccades = parse_first_instance(
         { 'after_filtering': after_filtering }
     )
-
-    plot_post_processing_trials(
-        saccades['anti']['correct'],
-        saccades['anti']['incorrect'],
-        'anti'
-    )
-    plot_anti_task_responses_times_distributions(
-        saccades['anti']['correct'],
-        saccades['anti']['incorrect']
-    )
+    plot_post_processing_trials(saccades, 'anti')
+    plot_responses_times_distributions(saccades)
