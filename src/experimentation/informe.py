@@ -31,11 +31,18 @@ if __name__ == "__main__":
     config = { 'frequencies': {
         'title': 'Distribución de frecuencias de sampleo',
         'metric_name': 'frequencies',
-        'key_name': 'frequency'
+        'key_name': 'frequency',
+        'unit_label': 'Frecuencia (en Hz)'
     }, 'resolutions': {
         'title': 'Distribución de frecuencias de anchos de pantalla',
         'metric_name': 'widths',
-        'key_name': 'width'
+        'key_name': 'width',
+        'unit_label': 'Ancho de pantalla (en px)'
+    }, 'ages': {
+        'title': 'Distribución de edades',
+        'metric_name': 'ages',
+        'key_name': 'age',
+        'unit_label': 'Edad'
     }}
 
     action = sys.argv[1]
@@ -50,14 +57,15 @@ if __name__ == "__main__":
 
     fig, axes = plt.subplots(nrows=2, ncols=2)
     fig.suptitle(config[action]['title'])
-    draw_metric(instances, config[action]['metric_name'], config[action]['key_name'])
+    draw_metric(
+        instances,
+        config[action]['metric_name'],
+        config[action]['key_name']
+    )
     axes[0][0].set_ylabel('Cantidad de sujetos')
     axes[1][0].set_ylabel('Cantidad de repeticiones')
-    unit_label = \
-        'Frecuencia (en Hz)' if action == 'frequencies' else \
-        'Ancho de pantalla (en px)'
-    axes[1][0].set_xlabel(unit_label)
-    axes[1][1].set_xlabel(unit_label)
+    axes[1][0].set_xlabel(config[action]['unit_label'])
+    axes[1][1].set_xlabel(config[action]['unit_label'])
 
     axes[0][0].set_title('Primera instancia, repeticiones agrupadas por sujeto')
     axes[1][0].set_title('Primera instancia, repeticiones miradas individualmente')
