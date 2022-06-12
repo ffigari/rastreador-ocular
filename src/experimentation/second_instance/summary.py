@@ -18,7 +18,8 @@ from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
 
 def parse_second_instance():
-    []
+    print('TODO: implement parse_second_instance')
+    return []
 
 if __name__ == "__main__":
     trials, counts_per_run = parse_trials()

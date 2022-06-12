@@ -3,7 +3,12 @@ import sys, os
 from first_instance.summary import parse_first_instance
 from second_instance.summary import parse_second_instance
 
-parse_first_instance()
-parse_second_instance()
+def parse_instances():
+    return {
+        'first': parse_first_instance(),
+        'second': parse_second_instance()
+    }
 
-raise Exception('Run all')
+if __name__ == "__main__":
+    instances = parse_instances()
+    print('TODO: plot')
