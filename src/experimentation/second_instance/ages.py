@@ -44,6 +44,4 @@ if __name__ == "__main__":
         label=['ages', 'dropped_ages']
     )
     ax.legend()
-    # TODO: In the same plot, display dropped and kept runs hist of ages
-    # https://stackoverflow.com/questions/6871201/plot-two-histograms-on-single-chart-with-matplotlib
     plt.show()
