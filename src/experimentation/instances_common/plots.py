@@ -97,9 +97,10 @@ def plot_widths(widths):
         ax.legend()
     plt.show()
 
-def plot_post_processing_trials(saccades, task_type):
-    correct_ts = saccades['anti']['correct']
-    incorrect_ts = saccades['anti']['incorrect']
+# TODO: This function is accumulating both saccades
+def plot_post_processing_trials(task_saccades, task_label):
+    correct_ts = task_saccades['correct']
+    incorrect_ts = task_saccades['incorrect']
     BUCKETS_AMOUNT = 5
     max_t = max([
         t['response_time']
@@ -112,7 +113,7 @@ Los ejes temporales de las repeticiones han sido alineados para que el valor t=0
 corresponda a la aparición del estímulo visual. Las estimaciones de las
 coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
         # http://stackoverflow.com/questions/34937048/ddg#44123579
-        r"$\bf{" + ('antisacadas' if task_type == 'anti' else 'prosacadas') + "}$"
+        r"$\bf{" + task_label + "}$"
     ))
     for j, (task_result, ts) in enumerate([
         ('correctas', correct_ts), ('incorrectas', incorrect_ts)

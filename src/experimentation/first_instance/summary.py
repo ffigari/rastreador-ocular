@@ -118,6 +118,9 @@ def parse_first_instance(cbs=None):
         }
     }
 
+def plot_first_post_processing_trials(saccades):
+    plot_post_processing_trials(saccades['anti'], 'antisacadas')
+
 if __name__ == "__main__":
     def after_filtering(post_filtering_metrics):
         plot_sampling_frequencies(post_filtering_metrics['frequencies'])
@@ -126,5 +129,5 @@ if __name__ == "__main__":
 
     instance = parse_first_instance({ 'after_filtering': after_filtering })
     saccades = instance['saccades']
-    plot_post_processing_trials(saccades, 'anti')
+    plot_first_post_processing_trials(saccades)
     plot_responses_times_distributions(saccades)

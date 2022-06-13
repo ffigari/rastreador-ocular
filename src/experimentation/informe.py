@@ -3,14 +3,12 @@ import matplotlib.pyplot as plt
 
 from instances_common.plots import separated_hist
 from instances_common.plots import draw_sampling_frequecies_marks
+from instances_common.plots import plot_post_processing_trials
+from instances_common.plots import plot_responses_times_distributions
 from first_instance.summary import parse_first_instance
+from first_instance.summary import plot_first_post_processing_trials
 from second_instance.summary import parse_second_instance
-
-def parse_instances():
-    return {
-        'first': parse_first_instance(),
-        'second': parse_second_instance()
-    }
+from second_instance.summary import plot_second_post_processing_trials
 
 def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name):
     separated_hist(
@@ -20,7 +18,7 @@ def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name
         field_name
     )
 
-if __name__ == "__main__":
+def plot_descriptive_histograms(instances, target, scope):
     config = { 'frequencies': {
         'title': 'Distribución de frecuencias de sampleo',
         'metric_name': 'frequencies',
@@ -36,33 +34,7 @@ if __name__ == "__main__":
         'metric_name': 'ages',
         'key_name': 'age',
         'unit_label': 'Edad'
-    }}
-
-    if len(sys.argv) < 2:
-        print('missing target', file=sys.stderr)
-        sys.exit(-1)
-
-    target = sys.argv[1]
-    if target not in config.keys():
-        print(
-            'unkown target, valid ones are [{}]'.format(', '.join(config.keys())),
-            file=sys.stderr
-        )
-        sys.exit(-1)
-
-    allowed_scopes = ['both', 'first', 'second']
-    if len(sys.argv) < 3:
-        raise Exception(
-            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
-        )
-    scope = sys.argv[2]
-    if scope not in allowed_scopes:
-        raise Exception(
-            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
-        )
-
-    instances = parse_instances()
-    
+    }, 'post_processing': {}}
     nrows = 2
     ncols = 1
     if scope == 'both':
@@ -113,3 +85,56 @@ if __name__ == "__main__":
 
     plt.show()
 
+if __name__ == "__main__":
+    description_targets = ['frequencies', 'resolutions', 'ages']
+    allowed_targets = \
+        description_targets + \
+        ['post_processing', 'response_times_distribution']
+    if len(sys.argv) < 2:
+        print('missing target', file=sys.stderr)
+        sys.exit(-1)
+    target = sys.argv[1]
+    if target not in allowed_targets:
+        print(
+            'unkown target, valid ones are [{}]'.format(', '.join(allowed_targets)),
+            file=sys.stderr
+        )
+        sys.exit(-1)
+
+    allowed_scopes = ['both', 'first', 'second']
+    if len(sys.argv) < 3:
+        print(
+            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
+            file=sys.stderr
+        )
+        sys.exit(-1)
+    scope = sys.argv[2]
+    if scope not in allowed_scopes:
+        print(
+            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
+            file=sys.stderr
+        )
+        sys.exit(-1)
+
+    instances = {}
+    if scope == 'both':
+        instances['first'] = parse_first_instance()
+        instances['second'] = parse_second_instance()
+    elif scope == 'first':
+        instances['first'] = parse_first_instance()
+    else:
+        instances['second'] = parse_second_instance()
+
+    if target in description_targets:
+        plot_descriptive_histograms(instances, target, scope)
+    elif target == 'post_processing':
+        for name in instances.keys():
+            saccades = instances[name]['saccades']
+            if name == 'first':
+                plot_first_post_processing_trials(saccades)
+            elif name == 'second':
+                plot_second_post_processing_trials(saccades)
+    elif target == 'response_times_distribution':
+        for name in instances.keys():
+            saccades = instances[name]['saccades']
+            plot_responses_times_distributions(saccades)
