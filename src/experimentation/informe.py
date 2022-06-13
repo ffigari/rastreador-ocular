@@ -9,12 +9,6 @@ from first_instance.summary import plot_first_post_processing_trials
 from second_instance.summary import parse_second_instance
 from second_instance.summary import plot_second_post_processing_trials
 
-def parse_instances():
-    return {
-        'first': parse_first_instance(),
-        'second': parse_second_instance()
-    }
-
 def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name):
     separated_hist(
         perRunAx,
@@ -105,8 +99,6 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     allowed_scopes = ['both', 'first', 'second']
-    if target == 'post_processing':
-        allowed_scopes.remove('both')
     if len(sys.argv) < 3:
         raise Exception(
             'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
@@ -117,12 +109,21 @@ if __name__ == "__main__":
             'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes))
         )
 
-    instances = parse_instances()
+    instances = {}
+    if scope == 'both':
+        instances['first'] = parse_first_instance()
+        instances['second'] = parse_second_instance()
+    elif scope == 'first':
+        instances['first'] = parse_first_instance()
+    else:
+        instances['second'] = parse_second_instance()
+
     if target in description_targets:
         plot_descriptive_histograms(instances, target, scope)
     elif target == 'post_processing':
-        instance = instances['first']
-        if scope == 'first':
-            plot_first_post_processing_trials(instance['saccades'])
-        elif scope == 'second':
-            plot_second_post_processing_trials(instance['saccades'])
+        for name in instances.keys():
+            saccades = instances[name]['saccades']
+            if name == 'first':
+                plot_first_post_processing_trials(saccades)
+            elif name == 'second':
+                plot_second_post_processing_trials(saccades)
