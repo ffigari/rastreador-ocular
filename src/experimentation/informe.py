@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from instances_common.plots import separated_hist
 from instances_common.plots import draw_sampling_frequecies_marks
+from instances_common.plots import plot_post_processing_trials
 from first_instance.summary import parse_first_instance
 from second_instance.summary import parse_second_instance
 
@@ -20,7 +21,7 @@ def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name
         field_name
     )
 
-def draw_descriptive_histograms(instances, target, scope):
+def plot_descriptive_histograms(instances, target, scope):
     config = { 'frequencies': {
         'title': 'Distribución de frecuencias de sampleo',
         'metric_name': 'frequencies',
@@ -88,8 +89,8 @@ def draw_descriptive_histograms(instances, target, scope):
     plt.show()
 
 if __name__ == "__main__":
-
-    allowed_targets = ['frequencies', 'resolutions', 'ages', 'post_processing']
+    description_targets = ['frequencies', 'resolutions', 'ages']
+    allowed_targets = description_targets + ['post_processing']
     if len(sys.argv) < 2:
         print('missing target', file=sys.stderr)
         sys.exit(-1)
@@ -115,9 +116,15 @@ if __name__ == "__main__":
         )
 
     instances = parse_instances()
-    if target != 'post_processing':
-        draw_descriptive_histograms(instances, target, scope)
-    else:
-        raise Exception('not implemented')
+    if target in description_targets:
+        plot_descriptive_histograms(instances, target, scope)
+    elif target == 'post_processing':
+        name = scope
+
+        instance = instances[name]
+        tasks = ['pro', 'anti'] if name == 'second' else ['anti']
+    
+        for task_name in tasks:
+            plot_post_processing_trials(instance['saccades'], task_name)
     
 

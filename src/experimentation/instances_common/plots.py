@@ -97,6 +97,7 @@ def plot_widths(widths):
         ax.legend()
     plt.show()
 
+# TODO: This function is accumulating both saccades
 def plot_post_processing_trials(saccades, task_type):
     correct_ts = saccades['anti']['correct']
     incorrect_ts = saccades['anti']['incorrect']
