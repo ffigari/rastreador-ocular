@@ -5,7 +5,9 @@ from instances_common.plots import separated_hist
 from instances_common.plots import draw_sampling_frequecies_marks
 from instances_common.plots import plot_post_processing_trials
 from first_instance.summary import parse_first_instance
+from first_instance.summary import plot_first_post_processing_trials
 from second_instance.summary import parse_second_instance
+from second_instance.summary import plot_second_post_processing_trials
 
 def parse_instances():
     return {
@@ -119,12 +121,8 @@ if __name__ == "__main__":
     if target in description_targets:
         plot_descriptive_histograms(instances, target, scope)
     elif target == 'post_processing':
-        name = scope
-
-        instance = instances[name]
-        tasks = ['pro', 'anti'] if name == 'second' else ['anti']
-    
-        for task_name in tasks:
-            plot_post_processing_trials(instance['saccades'], task_name)
-    
-
+        instance = instances['first']
+        if scope == 'first':
+            plot_first_post_processing_trials(instance['saccades'])
+        elif scope == 'second':
+            plot_second_post_processing_trials(instance['saccades'])
