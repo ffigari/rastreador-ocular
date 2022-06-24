@@ -26,7 +26,7 @@ const compiler = webpack({
     'build/rastoc': path.resolve(path.dirname(''), '/src/rastoc/index.js'),
     'build/rastoc-jspsych': path.resolve(path.dirname(''), '/src/rastoc-jspsych/index.js'),
     //'old-facemesh': path.resolve(path.dirname(''), 'src/experimental/old-facemesh.js'),
-    'new-facemesh': path.resolve(path.dirname(''), 'src/experimental/new-facemesh.js'),
+    //'new-facemesh': path.resolve(path.dirname(''), 'src/experimental/new-facemesh.js'),
   },
   output: {
     path: path.resolve(path.dirname(''), 'www'),
