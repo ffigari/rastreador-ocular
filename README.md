@@ -9,7 +9,8 @@ It built up from the ongoing research with
 directing [my](https://liaa.dc.uba.ar/francisco-figari-en/) master thesis at
 LIAA, UBA on the same topic.
 
-[Webgazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
+A [personal fork](https://github.com/ffigari/WebGazer) of
+[WebGazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
 estimation.
 Originally this package [proved to be unreliable for long sessions](
 https://github.com/brownhci/WebGazer/issues/171
@@ -32,12 +33,12 @@ The issues' section is open in case you have any question or want to report a
 bug.
 
 This project was built around the antisaccades task (Hallett 1978) in which
-only center, left and right over an horizontal axis are of interest. Because of
-that the provided JSPsych utilities for calibration and validation focus on
-those three regions of interests. In this sense, tasks which require other
-regions of interest might have their estimations worsened. Work could however
-be done to generalize how regions of interest are codified, allowing then for
-more general calibration and validation mechanisms.
+only center, left and right over an horizontal axis are of interest.
+Because of that the provided JSPsych utilities for calibration and validation
+focus on those three regions of interests.
+Tasks which require other regions of interest will have incorrect estimations.
+Work could however be done to generalize how regions of interest are codified,
+allowing then for more general calibration and validation mechanisms.
 
 ## Development
 
