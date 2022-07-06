@@ -88,37 +88,42 @@ def plot_descriptive_histograms(instances, target, scope):
 ###
 
 import sys
+import os
+
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 ] + sys.path
-
 from raw_data_cooker import cook_target_results
 
 if __name__ == "__main__":
-    with open('informe/resultados.tex') as r:
-        s = r.read()
-        print(s.format(
-            starting_sample_count_stats__trials_count___first=\
-                cook_target_results(
-                "starting_sample_count_stats.trials_count",
-                "first"
-                ),
-            starting_sample_count_stats__subjects_count___second=\
-                cook_target_results(
-                "starting_sample_count_stats.subjects_count",
-                "second"
-                ),
-            starting_sample_count_stats__subjects_count___first=\
-                cook_target_results(
-                "starting_sample_count_stats.subjects_count",
-                "first"
-                ),
-            inliering_sample_count_stats__trials_count___first=\
-                cook_target_results(
-                "inliering_sample_count_stats.trials_count",
-                "first"
-                )
-        ).strip('\n'))
+    with open('informe/resultados.tex') as input_file:
+        if not os.path.exists('informe/build'):
+            os.mkdir('informe/build')
+        if not os.path.exists('informe/build/results'):
+            os.mkdir('informe/build/results')
+        with open('informe/build/results/main.tex', "w") as output_file:
+            output_file.write(input_file.read().format(
+                starting_sample_count_stats__trials_count___first=\
+                    cook_target_results(
+                    "starting_sample_count_stats.trials_count",
+                    "first"
+                    ),
+                starting_sample_count_stats__subjects_count___second=\
+                    cook_target_results(
+                    "starting_sample_count_stats.subjects_count",
+                    "second"
+                    ),
+                starting_sample_count_stats__subjects_count___first=\
+                    cook_target_results(
+                    "starting_sample_count_stats.subjects_count",
+                    "first"
+                    ),
+                inliering_sample_count_stats__trials_count___first=\
+                    cook_target_results(
+                    "inliering_sample_count_stats.trials_count",
+                    "first"
+                    )
+            ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:
