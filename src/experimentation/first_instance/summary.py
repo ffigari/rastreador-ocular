@@ -30,31 +30,25 @@ if modified:
 
 #####
 
+class SampleCountStats():
+    def __init__(self, ts):
+        self.trials_count = len(ts)
+        self.subjects_count = len(list(set([t['run_id'] for t in ts])))
+
 class FirstInstanceResults():
     def __init__(self):
-        self.ts = mirror_trials(normalize(load_cleaned_up_trials()))
+        ts = mirror_trials(normalize(load_cleaned_up_trials()))
+        self.starting_sample_count_stats = SampleCountStats(ts)
 
-    def trials_count(self):
-        return len(self.ts)
+        ts = drop_invalid_trials([t for t in ts if not t['outlier']])
+        self.inliering_sample_count_stats = SampleCountStats(ts)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
 def parse_first_instance(cbs=None):
     cbs = parse_parsing_callbacks(cbs)
 
-    results = ()
-
-    print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
-        len(trials), len(list(set([t['run_id'] for t in trials])))
-    ))
-
-    trials_pre_processing = \
-        drop_invalid_trials([t for t in trials if not t['outlier']])
-    print('>> Pre processing count: {:d} trials distributed in {:d} subjects'.format(
-        len(trials_pre_processing),
-        len(list(set([t['run_id'] for t in trials_pre_processing])))
-    ))
-
+    trials_pre_processing
     count_per_run = dict()
     for t in trials_pre_processing:
         if t['run_id'] not in count_per_run:
@@ -127,6 +121,9 @@ def parse_first_instance(cbs=None):
         'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
         'response_time': t['reaction_time'],
     } for t in trials if not t['correct_reaction']]
+
+    # TODO: Este ultimo objeto hay que guardarle el formato para poder reusar
+    #       los gráficos
     return {
         'post_filtering_metrics': post_filtering_metrics,
         'saccades': {

@@ -18,6 +18,7 @@ from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
 from common.parsing import parse_parsing_callbacks
 
+# TODO: Make common class with FirstInstanceResults ?
 class SecondInstanceResults():
     def __init__(self):
         raise NotImplementedError()

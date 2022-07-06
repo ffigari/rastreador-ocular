@@ -54,38 +54,15 @@ main code.
 There _might_ be some events' timing issues which prevent the playground from
 starting up some times.
 
-## Experientation
+## Experimentation
 
-To setup Python env:
+Python env setup:
 ```sh
 python -m venv py-env
 source py-env/bin/activate
 pip install -r requirements.txt
 ```  
 
-Some of the maintained scripts:
-- informe: `src/experimentation/informe.py`
-- second instance:
-```
-# run instances common analysis
-python src/experimentation/second_instance/summary.py
-# view general reports
-python src/experimentation/second_instance/main.py
-# view instances of the saccades detection mechanism applied over individual
-# trials
-python src/experimentation/second_instance/saccade_detection.py
-```
-- first instance:
-```
-# run instances common analysis
-python src/experimentation/first_instance/summary.py
-
-# view shifted estimations
-python src/experimentation/first_instance/shifted-estimations.py
-```
-
-
-`src/short-antisaccades-results/` and `src/antisacadas-results/` respectively
-contain scripts to analyze the data obtained from the first and second
-experiment.
-You should be able to run them after setting up the python env.
+Usage:
+- `python src/experimentation/informe.py`: Print report.
+- `python src/experimentation/raw_data_cooker.py`: Create specific resources.

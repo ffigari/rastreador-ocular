@@ -85,56 +85,80 @@ def plot_descriptive_histograms(instances, target, scope):
 
     plt.show()
 
+###
+
+import sys
+sys.path = [
+    '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
+] + sys.path
+
+from raw_data_cooker import cook_target_results
+
 if __name__ == "__main__":
-    description_targets = ['frequencies', 'resolutions', 'ages']
-    allowed_targets = \
-        description_targets + \
-        ['post_processing', 'response_times_distribution']
-    if len(sys.argv) < 2:
-        print('missing target', file=sys.stderr)
-        sys.exit(-1)
-    target = sys.argv[1]
-    if target not in allowed_targets:
-        print(
-            'unkown target, valid ones are [{}]'.format(', '.join(allowed_targets)),
-            file=sys.stderr
+    # TODO: Read starting count
+    # TODO: Read string from file for easier editing
+    print("""En la primera instancia se obtuvo un total de 2718 ensayos distribuidos en 18
+sujetos.
+De estos ensayos, {inliering_sample_count_stats__trials_count___first} fueron clasificados como outliers.""".format(
+        inliering_sample_count_stats__trials_count___first=cook_target_results(
+            "inliering_sample_count_stats.trials_count",
+            "first"
         )
-        sys.exit(-1)
+        
+    ))
 
-    allowed_scopes = ['both', 'first', 'second']
-    if len(sys.argv) < 3:
-        print(
-            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
-            file=sys.stderr
-        )
-        sys.exit(-1)
-    scope = sys.argv[2]
-    if scope not in allowed_scopes:
-        print(
-            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
-            file=sys.stderr
-        )
-        sys.exit(-1)
-
-    instances = {}
-    if scope == 'both':
-        instances['first'] = parse_first_instance()
-        instances['second'] = parse_second_instance()
-    elif scope == 'first':
-        instances['first'] = parse_first_instance()
-    else:
-        instances['second'] = parse_second_instance()
-
-    if target in description_targets:
-        plot_descriptive_histograms(instances, target, scope)
-    elif target == 'post_processing':
-        for name in instances.keys():
-            saccades = instances[name]['saccades']
-            if name == 'first':
-                plot_first_post_processing_trials(saccades)
-            elif name == 'second':
-                plot_second_post_processing_trials(saccades)
-    elif target == 'response_times_distribution':
-        for name in instances.keys():
-            saccades = instances[name]['saccades']
-            plot_responses_times_distributions(saccades)
+# TODO: Delete this content below as it gets reused for re-writing
+    #with open("informe/resultados.tex") as f:
+        #print(f.read().format())
+#    description_targets = ['frequencies', 'resolutions', 'ages']
+#    allowed_targets = \
+#        description_targets + \
+#        ['post_processing', 'response_times_distribution']
+#    if len(sys.argv) < 2:
+#        print('missing target', file=sys.stderr)
+#        sys.exit(-1)
+#    target = sys.argv[1]
+#    if target not in allowed_targets:
+#        print(
+#            'unkown target, valid ones are [{}]'.format(', '.join(allowed_targets)),
+#            file=sys.stderr
+#        )
+#        sys.exit(-1)
+#
+#    allowed_scopes = ['both', 'first', 'second']
+#    if len(sys.argv) < 3:
+#        print(
+#            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
+#            file=sys.stderr
+#        )
+#        sys.exit(-1)
+#    scope = sys.argv[2]
+#    if scope not in allowed_scopes:
+#        print(
+#            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
+#            file=sys.stderr
+#        )
+#        sys.exit(-1)
+#
+#    instances = {}
+#    if scope == 'both':
+#        instances['first'] = parse_first_instance()
+#        instances['second'] = parse_second_instance()
+#    elif scope == 'first':
+#        instances['first'] = parse_first_instance()
+#    else:
+#        instances['second'] = parse_second_instance()
+#
+#    if target in description_targets:
+#        plot_descriptive_histograms(instances, target, scope)
+#    elif target == 'post_processing':
+#        for name in instances.keys():
+#            saccades = instances[name]['saccades']
+#            if name == 'first':
+#                plot_first_post_processing_trials(saccades)
+#            elif name == 'second':
+#                plot_second_post_processing_trials(saccades)
+#    elif target == 'response_times_distribution':
+#        for name in instances.keys():
+#            saccades = instances[name]['saccades']
+#            plot_responses_times_distributions(saccades)
