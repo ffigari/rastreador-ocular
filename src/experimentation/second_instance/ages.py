@@ -15,6 +15,9 @@ if __name__ == "__main__":
         if t['run_id'] not in ages_per_run_before_filtering:
             ages_per_run_before_filtering[t['run_id']] = t['age']
 
+    for k, v in trials.all()[0].items():
+        print(k, v)
+
     trials, counts_per_run = clean(trials, counts_per_run)
 
     ages_per_run_after_filtering = dict()

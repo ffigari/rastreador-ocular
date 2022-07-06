@@ -1,3 +1,4 @@
+# TODO: Rename file to cooking_tools.py
 import sys, os
 unwanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 wanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation/first_instance'
@@ -24,10 +25,25 @@ from common.parsing import parse_parsing_callbacks
 if modified:
     sys.path = sys_path_before
 
+#####
+
+
+#####
+
+class FirstInstanceResults():
+    def __init__(self):
+        self.ts = mirror_trials(normalize(load_cleaned_up_trials()))
+
+    def trials_count(self):
+        return len(self.ts)
+
+# TODO: Volar este método
+#       En particular no preocuparse en que siga andando
 def parse_first_instance(cbs=None):
     cbs = parse_parsing_callbacks(cbs)
 
-    trials = mirror_trials(normalize(load_cleaned_up_trials()))
+    results = ()
+
     print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
         len(trials), len(list(set([t['run_id'] for t in trials])))
     ))
