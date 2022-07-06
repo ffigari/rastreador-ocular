@@ -18,20 +18,28 @@ from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
 from common.parsing import parse_parsing_callbacks
 
-# TODO: Make common class with FirstInstanceResults ?
+# TODO: Make common class with the ones from the first instance ?
+class SampleCountStats():
+    def __init__(self, ts):
+        self.trials_count = ts.count
+        self.subjects_count = ts.runs_count
+
 class SecondInstanceResults():
     def __init__(self):
-        raise NotImplementedError()
+        ts, counts_per_run = parse_trials()
+        self.starting_sample_count_stats = SampleCountStats(ts)
+
+        # Outliers detection was not done in the second instance and instead the
+        # preprocessing was done directly. Is there really a difference between
+        # those two phases?
+        self.inliering_sample_count_stats = None
+
 
 
 def parse_second_instance(cbs=None):
     cbs = parse_parsing_callbacks(cbs)
 
     trials, counts_per_run = parse_trials()
-    print('>> Original count: {:d} trials distributed in {:d} subjects'.format(
-        trials.count, trials.runs_count
-    ))
-
     trials_pre_processing, counts_per_run = clean(trials, counts_per_run)
     print('>> Pre processing count: {:d} trials distributed in {:d} subjects'.format(
         trials_pre_processing.count, trials_pre_processing.runs_count

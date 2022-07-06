@@ -21,6 +21,9 @@ def usage():
 
 
 def cook_target_results(input_target, input_instance):
+    # TODO: Optimize / cache this reading
+    #       On each request for a result the data is being read and processed
+    #       from scratch
     r = FirstInstanceResults() \
         if input_instance == "first" \
         else SecondInstanceResults()

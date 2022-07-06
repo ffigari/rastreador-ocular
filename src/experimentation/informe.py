@@ -95,14 +95,30 @@ sys.path = [
 from raw_data_cooker import cook_target_results
 
 if __name__ == "__main__":
-    # TODO: Read starting count
     with open('informe/resultados.tex') as r:
-        print(r.read().format(
+        s = r.read()
+        print(s.format(
+            starting_sample_count_stats__trials_count___first=\
+                cook_target_results(
+                "starting_sample_count_stats.trials_count",
+                "first"
+                ),
+            starting_sample_count_stats__subjects_count___second=\
+                cook_target_results(
+                "starting_sample_count_stats.subjects_count",
+                "second"
+                ),
+            starting_sample_count_stats__subjects_count___first=\
+                cook_target_results(
+                "starting_sample_count_stats.subjects_count",
+                "first"
+                ),
             inliering_sample_count_stats__trials_count___first=\
                 cook_target_results(
                 "inliering_sample_count_stats.trials_count",
                 "first"
-                )).strip('\n'))
+                )
+        ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:
