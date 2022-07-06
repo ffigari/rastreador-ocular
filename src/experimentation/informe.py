@@ -96,16 +96,13 @@ from raw_data_cooker import cook_target_results
 
 if __name__ == "__main__":
     # TODO: Read starting count
-    # TODO: Read string from file for easier editing
-    print("""En la primera instancia se obtuvo un total de 2718 ensayos distribuidos en 18
-sujetos.
-De estos ensayos, {inliering_sample_count_stats__trials_count___first} fueron clasificados como outliers.""".format(
-        inliering_sample_count_stats__trials_count___first=cook_target_results(
-            "inliering_sample_count_stats.trials_count",
-            "first"
-        )
-        
-    ))
+    with open('informe/resultados.tex') as r:
+        print(r.read().format(
+            inliering_sample_count_stats__trials_count___first=\
+                cook_target_results(
+                "inliering_sample_count_stats.trials_count",
+                "first"
+                )).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:
