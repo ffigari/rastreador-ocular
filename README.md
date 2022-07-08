@@ -1,7 +1,7 @@
 # rastreador-ocular
 
-Rastoc is a study of browser based eye tracking's applicability in assisting the
-diagnosis of neuropsychological conditions.
+Rastoc is a study of browser based eye tracking's applicability to remote
+clinical studies.
 It built up from the ongoing research with
 [Juan Kamienkowski](https://liaa.dc.uba.ar/juan-kamienkowski/),
 [Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/) and
@@ -54,19 +54,20 @@ main code.
 There _might_ be some events' timing issues which prevent the playground from
 starting up some times.
 
-## Experimentation / Report
+### Python env setup
 
-Python env setup:
 ```sh
 python -m venv py-env
 source py-env/bin/activate
 pip install -r requirements.txt
 ```  
+then `source py-env/bin/activate` each time you want to use it.
 
-Usage:
-- `python src/experimentation/informe.py`: Print report.
-- `python src/experimentation/raw_data_cooker.py`: Create specific resources.
+## Experimentation / Report
 
 The report is stored inside `./informe/`.
-`{ ... }` have to be escaped to `{{ ... }}`.
-Otherwise the signal a value from the results.
+`python src/experimentation/informe.py` will build it and store it inside
+`./informe/build/`.
+
+In the `./informe/*.tex` files, `{ ... }` have to be escaped to `{{ ... }}`.
+Otherwise `{ ... }` signals a value from the results.

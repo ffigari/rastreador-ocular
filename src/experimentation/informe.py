@@ -106,12 +106,26 @@ if __name__ == "__main__":
             fr = FirstInstanceResults()
             sr = SecondInstanceResults()
             output_file.write(input_file.read().format(
-                starting_sample_count_stats__trials_count___first=\
+
+                first__starting_sample__trials_count=\
                     fr.starting_sample.trials_count,
-                starting_sample_count_stats__subjects_count___first=\
+                first__starting_sample__subjects_count=\
                     fr.starting_sample.subjects_count,
-                starting_sample_count_stats__subjects_count___second=\
+                second__starting_sample__subjects_count=\
                     sr.starting_sample.subjects_count,
+
+                first__inlier_sample__trials_count=\
+                    fr.inlier_sample.trials_count,
+                first__inlier_sample__subjects_count=\
+                    fr.inlier_sample.subjects_count,
+
+                first__without_response_sample__trials_count=\
+                    fr.without_response_sample.trials_count,
+                first__correct_sample__trials_count=\
+                    fr.correct_sample.trials_count,
+                first__incorrect_sample__trials_count=\
+                    fr.incorrect_sample.trials_count
+
             ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing

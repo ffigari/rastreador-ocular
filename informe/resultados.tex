@@ -2,32 +2,46 @@
 
 Como se mencionó anteriormente, se realizaron dos instancias de experimentación.
 En una primera instancia se consideraron únicamente antisacadas (N =
-{starting_sample_count_stats__subjects_count___first} sujetos) y en una segunda
+{first__starting_sample__subjects_count} sujetos) y en una segunda
 instancia se incluyeron tanto antisacadas como prosacadas (N =
-{starting_sample_count_stats__subjects_count___second} sujetos).
+{second__starting_sample__subjects_count} sujetos).
 
 \subsection{{Primera instancia}}
 
 En la primera instancia se realizaron únicamente antisacadas. Se obtuvieron un
-total de {starting_sample_count_stats__trials_count___first} ensayos
-provenientes de {starting_sample_count_stats__subjects_count___first} sujetos.
+total de {first__starting_sample__trials_count} ensayos provenientes de
+{first__starting_sample__subjects_count} sujetos.
+Luego de aplicar el pre-procesamiento, la cantidad de ensayos se redujo a
+{first__inlier_sample__trials_count} provenientes de
+{first__inlier_sample__subjects_count} sujetos.
+De estos, {first__correct_sample__trials_count} obtuvieron respuesta correcta,
+{first__incorrect_sample__trials_count} obtuvieron respuesta incorrecta y
+{first__without_response_sample__trials_count} no obtuvieron respuesta.
+
+# TODO: Calcular sacada correctiva
+
+103 de las 139 respuestas incorrectas tuvieron una sacada correctiva antes del
+fin del ensayo, es decir que tras mirar al punto incorrecto, corrigió y realizó
+una sacada hacia el punto correcto.
+
+# TODO: Calcular tiempos promedio de respuesta + std
+
+Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
+incorrectas (promedio ± desvio std: Correctas = 484 ms ± 118 ms; Incorrectas =
+356 ms ± 114 ms).
 
 # TODO: Figura distribución de las edades
 
 # TODO: Figura antisacadas desagregadas
 
-\subsubsection{{Estimaciones desviadas}}
 
-# TODO: Mover los valores citados en la prosa a dentro de las figuras
-        Dsp usar la figura como cita al hacer una afirmación
-        Esto va a lograr que naturalmente los valores citados sean valores
-        calculables
+\subsubsection{{Estimaciones desviadas}}
 
 Se encontró que para varios sujetos las estimaciones obtenidas por el prototipo
 sobre el eje horizontal no coincidían con las posiciones reales de la mirada.
 En cambio para cada uno de estos sujetos se detectó una desviación de sus
 estimaciones durante todo el experimento.
-La Figura \ref{fig:skewed-estimations-example} ilustra este fenómeno:
+La Figura \ref{{fig:skewed-estimations-example}} ilustra este fenómeno:
 durante la fase de fijación para los sujetos 47 y 24 se obtienen estimaciones
 respectivamente cercanas a los valores 2100 y 1400 píxeles, cuando los valores
 reales serían 1100 y 900.
@@ -43,16 +57,8 @@ momento de normalizar los datos. Asimismo, el hecho que se mantuviera el
 correcto posicionamiento relativo dió lugar al mecanismo de validación
 implementado.
 
-\subsubsection{{Tiempos de respuesta}}
-
-De los ensayos con respuesta, 555 obtuvieron respuesta correcta y 139 respuesta
-incorrecta.
-103 de las 139 respuestas incorrectas tuvieron una sacada correctiva antes del
-fin del ensayo, es decir que tras mirar al punto incorrecto, corrigió y realizó
-una sacada hacia el punto correcto.
-Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
-incorrectas (promedio ± desvio std: Correctas = 484 ms ± 118 ms; Incorrectas =
-356 ms ± 114 ms).
+# TODO: Va a ser más claro terminar de explicar el resumen de los tiempos de
+        respuesta antes de comentar lo de las estimaciones desviadas
 
 
 
