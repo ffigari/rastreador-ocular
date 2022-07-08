@@ -199,23 +199,22 @@ if __name__ == "__main__":
         axs[2].set_title("repeticiones sin respuesta")
     plt.show()
 
-    for t in incorrect_trials:
-        t['subject_corrected_side'] = False
-        for e in t['estimations']:
-            if e['t'] < t['reaction_time']:
-                continue
-            if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
-                continue
-            t['subject_corrected_side'] = True
-            t['correction_reaction_time'] = e['t']
-            break
-
-    incorrect_corrected_trials = [t for t in incorrect_trials if t['subject_corrected_side']]
-    incorrect_non_corrected_trials = [t for t in incorrect_trials if not t['subject_corrected_side']]
-
-    tic = len(incorrect_trials)
-    tinc = len(incorrect_non_corrected_trials)
-    t = tic + tinc
+    # TODO: This scope should not be needed anymore
+    # for t in incorrect_trials:
+    #     t['subject_corrected_side'] = False
+    #     for e in t['estimations']:
+    #         if e['t'] < t['reaction_time']:
+    #             continue
+    #         if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
+    #             continue
+    #         t['subject_corrected_side'] = True
+    #         t['correction_reaction_time'] = e['t']
+    #         break
+    # incorrect_corrected_trials = [t for t in incorrect_trials if t['subject_corrected_side']]
+    # incorrect_non_corrected_trials = [t for t in incorrect_trials if not t['subject_corrected_side']]
+    # tic = len(incorrect_trials)
+    # tinc = len(incorrect_non_corrected_trials)
+    # t = tic + tinc
 
     print("""
     repetición corregida || sí | no

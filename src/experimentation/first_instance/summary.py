@@ -15,6 +15,7 @@ from response_times import drop_invalid_trials
 from response_times import mirror_trials
 from response_times import compute_correcteness_in_place
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
+from constants import POST_NORMALIZATION_REACTION_TRESHOLD
 from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
@@ -77,7 +78,7 @@ def process_starting_sample(ts):
 
     compute_correcteness_in_place(inlier_ts)
 
-    return outlier_ts, (inlier_ts)
+    return outlier_ts, inlier_ts
 
 def look_for_response(inlier_ts):
     without_response_ts = [
@@ -106,8 +107,21 @@ class FirstInstanceResults():
         without_response_ts, correct_ts, incorrect_ts = \
             look_for_response(inlier_ts)
         self.without_response_sample = Sample(without_response_ts)
-        self.incorrect_sample = Sample(incorrect_ts)
         self.correct_sample = Sample(correct_ts)
+        self.incorrect_sample = Sample(incorrect_ts)
+
+        for t in incorrect_ts:
+            t['subject_corrected_side'] = False
+            for e in t['estimations']:
+                if e['t'] < t['reaction_time']:
+                    continue
+                if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
+                    continue
+                t['subject_corrected_side'] = True
+                t['correction_reaction_time'] = e['t']
+                break
+        corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
+        self.corrected_sample = Sample(corrected_ts)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando

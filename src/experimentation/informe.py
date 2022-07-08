@@ -124,8 +124,10 @@ if __name__ == "__main__":
                 first__correct_sample__trials_count=\
                     fr.correct_sample.trials_count,
                 first__incorrect_sample__trials_count=\
-                    fr.incorrect_sample.trials_count
+                    fr.incorrect_sample.trials_count,
 
+                first__corrected_sample__trials_count=\
+                    fr.corrected_sample.trials_count
             ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing
