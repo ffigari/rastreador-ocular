@@ -93,7 +93,8 @@ import os
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 ] + sys.path
-from raw_data_cooker import cook_target_results
+from first_instance.summary import FirstInstanceResults
+from second_instance.summary import SecondInstanceResults
 
 if __name__ == "__main__":
     with open('informe/resultados.tex') as input_file:
@@ -102,27 +103,13 @@ if __name__ == "__main__":
         if not os.path.exists('informe/build/results'):
             os.mkdir('informe/build/results')
         with open('informe/build/results/main.tex', "w") as output_file:
+            fr = FirstInstanceResults()
+            sr = SecondInstanceResults()
             output_file.write(input_file.read().format(
-                starting_sample_count_stats__trials_count___first=\
-                    cook_target_results(
-                    "starting_sample_count_stats.trials_count",
-                    "first"
-                    ),
-                starting_sample_count_stats__subjects_count___second=\
-                    cook_target_results(
-                    "starting_sample_count_stats.subjects_count",
-                    "second"
-                    ),
                 starting_sample_count_stats__subjects_count___first=\
-                    cook_target_results(
-                    "starting_sample_count_stats.subjects_count",
-                    "first"
-                    ),
-                inliering_sample_count_stats__trials_count___first=\
-                    cook_target_results(
-                    "inliering_sample_count_stats.trials_count",
-                    "first"
-                    )
+                    fr.starting_sample.subjects_count,
+                starting_sample_count_stats__subjects_count___second=\
+                    sr.starting_sample.subjects_count,
             ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing

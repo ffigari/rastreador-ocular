@@ -30,7 +30,8 @@ if modified:
 
 #####
 
-class SampleCountStats():
+
+class Sample():
     def __init__(self, ts):
         self.trials_count = len(ts)
         self.subjects_count = len(list(set([t['run_id'] for t in ts])))
@@ -38,10 +39,9 @@ class SampleCountStats():
 class FirstInstanceResults():
     def __init__(self):
         ts = mirror_trials(normalize(load_cleaned_up_trials()))
-        self.starting_sample_count_stats = SampleCountStats(ts)
+        self.starting_sample = Sample(ts)
 
         ts = drop_invalid_trials([t for t in ts if not t['outlier']])
-        self.inliering_sample_count_stats = SampleCountStats(ts)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
