@@ -28,15 +28,23 @@ if modified:
 
 #####
 
+from statistics import mean, stdev
+
 
 #####
 
 
 class Sample():
     def __init__(self, ts):
-        # There is no guarantee that ts won't get modifications
         self.trials_count = len(ts)
         self.subjects_count = len(list(set([t['run_id'] for t in ts])))
+
+class WithResponseSample(Sample):
+    def __init__(self, ts):
+        super().__init__(ts)
+        rts = [t['reaction_time'] for t in ts]
+        self.mean_response_time = int(mean(rts))
+        self.stdev_response_time = int(stdev(rts))
 
 def read_normalized_data():
     return mirror_trials(normalize(load_cleaned_up_trials()))
@@ -107,8 +115,8 @@ class FirstInstanceResults():
         without_response_ts, correct_ts, incorrect_ts = \
             look_for_response(inlier_ts)
         self.without_response_sample = Sample(without_response_ts)
-        self.correct_sample = Sample(correct_ts)
-        self.incorrect_sample = Sample(incorrect_ts)
+        self.correct_sample = WithResponseSample(correct_ts)
+        self.incorrect_sample = WithResponseSample(incorrect_ts)
 
         for t in incorrect_ts:
             t['subject_corrected_side'] = False
@@ -121,7 +129,7 @@ class FirstInstanceResults():
                 t['correction_reaction_time'] = e['t']
                 break
         corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
-        self.corrected_sample = Sample(corrected_ts)
+        self.corrected_sample = WithResponseSample(corrected_ts)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando

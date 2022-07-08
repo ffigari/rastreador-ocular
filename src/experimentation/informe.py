@@ -127,7 +127,17 @@ if __name__ == "__main__":
                     fr.incorrect_sample.trials_count,
 
                 first__corrected_sample__trials_count=\
-                    fr.corrected_sample.trials_count
+                    fr.corrected_sample.trials_count,
+
+                first__correct_sample__mean_response_time=\
+                    fr.correct_sample.mean_response_time,
+                first__correct_sample__stdev_response_time=\
+                    fr.correct_sample.stdev_response_time,
+
+                first__incorrect_sample__stdev_response_time=\
+                    fr.incorrect_sample.stdev_response_time,
+                first__incorrect_sample__mean_response_time=\
+                    fr.incorrect_sample.mean_response_time
             ).strip('\n'))
 
 # TODO: Delete this content below as it gets reused for re-writing

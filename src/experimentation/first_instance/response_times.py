@@ -269,8 +269,8 @@ if __name__ == "__main__":
     según tipo y tiempo de respuesta""")
     plt.show()
 
-    correct_response_times = [t['reaction_time'] for t in correct_trials]
-    incorrect_response_times = [t['reaction_time'] for t in incorrect_trials]
+    # correct_response_times = [t['reaction_time'] for t in correct_trials]
+    # incorrect_response_times = [t['reaction_time'] for t in incorrect_trials]
     print("""tiempo de respuesta
     tipo  | correcto | incorrecto
     mean  | %f | %f

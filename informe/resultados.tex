@@ -20,19 +20,18 @@ De estos, {first__correct_sample__trials_count} obtuvieron respuesta correcta,
 De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
 una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
 al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
-
-# TODO: Calcular tiempos promedio de respuesta + std
-
 Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
-incorrectas (promedio ± desvio std: Correctas = 484 ms ± 118 ms; Incorrectas =
-356 ms ± 114 ms).
+incorrectas (promedio $\pm$ desvio std: Correctas $=$ 
+{first__correct_sample__mean_response_time} ms $\pm$ 
+{first__correct_sample__stdev_response_time}; Incorrectas $=$
+{first__incorrect_sample__mean_response_time} ms $\pm$
+{first__incorrect_sample__stdev_response_time}).
 
-# TODO: Figura distribución de las edades
+% TODO: Figura distribución de las edades
+% TODO: Figura antisacadas desagregadas
+% TODO: Figura distribución de RTs
 
-# TODO: Figura antisacadas desagregadas
-
-
-\subsubsection{{Estimaciones desviadas}}
+\subsubsection{{Estimaciones desviadas}} \label{{section:results:skewed_estimates}}
 
 Se encontró que para varios sujetos las estimaciones obtenidas por el prototipo
 sobre el eje horizontal no coincidían con las posiciones reales de la mirada.
@@ -54,8 +53,8 @@ momento de normalizar los datos. Asimismo, el hecho que se mantuviera el
 correcto posicionamiento relativo dió lugar al mecanismo de validación
 implementado.
 
-# TODO: Va a ser más claro terminar de explicar el resumen de los tiempos de
-        respuesta antes de comentar lo de las estimaciones desviadas
+% TODO: Va a ser más claro terminar de explicar el resumen de los tiempos de
+%       respuesta antes de comentar lo de las estimaciones desviadas
 
 
 
