@@ -54,7 +54,7 @@ main code.
 There _might_ be some events' timing issues which prevent the playground from
 starting up some times.
 
-## Experimentation
+## Experimentation / Report
 
 Python env setup:
 ```sh
@@ -66,3 +66,7 @@ pip install -r requirements.txt
 Usage:
 - `python src/experimentation/informe.py`: Print report.
 - `python src/experimentation/raw_data_cooker.py`: Create specific resources.
+
+The report is stored inside `./informe/`.
+`{ ... }` have to be escaped to `{{ ... }}`.
+Otherwise the signal a value from the results.

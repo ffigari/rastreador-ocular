@@ -106,6 +106,8 @@ if __name__ == "__main__":
             fr = FirstInstanceResults()
             sr = SecondInstanceResults()
             output_file.write(input_file.read().format(
+                starting_sample_count_stats__trials_count___first=\
+                    fr.starting_sample.trials_count,
                 starting_sample_count_stats__subjects_count___first=\
                     fr.starting_sample.subjects_count,
                 starting_sample_count_stats__subjects_count___second=\

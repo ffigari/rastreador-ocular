@@ -6,10 +6,58 @@ En una primera instancia se consideraron únicamente antisacadas (N =
 instancia se incluyeron tanto antisacadas como prosacadas (N =
 {starting_sample_count_stats__subjects_count___second} sujetos).
 
-\footnote{{asd; \textit{{italic}}}}
 \subsection{{Primera instancia}}
 
+En la primera instancia se realizaron únicamente antisacadas. Se obtuvieron un
+total de {starting_sample_count_stats__trials_count___first} ensayos
+provenientes de {starting_sample_count_stats__subjects_count___first} sujetos.
 
+# TODO: Figura distribución de las edades
+
+# TODO: Figura antisacadas desagregadas
+
+\subsubsection{{Estimaciones desviadas}}
+
+# TODO: Mover los valores citados en la prosa a dentro de las figuras
+        Dsp usar la figura como cita al hacer una afirmación
+        Esto va a lograr que naturalmente los valores citados sean valores
+        calculables
+
+Se encontró que para varios sujetos las estimaciones obtenidas por el prototipo
+sobre el eje horizontal no coincidían con las posiciones reales de la mirada.
+En cambio para cada uno de estos sujetos se detectó una desviación de sus
+estimaciones durante todo el experimento.
+La Figura \ref{fig:skewed-estimations-example} ilustra este fenómeno:
+durante la fase de fijación para los sujetos 47 y 24 se obtienen estimaciones
+respectivamente cercanas a los valores 2100 y 1400 píxeles, cuando los valores
+reales serían 1100 y 900.
+Esto no ocurre para todos los sujetos, como puede verse con los sujetos 43 y 22.
+
+Para cada sujeto las estimaciones obtenidas son sin embargo consistentes en
+cuánto a su desviación. Si bien los valores obtenidos no coinciden con las
+coordenadas reales de los estímulos, sí se mantendrá el posicionamiento
+relativo de las estimaciones durante la duración del experimento. Entonces, es
+posible continuar identificando las regiones de interés (izquierda, centro y
+derecha) del experimento. Estas desviaciones tuvieron que tenerse en cuenta al
+momento de normalizar los datos. Asimismo, el hecho que se mantuviera el
+correcto posicionamiento relativo dió lugar al mecanismo de validación
+implementado.
+
+\subsubsection{{Tiempos de respuesta}}
+
+De los ensayos con respuesta, 555 obtuvieron respuesta correcta y 139 respuesta
+incorrecta.
+103 de las 139 respuestas incorrectas tuvieron una sacada correctiva antes del
+fin del ensayo, es decir que tras mirar al punto incorrecto, corrigió y realizó
+una sacada hacia el punto correcto.
+Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
+incorrectas (promedio ± desvio std: Correctas = 484 ms ± 118 ms; Incorrectas =
+356 ms ± 114 ms).
+
+
+
+examples below here
+\footnote{{asd; \textit{{italic}}}}
 \begin{{figure}}
     \centering
     \includegraphics[width=0.4\linewidth]{{media/calibration-stimulus-left.png}}
