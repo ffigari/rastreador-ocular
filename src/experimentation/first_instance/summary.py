@@ -28,7 +28,10 @@ if modified:
 
 ###
 
+import os
 import matplotlib.pyplot as plt
+
+from shared.main import rm_rf
 
 class Figure():
     def __init__(self, build_path, logical_path, figure_name):
@@ -50,6 +53,7 @@ class Figure():
             "{}/{}".format(self.logical_path, output_file_name)
 
         fig = self.render()
+        rm_rf(output_file_build_path)
         fig.savefig(output_file_build_path, format=output_format)
         plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
 
@@ -58,6 +62,7 @@ class Figure():
 class AgesDistributionFigure(Figure):
     def __init__(self, *args):
         super().__init__(*args, "ages_distribution")
+        self.comment = "% TODO: Write a comment about ages distribution"
 
     def render(self):
         fig, _ = plt.subplots()
@@ -72,7 +77,6 @@ from statistics import mean, stdev
 
 
 #####
-
 
 class Sample():
     def __init__(self, ts):

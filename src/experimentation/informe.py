@@ -87,24 +87,13 @@ def plot_descriptive_histograms(instances, target, scope):
 
 ###
 
-import os
-import shutil
-
-# https://stackoverflow.com/a/9559881/2923526
-def rm_rf(path):
-    if os.path.isdir(path) and not os.path.islink(path):
-        shutil.rmtree(path)
-    elif os.path.exists(path):
-        os.remove(path)
-
-###
-
 import sys
 import os
 
-sys.path = [
-    '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
-] + sys.path
+sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'] + sys.path
+
+from shared.main import rm_rf
+
 from first_instance.summary import FirstInstanceResults
 from second_instance.summary import SecondInstanceResults
 
@@ -142,6 +131,7 @@ if __name__ == "__main__":
                 "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
                 "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
                 "first__ages_distribution_figure__logical_path": fr.ages_distribution_figure.export_to_file(),
+                "first__ages_distribution_figure__comment": fr.ages_distribution_figure.comment,
             }
             output_file.write(input_file.read().format(**tex_context).strip('\n'))
 
