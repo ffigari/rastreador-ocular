@@ -26,6 +26,46 @@ from common.parsing import parse_parsing_callbacks
 if modified:
     sys.path = sys_path_before
 
+###
+
+import matplotlib.pyplot as plt
+
+class Figure():
+    def __init__(self, build_path, logical_path, figure_name):
+        self.build_path = build_path
+        self.logical_path = logical_path
+        self.figure_name = figure_name
+
+    def render(self):
+        raise NotImplementedError(
+            'Children of `Figure` need to implement `render` method')
+
+    def export_to_file(self):
+        output_format = "png"
+        output_file_name = \
+            "{}.{}".format(self.figure_name, output_format)
+        output_file_build_path = \
+            "{}/{}".format(self.build_path, output_file_name)
+        output_file_logical_path = \
+            "{}/{}".format(self.logical_path, output_file_name)
+
+        fig = self.render()
+        fig.savefig(output_file_build_path, format=output_format)
+        plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+
+        return output_file_logical_path
+
+class AgesDistributionFigure(Figure):
+    def __init__(self, *args):
+        super().__init__(*args, "ages_distribution")
+
+    def render(self):
+        fig, _ = plt.subplots()
+        fig.suptitle('istribución de edades')
+        # TODO
+        return fig
+
+
 #####
 
 from statistics import mean, stdev
@@ -104,7 +144,7 @@ def look_for_response(inlier_ts):
     return without_response_ts, correct_ts, incorrect_ts
 
 class FirstInstanceResults():
-    def __init__(self):
+    def __init__(self, results_build_path, results_logical_path):
         starting_ts = read_normalized_data()
         self.starting_sample = Sample(starting_ts)
         
@@ -131,6 +171,9 @@ class FirstInstanceResults():
                 break
         corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
         self.corrected_sample = WithResponseSample(corrected_ts)
+
+        self.ages_distribution_figure = \
+            AgesDistributionFigure(results_build_path, results_logical_path)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
