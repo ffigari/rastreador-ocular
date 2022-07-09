@@ -63,6 +63,7 @@ class AgesDistributionFigure(Figure):
     def __init__(self, *args):
         super().__init__(*args, "ages_distribution")
         self.comment = "% TODO: Write a comment about ages distribution"
+        self.title = "Distribución de edades"
 
     def render(self):
         fig, _ = plt.subplots()

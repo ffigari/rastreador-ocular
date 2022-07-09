@@ -131,6 +131,7 @@ if __name__ == "__main__":
                 "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
                 "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
                 "first__ages_distribution_figure__logical_path": fr.ages_distribution_figure.export_to_file(),
+                "first__ages_distribution_figure__title": fr.ages_distribution_figure.title,
                 "first__ages_distribution_figure__comment": fr.ages_distribution_figure.comment,
             }
             output_file.write(input_file.read().format(**tex_context).strip('\n'))
