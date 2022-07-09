@@ -123,13 +123,14 @@ if __name__ == "__main__":
         results_build_path = "informe/build/results"
         results_logical_path = "/content/results"
         fr = FirstInstanceResults(results_build_path, results_logical_path)
-        sr = SecondInstanceResults()
+        # TODO: Abstrat API from FirstInstanceResults to implement SecondInstanceResults
+        # sr = SecondInstanceResults()
 
         with open(main_path, "w") as output_file:
             tex_context = {
                 "first__starting_sample__trials_count": fr.starting_sample.trials_count,
                 "first__starting_sample__subjects_count": fr.starting_sample.subjects_count,
-                "second__starting_sample__subjects_count": sr.starting_sample.subjects_count,
+                "second__starting_sample__subjects_count": 'TODO',  #sr.starting_sample.subjects_count,
                 "first__inlier_sample__trials_count": fr.inlier_sample.trials_count,
                 "first__inlier_sample__subjects_count": fr.inlier_sample.subjects_count,
                 "first__without_response_sample__trials_count": fr.without_response_sample.trials_count,
