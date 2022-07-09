@@ -101,18 +101,41 @@ def rm_rf(path):
 
 import matplotlib.pyplot as plt
 
-def export_figure_to_file(build_path, logical_path, figure_name, figure):
-    output_format = "png"
-    output_file_name = "{}.{}".format(figure_name, output_format)
-    output_file_build_path ="{}/{}".format(build_path, output_file_name)
-    fig = figure.render()
-    fig.savefig(output_file_build_path, format=output_format)
-    plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
-    return "{}/{}".format(logical_path, output_file_name)
-
 class Figure():
+    def __init__(self, build_path, logical_path, figure_name):
+        self.build_path = build_path
+        self.logical_path = logical_path
+        self.figure_name = figure_name
+
     def render(self):
-        raise NotImplementedError('Child of `Figure` did not implement `render` methods')
+        raise NotImplementedError(
+            'Children of `Figure` need to implement `render` method')
+
+    def export_to_file(self):
+        output_format = "png"
+        output_file_name = \
+            "{}.{}".format(self.figure_name, output_format)
+        output_file_build_path = \
+            "{}/{}".format(self.build_path, output_file_name)
+        output_file_logical_path = \
+            "{}/{}".format(self.logical_path, output_file_name)
+
+        fig = self.render()
+        fig.savefig(output_file_build_path, format=output_format)
+        plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+
+        return output_file_logical_path
+
+class AgesDistributionFigure(Figure):
+    def __init__(self, *args):
+        super().__init__(*args, "ges_distribution")
+
+    def render(self):
+        fig, _ = plt.subplots()
+        fig.suptitle('istribución de edades')
+        # TODO
+        return fig
+
 ###
 
 import sys
@@ -141,17 +164,8 @@ if __name__ == "__main__":
 
         results_build_path = "informe/build/results"
         results_logical_path = "/content/results"
-        class AgesDistributionFigure(Figure):
-            def __init__(self):
-                super().__init__()
-
-            def render(self):
-                fig, _ = plt.subplots()
-                fig.suptitle('istribución de edades')
-                # TODO
-                return fig
-
-        ages_distribution_figure = AgesDistributionFigure()
+        ages_distribution_figure = \
+            AgesDistributionFigure(results_build_path, results_logical_path)
         with open(main_path, "w") as output_file:
             tex_context = {
                 "first__starting_sample__trials_count": fr.starting_sample.trials_count,
@@ -167,11 +181,7 @@ if __name__ == "__main__":
                 "first__correct_sample__stdev_response_time": fr.correct_sample.stdev_response_time,
                 "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
                 "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
-                "first__image_path__ages_distribution": export_figure_to_file(
-                    results_build_path,
-                    results_logical_path,
-                    "ages_distribution",
-                    ages_distribution_figure),
+                "first__image_path__ages_distribution": ages_distribution_figure.export_to_file(),
             }
             output_file.write(input_file.read().format(**tex_context).strip('\n'))
 
