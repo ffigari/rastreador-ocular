@@ -107,6 +107,7 @@ class FirstInstanceResults():
     def __init__(self):
         starting_ts = read_normalized_data()
         self.starting_sample = Sample(starting_ts)
+        
 
         outlier_ts, inlier_ts = \
             process_starting_sample(starting_ts)
