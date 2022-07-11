@@ -87,6 +87,48 @@ def plot_descriptive_histograms(instances, target, scope):
 
 ###
 
+# TODO: There should be a module `results` containing both raw data parsing
+#       and metrics extraction logic is stored
+#       Beyond that point no assumptions should be made regarding from which
+#       instance the data originated from
+
+class Results():
+    def __init__(self, input_file):
+        fr = FirstInstanceResults()
+        self.main_tex_context = {
+            "first__starting_sample__trials_count": fr.starting_sample.trials_count,
+            "first__starting_sample__subjects_count": fr.starting_sample.subjects_count,
+            "second__starting_sample__subjects_count": 'TODO',  #sr.starting_sample.subjects_count,
+            "first__inlier_sample__trials_count": fr.inlier_sample.trials_count,
+            "first__inlier_sample__subjects_count": fr.inlier_sample.subjects_count,
+            "first__without_response_sample__trials_count": fr.without_response_sample.trials_count,
+            "first__correct_sample__trials_count": fr.correct_sample.trials_count,
+            "first__incorrect_sample__trials_count": fr.incorrect_sample.trials_count,
+            "first__corrected_sample__trials_count": fr.corrected_sample.trials_count,
+            "first__correct_sample__mean_response_time": fr.correct_sample.mean_response_time,
+            "first__correct_sample__stdev_response_time": fr.correct_sample.stdev_response_time,
+            "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
+            "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
+        }
+        self.results_figures_tex_strings = {
+                "first__ages_distribution_figure": \
+                    fr.ages_distribution_figure.as_tex_string(
+                        results_build_path,
+                        results_logical_path
+                    )
+            }
+
+
+    def as_tex_string(self, results_build_path, results_logical_path):
+        return input_file.read().format(
+            **self.main_tex_context,
+            **self.results_figures_tex_strings
+        ).strip('\n')
+
+        
+
+###
+
 import sys
 import os
 
@@ -96,6 +138,8 @@ from shared.main import rm_rf
 
 from first_instance.summary import FirstInstanceResults
 from second_instance.summary import SecondInstanceResults
+
+
 
 if __name__ == "__main__":
     build_path = 'informe/build'
@@ -111,30 +155,12 @@ if __name__ == "__main__":
 
         results_build_path = "informe/build/results"
         results_logical_path = "/content/results"
-        fr = FirstInstanceResults(results_build_path, results_logical_path)
-        # TODO: Abstrat API from FirstInstanceResults to implement SecondInstanceResults
-        # sr = SecondInstanceResults()
 
+        r = Results(input_file)
         with open(main_path, "w") as output_file:
-            tex_context = {
-                "first__starting_sample__trials_count": fr.starting_sample.trials_count,
-                "first__starting_sample__subjects_count": fr.starting_sample.subjects_count,
-                "second__starting_sample__subjects_count": 'TODO',  #sr.starting_sample.subjects_count,
-                "first__inlier_sample__trials_count": fr.inlier_sample.trials_count,
-                "first__inlier_sample__subjects_count": fr.inlier_sample.subjects_count,
-                "first__without_response_sample__trials_count": fr.without_response_sample.trials_count,
-                "first__correct_sample__trials_count": fr.correct_sample.trials_count,
-                "first__incorrect_sample__trials_count": fr.incorrect_sample.trials_count,
-                "first__corrected_sample__trials_count": fr.corrected_sample.trials_count,
-                "first__correct_sample__mean_response_time": fr.correct_sample.mean_response_time,
-                "first__correct_sample__stdev_response_time": fr.correct_sample.stdev_response_time,
-                "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
-                "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
-                "first__ages_distribution_figure__logical_path": fr.ages_distribution_figure.export_to_file(),
-                "first__ages_distribution_figure__title": fr.ages_distribution_figure.title,
-                "first__ages_distribution_figure__comment": fr.ages_distribution_figure.comment,
-            }
-            output_file.write(input_file.read().format(**tex_context).strip('\n'))
+            output_file.write(r.as_tex_string(
+                results_build_path,
+                results_logical_path))
 
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:

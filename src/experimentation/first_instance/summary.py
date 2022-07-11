@@ -34,23 +34,21 @@ import matplotlib.pyplot as plt
 from shared.main import rm_rf
 
 class Figure():
-    def __init__(self, build_path, logical_path, figure_name):
-        self.build_path = build_path
-        self.logical_path = logical_path
+    def __init__(self, figure_name):
         self.figure_name = figure_name
 
     def render(self):
         raise NotImplementedError(
             'Children of `Figure` need to implement `render` method')
 
-    def export_to_file(self):
+    def export_to_file(self, build_path, logical_path):
         output_format = "png"
         output_file_name = \
             "{}.{}".format(self.figure_name, output_format)
         output_file_build_path = \
-            "{}/{}".format(self.build_path, output_file_name)
+            "{}/{}".format(build_path, output_file_name)
         output_file_logical_path = \
-            "{}/{}".format(self.logical_path, output_file_name)
+            "{}/{}".format(logical_path, output_file_name)
 
         fig = self.render()
         rm_rf(output_file_build_path)
@@ -68,8 +66,25 @@ class AgesDistributionFigure(Figure):
     def render(self):
         fig, _ = plt.subplots()
         fig.suptitle('istribución de edades')
-        # TODO
+        raise NotImplementedError("AgesDistributionFigure.render")
         return fig
+
+    def as_tex_string(self, build_path, logical_path):
+        logical_path = self.export_to_file(build_path, logical_path)
+        return """
+            \\begin{{figure}}
+                \\centering
+                \\includegraphics[width=0.4\\linewidth]{{{logical_path}}}
+                \\caption{{{title}}}
+                {comment}
+                % TODO: Abstratct label
+                \\label{{fig:results:ages-distribution}}
+            \\end{{figure}}
+        """.format(**{
+            "logical_path": logical_path,
+            "title": self.title,
+            "comment": self.comment
+        })
 
 
 #####
@@ -149,7 +164,7 @@ def look_for_response(inlier_ts):
     return without_response_ts, correct_ts, incorrect_ts
 
 class FirstInstanceResults():
-    def __init__(self, results_build_path, results_logical_path):
+    def __init__(self):
         starting_ts = read_normalized_data()
         self.starting_sample = Sample(starting_ts)
         
@@ -177,8 +192,7 @@ class FirstInstanceResults():
         corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
         self.corrected_sample = WithResponseSample(corrected_ts)
 
-        self.ages_distribution_figure = \
-            AgesDistributionFigure(results_build_path, results_logical_path)
+        self.ages_distribution_figure = AgesDistributionFigure()
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
