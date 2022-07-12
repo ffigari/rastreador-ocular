@@ -71,6 +71,7 @@ def plot_sampling_frequencies(frequencies):
     ax2.legend()
     plt.show()
 
+##
 def plot_ages(ages):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
     fig.suptitle('Distribución de edades')
@@ -83,6 +84,7 @@ def plot_ages(ages):
     for ax in [ax1, ax2]:
         ax.legend()
     plt.show()
+    return fig
 
 def plot_widths(widths):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)

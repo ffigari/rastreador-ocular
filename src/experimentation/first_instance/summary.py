@@ -58,15 +58,14 @@ class Figure():
         return output_file_logical_path
 
 class AgesDistributionFigure(Figure):
-    def __init__(self, *args):
-        super().__init__(*args, "ages_distribution")
+    def __init__(self, ages):
+        super().__init__("ages_distribution")
         self.comment = "% TODO: Write a comment about ages distribution"
         self.title = "Distribución de edades"
+        self.ages = ages
 
     def render(self):
-        fig, _ = plt.subplots()
-        fig.suptitle('istribución de edades')
-        raise NotImplementedError("AgesDistributionFigure.render")
+        fig = plot_ages(self.ages)
         return fig
 
     def as_tex_string(self, build_path, logical_path):
@@ -192,7 +191,26 @@ class FirstInstanceResults():
         corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
         self.corrected_sample = WithResponseSample(corrected_ts)
 
-        self.ages_distribution_figure = AgesDistributionFigure()
+        frequencies, ages, widths = [], [], []
+        for kept, ts in [(True, inlier_ts), (False, outlier_ts)]:
+            for t in ts:
+                frequencies.append({
+                    'frequency': t['original_sampling_frecuency_in_hz'],
+                    'run_id': t['run_id'],
+                    'kept': kept,
+                })
+                ages.append({
+                    'age': int(t['subject_data']['edad']),
+                    'run_id': t['run_id'],
+                    'kept': kept,
+                })
+                widths.append({
+                    'width': t['inner_width'],
+                    'run_id': t['run_id'],
+                    'kept': kept,
+                })
+
+        self.ages_distribution_figure = AgesDistributionFigure(ages)
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
@@ -202,24 +220,6 @@ def parse_first_instance(cbs=None):
 
 
 
-    frequencies, ages, widths = [], [], []
-    for kept, ts in [(True, inlier_ts), (False, dropped_trials)]:
-        for t in ts:
-            frequencies.append({
-                'frequency': t['original_sampling_frecuency_in_hz'],
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
-            ages.append({
-                'age': int(t['subject_data']['edad']),
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
-            widths.append({
-                'width': t['inner_width'],
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
 
     post_filtering_metrics = dict()
     post_filtering_metrics['frequencies'] = frequencies
