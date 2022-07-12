@@ -9,6 +9,7 @@ from main import drop_runs_without_enough
 from utils.parsing import parse_trials
 from utils.cleaning import clean
 from utils.trials_collection import TrialsCollection
+from common.main import Instance
 from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
@@ -24,7 +25,7 @@ class Sample():
         self.trials_count = ts.count
         self.subjects_count = ts.runs_count
 
-class SecondInstanceResults():
+class SecondInstance(Instance):
     def __init__(self):
         ts, counts_per_run = parse_trials()
         self.starting_sample = Sample(ts)

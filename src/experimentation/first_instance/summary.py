@@ -1,13 +1,5 @@
-# TODO: Rename file to cooking_tools.py
-import sys, os
-unwanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
-wanted='/home/francisco/eye-tracking/rastreador-ocular/src/experimentation/first_instance'
-modified = False
-if unwanted in sys.path:
-    modified = True
-    sys_path_before = list(sys.path)
-    sys.path.remove(unwanted)
-    sys.path = [wanted] + sys.path
+import sys
+sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation/first_instance'] + sys.path
 
 from utils.main import load_cleaned_up_trials
 from utils.normalize import normalize
@@ -16,14 +8,12 @@ from response_times import mirror_trials
 from response_times import compute_correcteness_in_place
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from constants import POST_NORMALIZATION_REACTION_TRESHOLD
+from common.main import Instance
 from common.plots import plot_sampling_frequencies
 from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
 from common.plots import plot_responses_times_distributions
-
-if modified:
-    sys.path = sys_path_before
 
 ###
 
@@ -192,7 +182,7 @@ def look_for_response(inlier_ts):
     ]
     return without_response_ts, correct_ts, incorrect_ts
 
-class FirstInstanceResults():
+class FirstInstance(Instance):
     def __init__(self):
         starting_ts = read_normalized_data()
         self.starting_sample = Sample(starting_ts)
@@ -257,3 +247,19 @@ class FirstInstanceResults():
         }
         self.response_times_distribution_figure = ResponseTimesDistributionFigure(saccades)
         self.disaggregated_antisaccades_figure = DisaggregatedAntisaccadesFigure(saccades)
+
+    def build_tex_context(self):
+        return {
+            "first__starting_sample__trials_count": self.starting_sample.trials_count,
+            "first__starting_sample__subjects_count": self.starting_sample.subjects_count,
+            "first__inlier_sample__trials_count": self.inlier_sample.trials_count,
+            "first__inlier_sample__subjects_count": self.inlier_sample.subjects_count,
+            "first__without_response_sample__trials_count": self.without_response_sample.trials_count,
+            "first__correct_sample__trials_count": self.correct_sample.trials_count,
+            "first__incorrect_sample__trials_count": self.incorrect_sample.trials_count,
+            "first__corrected_sample__trials_count": self.corrected_sample.trials_count,
+            "first__correct_sample__mean_response_time": self.correct_sample.mean_response_time,
+            "first__correct_sample__stdev_response_time": self.correct_sample.stdev_response_time,
+            "first__incorrect_sample__stdev_response_time": self.incorrect_sample.stdev_response_time,
+            "first__incorrect_sample__mean_response_time": self.incorrect_sample.mean_response_time,
+        }

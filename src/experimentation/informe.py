@@ -85,40 +85,29 @@ def plot_descriptive_histograms(instances, target, scope):
 
 ###
 
-# TODO: There should be a module `results` containing both raw data parsing
-#       and metrics extraction logic is stored
-#       Beyond that point no assumptions should be made regarding from which
-#       instance the data originated from
+import sys
+sys.path = [
+    '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation',
+] + sys.path
+from first_instance.summary import FirstInstance
+from second_instance.summary import SecondInstance
 
 class Results():
     def __init__(self, input_file):
-        fr = FirstInstanceResults()
-        self.main_tex_context = {
-            "first__starting_sample__trials_count": fr.starting_sample.trials_count,
-            "first__starting_sample__subjects_count": fr.starting_sample.subjects_count,
-            "second__starting_sample__subjects_count": 'TODO',  #sr.starting_sample.subjects_count,
-            "first__inlier_sample__trials_count": fr.inlier_sample.trials_count,
-            "first__inlier_sample__subjects_count": fr.inlier_sample.subjects_count,
-            "first__without_response_sample__trials_count": fr.without_response_sample.trials_count,
-            "first__correct_sample__trials_count": fr.correct_sample.trials_count,
-            "first__incorrect_sample__trials_count": fr.incorrect_sample.trials_count,
-            "first__corrected_sample__trials_count": fr.corrected_sample.trials_count,
-            "first__correct_sample__mean_response_time": fr.correct_sample.mean_response_time,
-            "first__correct_sample__stdev_response_time": fr.correct_sample.stdev_response_time,
-            "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
-            "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
-        }
+        first_instance = FirstInstance()
+        self.first_instance_context = first_instance.build_tex_context()
         self.figures = dict([
-            ("first__ages_distribution_figure", fr.ages_distribution_figure),
-            ("first__response_times_distribution_figure", fr.response_times_distribution_figure),
-            ("first__disaggregated_antisaccades_figure", fr.disaggregated_antisaccades_figure)
-
+            ("first__ages_distribution_figure", first_instance.ages_distribution_figure),
+            ("first__response_times_distribution_figure", first_instance.response_times_distribution_figure),
+            ("first__disaggregated_antisaccades_figure", first_instance.disaggregated_antisaccades_figure)
         ])
+
+        
 
 
     def as_tex_string(self, build_path, logical_path):
         return input_file.read().format(
-            **self.main_tex_context,
+            **self.first_instance_context,
             **dict([
                 (n, f.as_tex_string(build_path, logical_path))
                 for n, f
@@ -139,9 +128,6 @@ import os
 sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'] + sys.path
 
 from shared.main import rm_rf
-
-from first_instance.summary import FirstInstanceResults
-from second_instance.summary import SecondInstanceResults
 
 if __name__ == "__main__":
     build_path = 'informe/build'
