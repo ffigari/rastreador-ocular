@@ -18,24 +18,24 @@ def subject_did_not_focus_fixation_marker(t):
     return not estimates_are_centered([
         e['x']
         for e
-        in t['estimations']
-        if t['fixation_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS <= e['t'] <= t['mid_start']
+        in t.estimations
+        if t.fixation_start + MINIMUM_TIME_FOR_SACCADE_IN_MS <= e['t'] <= t.mid_start
     ])
 
 def subject_got_distracted(t):
     return not estimates_are_centered([
         e['x']
         for e
-        in t['estimations']
-        if t['mid_start'] <= e['t'] <= t['cue_start']
+        in t.estimations
+        if t.mid_start <= e['t'] <= t.cue_start
     ])
 
 def subject_reacted_too_quickly(t):
     return not estimates_are_centered([
         e['x']
         for e
-        in t['estimations']
-        if t['cue_start'] <= e['t'] <= t['cue_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS
+        in t.estimations
+        if t.cue_start <= e['t'] <= t.cue_start + MINIMUM_TIME_FOR_SACCADE_IN_MS
     ])
 
 def divide_trials(trials):
@@ -68,15 +68,15 @@ def mirror_trials(trials):
 
 def compute_correcteness_in_place(trials):
     for t in trials:
-        t['subject_reacted'] = False
-        for e in t['estimations']:
-            if e['t'] < t['cue_start'] + MINIMUM_TIME_FOR_SACCADE_IN_MS:
+        t.subject_reacted = False
+        for e in t.estimations:
+            if e['t'] < t.cue_start + MINIMUM_TIME_FOR_SACCADE_IN_MS:
                 continue
             if abs(e['x']) < POST_NORMALIZATION_REACTION_TRESHOLD:
                 continue
-            t['subject_reacted'] = True
-            t['reaction_time'] = e['t']
-            t['correct_reaction'] = e['x'] < 0
+            t.subject_reacted = True
+            t.reaction_time = e['t']
+            t.correct_reaction = e['x'] < 0
             break
 
 if __name__ == "__main__":

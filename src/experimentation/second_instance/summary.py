@@ -26,11 +26,19 @@ class Sample():
         self.subjects_count = ts.runs_count
 
 class SecondInstance(Instance):
-    def __init__(self):
+    def load_data(self):
         ts, counts_per_run = parse_trials()
-        self.starting_sample = Sample(ts)
+        # TODO: Conver ts to appropiate format
+        return ts
 
+    def __init__(self):
+        super().__init__()
 
+    def build_tex_context(self):
+        return {
+            "second__starting_sample__trials_count": 'TODO',
+            "second__starting_sample__subjects_count": 'TODO',
+        }
 
 def parse_second_instance(cbs=None):
     cbs = parse_parsing_callbacks(cbs)
