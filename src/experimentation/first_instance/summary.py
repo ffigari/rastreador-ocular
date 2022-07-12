@@ -59,9 +59,12 @@ class Figure():
 class AgesDistributionFigure(Figure):
     def __init__(self, ages):
         super().__init__("ages_distribution")
+
+        self.ages = ages
+
         self.comment = "% TODO: Write a comment about ages distribution"
         self.title = "Distribución de edades"
-        self.ages = ages
+        self.label = "fig:results:ages-distribution"
 
     def render(self):
         fig = plot_ages(self.ages)
@@ -75,13 +78,13 @@ class AgesDistributionFigure(Figure):
                 \\includegraphics[width=0.4\\linewidth]{{{logical_path}}}
                 \\caption{{{title}}}
                 {comment}
-                % TODO: Abstratct label
-                \\label{{fig:results:ages-distribution}}
+                \\label{{{label}}}
             \\end{{figure}}
         """.format(**{
             "logical_path": logical_path,
             "title": self.title,
-            "comment": self.comment
+            "comment": self.comment,
+            "label": self.label
         })
 
 

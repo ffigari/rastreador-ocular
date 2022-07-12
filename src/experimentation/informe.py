@@ -121,8 +121,12 @@ class Results():
             **dict([
                 (n, f.as_tex_string(build_path, logical_path))
                 for n, f
-                in self.figures.items()
-            ])).strip('\n')
+                in self.figures.items()]),
+            **dict([
+                ("{}__label".format(n), f.label)
+                for n, f
+                in self.figures.items()]),
+        ).strip('\n')
 
         
 
@@ -153,7 +157,7 @@ if __name__ == "__main__":
         main_path = 'informe/build/results/main.tex'
 
         results_build_path = "informe/build/results"
-        results_logical_path = "/results"
+        results_logical_path = "results"
 
         r = Results(input_file)
         with open(main_path, "w") as output_file:
