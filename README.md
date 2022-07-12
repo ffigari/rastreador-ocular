@@ -1,7 +1,7 @@
 # rastreador-ocular
 
-Rastoc is a study of browser based eye tracking's applicability in assisting the
-diagnosis of neuropsychological conditions.
+Rastoc is a study of browser based eye tracking's applicability to remote
+clinical studies.
 It built up from the ongoing research with
 [Juan Kamienkowski](https://liaa.dc.uba.ar/juan-kamienkowski/),
 [Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/) and
@@ -54,38 +54,20 @@ main code.
 There _might_ be some events' timing issues which prevent the playground from
 starting up some times.
 
-## Experientation
+### Python env setup
 
-To setup Python env:
 ```sh
 python -m venv py-env
 source py-env/bin/activate
 pip install -r requirements.txt
 ```  
+then `source py-env/bin/activate` each time you want to use it.
 
-Some of the maintained scripts:
-- informe: `src/experimentation/informe.py`
-- second instance:
-```
-# run instances common analysis
-python src/experimentation/second_instance/summary.py
-# view general reports
-python src/experimentation/second_instance/main.py
-# view instances of the saccades detection mechanism applied over individual
-# trials
-python src/experimentation/second_instance/saccade_detection.py
-```
-- first instance:
-```
-# run instances common analysis
-python src/experimentation/first_instance/summary.py
+## Experimentation / Report
 
-# view shifted estimations
-python src/experimentation/first_instance/shifted-estimations.py
-```
+The report is stored inside `./informe/`.
+`python src/experimentation/informe.py` will build it and store it inside
+`./informe/build/`.
 
-
-`src/short-antisaccades-results/` and `src/antisacadas-results/` respectively
-contain scripts to analyze the data obtained from the first and second
-experiment.
-You should be able to run them after setting up the python env.
+In the `./informe/*.tex` files, `{ ... }` have to be escaped to `{{ ... }}`.
+Otherwise `{ ... }` signals a value from the results.

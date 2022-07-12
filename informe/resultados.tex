@@ -1,0 +1,55 @@
+\section{{Resultados}}
+
+Como se mencionó anteriormente, se realizaron dos instancias de experimentación.
+En una primera instancia se consideraron únicamente antisacadas (N =
+{first__starting_sample__subjects_count} sujetos) y en una segunda
+instancia se incluyeron tanto antisacadas como prosacadas (N =
+{second__starting_sample__subjects_count} sujetos).
+
+\subsection{{Primera instancia}}
+
+En la primera instancia se realizaron únicamente antisacadas. Se obtuvieron un
+total de {first__starting_sample__trials_count} ensayos provenientes de
+{first__starting_sample__subjects_count} sujetos.
+Luego de aplicar el pre-procesamiento, la cantidad de ensayos se redujo a
+{first__inlier_sample__trials_count} provenientes de
+{first__inlier_sample__subjects_count} sujetos.
+De estos, {first__correct_sample__trials_count} obtuvieron respuesta correcta,
+{first__incorrect_sample__trials_count} obtuvieron respuesta incorrecta y
+{first__without_response_sample__trials_count} no obtuvieron respuesta.
+De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
+una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
+al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
+Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
+incorrectas (promedio $\pm$ desvio std: Correctas $=$ 
+{first__correct_sample__mean_response_time} ms $\pm$ 
+{first__correct_sample__stdev_response_time}; Incorrectas $=$
+{first__incorrect_sample__mean_response_time} ms $\pm$
+{first__incorrect_sample__stdev_response_time}).
+
+{first__ages_distribution_figure}
+
+% TODO: Figura antisacadas desagregadas
+% TODO: Figura distribución de RTs
+
+\subsubsection{{Estimaciones desviadas}} \label{{section:results:skewed_estimates}}
+
+Se encontró que para varios sujetos las estimaciones obtenidas por el prototipo
+sobre el eje horizontal no coincidían con las posiciones reales de la mirada.
+En cambio para cada uno de estos sujetos se detectó una desviación de sus
+estimaciones durante todo el experimento.
+La Figura \ref{{fig:skewed-estimations-example}} ilustra este fenómeno:
+durante la fase de fijación para los sujetos 47 y 24 se obtienen estimaciones
+respectivamente cercanas a los valores 2100 y 1400 píxeles, cuando los valores
+reales serían 1100 y 900.
+Esto no ocurre para todos los sujetos, como puede verse con los sujetos 43 y 22.
+
+Para cada sujeto las estimaciones obtenidas son sin embargo consistentes en
+cuánto a su desviación. Si bien los valores obtenidos no coinciden con las
+coordenadas reales de los estímulos, sí se mantendrá el posicionamiento
+relativo de las estimaciones durante la duración del experimento. Entonces, es
+posible continuar identificando las regiones de interés (izquierda, centro y
+derecha) del experimento. Estas desviaciones tuvieron que tenerse en cuenta al
+momento de normalizar los datos. Asimismo, el hecho que se mantuviera el
+correcto posicionamiento relativo dió lugar al mecanismo de validación
+implementado.

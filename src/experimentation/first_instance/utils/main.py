@@ -13,6 +13,7 @@ from utils.normalize import normalize
 run_id_regex = re.compile('short-antisaccades_(\d{1,3}).csv')
 empty_hardware_regex = re.compile('(\{.*),"hardware":"(\})')
 antisaccades_data_path = 'src/experimentation/first_instance/data'
+internal_id = 0
 def load_trials():
     trials = []
     for file_path in os.listdir(antisaccades_data_path):
@@ -82,7 +83,10 @@ def load_trials():
                     trial['fixation_duration'] + \
                     trial['mid_duration'] + \
                     trial['cue_duration']
+                global internal_id
+                internal_id += 1
                 formatted_trial = {
+                    "id": internal_id,
                     "subject_data": subject_data,
                     "run_id": run_id,
                     "trial_id": trial["trial_id"],
