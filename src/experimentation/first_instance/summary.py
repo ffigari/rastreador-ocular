@@ -21,7 +21,6 @@ from common.plots import plot_ages
 from common.plots import plot_widths
 from common.plots import plot_post_processing_trials
 from common.plots import plot_responses_times_distributions
-from common.parsing import parse_parsing_callbacks
 
 if modified:
     sys.path = sys_path_before
@@ -214,19 +213,7 @@ class FirstInstanceResults():
 
 # TODO: Volar este método
 #       En particular no preocuparse en que siga andando
-def parse_first_instance(cbs=None):
-    cbs = parse_parsing_callbacks(cbs)
-
-
-
-
-
-    post_filtering_metrics = dict()
-    post_filtering_metrics['frequencies'] = frequencies
-    post_filtering_metrics['ages'] = ages
-    post_filtering_metrics['widths'] = widths
-    cbs['after_filtering'](post_filtering_metrics)
-
+def parse_first_instance():
     # TODO: This will be needed to reuse plots later on
     correct_anti = [{
         'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
@@ -238,7 +225,6 @@ def parse_first_instance(cbs=None):
     } for t in trials if not t['correct_reaction']]
 
     return {
-        'post_filtering_metrics': post_filtering_metrics,
         'saccades': {
             'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
         }
@@ -248,12 +234,7 @@ def plot_first_post_processing_trials(saccades):
     plot_post_processing_trials(saccades['anti'], 'antisacadas')
 
 if __name__ == "__main__":
-    def after_filtering(post_filtering_metrics):
-        plot_sampling_frequencies(post_filtering_metrics['frequencies'])
-        plot_ages(post_filtering_metrics['ages'])
-        plot_widths(post_filtering_metrics['widths'])
-
-    instance = parse_first_instance({ 'after_filtering': after_filtering })
+    instance = parse_first_instance()
     saccades = instance['saccades']
     plot_first_post_processing_trials(saccades)
     plot_responses_times_distributions(saccades)

@@ -110,20 +110,19 @@ class Results():
             "first__incorrect_sample__stdev_response_time": fr.incorrect_sample.stdev_response_time,
             "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
         }
-        self.results_figures_tex_strings = {
-                "first__ages_distribution_figure": \
-                    fr.ages_distribution_figure.as_tex_string(
-                        results_build_path,
-                        results_logical_path
-                    )
-            }
+        self.figures = dict([
+            ("first__ages_distribution_figure", fr.ages_distribution_figure)
+        ])
 
 
-    def as_tex_string(self, results_build_path, results_logical_path):
+    def as_tex_string(self, build_path, logical_path):
         return input_file.read().format(
             **self.main_tex_context,
-            **self.results_figures_tex_strings
-        ).strip('\n')
+            **dict([
+                (n, f.as_tex_string(build_path, logical_path))
+                for n, f
+                in self.figures.items()
+            ])).strip('\n')
 
         
 
@@ -154,7 +153,7 @@ if __name__ == "__main__":
         main_path = 'informe/build/results/main.tex'
 
         results_build_path = "informe/build/results"
-        results_logical_path = "/content/results"
+        results_logical_path = "/results"
 
         r = Results(input_file)
         with open(main_path, "w") as output_file:

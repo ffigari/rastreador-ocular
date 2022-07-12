@@ -83,7 +83,6 @@ def plot_ages(ages):
     separated_hist(ax1, ax2, ages, 'age')
     for ax in [ax1, ax2]:
         ax.legend()
-    plt.show()
     return fig
 
 def plot_widths(widths):
