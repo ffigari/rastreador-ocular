@@ -5,8 +5,6 @@ from instances_common.plots import separated_hist
 from instances_common.plots import draw_sampling_frequecies_marks
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
-from first_instance.summary import parse_first_instance
-from first_instance.summary import plot_first_post_processing_trials
 from second_instance.summary import parse_second_instance
 from second_instance.summary import plot_second_post_processing_trials
 
@@ -111,7 +109,10 @@ class Results():
             "first__incorrect_sample__mean_response_time": fr.incorrect_sample.mean_response_time,
         }
         self.figures = dict([
-            ("first__ages_distribution_figure", fr.ages_distribution_figure)
+            ("first__ages_distribution_figure", fr.ages_distribution_figure),
+            ("first__response_times_distribution_figure", fr.response_times_distribution_figure),
+            ("first__disaggregated_antisaccades_figure", fr.disaggregated_antisaccades_figure)
+
         ])
 
 
@@ -141,8 +142,6 @@ from shared.main import rm_rf
 
 from first_instance.summary import FirstInstanceResults
 from second_instance.summary import SecondInstanceResults
-
-
 
 if __name__ == "__main__":
     build_path = 'informe/build'
@@ -200,10 +199,8 @@ if __name__ == "__main__":
 #
 #    instances = {}
 #    if scope == 'both':
-#        instances['first'] = parse_first_instance()
 #        instances['second'] = parse_second_instance()
 #    elif scope == 'first':
-#        instances['first'] = parse_first_instance()
 #    else:
 #        instances['second'] = parse_second_instance()
 #
@@ -213,7 +210,6 @@ if __name__ == "__main__":
 #        for name in instances.keys():
 #            saccades = instances[name]['saccades']
 #            if name == 'first':
-#                plot_first_post_processing_trials(saccades)
 #            elif name == 'second':
 #                plot_second_post_processing_trials(saccades)
 #    elif target == 'response_times_distribution':

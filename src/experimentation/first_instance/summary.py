@@ -33,14 +33,18 @@ import matplotlib.pyplot as plt
 from shared.main import rm_rf
 
 class Figure():
-    def __init__(self, figure_name):
+    def __init__(self, figure_name, title, label, comment):
         self.figure_name = figure_name
+        self.title = title
+        self.label = label
+        self.comment = comment
 
     def render(self):
         raise NotImplementedError(
             'Children of `Figure` need to implement `render` method')
 
-    def export_to_file(self, build_path, logical_path):
+    # This also builds the figure
+    def as_tex_string(self, build_path, logical_path):
         output_format = "png"
         output_file_name = \
             "{}.{}".format(self.figure_name, output_format)
@@ -53,39 +57,63 @@ class Figure():
         rm_rf(output_file_build_path)
         fig.savefig(output_file_build_path, format=output_format)
         plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+        
+        ctx = {
+            "logical_path": output_file_logical_path,
+            "label": self.label,
+            "comment": self.comment,
+            "title": self.title,
+        }
 
-        return output_file_logical_path
-
-class AgesDistributionFigure(Figure):
-    def __init__(self, ages):
-        super().__init__("ages_distribution")
-
-        self.ages = ages
-
-        self.comment = "% TODO: Write a comment about ages distribution"
-        self.title = "Distribución de edades"
-        self.label = "fig:results:ages-distribution"
-
-    def render(self):
-        fig = plot_ages(self.ages)
-        return fig
-
-    def as_tex_string(self, build_path, logical_path):
-        logical_path = self.export_to_file(build_path, logical_path)
         return """
             \\begin{{figure}}
                 \\centering
-                \\includegraphics[width=0.4\\linewidth]{{{logical_path}}}
+                \\includegraphics{{{logical_path}}}
                 \\caption{{{title}}}
                 {comment}
                 \\label{{{label}}}
             \\end{{figure}}
-        """.format(**{
-            "logical_path": logical_path,
-            "title": self.title,
-            "comment": self.comment,
-            "label": self.label
-        })
+        """.format(**ctx)
+
+class ResponseTimesDistributionFigure(Figure):
+    def __init__(self, saccades):
+        super().__init__ ("response_time_distribution",
+            "Distribución de tiempos de respuesta",
+            "fig:results:rts-distribution",
+            "% TODO: Write a comment"
+        )
+        self.saccades = saccades
+
+    def render(self):
+        fig = plot_responses_times_distributions(self.saccades)
+        return fig
+
+class DisaggregatedAntisaccadesFigure(Figure):
+    def __init__(self, saccades):
+        super().__init__ ("disaggregated_antisaccades_figure",
+            "Antisacadas desagregadas según correctitud y tiempo de respuesta",
+            "fig:results:disaggregated_antisaccades",
+            "% TODO: Write a comment"
+        )
+        self.saccades = saccades
+
+    def render(self):
+        fig = plot_post_processing_trials(self.saccades['anti'], 'antisacadas')
+        return fig
+
+class AgesDistributionFigure(Figure):
+    def __init__(self, ages):
+        super().__init__ ("ages_distribution",
+            "Distribución de edades",
+            "fig:results:ages-distribution",
+            "% TODO: Write a comment"
+        )
+
+        self.ages = ages
+
+    def render(self):
+        fig = plot_ages(self.ages)
+        return fig
 
 
 #####
@@ -169,29 +197,9 @@ class FirstInstanceResults():
         starting_ts = read_normalized_data()
         self.starting_sample = Sample(starting_ts)
         
-
         outlier_ts, inlier_ts = \
             process_starting_sample(starting_ts)
         self.inlier_sample = Sample(inlier_ts)
-
-        without_response_ts, correct_ts, incorrect_ts = \
-            look_for_response(inlier_ts)
-        self.without_response_sample = Sample(without_response_ts)
-        self.correct_sample = WithResponseSample(correct_ts)
-        self.incorrect_sample = WithResponseSample(incorrect_ts)
-
-        for t in incorrect_ts:
-            t['subject_corrected_side'] = False
-            for e in t['estimations']:
-                if e['t'] < t['reaction_time']:
-                    continue
-                if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
-                    continue
-                t['subject_corrected_side'] = True
-                t['correction_reaction_time'] = e['t']
-                break
-        corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
-        self.corrected_sample = WithResponseSample(corrected_ts)
 
         frequencies, ages, widths = [], [], []
         for kept, ts in [(True, inlier_ts), (False, outlier_ts)]:
@@ -212,32 +220,40 @@ class FirstInstanceResults():
                     'kept': kept,
                 })
 
+        without_response_ts, correct_ts, incorrect_ts = \
+            look_for_response(inlier_ts)
+        self.without_response_sample = Sample(without_response_ts)
+        self.correct_sample = WithResponseSample(correct_ts)
+        self.incorrect_sample = WithResponseSample(incorrect_ts)
+
+        for t in incorrect_ts:
+            t['subject_corrected_side'] = False
+            for e in t['estimations']:
+                if e['t'] < t['reaction_time']:
+                    continue
+                if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
+                    continue
+                t['subject_corrected_side'] = True
+                t['correction_reaction_time'] = e['t']
+                break
+        corrected_ts = [t for t in incorrect_ts if t['subject_corrected_side']]
+        self.corrected_sample = WithResponseSample(corrected_ts)
+
+        # TODO: Add remaining summary figures
         self.ages_distribution_figure = AgesDistributionFigure(ages)
 
-# TODO: Volar este método
-#       En particular no preocuparse en que siga andando
-def parse_first_instance():
-    # TODO: This will be needed to reuse plots later on
-    correct_anti = [{
-        'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
-        'response_time': t['reaction_time'],
-    } for t in trials if t['correct_reaction']]
-    incorrect_anti = [{
-        'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
-        'response_time': t['reaction_time'],
-    } for t in trials if not t['correct_reaction']]
-
-    return {
-        'saccades': {
-            'anti': { 'correct': correct_anti, 'incorrect': incorrect_anti }
+        with_response_ts = correct_ts + incorrect_ts
+        saccades = {
+            'anti': {
+                'correct': [{
+                    'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
+                    'response_time': t['reaction_time'],
+                } for t in with_response_ts if t['correct_reaction']],
+                'incorrect': [{
+                    'estimations': [{ 'x': e['x'], 't': e['t'] } for e in t['estimations']],
+                    'response_time': t['reaction_time'],
+                } for t in with_response_ts if not t['correct_reaction']],
+            }
         }
-    }
-
-def plot_first_post_processing_trials(saccades):
-    plot_post_processing_trials(saccades['anti'], 'antisacadas')
-
-if __name__ == "__main__":
-    instance = parse_first_instance()
-    saccades = instance['saccades']
-    plot_first_post_processing_trials(saccades)
-    plot_responses_times_distributions(saccades)
+        self.response_times_distribution_figure = ResponseTimesDistributionFigure(saccades)
+        self.disaggregated_antisaccades_figure = DisaggregatedAntisaccadesFigure(saccades)

@@ -151,7 +151,7 @@ coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
             color='red', alpha=0.1
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
-    plt.show()
+    return fig
 
 def plot_responses_times_distributions(trials_results):
     min_rt, max_rt = [f([
@@ -238,4 +238,4 @@ Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'''.format(
         bucket_size
     ))
     plt.legend()
-    plt.show()
+    return fig
