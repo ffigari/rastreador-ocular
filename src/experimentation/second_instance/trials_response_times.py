@@ -15,7 +15,7 @@ from incorrect_trials import drop_incorrect_trials
 def compute_response_times_in_place(trials):
     for t in trials.all():
         (i, j) = first_saccade_interval(t)
-        t['response_time'] = t['estimates'][i]['t']
+        t.response_time = t.estimations[i]['t']
 
 if __name__ == "__main__":
     trials = drop_non_fixated_trials(parse_trials()[0])

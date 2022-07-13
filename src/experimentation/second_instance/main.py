@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 from statistics import mean, stdev
 
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
+from common.main import TrialsCollection
 from utils.parsing import parse_trials
 from utils.constants import saccade_types
-from utils.trials_collection import TrialsCollection
 from utils.trial_utilities import second_saccade_interval
 from utils.cleaning import clean
 from incorrect_trials import divide_trials_by_correctness
@@ -88,7 +88,7 @@ def drop_runs_without_enough(trials, counts_per_run):
         ))
         trials = TrialsCollection([
             t for t in trials.all()
-            if t['run_id'] not in runs_without_enough_valid_trials
+            if t.run_id not in runs_without_enough_valid_trials
         ])
     return trials
 

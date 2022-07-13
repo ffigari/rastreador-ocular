@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from utils.trials_collection import TrialsCollection
+from common.main import TrialsCollection
 from utils.parsing import parse_trials
 from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
 from utils.trial_utilities import first_saccade_interval
@@ -16,13 +16,13 @@ def divide_trials_by_correctness(trials):
     correct_trials, incorrect_trials = [], []
     for t in trials.all():
         (i, j) = first_saccade_interval(t)
-        saccade_x_start = t['estimates'][i]['x']
-        saccade_x_end = t['estimates'][j]['x']
+        saccade_x_start = t.estimations[i]['x']
+        saccade_x_end = t.estimations[j]['x']
         saccade_direction = \
             CUE if saccade_x_start < saccade_x_end else NON_CUE
 
         expected_direction = \
-            CUE if t['saccade_type'] == "pro" else NON_CUE
+            CUE if t.saccade_type == "pro" else NON_CUE
 
         if saccade_direction == expected_direction:
             correct_trials.append(t)

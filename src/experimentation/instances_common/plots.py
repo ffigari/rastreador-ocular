@@ -103,7 +103,7 @@ def plot_post_processing_trials(task_saccades, task_label):
     incorrect_ts = task_saccades['incorrect']
     BUCKETS_AMOUNT = 5
     max_t = max([
-        t['response_time']
+        t.response_time
         for l in [incorrect_ts, correct_ts]
         for t in l])
     axes_with_at_least_one_trial = set()
@@ -123,13 +123,11 @@ coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
         for t in ts:
             i = min(
                 BUCKETS_AMOUNT - 1,
-                int(t[
-                    'response_time'
-                ] // (max_t // BUCKETS_AMOUNT))
+                int(t.response_time // (max_t // BUCKETS_AMOUNT))
             )
             axes[i][j].plot(
-                [e['t'] for e in t['estimations']],
-                [e['x'] for e in t['estimations']],
+                [e['t'] for e in t.estimations],
+                [e['x'] for e in t.estimations],
                 color="black",
                 alpha=0.1
             )
@@ -155,10 +153,10 @@ coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
 
 def plot_responses_times_distributions(trials_results):
     min_rt, max_rt = [f([
-        trial['response_time']
+        t.response_time
         for task_type in trials_results.keys()
         for correcteness in trials_results[task_type].keys()
-        for trial in trials_results[task_type][correcteness]
+        for t in trials_results[task_type][correcteness]
     ]) for f in [min, max]]
     buckets_amount = 20
     bucket_size = (max_rt - min_rt) / buckets_amount
@@ -180,7 +178,7 @@ def plot_responses_times_distributions(trials_results):
             for _ in range(buckets_amount):
                 bucketed_rts[task_type][correcteness].append(list())
             for rt in [
-                t['response_time'] for t in trials_results[task_type][correcteness]
+                t.response_time for t in trials_results[task_type][correcteness]
             ]:
                 bucketed_rts[task_type][correcteness][
                     rt_to_bucket_idx(rt)

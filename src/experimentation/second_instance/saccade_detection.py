@@ -8,7 +8,7 @@ from fixated_trials import drop_non_fixated_trials
 
 def compute_saccades_in_place(trials):
     for t in trials.all():
-        es = t['estimates']
+        es = t.estimations
         velocities = [
             {
                 't': es[i]['t'],
@@ -42,8 +42,8 @@ def compute_saccades_in_place(trials):
                 saccades_intervals.append((i, j + 1))
             i = j + 1
 
-        t['saccades_intervals'] = saccades_intervals
-        t['velocities'] = velocities
+        t.saccades_intervals = saccades_intervals
+        t.velocities = velocities
 
 if __name__ == "__main__":
     trials = drop_non_fixated_trials(parse_trials()[0])

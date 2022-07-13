@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from utils.trials_collection import TrialsCollection
+from common.main import TrialsCollection
 from utils.parsing import parse_trials
 from utils.trial_utilities import relevant_saccades
 from fixated_trials import drop_non_fixated_trials

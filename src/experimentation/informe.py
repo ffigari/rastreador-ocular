@@ -5,8 +5,6 @@ from instances_common.plots import separated_hist
 from instances_common.plots import draw_sampling_frequecies_marks
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
-from second_instance.summary import parse_second_instance
-from second_instance.summary import plot_second_post_processing_trials
 
 def draw_compared_metric(instance, perRunAx, perTrialAx, metric_name, field_name):
     separated_hist(
@@ -89,21 +87,41 @@ import sys
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation',
 ] + sys.path
+from instances_common.main import AgesDistributionFigure
+from instances_common.main import DisaggregatedAntisaccadesFigure
+from instances_common.main import ResponseTimesDistributionFigure
 from first_instance.summary import FirstInstance
 from second_instance.summary import SecondInstance
 
 class Results():
     def __init__(self, input_file):
         first_instance = FirstInstance()
-        second_instance = SecondInstance()
-
         self.first_instance_context = first_instance.build_tex_context()
-        self.second_instance_context = second_instance.build_tex_context()
 
+        second_instance = SecondInstance()
+        self.second_instance_context = second_instance.build_tex_context()
+    
+        first__saccades = {
+            'anti': {
+                'correct': first_instance.correct_sample.ts.all(),
+                'incorrect': first_instance.incorrect_sample.ts.all(),
+            }
+        }
+
+        # TODO: Pass prefix to figures so that they can be distinguished
         self.figures = dict([
-            ("first__ages_distribution_figure", first_instance.ages_distribution_figure),
-            ("first__response_times_distribution_figure", first_instance.response_times_distribution_figure),
-            ("first__disaggregated_antisaccades_figure", first_instance.disaggregated_antisaccades_figure)
+            (
+                "first__ages_distribution_figure",
+                AgesDistributionFigure(first_instance.ages)
+            ),
+            (
+                "first__response_times_distribution_figure",
+                ResponseTimesDistributionFigure(first__saccades)
+            ),
+            (
+                "first__disaggregated_antisaccades_figure",
+                DisaggregatedAntisaccadesFigure(first__saccades)
+            )
         ])
 
     def as_tex_string(self, build_path, logical_path):
@@ -187,10 +205,8 @@ if __name__ == "__main__":
 #
 #    instances = {}
 #    if scope == 'both':
-#        instances['second'] = parse_second_instance()
 #    elif scope == 'first':
 #    else:
-#        instances['second'] = parse_second_instance()
 #
 #    if target in description_targets:
 #        plot_descriptive_histograms(instances, target, scope)
@@ -199,7 +215,6 @@ if __name__ == "__main__":
 #            saccades = instances[name]['saccades']
 #            if name == 'first':
 #            elif name == 'second':
-#                plot_second_post_processing_trials(saccades)
 #    elif target == 'response_times_distribution':
 #        for name in instances.keys():
 #            saccades = instances[name]['saccades']

@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 
+from common.main import TrialsCollection
 from utils.constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
-from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 
 def divide_trials_by_focus_on_center(trials):
     focused_trials, unfocused_trials = [], []
     for t in trials.all():
         xs_before_visual_cue = [
-            e['x'] for e in t['estimates']
+            e['x'] for e in t.estimations
             if - REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS < e['t'] < 0
         ]
         avg = sum(xs_before_visual_cue) / len(xs_before_visual_cue)

@@ -10,116 +10,64 @@ from utils.parsing import parse_trials
 from utils.cleaning import clean
 from common.main import Instance
 from common.main import Trial
+from common.main import TrialsCollection
 from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
 
 class SecondTrial(Trial):
     def __init__(self, parsed_trial):
-        super().__init__(parsed_trial['run_id'])
+        super().__init__(
+            parsed_trial['run_id'],
+            parsed_trial['trial_id'],
+            parsed_trial['original_frequency'],
+            parsed_trial['saccade_type'],
+            parsed_trial['estimates'],
+            parsed_trial['age'],
+            parsed_trial['viewport_width'],
+        )
 
 class SecondInstance(Instance):
     def load_data(self):
         pts, counts_per_run = parse_trials()
+        # TODO: Remove this `self.counts_per_run` variable?
+        self.counts_per_run = counts_per_run
         return [SecondTrial(pt) for pt in pts]
 
+    def process_starting_sample(self, starting_ts):
+        trials_pre_processing, counts_per_run = clean(starting_ts, self.counts_per_run)
+        trials_with_enough_per_run = drop_runs_without_enough(trials_pre_processing, counts_per_run)
+        self.counts_per_run = counts_per_run
+
+        kept_trials = []
+        kept_runs_ids = []
+        for t in starting_ts.all():
+            is_kept = (t.run_id, t.trial_id) in set([
+                (te.run_id, te.trial_id)
+                for te in trials_with_enough_per_run.all()
+            ])
+
+            if is_kept:
+                kept_trials.append(t)
+                kept_runs_ids.append(t.run_id)
+
+        inlier_ts = kept_trials
+        outlier_ts = [
+            t for t in starting_ts.all()
+            if t.id not in set([t.id for t in inlier_ts])
+        ]
+        return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
+
+    def look_for_response(self, inlier_ts):
+        # Didn't got to compute this on the second instance
+        without_response_ts = TrialsCollection([])
+
+        compute_response_times_in_place(inlier_ts)
+        correct_ts, incorrect_ts = divide_trials_by_correctness(inlier_ts)
+
+        return without_response_ts, correct_ts, incorrect_ts
+
     def build_tex_context(self):
-        return {
-            "second__starting_sample__trials_count": 'TODO',
-            "second__starting_sample__subjects_count": 'TODO',
-        }
-
-def parse_second_instance(cbs):
-    trials, counts_per_run = parse_trials()
-    # starting_ts
-    trials_pre_processing, counts_per_run = clean(trials, counts_per_run)
-    print('>> Pre processing count: {:d} trials distributed in {:d} subjects'.format(
-        trials_pre_processing.count, trials_pre_processing.runs_count
-    ))
-
-    trials_with_enough_per_run = drop_runs_without_enough(trials_pre_processing, counts_per_run)
-    print('>> Pre processing count: {:d} trials distributed in {:d} subjects'.format(
-        trials_with_enough_per_run.count, trials_with_enough_per_run.runs_count
-    ))
-
-    kept_trials, dropped_trials = [], []
-    kept_runs_ids = []
-    for t in trials.all():
-        is_kept = len([
-            te
-            for te in trials_with_enough_per_run.all()
-            if te['run_id'] == t['run_id'] and te['trial_id'] == t['trial_id']
-        ])
-        if is_kept:
-            kept_trials.append(t)
-            kept_runs_ids.append(t['run_id'])
-        else:
-            dropped_trials.append(t)
-    print('>> {:.2f} % of trials dropped; {:.2f} % of runs dropped'.format(
-        100 * (len(dropped_trials) / len(trials.all())),
-        100 * (
-            (len(set([t['run_id'] for t in trials.all()])) - len(set(kept_runs_ids))) \
-            / len(set([t['run_id'] for t in trials.all()]))
-        )
-    ))
-    # outlier_ts, inlier_ts
-
-    frequencies, ages, widths = [], [], []
-    for kept, ts in [(True, kept_trials), (False, dropped_trials)]:
-        for t in ts:
-            frequencies.append({
-                'frequency': t['original_frequency'],
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
-            ages.append({
-                'age': t['age'],
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
-            widths.append({
-                'width': t['viewport_width'],
-                'run_id': t['run_id'],
-                'kept': kept,
-            })
-
-    post_filtering_metrics = dict()
-    post_filtering_metrics['frequencies'] = frequencies
-    post_filtering_metrics['ages'] = ages
-    post_filtering_metrics['widths'] = widths
-    cbs['after_filtering'](post_filtering_metrics)
-
-    trials = TrialsCollection(kept_trials)
-    compute_response_times_in_place(trials)
-    correct_trials, incorrect_trials = divide_trials_by_correctness(trials)
-    correct_anti = [{
-        'estimations': t['estimates'],
-        'response_time': t['response_time']
-    } for t in correct_trials.all() if t['saccade_type'] == "anti"]
-    incorrect_anti = [{
-        'estimations': t['estimates'],
-        'response_time': t['response_time']
-    } for t in incorrect_trials.all() if t['saccade_type'] == "anti"]
-    correct_pro = [{
-        'estimations': t['estimates'],
-        'response_time': t['response_time']
-    } for t in correct_trials.all() if t['saccade_type'] == "pro"]
-    incorrect_pro = [{
-        'estimations': t['estimates'],
-        'response_time': t['response_time']
-    } for t in incorrect_trials.all() if t['saccade_type'] == "pro"]
-    return {
-        'post_filtering_metrics': post_filtering_metrics,
-        'saccades': {
-            'anti': {
-                'correct': correct_anti,
-                'incorrect': incorrect_anti,
-            },
-            'pro': {
-                'correct': correct_pro,
-                'incorrect': incorrect_pro,
-            }
-        }
-    }
+        return self._build_common_tex_context("second__")
 
 def plot_second_post_processing_trials(saccades):
     plot_post_processing_trials(saccades['anti'], 'antisacadas')
@@ -131,7 +79,5 @@ if __name__ == "__main__":
         plot_ages(post_filtering_metrics['ages'])
         plot_widths(post_filtering_metrics['widths'])
 
-    instance = parse_second_instance({ 'after_filtering': after_filtering })
-    saccades = instance['saccades']
     plot_second_post_processing_trials(saccades)
     plot_responses_times_distributions(saccades)

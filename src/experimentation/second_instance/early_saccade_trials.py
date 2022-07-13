@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
+from common.main import TrialsCollection
 from utils.constants import REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS
 from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS
-from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
@@ -10,9 +10,9 @@ from saccade_detection import compute_saccades_in_place
 def divide_trials_by_early_saccade(trials):
     non_early_saccade_trials, early_saccade_trials = [], []
     for t in trials.all():
-        es = t['estimates']
+        es = t.estimations
         had_early_saccade = False
-        for (i, j) in t['saccades_intervals']:
+        for (i, j) in t.saccades_intervals:
             # we are cool with saccades that finished before the fixation period
             if es[j]['t'] < - REQUIRED_FOCUS_TIME_PRE_VISUAL_CUE_IN_MS:
                 continue

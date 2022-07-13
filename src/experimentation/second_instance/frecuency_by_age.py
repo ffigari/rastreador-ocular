@@ -6,6 +6,7 @@ from common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 from utils.parsing import parse_trials
 from utils.cleaning import clean
 
+# TODO: Delete no longer needed `__name__ == "__main__"`s
 if __name__ == "__main__":
     trials, counts_per_run = parse_trials()
 
@@ -13,7 +14,7 @@ if __name__ == "__main__":
         t for t in trials.all() if t['run_id'] == run_id
     ][0]['age']
     get_frequencies_of = lambda run_id: [
-        t['original_frequency']
+        t.original_sampling_frecuency_in_hz
         for t in trials.all()
         if t['run_id'] == run_id
     ]

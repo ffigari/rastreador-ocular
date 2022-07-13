@@ -18,19 +18,27 @@ from common.main import WithResponseSample
 
 class FirstTrial(Trial):
     def __init__(self, parsed_trial):
-        super().__init__(parsed_trial['run_id'])
+        super().__init__(
+            parsed_trial['run_id'],
+            parsed_trial['trial_id'],
+            parsed_trial['original_sampling_frecuency_in_hz'],
+            "anti",
+            parsed_trial['estimations'],
+            int(parsed_trial['subject_data']['edad']),
+            parsed_trial['inner_width'],
+        )
         self.is_outlier = parsed_trial['outlier']
-        self.estimations = parsed_trial['estimations']
         self.fixation_start = parsed_trial['fixation_start']
         self.mid_start = parsed_trial['mid_start']
         self.cue_start = parsed_trial['cue_start']
-        self.trial_id = parsed_trial['trial_id']
-        self.id = parsed_trial['id']
-        self.original_sampling_frecuency_in_hz = parsed_trial['original_sampling_frecuency_in_hz']
-        self.subject_data = parsed_trial['subject_data']
-        self.inner_width = parsed_trial['inner_width']
 
 class FirstInstance(Instance):
+    def __init__(self):
+        super().__init__()
+
+        corrected_ts = self.look_for_corrective_saccade(self.incorrect_sample.ts)
+        self.corrected_sample = WithResponseSample(corrected_ts)
+
     def load_data(self):
         return [FirstTrial(t) for t in mirror_trials(normalize(load_cleaned_up_trials()))]
 
@@ -95,7 +103,7 @@ class FirstInstance(Instance):
         for t in incorrect_ts.all():
             t.subject_corrected_side = False
             for e in t.estimations:
-                if e['t'] < t.reaction_time:
+                if e['t'] < t.response_time:
                     continue
                 if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
                     continue
@@ -107,16 +115,8 @@ class FirstInstance(Instance):
 
     def build_tex_context(self):
         return {
-            "first__starting_sample__trials_count": self.starting_sample.trials_count,
-            "first__starting_sample__subjects_count": self.starting_sample.subjects_count,
-            "first__inlier_sample__trials_count": self.inlier_sample.trials_count,
-            "first__inlier_sample__subjects_count": self.inlier_sample.subjects_count,
-            "first__without_response_sample__trials_count": self.without_response_sample.trials_count,
-            "first__correct_sample__trials_count": self.correct_sample.trials_count,
-            "first__incorrect_sample__trials_count": self.incorrect_sample.trials_count,
-            "first__corrected_sample__trials_count": self.corrected_sample.trials_count,
-            "first__correct_sample__mean_response_time": self.correct_sample.mean_response_time,
-            "first__correct_sample__stdev_response_time": self.correct_sample.stdev_response_time,
-            "first__incorrect_sample__stdev_response_time": self.incorrect_sample.stdev_response_time,
-            "first__incorrect_sample__mean_response_time": self.incorrect_sample.mean_response_time,
+            **self._build_common_tex_context("first__"),
+            **{
+                "first__corrected_sample__trials_count": self.corrected_sample.trials_count,
+            }
         }

@@ -75,7 +75,7 @@ def compute_correcteness_in_place(trials):
             if abs(e['x']) < POST_NORMALIZATION_REACTION_TRESHOLD:
                 continue
             t.subject_reacted = True
-            t.reaction_time = e['t']
+            t.response_time = e['t']
             t.correct_reaction = e['x'] < 0
             break
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     # for t in incorrect_trials:
     #     t['subject_corrected_side'] = False
     #     for e in t['estimations']:
-    #         if e['t'] < t['reaction_time']:
+    #         if e['t'] < t['response_time']:
     #             continue
     #         if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
     #             continue
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     for t in trials:
         b = min(
             BUCKETS_AMOUNT - 1,
-            int(t['reaction_time'] // (VISUAL_CUE_DURATION_IN_MS // BUCKETS_AMOUNT))
+            int(t['response_time'] // (VISUAL_CUE_DURATION_IN_MS // BUCKETS_AMOUNT))
         )
         j = 0 if t['correct_reaction'] else 1
         axs[b][j].plot(
@@ -269,8 +269,8 @@ if __name__ == "__main__":
     según tipo y tiempo de respuesta""")
     plt.show()
 
-    # correct_response_times = [t['reaction_time'] for t in correct_trials]
-    # incorrect_response_times = [t['reaction_time'] for t in incorrect_trials]
+    # correct_response_times = [t['response_time'] for t in correct_trials]
+    # incorrect_response_times = [t['response_time'] for t in incorrect_trials]
     print("""tiempo de respuesta
     tipo  | correcto | incorrecto
     mean  | %f | %f
