@@ -100,9 +100,12 @@ class DisaggregatedSaccadesFigure(Figure):
             "Los ejes temporales de las repeticiones han sido alineados para que el valor t=0 corresponda a la aparición del estímulo visual. Las estimaciones de las coordenadas \'x\' han sido normalizadas al rango [-1, 1]."
         )
         self.categorized_trials = categorized_trials
+        self.task_tag = task_tag
 
     def render(self):
-        fig = plot_post_processing_trials(self.categorized_trials['anti'], 'antisacadas')
+        fig = plot_post_processing_trials(
+            self.categorized_trials[self.task_tag],
+            'prosacadas' if self.task_tag == 'pro' else 'antisacadas')
         return fig
 
 
