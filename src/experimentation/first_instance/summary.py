@@ -10,26 +10,29 @@ from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from constants import POST_NORMALIZATION_REACTION_TRESHOLD
 from common.main import Instance
 from common.main import Sample
+from common.main import Trial
 from common.main import TrialsCollection
 from common.main import WithResponseSample
 
 ###
 
+class FirstTrial(Trial):
+    def __init__(self, parsed_trial):
+        super().__init__(parsed_trial['run_id'])
+        self.is_outlier = parsed_trial['outlier']
+        self.estimations = parsed_trial['estimations']
+        self.fixation_start = parsed_trial['fixation_start']
+        self.mid_start = parsed_trial['mid_start']
+        self.cue_start = parsed_trial['cue_start']
+        self.trial_id = parsed_trial['trial_id']
+        self.id = parsed_trial['id']
+        self.original_sampling_frecuency_in_hz = parsed_trial['original_sampling_frecuency_in_hz']
+        self.subject_data = parsed_trial['subject_data']
+        self.inner_width = parsed_trial['inner_width']
+
 class FirstInstance(Instance):
     def load_data(self):
-        return [{
-            'run_id': t['run_id'],
-            'is_outlier': t['outlier'],
-            'estimations': t['estimations'],
-            'fixation_start': t['fixation_start'],
-            'mid_start': t['mid_start'],
-            'cue_start': t['cue_start'],
-            'trial_id': t['trial_id'],
-            'id': t['id'],
-            'original_sampling_frecuency_in_hz': t['original_sampling_frecuency_in_hz'],
-            'subject_data': t['subject_data'],
-            'inner_width': t['inner_width'],
-        } for t in mirror_trials(normalize(load_cleaned_up_trials()))]
+        return [FirstTrial(t) for t in mirror_trials(normalize(load_cleaned_up_trials()))]
 
     def process_starting_sample(self, ts):
         trials_pre_processing = drop_invalid_trials([
@@ -68,9 +71,7 @@ class FirstInstance(Instance):
 
         compute_correcteness_in_place(inlier_ts)
 
-        return \
-            TrialsCollection.from_trials(outlier_ts), \
-            TrialsCollection.from_trials(inlier_ts)
+        return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
 
     def look_for_response(self, inlier_ts):
         without_response_ts = [
@@ -86,9 +87,9 @@ class FirstInstance(Instance):
             if t.subject_reacted and not t.correct_reaction
         ]
         return \
-            TrialsCollection.from_trials(without_response_ts), \
-            TrialsCollection.from_trials(correct_ts), \
-            TrialsCollection.from_trials(incorrect_ts)
+            TrialsCollection(without_response_ts), \
+            TrialsCollection(correct_ts), \
+            TrialsCollection(incorrect_ts)
 
     def look_for_corrective_saccade(self, incorrect_ts):
         for t in incorrect_ts.all():
@@ -102,7 +103,7 @@ class FirstInstance(Instance):
                 t.correction_reaction_time = e['t']
                 break
         corrected_ts = [t for t in incorrect_ts.all() if t.subject_corrected_side]
-        return TrialsCollection.from_trials(corrected_ts)
+        return TrialsCollection(corrected_ts)
 
     def build_tex_context(self):
         return {

@@ -8,31 +8,19 @@ if unwanted in sys.path:
 from main import drop_runs_without_enough
 from utils.parsing import parse_trials
 from utils.cleaning import clean
-from utils.trials_collection import TrialsCollection
 from common.main import Instance
-from common.plots import plot_sampling_frequencies
-from common.plots import plot_ages
-from common.plots import plot_widths
-from common.plots import plot_post_processing_trials
-from common.plots import plot_responses_times_distributions
+from common.main import Trial
 from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
-from common.parsing import parse_parsing_callbacks
 
-# TODO: Make common class with the ones from the first instance
-class Sample():
-    def __init__(self, ts):
-        self.trials_count = ts.count
-        self.subjects_count = ts.runs_count
+class SecondTrial(Trial):
+    def __init__(self, parsed_trial):
+        super().__init__(parsed_trial['run_id'])
 
 class SecondInstance(Instance):
     def load_data(self):
-        ts, counts_per_run = parse_trials()
-        # TODO: Conver ts to appropiate format
-        return ts
-
-    def __init__(self):
-        super().__init__()
+        pts, counts_per_run = parse_trials()
+        return [SecondTrial(pt) for pt in pts]
 
     def build_tex_context(self):
         return {
@@ -40,10 +28,9 @@ class SecondInstance(Instance):
             "second__starting_sample__subjects_count": 'TODO',
         }
 
-def parse_second_instance(cbs=None):
-    cbs = parse_parsing_callbacks(cbs)
-
+def parse_second_instance(cbs):
     trials, counts_per_run = parse_trials()
+    # starting_ts
     trials_pre_processing, counts_per_run = clean(trials, counts_per_run)
     print('>> Pre processing count: {:d} trials distributed in {:d} subjects'.format(
         trials_pre_processing.count, trials_pre_processing.runs_count
@@ -74,6 +61,7 @@ def parse_second_instance(cbs=None):
             / len(set([t['run_id'] for t in trials.all()]))
         )
     ))
+    # outlier_ts, inlier_ts
 
     frequencies, ages, widths = [], [], []
     for kept, ts in [(True, kept_trials), (False, dropped_trials)]:

@@ -95,10 +95,10 @@ from second_instance.summary import SecondInstance
 class Results():
     def __init__(self, input_file):
         first_instance = FirstInstance()
-        self.first_instance_context = first_instance.build_tex_context()
+        second_instance = SecondInstance()
 
-        # second_instance = SecondInstance()
-        # self.second_instance_context = second_instance.build_tex_context()
+        self.first_instance_context = first_instance.build_tex_context()
+        self.second_instance_context = second_instance.build_tex_context()
 
         self.figures = dict([
             ("first__ages_distribution_figure", first_instance.ages_distribution_figure),
@@ -109,11 +109,7 @@ class Results():
     def as_tex_string(self, build_path, logical_path):
         return input_file.read().format(
             **self.first_instance_context,
-            #**self.second_instance_context,
-            **{
-                "second__starting_sample__trials_count": 42,
-                "second__starting_sample__subjects_count": 34
-            },
+            **self.second_instance_context,
             **dict([
                 (n, f.as_tex_string(build_path, logical_path))
                 for n, f

@@ -1,7 +1,6 @@
 import os, re, csv, json
 
 from utils.normalizer import Normalizer
-from utils.trials_collection import TrialsCollection
 from utils.second_sampling import second_uniformize_sampling
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
@@ -149,4 +148,4 @@ def parse_trials():
                 else:
                     pass
     
-    return TrialsCollection(parsed_trials), counts_per_run
+    return parsed_trials, counts_per_run

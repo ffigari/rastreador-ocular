@@ -6,6 +6,7 @@ from early_saccade_trials import divide_trials_by_early_saccade
 from non_response_trials import divide_trials_by_non_response
 
 def clean(trials, counts_per_run):
+    # starting_ts
     trials, low_frequency_trials = divide_trials_by_low_frequency(trials)
     for run_id in counts_per_run.keys():
         for st in saccade_types:

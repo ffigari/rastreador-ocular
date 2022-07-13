@@ -1,3 +1,4 @@
+# TODO: the content of this object is being migrated to the 
 class TrialsCollection:
     def __init__(self, parsed_trials):
         self.parsed_trials = parsed_trials
