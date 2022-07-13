@@ -74,7 +74,6 @@ def plot_sampling_frequencies(frequencies):
 ##
 def plot_ages(ages):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
-    fig.suptitle('Distribución de edades')
 
     ax1.set_ylabel('Cantidad de sujetos')
     ax2.set_ylabel('Cantidad de repeticiones')
@@ -108,13 +107,6 @@ def plot_post_processing_trials(task_saccades, task_label):
         for t in l])
     axes_with_at_least_one_trial = set()
     fig, axes = plt.subplots(nrows=BUCKETS_AMOUNT, ncols=2, sharex=True)
-    fig.suptitle('''Tareas de {}
-Los ejes temporales de las repeticiones han sido alineados para que el valor t=0
-corresponda a la aparición del estímulo visual. Las estimaciones de las
-coordenadas \'x\' han sido normalizadas al rango [-1, 1].'''.format(
-        # http://stackoverflow.com/questions/34937048/ddg#44123579
-        r"$\bf{" + task_label + "}$"
-    ))
     for j, (task_result, ts) in enumerate([
         ('correctas', correct_ts), ('incorrectas', incorrect_ts)
     ]):

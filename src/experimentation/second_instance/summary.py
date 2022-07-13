@@ -69,15 +69,8 @@ class SecondInstance(Instance):
     def build_tex_context(self):
         return self._build_common_tex_context("second__")
 
-def plot_second_post_processing_trials(saccades):
+if __name__ == "__main__":
+    # TODO: Move this to informe.py
     plot_post_processing_trials(saccades['anti'], 'antisacadas')
     plot_post_processing_trials(saccades['pro'], 'prosacadas')
-
-if __name__ == "__main__":
-    def after_filtering(post_filtering_metrics):
-        plot_sampling_frequencies(post_filtering_metrics['frequencies'])
-        plot_ages(post_filtering_metrics['ages'])
-        plot_widths(post_filtering_metrics['widths'])
-
-    plot_second_post_processing_trials(saccades)
     plot_responses_times_distributions(saccades)

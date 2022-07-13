@@ -87,11 +87,13 @@ import sys
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation',
 ] + sys.path
-from instances_common.main import AgesDistributionFigure
-from instances_common.main import DisaggregatedAntisaccadesFigure
-from instances_common.main import ResponseTimesDistributionFigure
 from first_instance.summary import FirstInstance
 from second_instance.summary import SecondInstance
+
+from instances_common.main import AgesDistributionFigure
+from instances_common.main import DisaggregatedAntisaccadesFigure
+from instances_common.main import DisaggregatedProsaccadesFigure
+from instances_common.main import ResponseTimesDistributionFigure
 
 class Results():
     def __init__(self, input_file):
@@ -101,27 +103,53 @@ class Results():
         second_instance = SecondInstance()
         self.second_instance_context = second_instance.build_tex_context()
     
-        first__saccades = {
+        first_categorized_trials = {
             'anti': {
                 'correct': first_instance.correct_sample.ts.all(),
                 'incorrect': first_instance.incorrect_sample.ts.all(),
             }
+        }
+        second_categorized_trials = {
+            'anti': {
+                'correct': [t for t in second_instance.correct_sample.ts.all() if t.saccade_type == 'anti'],
+                'incorrect': [t for t in second_instance.incorrect_sample.ts.all() if t.saccade_type == 'anti'],
+            },
+            'pro': {
+                'correct': [t for t in second_instance.correct_sample.ts.all() if t.saccade_type == 'pro'],
+                'incorrect': [t for t in second_instance.incorrect_sample.ts.all() if t.saccade_type == 'pro'],
+            },
         }
 
         # TODO: Pass prefix to figures so that they can be distinguished
         self.figures = dict([
             (
                 "first__ages_distribution_figure",
-                AgesDistributionFigure(first_instance.ages)
+                AgesDistributionFigure(first_instance.ages, 'first')
+            ),
+            (
+                "second__ages_distribution_figure",
+                AgesDistributionFigure(second_instance.ages, 'second')
             ),
             (
                 "first__response_times_distribution_figure",
-                ResponseTimesDistributionFigure(first__saccades)
+                ResponseTimesDistributionFigure(first_categorized_trials, 'first')
+            ),
+            (
+                "second__response_times_distribution_figure",
+                ResponseTimesDistributionFigure(second_categorized_trials, 'second')
             ),
             (
                 "first__disaggregated_antisaccades_figure",
-                DisaggregatedAntisaccadesFigure(first__saccades)
-            )
+                DisaggregatedAntisaccadesFigure(first_categorized_trials, 'first')
+            ),
+            (
+                "second__disaggregated_antisaccades_figure",
+                DisaggregatedAntisaccadesFigure(second_categorized_trials, 'second')
+            ),
+            (
+                "second__disaggregated_prosaccades_figure",
+                DisaggregatedProsaccadesFigure(second_categorized_trials, 'second')
+            ),
         ])
 
     def as_tex_string(self, build_path, logical_path):

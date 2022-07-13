@@ -56,13 +56,15 @@ class Figure():
         """.format(**ctx)
 
 class AgesDistributionFigure(Figure):
-    def __init__(self, ages):
-        super().__init__ ("ages_distribution",
-            "Distribución de edades",
-            "fig:results:ages-distribution",
-            "% TODO: Write a comment"
+    def __init__(self, ages, instance_tag):
+        super().__init__(
+            "{}_ages_distribution".format(instance_tag),
+            "Distribución de edades ({} instancia)".format(
+                'primera' if instance_tag == 'first' else 'segunda'
+            ),
+            "fig:results:{}-ages-distribution".format(instance_tag),
+            "% TODO: Write a comment for each instance"
         )
-
         self.ages = ages
 
     def render(self):
@@ -71,30 +73,46 @@ class AgesDistributionFigure(Figure):
 
 
 class ResponseTimesDistributionFigure(Figure):
-    def __init__(self, saccades):
-        super().__init__ ("response_time_distribution",
-            "Distribución de tiempos de respuesta",
-            "fig:results:rts-distribution",
+    def __init__(self, categorized_trials, instance_tag):
+        super().__init__(
+            "{}_response_time_distribution".format(instance_tag),
+            "Distribución de tiempos de respuesta ({} instancia)".format(
+                'primera' if instance_tag == 'first' else 'segunda'
+            ),
+            "fig:results:{}-rts-distribution".format(instance_tag),
             "% TODO: Write a comment"
         )
-        self.saccades = saccades
+        self.categorized_trials = categorized_trials
 
     def render(self):
-        fig = plot_responses_times_distributions(self.saccades)
+        fig = plot_responses_times_distributions(self.categorized_trials)
         return fig
 
-class DisaggregatedAntisaccadesFigure(Figure):
-    def __init__(self, saccades):
-        super().__init__ ("disaggregated_antisaccades_figure",
-            "Antisacadas desagregadas según correctitud y tiempo de respuesta",
-            "fig:results:disaggregated_antisaccades",
-            "% TODO: Write a comment"
+class DisaggregatedSaccadesFigure(Figure):
+    def __init__(self, categorized_trials, instance_tag, task_tag):
+        super().__init__ (
+            "{}_disaggregated_{}saccades_figure".format(instance_tag, task_tag),
+            "{} desagregadas según correctitud y tiempo de respuesta ({} instancia)".format(
+                'Antisacadas' if task_tag == 'anti' else 'Prosacadas',
+                'primera' if instance_tag == 'first' else 'segunda'
+            ),
+            "fig:results:{}_disaggregated_{}saccades".format(instance_tag, task_tag),
+            "Los ejes temporales de las repeticiones han sido alineados para que el valor t=0 corresponda a la aparición del estímulo visual. Las estimaciones de las coordenadas \'x\' han sido normalizadas al rango [-1, 1]."
         )
-        self.saccades = saccades
+        self.categorized_trials = categorized_trials
 
     def render(self):
-        fig = plot_post_processing_trials(self.saccades['anti'], 'antisacadas')
+        fig = plot_post_processing_trials(self.categorized_trials['anti'], 'antisacadas')
         return fig
+
+
+class DisaggregatedAntisaccadesFigure(DisaggregatedSaccadesFigure):
+    def __init__(self, categorized_trials, instance_tag):
+        super().__init__(categorized_trials, instance_tag, 'anti')
+
+class DisaggregatedProsaccadesFigure(DisaggregatedSaccadesFigure):
+    def __init__(self, categorized_trials, instance_tag):
+        super().__init__(categorized_trials, instance_tag, 'pro')
 
 #####
 
