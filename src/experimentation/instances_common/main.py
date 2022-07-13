@@ -142,6 +142,7 @@ class Trial():
 class TrialsCollection():
     def __init__(self, ts):
         self.trials = ts
+        self.runs_ids = set([t.run_id for t in ts])
 
     def count(self):
         return len(self.trials)
@@ -158,6 +159,8 @@ class TrialsCollection():
             if t.run_id == run_id and t.saccade_type == saccade_type
         ]
 
+    def get_trials_by_run(self, run_id):
+        return TrialsCollection([t for t in self.trials if t.run_id == run_id])
 
 class Sample():
     def __init__(self, ts):

@@ -67,10 +67,12 @@ class SecondInstance(Instance):
         return without_response_ts, correct_ts, incorrect_ts
 
     def build_tex_context(self):
-        return self._build_common_tex_context("second__")
-
-if __name__ == "__main__":
-    # TODO: Move this to informe.py
-    plot_post_processing_trials(saccades['anti'], 'antisacadas')
-    plot_post_processing_trials(saccades['pro'], 'prosacadas')
-    plot_responses_times_distributions(saccades)
+        starting_ts = self.starting_sample.ts
+        return {
+            **self._build_common_tex_context("second__"),
+            "second__early_subjects_count": len([
+                run_id
+                for run_id in starting_ts.runs_ids
+                if starting_ts.get_trials_by_run(run_id).count() == 160
+            ]),
+        }
