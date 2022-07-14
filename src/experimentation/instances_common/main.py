@@ -177,6 +177,9 @@ def build_sample_tex_context(sample, sample_name):
         at.format("subjects_count"): sample.subjects_count,
     }
 
+def build_sample_template(instance_name):
+    return "{}__{{}}_sample".format(instance_name)
+
 class Sample():
     def __init__(self, ts):
         self.ts = ts
@@ -197,9 +200,6 @@ class WithResponseSample(Sample):
         rts = [t.response_time for t in ts.all()]
         self.mean_response_time = int(mean(rts))
         self.stdev_response_time = int(stdev(rts))
-
-def build_sample_template(instance_name):
-    return "{}__{{}}_sample".format(instance_name)
 
 def build_base_instance_tex_context(bi, instance_name):
     st = build_sample_template(instance_name)

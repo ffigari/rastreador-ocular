@@ -39,9 +39,49 @@ def build_second_instance_tex_context(si):
     return {
         **build_base_instance_tex_context(si, si_name),
         at.format("early_subjects_count"): si.early_subjects_count(),
+        at.format("antisaccades_correctness_percentage"): si.antisaccades_correctness_percentage(),
+        at.format("prosaccades_correctness_percentage"): si.prosaccades_correctness_percentage(),
     }
 
 class SecondInstance(Instance):
+    def antisaccades_correctness_percentage(self):
+        cas__count = self.correct_antisaccades_sample.trials_count
+        total = cas__count + self.incorrect_antisaccades_sample.trials_count
+        return cas__count / total
+
+    def prosaccades_correctness_percentage(self):
+        cps__count = self.correct_prosaccades_sample.trials_count
+        total = cps__count + self.incorrect_prosaccades_sample.trials_count
+        return cps__count / total
+
+    def early_subjects_count(self):
+        starting_ts = self.starting_sample.ts
+        return len([
+            run_id
+            for run_id in starting_ts.runs_ids
+            if starting_ts.get_trials_by_run(run_id).count() == 160
+        ])
+
+    def __init__(self):
+        super().__init__()
+
+        self.correct_antisaccades_sample = Sample(TrialsCollection([ct
+            for ct in self.correct_sample.ts.all()
+            if ct.saccade_type == "anti"
+        ]))
+        self.correct_prosaccades_sample = Sample(TrialsCollection([ct
+            for ct in self.correct_sample.ts.all()
+            if ct.saccade_type == "pro"
+        ]))
+        self.incorrect_antisaccades_sample = Sample(TrialsCollection([it
+            for it in self.incorrect_sample.ts.all()
+            if it.saccade_type == "anti"
+        ]))
+        self.incorrect_prosaccades_sample = Sample(TrialsCollection([it
+            for it in self.incorrect_sample.ts.all()
+            if it.saccade_type == "pro"
+        ]))
+
     def _load_data(self):
         pts, counts_per_run = parse_trials()
         # TODO: Remove this `self.counts_per_run` variable?
@@ -80,11 +120,3 @@ class SecondInstance(Instance):
         correct_ts, incorrect_ts = divide_trials_by_correctness(inlier_ts)
 
         return without_response_ts, correct_ts, incorrect_ts
-
-    def early_subjects_count(self):
-        starting_ts = self.starting_sample.ts
-        return len([
-            run_id
-            for run_id in starting_ts.runs_ids
-            if starting_ts.get_trials_by_run(run_id).count() == 160
-        ])

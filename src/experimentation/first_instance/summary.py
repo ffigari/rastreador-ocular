@@ -22,6 +22,16 @@ from common.main import TrialsCollection
 
 ###
 
+def build_first_instance_tex_context(fi):
+    fi_name = "first"
+    st = build_sample_template(fi_name)
+    return {
+        **build_base_instance_tex_context(fi, fi_name),
+        **build_with_response_sample_tex_context(fi.corrected_sample, st.format("corrected")),
+    }
+
+##
+
 class FirstTrial(Trial):
     def __init__(self, parsed_trial):
         super().__init__(
@@ -52,35 +62,11 @@ def look_for_corrective_saccade(incorrect_ts):
     corrected_ts = [t for t in incorrect_ts.all() if t.subject_corrected_side]
     return TrialsCollection(corrected_ts)
 
-def build_first_instance_tex_context(fi):
-    fi_name = "first"
-    st = build_sample_template(fi_name)
-    return {
-        **build_base_instance_tex_context(fi, fi_name),
-        **build_with_response_sample_tex_context(fi.corrected_sample, st.format("corrected")),
-    }
-
 class FirstInstance(Instance):
     def __init__(self):
         super().__init__()
 
         corrected_ts = look_for_corrective_saccade(self.incorrect_sample.ts)
-        # TODO: Put samples in an array so that I can then build the ctx for all samples
-        #       Then I could have both `correct_sample`, `correct_anti` or
-        #       whatever as "views" into the instance data. Otherwise I'm
-        #       restricted to the common samples. 
-        #[
-        #    self.outlier_sample
-        #    self.without_respnose_sample
-        #]
-        #[
-        #    self.correcet_anti_sample
-        #    self.incorrecet_pro_sample
-        #]
-        #[
-        #    self.corrected_sample
-        #]
-        #  Para cada una buildearle el "context" de lo preguntable sobre el sample
         self.corrected_sample = WithResponseSample(corrected_ts)
 
     def _load_data(self):
