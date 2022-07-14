@@ -233,13 +233,13 @@ if __name__ == "__main__":
     ))
     print('-------------------------------------------------------------------------------')
     
-    def compute_correction_time_in_place(trials):
-        for t in trials.all():
-            second_saccade_indexes = second_saccade_interval(t)
-            t['correction_time'] = \
-                t['estimates'][second_saccade_indexes[0]]['t'] \
-                if second_saccade_indexes is not None \
-                else None
+    # def compute_correction_time_in_place(trials):
+    #     for t in trials.all():
+    #         second_saccade_indexes = second_saccade_interval(t)
+    #         t['correction_time'] = \
+    #             t['estimates'][second_saccade_indexes[0]]['t'] \
+    #             if second_saccade_indexes is not None \
+    #             else None
     compute_correction_time_in_place(incorrect_trials)
     
     corrected_trials = [

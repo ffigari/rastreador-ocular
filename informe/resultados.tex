@@ -69,7 +69,33 @@ Para los ensayos válidos se obtuvo en promedio una correctitud de
 {second__prosaccades_correctness_percentage}$\%$ para la tarea de prosacadas y
 de {second__antisaccades_correctness_percentage}$\%$ para aquella de
 antisacadas.
- 
+
+prosacada correcto:
+mean {second__correct_prosaccades_sample__mean_response_time} ms  
+stdev {second__correct_prosaccades_sample__stdev_response_time} ms
+
+prosacada incorrecto:
+mean {second__incorrect_prosaccades_sample__mean_response_time} ms  
+stdev {second__incorrect_prosaccades_sample__stdev_response_time} ms
+
+antisacada correcto:
+mean {second__correct_antisaccades_sample__mean_response_time} ms  
+stdev {second__correct_antisaccades_sample__stdev_response_time} ms
+
+antisacada incorrecto:
+mean {second__incorrect_antisaccades_sample__mean_response_time} ms  
+stdev {second__incorrect_antisaccades_sample__stdev_response_time} ms
+
+
+En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas incorrectos se
+realizó una corrección.
+
+% TODO: Corregir acá que estoy diciendo que cuánto tomo en promedio pero en
+%       verdad se está calculando el instante promedio de respuesta (y no la
+%       diferencia promedio con la primer respuesta que es lo que si quiero)
+Tal corrección tomó en promedio {second__corrected_antisaccades_sample__mean_correction_time}
+ms (stdev {second__corrected_antisaccades_sample__mean_correction_time} ms).
+
 % TODO: Add figure about frequency in function of age 
 
 {second__ages_distribution_figure}

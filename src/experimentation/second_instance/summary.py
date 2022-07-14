@@ -10,13 +10,18 @@ from utils.parsing import parse_trials
 from utils.cleaning import clean
 from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
+from utils.trial_utilities import second_saccade_interval
 
 from common.main import Instance
 from common.main import build_base_instance_tex_context
+from common.main import build_with_response_sample_tex_context
+from common.main import build_with_correction_sample_tex_context
 from common.main import build_attribute_template
 
 from common.main import Sample
 from common.main import WithResponseSample
+from common.main import WithCorrectionSample
+from common.main import build_sample_template
 
 from common.main import Trial
 from common.main import TrialsCollection
@@ -33,26 +38,56 @@ class SecondTrial(Trial):
             parsed_trial['viewport_width'],
         )
 
+def format_percentage(p):
+    return str((int(p * 10000) / 100))
+
 def build_second_instance_tex_context(si):
     si_name = "second"
-    at = build_attribute_template(si_name)
+    instance_name = si_name
+    at = build_attribute_template(instance_name)
+    st = build_sample_template(instance_name)
     return {
-        **build_base_instance_tex_context(si, si_name),
+        **build_base_instance_tex_context(si, instance_name),
+
+        at.format("prosaccades_correctness_percentage"): \
+            format_percentage(si.prosaccades_correctness_percentage()),
+        **build_with_response_sample_tex_context(
+            si.correct_prosaccades_sample,
+            st.format("correct_prosaccades")),
+        **build_with_response_sample_tex_context(
+            si.incorrect_prosaccades_sample,
+            st.format("incorrect_prosaccades")),
+
+        at.format("antisaccades_correctness_percentage"): \
+            format_percentage(si.antisaccades_correctness_percentage()),
+        at.format("antisaccades_correction_percentage"): \
+            format_percentage(si.antisaccades_correction_percentage()),
+        **build_with_response_sample_tex_context(
+            si.correct_antisaccades_sample,
+            st.format("correct_antisaccades")),
+        **build_with_response_sample_tex_context(
+            si.incorrect_antisaccades_sample,
+            st.format("incorrect_antisaccades")),
+        **build_with_correction_sample_tex_context(
+            si.corrected_antisaccades_sample,
+            st.format("corrected_antisaccades")),
+
         at.format("early_subjects_count"): si.early_subjects_count(),
-        at.format("antisaccades_correctness_percentage"): si.antisaccades_correctness_percentage(),
-        at.format("prosaccades_correctness_percentage"): si.prosaccades_correctness_percentage(),
     }
 
 class SecondInstance(Instance):
+    def antisaccades_correction_percentage(self):
+        return \
+                self.corrected_antisaccades_sample.trials_count / \
+                self.incorrect_antisaccades_sample.trials_count 
+
     def antisaccades_correctness_percentage(self):
         cas__count = self.correct_antisaccades_sample.trials_count
-        total = cas__count + self.incorrect_antisaccades_sample.trials_count
-        return cas__count / total
+        return cas__count / cas__count + self.incorrect_antisaccades_sample.trials_count
 
     def prosaccades_correctness_percentage(self):
         cps__count = self.correct_prosaccades_sample.trials_count
-        total = cps__count + self.incorrect_prosaccades_sample.trials_count
-        return cps__count / total
+        return cps__count / cps__count + self.incorrect_prosaccades_sample.trials_count
 
     def early_subjects_count(self):
         starting_ts = self.starting_sample.ts
@@ -65,21 +100,34 @@ class SecondInstance(Instance):
     def __init__(self):
         super().__init__()
 
-        self.correct_antisaccades_sample = Sample(TrialsCollection([ct
-            for ct in self.correct_sample.ts.all()
-            if ct.saccade_type == "anti"
-        ]))
-        self.correct_prosaccades_sample = Sample(TrialsCollection([ct
+        self.correct_prosaccades_sample = WithResponseSample(TrialsCollection([
+            ct
             for ct in self.correct_sample.ts.all()
             if ct.saccade_type == "pro"
         ]))
-        self.incorrect_antisaccades_sample = Sample(TrialsCollection([it
+        self.incorrect_prosaccades_sample = WithResponseSample(TrialsCollection([
+            it
+            for it in self.incorrect_sample.ts.all()
+            if it.saccade_type == "pro"
+        ]))
+
+        self.correct_antisaccades_sample = WithResponseSample(TrialsCollection([
+            ct
+            for ct in self.correct_sample.ts.all()
+            if ct.saccade_type == "anti"
+        ]))
+        self.incorrect_antisaccades_sample = WithResponseSample(TrialsCollection([
+            it
             for it in self.incorrect_sample.ts.all()
             if it.saccade_type == "anti"
         ]))
-        self.incorrect_prosaccades_sample = Sample(TrialsCollection([it
-            for it in self.incorrect_sample.ts.all()
-            if it.saccade_type == "pro"
+        self.corrected_antisaccades_sample = WithCorrectionSample(TrialsCollection([
+            ct
+            for ct in self.corrected_sample.ts.all()
+            if ct.id in set([
+                iat.id
+                for iat in self.incorrect_antisaccades_sample.ts.all()
+            ])
         ]))
 
     def _load_data(self):
@@ -120,3 +168,14 @@ class SecondInstance(Instance):
         correct_ts, incorrect_ts = divide_trials_by_correctness(inlier_ts)
 
         return without_response_ts, correct_ts, incorrect_ts
+
+    def _look_for_corrective_saccade(self, incorrect_ts):
+        corrected_ts = []
+        for t in incorrect_ts.all():
+            second_saccade_indexes = second_saccade_interval(t)
+            second_saccade_was_detected = second_saccade_indexes is not None
+            if second_saccade_was_detected:
+                t.correction_time = t.estimations[second_saccade_indexes[0]]['t']
+                corrected_ts.append(t)
+            
+        return TrialsCollection(corrected_ts)

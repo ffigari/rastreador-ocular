@@ -201,6 +201,21 @@ class WithResponseSample(Sample):
         self.mean_response_time = int(mean(rts))
         self.stdev_response_time = int(stdev(rts))
 
+def build_with_correction_sample_tex_context(sample, sample_name):
+    at = build_attribute_template(sample_name)
+    return {
+        **build_with_response_sample_tex_context(sample, sample_name),
+        at.format("stdev_correction_time"): sample.stdev_correction_time,
+        at.format("mean_correction_time"): sample.mean_correction_time,
+    }
+
+class WithCorrectionSample(WithResponseSample):
+    def __init__(self, ts):
+        super().__init__(ts)
+        cts = [t.correction_time for t in ts.all()]
+        self.mean_correction_time = int(mean(cts))
+        self.stdev_correction_time = int(stdev(cts))
+
 def build_base_instance_tex_context(bi, instance_name):
     st = build_sample_template(instance_name)
     return {
@@ -220,6 +235,9 @@ class Instance():
 
     def _look_for_response(self, inlier_ts):
         raise NotImplementedError('Instance._look_for_response')
+
+    def _look_for_corrective_saccade(self, incorrect_ts):
+        raise NotImplementedError('Instance._look_for_corrective_saccade')
 
     def __init__(self):
         starting_ts = TrialsCollection(self._load_data())
@@ -251,3 +269,6 @@ class Instance():
         self.without_response_sample = Sample(without_response_ts)
         self.correct_sample = WithResponseSample(correct_ts)
         self.incorrect_sample = WithResponseSample(incorrect_ts)
+
+        corrected_ts = self._look_for_corrective_saccade(self.incorrect_sample.ts)
+        self.corrected_sample = WithCorrectionSample(corrected_ts)

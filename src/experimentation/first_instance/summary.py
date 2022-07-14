@@ -48,27 +48,7 @@ class FirstTrial(Trial):
         self.mid_start = parsed_trial['mid_start']
         self.cue_start = parsed_trial['cue_start']
 
-def look_for_corrective_saccade(incorrect_ts):
-    for t in incorrect_ts.all():
-        t.subject_corrected_side = False
-        for e in t.estimations:
-            if e['t'] < t.response_time:
-                continue
-            if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
-                continue
-            t.subject_corrected_side = True
-            t.correction_reaction_time = e['t']
-            break
-    corrected_ts = [t for t in incorrect_ts.all() if t.subject_corrected_side]
-    return TrialsCollection(corrected_ts)
-
 class FirstInstance(Instance):
-    def __init__(self):
-        super().__init__()
-
-        corrected_ts = look_for_corrective_saccade(self.incorrect_sample.ts)
-        self.corrected_sample = WithResponseSample(corrected_ts)
-
     def _load_data(self):
         return [FirstTrial(t) for t in mirror_trials(normalize(load_cleaned_up_trials()))]
 
@@ -128,3 +108,16 @@ class FirstInstance(Instance):
             TrialsCollection(without_response_ts), \
             TrialsCollection(correct_ts), \
             TrialsCollection(incorrect_ts)
+
+    def _look_for_corrective_saccade(self, incorrect_ts):
+        corrected_ts = []
+        for t in incorrect_ts.all():
+            for e in t.estimations:
+                if e['t'] < t.response_time:
+                    continue
+                if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
+                    continue
+                t.correction_time = e['t']
+                corrected_ts.append(t)
+                break
+        return TrialsCollection(corrected_ts)
