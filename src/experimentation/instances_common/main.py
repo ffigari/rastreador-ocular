@@ -205,16 +205,16 @@ def build_with_correction_sample_tex_context(sample, sample_name):
     at = build_attribute_template(sample_name)
     return {
         **build_with_response_sample_tex_context(sample, sample_name),
-        at.format("stdev_correction_time"): sample.stdev_correction_time,
-        at.format("mean_correction_time"): sample.mean_correction_time,
+        at.format("stdev_correction_delay"): sample.stdev_correction_delay,
+        at.format("mean_correction_delay"): sample.mean_correction_delay,
     }
 
 class WithCorrectionSample(WithResponseSample):
-    def __init__(self, ts):
-        super().__init__(ts)
-        cts = [t.correction_time for t in ts.all()]
-        self.mean_correction_time = int(mean(cts))
-        self.stdev_correction_time = int(stdev(cts))
+    def __init__(self, incorrect_ts):
+        super().__init__(incorrect_ts)
+        delays = [t.correction_time - t.response_time for t in incorrect_ts.all()]
+        self.mean_correction_delay = int(mean(delays))
+        self.stdev_correction_delay = int(stdev(delays))
 
 def build_base_instance_tex_context(bi, instance_name):
     st = build_sample_template(instance_name)
