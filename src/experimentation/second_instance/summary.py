@@ -83,11 +83,11 @@ class SecondInstance(Instance):
 
     def antisaccades_correctness_percentage(self):
         cas__count = self.correct_antisaccades_sample.trials_count
-        return cas__count / cas__count + self.incorrect_antisaccades_sample.trials_count
+        return cas__count / (cas__count + self.incorrect_antisaccades_sample.trials_count)
 
     def prosaccades_correctness_percentage(self):
         cps__count = self.correct_prosaccades_sample.trials_count
-        return cps__count / cps__count + self.incorrect_prosaccades_sample.trials_count
+        return cps__count / (cps__count + self.incorrect_prosaccades_sample.trials_count)
 
     def early_subjects_count(self):
         starting_ts = self.starting_sample.ts
