@@ -8,11 +8,18 @@ if unwanted in sys.path:
 from main import drop_runs_without_enough
 from utils.parsing import parse_trials
 from utils.cleaning import clean
-from common.main import Instance
-from common.main import Trial
-from common.main import TrialsCollection
 from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
+
+from common.main import Instance
+from common.main import build_base_instance_tex_context
+from common.main import build_attribute_template
+
+from common.main import Sample
+from common.main import WithResponseSample
+
+from common.main import Trial
+from common.main import TrialsCollection
 
 class SecondTrial(Trial):
     def __init__(self, parsed_trial):
@@ -26,14 +33,22 @@ class SecondTrial(Trial):
             parsed_trial['viewport_width'],
         )
 
+def build_second_instance_tex_context(si):
+    si_name = "second"
+    at = build_attribute_template(si_name)
+    return {
+        **build_base_instance_tex_context(si, si_name),
+        at.format("early_subjects_count"): si.early_subjects_count(),
+    }
+
 class SecondInstance(Instance):
-    def load_data(self):
+    def _load_data(self):
         pts, counts_per_run = parse_trials()
         # TODO: Remove this `self.counts_per_run` variable?
         self.counts_per_run = counts_per_run
         return [SecondTrial(pt) for pt in pts]
 
-    def process_starting_sample(self, starting_ts):
+    def _process_starting_sample(self, starting_ts):
         trials_pre_processing, counts_per_run = clean(starting_ts, self.counts_per_run)
         trials_with_enough_per_run = drop_runs_without_enough(trials_pre_processing, counts_per_run)
         self.counts_per_run = counts_per_run
@@ -57,7 +72,7 @@ class SecondInstance(Instance):
         ]
         return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
 
-    def look_for_response(self, inlier_ts):
+    def _look_for_response(self, inlier_ts):
         # Didn't got to compute this on the second instance
         without_response_ts = TrialsCollection([])
 
@@ -66,13 +81,10 @@ class SecondInstance(Instance):
 
         return without_response_ts, correct_ts, incorrect_ts
 
-    def build_tex_context(self):
+    def early_subjects_count(self):
         starting_ts = self.starting_sample.ts
-        return {
-            **self._build_common_tex_context("second__"),
-            "second__early_subjects_count": len([
-                run_id
-                for run_id in starting_ts.runs_ids
-                if starting_ts.get_trials_by_run(run_id).count() == 160
-            ]),
-        }
+        return len([
+            run_id
+            for run_id in starting_ts.runs_ids
+            if starting_ts.get_trials_by_run(run_id).count() == 160
+        ])

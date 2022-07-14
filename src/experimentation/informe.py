@@ -87,8 +87,12 @@ import sys
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation',
 ] + sys.path
+
 from first_instance.summary import FirstInstance
+from first_instance.summary import build_first_instance_tex_context
+
 from second_instance.summary import SecondInstance
+from second_instance.summary import build_second_instance_tex_context
 
 from instances_common.main import AgesDistributionFigure
 from instances_common.main import DisaggregatedAntisaccadesFigure
@@ -98,10 +102,10 @@ from instances_common.main import ResponseTimesDistributionFigure
 class Results():
     def __init__(self, input_file):
         first_instance = FirstInstance()
-        self.first_instance_context = first_instance.build_tex_context()
+        self.first_instance_context = build_first_instance_tex_context(first_instance)
 
         second_instance = SecondInstance()
-        self.second_instance_context = second_instance.build_tex_context()
+        self.second_instance_context = build_second_instance_tex_context(second_instance)
     
         first_categorized_trials = {
             'anti': {

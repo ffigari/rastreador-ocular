@@ -8,11 +8,17 @@ from response_times import mirror_trials
 from response_times import compute_correcteness_in_place
 from common.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
 from constants import POST_NORMALIZATION_REACTION_TRESHOLD
+
 from common.main import Instance
+from common.main import build_base_instance_tex_context
+from common.main import build_sample_template
+
 from common.main import Sample
+from common.main import WithResponseSample
+from common.main import build_with_response_sample_tex_context
+
 from common.main import Trial
 from common.main import TrialsCollection
-from common.main import WithResponseSample
 
 ###
 
@@ -32,17 +38,55 @@ class FirstTrial(Trial):
         self.mid_start = parsed_trial['mid_start']
         self.cue_start = parsed_trial['cue_start']
 
+def look_for_corrective_saccade(incorrect_ts):
+    for t in incorrect_ts.all():
+        t.subject_corrected_side = False
+        for e in t.estimations:
+            if e['t'] < t.response_time:
+                continue
+            if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
+                continue
+            t.subject_corrected_side = True
+            t.correction_reaction_time = e['t']
+            break
+    corrected_ts = [t for t in incorrect_ts.all() if t.subject_corrected_side]
+    return TrialsCollection(corrected_ts)
+
+def build_first_instance_tex_context(fi):
+    fi_name = "first"
+    st = build_sample_template(fi_name)
+    return {
+        **build_base_instance_tex_context(fi, fi_name),
+        **build_with_response_sample_tex_context(fi.corrected_sample, st.format("corrected")),
+    }
+
 class FirstInstance(Instance):
     def __init__(self):
         super().__init__()
 
-        corrected_ts = self.look_for_corrective_saccade(self.incorrect_sample.ts)
+        corrected_ts = look_for_corrective_saccade(self.incorrect_sample.ts)
+        # TODO: Put samples in an array so that I can then build the ctx for all samples
+        #       Then I could have both `correct_sample`, `correct_anti` or
+        #       whatever as "views" into the instance data. Otherwise I'm
+        #       restricted to the common samples. 
+        #[
+        #    self.outlier_sample
+        #    self.without_respnose_sample
+        #]
+        #[
+        #    self.correcet_anti_sample
+        #    self.incorrecet_pro_sample
+        #]
+        #[
+        #    self.corrected_sample
+        #]
+        #  Para cada una buildearle el "context" de lo preguntable sobre el sample
         self.corrected_sample = WithResponseSample(corrected_ts)
 
-    def load_data(self):
+    def _load_data(self):
         return [FirstTrial(t) for t in mirror_trials(normalize(load_cleaned_up_trials()))]
 
-    def process_starting_sample(self, ts):
+    def _process_starting_sample(self, ts):
         trials_pre_processing = drop_invalid_trials([
             t for t in ts.all() if not t.is_outlier
         ])
@@ -81,7 +125,7 @@ class FirstInstance(Instance):
 
         return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
 
-    def look_for_response(self, inlier_ts):
+    def _look_for_response(self, inlier_ts):
         without_response_ts = [
             t for t in inlier_ts.all()
             if not t.subject_reacted
@@ -98,25 +142,3 @@ class FirstInstance(Instance):
             TrialsCollection(without_response_ts), \
             TrialsCollection(correct_ts), \
             TrialsCollection(incorrect_ts)
-
-    def look_for_corrective_saccade(self, incorrect_ts):
-        for t in incorrect_ts.all():
-            t.subject_corrected_side = False
-            for e in t.estimations:
-                if e['t'] < t.response_time:
-                    continue
-                if e['x'] > - POST_NORMALIZATION_REACTION_TRESHOLD:
-                    continue
-                t.subject_corrected_side = True
-                t.correction_reaction_time = e['t']
-                break
-        corrected_ts = [t for t in incorrect_ts.all() if t.subject_corrected_side]
-        return TrialsCollection(corrected_ts)
-
-    def build_tex_context(self):
-        return {
-            **self._build_common_tex_context("first__"),
-            **{
-                "first__corrected_sample__trials_count": self.corrected_sample.trials_count,
-            }
-        }

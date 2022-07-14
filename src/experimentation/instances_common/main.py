@@ -165,11 +165,31 @@ class TrialsCollection():
     def get_trials_by_run(self, run_id):
         return TrialsCollection([t for t in self.trials if t.run_id == run_id])
 
+###
+
+def build_attribute_template(host_name):
+    return "{}__{{}}".format(host_name)
+
+def build_sample_tex_context(sample, sample_name):
+    at = build_attribute_template(sample_name)
+    return {
+        at.format("trials_count"): sample.trials_count,
+        at.format("subjects_count"): sample.subjects_count,
+    }
+
 class Sample():
     def __init__(self, ts):
         self.ts = ts
         self.trials_count = ts.count()
         self.subjects_count = ts.subjects_count()
+
+def build_with_response_sample_tex_context(sample, sample_name):
+    at = build_attribute_template(sample_name)
+    return {
+        **build_sample_tex_context(sample, sample_name),
+        at.format("stdev_response_time"): sample.stdev_response_time,
+        at.format("mean_response_time"): sample.mean_response_time,
+    }
 
 class WithResponseSample(Sample):
     def __init__(self, ts):
@@ -178,39 +198,33 @@ class WithResponseSample(Sample):
         self.mean_response_time = int(mean(rts))
         self.stdev_response_time = int(stdev(rts))
 
+def build_sample_template(instance_name):
+    return "{}__{{}}_sample".format(instance_name)
+
+def build_base_instance_tex_context(bi, instance_name):
+    st = build_sample_template(instance_name)
+    return {
+        **build_sample_tex_context(bi.starting_sample, st.format("starting")),
+        **build_sample_tex_context(bi.inlier_sample, st.format("inlier")),
+        **build_sample_tex_context(bi.without_response_sample, st.format("without_response")),
+        **build_with_response_sample_tex_context(bi.correct_sample, st.format("correct")),
+        **build_with_response_sample_tex_context(bi.incorrect_sample, st.format("incorrect")),
+    }
+
 class Instance():
-    def _build_common_tex_context(self, prefix):
-        return {
-            "{}starting_sample__trials_count".format(prefix): self.starting_sample.trials_count,
-            "{}starting_sample__subjects_count".format(prefix): self.starting_sample.subjects_count,
-            "{}inlier_sample__trials_count".format(prefix): self.inlier_sample.trials_count,
-            "{}inlier_sample__subjects_count".format(prefix): self.inlier_sample.subjects_count,
-            "{}without_response_sample__trials_count".format(prefix): self.without_response_sample.trials_count,
-            "{}correct_sample__trials_count".format(prefix): self.correct_sample.trials_count,
-            "{}incorrect_sample__trials_count".format(prefix): self.incorrect_sample.trials_count,
-            "{}correct_sample__mean_response_time".format(prefix): self.correct_sample.mean_response_time,
-            "{}correct_sample__stdev_response_time".format(prefix): self.correct_sample.stdev_response_time,
-            "{}incorrect_sample__stdev_response_time".format(prefix): self.incorrect_sample.stdev_response_time,
-            "{}incorrect_sample__mean_response_time".format(prefix): self.incorrect_sample.mean_response_time,
-        }
+    def _load_data(self):
+        raise NotImplementedError('Instance._load_data')
 
-    def build_tex_context(self):
-        # TODO: Build "Instance" tex content here for both instances
-        raise NotImplementedError('Instance.build_tex_context')
+    def _process_starting_sample(self, starting_ts):
+        raise NotImplementedError('Instance._process_starting_sample')
 
-    def load_data(self):
-        raise NotImplementedError('Instance.load_data')
-
-    def process_starting_sample(self, starting_ts):
-        raise NotImplementedError('Instance.process_starting_sample')
-
-    def look_for_response(self, inlier_ts):
-        raise NotImplementedError('Instance.look_for_response')
+    def _look_for_response(self, inlier_ts):
+        raise NotImplementedError('Instance._look_for_response')
 
     def __init__(self):
-        starting_ts = TrialsCollection(self.load_data())
+        starting_ts = TrialsCollection(self._load_data())
         self.starting_sample = Sample(starting_ts)
-        outlier_ts, inlier_ts = self.process_starting_sample(starting_ts)
+        outlier_ts, inlier_ts = self._process_starting_sample(starting_ts)
         self.inlier_sample = Sample(inlier_ts)
 
         self.frequencies, self.ages, self.widths = [], [], []
@@ -233,7 +247,7 @@ class Instance():
                 })
 
         without_response_ts, correct_ts, incorrect_ts = \
-            self.look_for_response(inlier_ts)
+            self._look_for_response(inlier_ts)
         self.without_response_sample = Sample(without_response_ts)
         self.correct_sample = WithResponseSample(correct_ts)
         self.incorrect_sample = WithResponseSample(incorrect_ts)
