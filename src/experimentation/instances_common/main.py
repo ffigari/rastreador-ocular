@@ -185,6 +185,11 @@ class Sample():
         self.ts = ts
         self.trials_count = ts.count()
         self.subjects_count = ts.subjects_count()
+        self.trials_count_per_present_subject = [
+            ts.get_trials_by_run(run_id).count()
+            for run_id
+            in set([t.run_id for t in ts.all()])
+        ]
 
 def build_with_response_sample_tex_context(sample, sample_name):
     at = build_attribute_template(sample_name)

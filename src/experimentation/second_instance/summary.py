@@ -12,6 +12,9 @@ from trials_response_times import compute_response_times_in_place
 from incorrect_trials import divide_trials_by_correctness
 from utils.trial_utilities import second_saccade_interval
 
+
+from statistics import mean, stdev
+
 from common.main import Instance
 from common.main import build_base_instance_tex_context
 from common.main import build_with_response_sample_tex_context
@@ -38,6 +41,9 @@ class SecondTrial(Trial):
             parsed_trial['viewport_width'],
         )
 
+def format_float(f):
+    return str((int(f * 100) / 100))
+
 def format_percentage(p):
     return str((int(p * 10000) / 100))
 
@@ -51,6 +57,8 @@ def build_second_instance_tex_context(si):
 
         at.format("prosaccades_correctness_percentage"): \
             format_percentage(si.prosaccades_correctness_percentage()),
+        at.format("mean_incorrect_prosaccades_count_per_subject"): \
+            format_float(si.mean_incorrect_prosaccades_count_per_subject()),
         **build_with_response_sample_tex_context(
             si.correct_prosaccades_sample,
             st.format("correct_prosaccades")),
@@ -62,6 +70,8 @@ def build_second_instance_tex_context(si):
             format_percentage(si.antisaccades_correctness_percentage()),
         at.format("antisaccades_correction_percentage"): \
             format_percentage(si.antisaccades_correction_percentage()),
+        at.format("mean_incorrect_antisaccades_count_per_subject"): \
+            format_float(si.mean_incorrect_antisaccades_count_per_subject()),
         **build_with_response_sample_tex_context(
             si.correct_antisaccades_sample,
             st.format("correct_antisaccades")),
@@ -76,6 +86,12 @@ def build_second_instance_tex_context(si):
     }
 
 class SecondInstance(Instance):
+    def mean_incorrect_prosaccades_count_per_subject(self):
+        return mean(self.incorrect_prosaccades_sample.trials_count_per_present_subject)
+
+    def mean_incorrect_antisaccades_count_per_subject(self):
+        return mean(self.incorrect_antisaccades_sample.trials_count_per_present_subject)
+
     def antisaccades_correction_percentage(self):
         return \
                 self.corrected_antisaccades_sample.trials_count / \
