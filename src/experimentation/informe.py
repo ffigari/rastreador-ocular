@@ -99,8 +99,22 @@ from instances_common.main import DisaggregatedAntisaccadesFigure
 from instances_common.main import DisaggregatedProsaccadesFigure
 from instances_common.main import ResponseTimesDistributionFigure
 
+def build_results_tex_string(results, template, build_path, logical_path):
+    return template.format(
+        **results.first_instance_context,
+        **results.second_instance_context,
+        **dict([
+            (n, f.as_tex_string(build_path, logical_path))
+            for n, f
+            in results.figures.items()]),
+        **dict([
+            ("{}__label".format(n), f.label)
+            for n, f
+            in results.figures.items()]),
+    ).strip('\n')
+
 class Results():
-    def __init__(self, input_file):
+    def __init__(self):
         first_instance = FirstInstance()
         self.first_instance_context = build_first_instance_tex_context(first_instance)
 
@@ -124,7 +138,6 @@ class Results():
             },
         }
 
-        # TODO: Pass prefix to figures so that they can be distinguished
         self.figures = dict([
             (
                 "first__ages_distribution_figure",
@@ -156,22 +169,6 @@ class Results():
             ),
         ])
 
-    def as_tex_string(self, build_path, logical_path):
-        return input_file.read().format(
-            **self.first_instance_context,
-            **self.second_instance_context,
-            **dict([
-                (n, f.as_tex_string(build_path, logical_path))
-                for n, f
-                in self.figures.items()]),
-            **dict([
-                ("{}__label".format(n), f.label)
-                for n, f
-                in self.figures.items()]),
-        ).strip('\n')
-
-        
-
 ###
 
 import sys
@@ -181,26 +178,30 @@ sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 
 from shared.main import rm_rf
 
+# TODO: Match what is exported to '/build' with what I then copy to overleaf
+#        - intro/ (done)
+#        - metodo/
+#        - results/ (missing figures and tables)
+#        - conclu/
+#        - refs/
 if __name__ == "__main__":
-    build_path = 'informe/build'
-    rm_rf(build_path)
-    with open('informe/resultados.tex') as input_file:
-        os.mkdir(build_path)
-        # TODO: Match what is exported to '/build' with what I then copy to 
-        #       overleaf
-        
-        results_path = '{}/results'.format(build_path)
-        os.mkdir(results_path)
-        main_path = 'informe/build/results/main.tex'
+    rm_rf('informe/build')
+    os.mkdir('informe/build')
 
-        results_build_path = "informe/build/results"
-        results_logical_path = "results"
+    os.mkdir('informe/build/results')
+    with open('informe/resultados.tex') as results_template_file:
+        with open('informe/build/results/main.tex'.format(), "w") as results_output_file:
+            results_output_file.write(build_results_tex_string(
+                Results(),
+                results_template_file.read(),
+                'informe/build/results',
+                "results"
+            ))
 
-        r = Results(input_file)
-        with open(main_path, "w") as output_file:
-            output_file.write(r.as_tex_string(
-                results_build_path,
-                results_logical_path))
+    os.mkdir('informe/build/intro')
+    with open('informe/intro.tex') as intro_template_file:
+        with open('informe/build/intro/main.tex', "w") as intro_output_file:
+            intro_output_file.write(intro_template_file.read().format())
 
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:
