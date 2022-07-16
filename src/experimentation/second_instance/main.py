@@ -44,12 +44,6 @@ def plot_trials_by_run_and_saccade_type(trials):
 
 def drop_runs_without_enough(trials, counts_per_run):
     runs_without_enough_valid_trials = []
-    print('>> Preprocessing drop count report:')
-    print('---------------------------------------------------------------------------------------------------------------------------')
-    print('       || counts                                                                                        ||                 ')
-    print('run_id || original   || low frecuency | unfocused  | early saccade | non response || post preprocessing || is below minimum')
-    print('       || pro ~ anti || pro   ~ anti  | pro ~ anti | pro   ~ anti  | pro  ~ anti  || pro     ~ anti     ||                 ')
-    print('---------------------------------------------------------------------------------------------------------------------------')
     for run_id, counts in sorted(
             counts_per_run.items(),
             key=lambda e: e[1]['pro']['post_preprocessing_count'] + e[1]['anti']['post_preprocessing_count']
@@ -61,31 +55,7 @@ def drop_runs_without_enough(trials, counts_per_run):
         if is_below_minimum:
             runs_without_enough_valid_trials.append(run_id)
     
-        print('{:6d} || {:3d} ~ {:4d} || {:3d}   ~ {:4d}  | {:3d} ~ {:4d} | {:3d}   ~ {:4d}  | {:3d}   ~ {:4d} || {:3d}     ~ {:4d}     || {}'.format(
-            run_id,
-            counts['pro']['original_count'],
-            counts['anti']['original_count'],
-            counts['pro']['low_frequency_drop_count'],
-            counts['anti']['low_frequency_drop_count'],
-            counts['pro']['unfocused_drop_count'],
-            counts['anti']['unfocused_drop_count'],
-            counts['pro']['early_saccade_drop_count'],
-            counts['anti']['early_saccade_drop_count'],
-            counts['pro']['non_response_drop_count'],
-            counts['anti']['non_response_drop_count'],
-            counts['pro']['post_preprocessing_count'],
-            counts['anti']['post_preprocessing_count'],
-            is_below_minimum
-        ))
-    print('---------------------------------------------------------------------------------------------------------------------------')
-    
     if len(runs_without_enough_valid_trials) > 0:
-        print('')
-        print('>> Trials of {:d} runs (ids=[{:s}]) were dropped due to having less than {:d} trials per task after preprocessing'.format(
-            len(runs_without_enough_valid_trials),
-            ', '.join([str(i) for i in runs_without_enough_valid_trials]),
-            MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
-        ))
         trials = TrialsCollection([
             t for t in trials.all()
             if t.run_id not in runs_without_enough_valid_trials

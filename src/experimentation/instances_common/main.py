@@ -185,11 +185,25 @@ class Sample():
         self.ts = ts
         self.trials_count = ts.count()
         self.subjects_count = ts.subjects_count()
-        self.trials_count_per_present_subject = [
+        trials_count_per_present_subject = [
             ts.get_trials_by_run(run_id).count()
             for run_id
             in set([t.run_id for t in ts.all()])
         ]
+
+        self.mean_trials_count_per_subject = \
+            mean(trials_count_per_present_subject) \
+            if len(trials_count_per_present_subject) > 0 \
+            else None
+        self.stdev_trials_count_per_subject = \
+            stdev(trials_count_per_present_subject) \
+            if len(trials_count_per_present_subject) > 1 \
+            else None
+
+        self.involved_run_ids = set([ t.run_id for t in self.ts.all() ])
+
+    def subsample_by_run_id(self, run_id):
+        return Sample(self.ts.get_trials_by_run(run_id))
 
 def build_with_response_sample_tex_context(sample, sample_name):
     at = build_attribute_template(sample_name)
