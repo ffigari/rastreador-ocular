@@ -189,19 +189,24 @@ if __name__ == "__main__":
     os.mkdir('informe/build')
 
     os.mkdir('informe/build/results')
-    with open('informe/resultados.tex') as results_template_file:
-        with open('informe/build/results/main.tex'.format(), "w") as results_output_file:
-            results_output_file.write(build_results_tex_string(
+    with open('informe/resultados.tex') as template_file:
+        with open('informe/build/results/main.tex'.format(), "w") as o_file:
+            o_file.write(build_results_tex_string(
                 Results(),
-                results_template_file.read(),
+                template_file.read(),
                 'informe/build/results',
                 "results"
             ))
 
     os.mkdir('informe/build/intro')
-    with open('informe/intro.tex') as intro_template_file:
-        with open('informe/build/intro/main.tex', "w") as intro_output_file:
-            intro_output_file.write(intro_template_file.read().format())
+    with open('informe/intro.tex') as i_file:
+        with open('informe/build/intro/main.tex', "w") as o_file:
+            o_file.write(i_file.read().format())
+
+    os.mkdir('informe/build/metodo')
+    with open('informe/metodo.tex') as i_file:
+        with open('informe/build/metodo/main.tex', "w") as o_file:
+            o_file.write(i_file.read())
 
     with open('informe/tesis.tex') as i_file:
         with open('informe/build/tesis.tex', "w") as o_file:
