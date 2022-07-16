@@ -1,0 +1,87 @@
+\documentclass[11pt,a4paper,twoside]{tesis}  % puede agregarse `twoside` como opción si se necesita "formato libro"
+
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[left=3cm,right=3cm,bottom=3.5cm,top=3.5cm]{geometry}
+
+\usepackage{biblatex}
+\usepackage{csquotes}  % https://tex.stackexchange.com/a/229653
+\addbibresource{refs/eye_tracking.bib}
+\addbibresource{refs/neuro_tools.bib}
+\addbibresource{refs/antisaccades_task.bib}
+\addbibresource{refs/saccades.bib}
+\addbibresource{refs/other_areas.bib}
+
+% algunas constantes para asegurarme de que quede todo parejo
+\usepackage{xspace}  % para garantizar un espacio dsp de los newcommand
+                     % https://tex.stackexchange.com/a/17731
+\newcommand{\eyetracking}{\textit{eye tracking}\xspace}
+\newcommand{\eyetrackingweb}{\eyetracking web\xspace}
+\newcommand{\eyetracker}{\textit{eye tracker}\xspace}
+\newcommand{\eyetrackers}{\textit{eye trackers}\xspace}
+\newcommand{\js}{\texttt{JavaScript}\xspace}
+\newcommand{\jspsych}{\texttt{JSPsych}\xspace}
+\newcommand{\pupilext}{\texttt{PupilEXT}\xspace}
+\newcommand{\psychophysics}{\texttt{PsychoPhysics}\xspace}
+\newcommand{\turkergaze}{\texttt{TurkerGaze}\xspace}
+\newcommand{\webgazer}{\texttt{WebGazer}\xspace}
+\newcommand{\pace}{\texttt{PACE}\xspace}
+\newcommand{\rastoc}{\texttt{rastoc}\xspace}
+
+\usepackage{svg}  % https://tex.stackexchange.com/a/445182/273585
+
+\usepackage{hyperref}  % clickable links
+
+\usepackage{enumitem}         % reduce space between itemize's items 
+\setlist[itemize]{noitemsep}  % https://tex.stackexchange.com/a/457737/273585
+
+\usepackage[T1]{fontenc}  % https://tex.stackexchange.com/a/1775/273585
+
+\begin{document}
+
+\def\autor{Francisco Figari}
+\def\tituloTesis{Aplicaciones de eye tracking online en diagnóstico de
+condiciones neuropsicológicas}
+\def\runtitulo{Aplicaciones de eye tracking online en diagnóstico de
+condiciones neuropsicológicas}
+%\def\runtitle{Star Wars: Rebellion and Empire}
+\def\director{Juan Kamienkowski}
+\def\codirector{Gustavo Juantorena}
+\def\lugar{Buenos Aires, 2022}
+\input{caratula}
+
+%%%% ABSTRACTS, AGRADECIMIENTOS Y DEDICATORIA
+\frontmatter
+\pagestyle{empty}
+\input{abs_esp.tex}
+
+%\cleardoublepage
+%\input{abs_en.tex} % OPCIONAL: comentar si no se quiere
+
+%\cleardoublepage
+%\input{agradecimientos.tex} % OPCIONAL: comentar si no se quiere
+
+%\cleardoublepage
+%\input{dedicatoria.tex}  % OPCIONAL: comentar si no se quiere
+
+\cleardoublepage
+\tableofcontents
+
+\mainmatter
+\pagestyle{headings}
+
+\input{intro/main.tex}
+
+\chapter{Desarrollo}
+
+\input{content/metodo.tex}
+
+\input{results/main.tex}
+
+\chapter{Conclusiones}
+
+\printbibliography
+\backmatter
+
+\end{document}

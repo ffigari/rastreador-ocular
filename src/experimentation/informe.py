@@ -203,6 +203,10 @@ if __name__ == "__main__":
         with open('informe/build/intro/main.tex', "w") as intro_output_file:
             intro_output_file.write(intro_template_file.read().format())
 
+    with open('informe/tesis.tex') as i_file:
+        with open('informe/build/tesis.tex', "w") as o_file:
+            o_file.write(i_file.read())
+
 # TODO: Delete this content below as it gets reused for re-writing
     #with open("informe/resultados.tex") as f:
         #print(f.read().format())
