@@ -129,7 +129,7 @@ Idealmente se verificaría que durante un período previo a la interacción del
 sujeto estas estimaciones coincidan en algún grado con las coordenadas de los
 estímulos presentados [10.6].
 Sin embargo, debido a las desviaciones detectadas en la primer fase de
-experimentación (cf. sección \ref{section:results:skewed_estimates}) se
+experimentación (cf. sección \ref{section:skewed-estimates}) se
 verifica, en cambio, un correcto posicionamiento relativo.
 Dicho de otra manera, en lugar de verificar que al mostrar un estímulo en la
 esquina superior derecha las estimaciones coinciden con la coordenada de tal
@@ -144,7 +144,7 @@ Queda pendiente estudiar e implementar mecanismos de calibración y validación
 que balanceen correctamente experiencia de uso y calidad de las estimaciones.
 
 TODO: Revisar si el párrafo siguiente vale la pena que esté o si alcanza con lo
-que se comente en \ref{section:method:preprocessing}
+que se comente en \ref{section:preprocessing}
 
 Este mecanismo de validación se implementó para la segunda ronda de
 experimentación.
@@ -405,21 +405,38 @@ terminar con la mitad de los bloques, en caso de que se hubiera cansado.
     \label{fig:antisaccades-protocol}
 \end{figure}
 
-\subsection{Preprocesamiento} \label{section:method:preprocessing}
+\subsection{Preprocesamiento} \label{section:preprocessing}
 
 En ambas instancias de experimentación el objetivo principal fue detectar
 dirección y latencia de la respuesta dada por los sujetos.
 Para lograr esto tuvieron que implementarse mecanismos que detectaran sacadas
 en base a las estimaciones arrojadas por nuestro prototipo.
 Sin embargo, dada la naturaleza remota de nuestra experimentación se obtuvieron
-tanto frecuencia de muestreo distintas [fig 2] como resoluciones de pantalla
-distintas [fig 3].
+tanto frecuencia de muestreo distintas (Figura
+\ref{fig:sampling-frequency-distribution}) como resoluciones de pantalla
+distintas (Figura \ref{fig:widths-distribution}).
 Para simplificar la implementación de la detección de sacadas se buscó
 uniformizar los datos obtenidos de distintas fuentes a un mismo formato, además
 se descartaron aquellos datos que se consideraron inválidos.
 En ambas instancias se ignoraron los valores “y” de las estimaciones, pues para
 nuestro caso de uso sólo interesaba capturar los movimientos horizontales de la
 mirada.
+
+\begin{figure}
+  \centering
+  TODO: load image
+  \caption{Distribución de frecuencias de muestreo}
+  \label{fig:sampling-frequency-distribution}
+\end{figure}
+
+\begin{figure}
+  \centering
+  TODO: load image
+  \caption{Distribución de anchos de resoluciones}
+  \label{fig:widths-distribution}
+\end{figure}
+
+\label{}
 
 En primer lugar, se descartaron las repeticiones cuyas estimaciones tuvieran
 una frecuencia menor a 15 Hz.

@@ -208,6 +208,11 @@ if __name__ == "__main__":
         with open('informe/build/metodo/main.tex', "w") as o_file:
             o_file.write(i_file.read())
 
+    os.mkdir('informe/build/conclu')
+    with open('informe/conclu.tex') as i_file:
+        with open('informe/build/conclu/main.tex', "w") as o_file:
+            o_file.write(i_file.read())
+
     with open('informe/tesis.tex') as i_file:
         with open('informe/build/tesis.tex', "w") as o_file:
             o_file.write(i_file.read())
