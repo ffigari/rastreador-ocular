@@ -127,7 +127,7 @@ Durante la presentación de estos estímulos se estará estimando la mirada en l
 pantalla.
 Idealmente se verificaría que durante un período previo a la interacción del
 sujeto estas estimaciones coincidan en algún grado con las coordenadas de los
-estímulos presentados [10.6].
+estímulos presentados \cite{huang_2016_pace}.
 Sin embargo, debido a las desviaciones detectadas en la primer fase de
 experimentación (cf. sección \ref{section:skewed-estimates}) se
 verifica, en cambio, un correcto posicionamiento relativo.
@@ -143,26 +143,14 @@ hubiera un correcto posicionamiento relativo horizontal.
 Queda pendiente estudiar e implementar mecanismos de calibración y validación
 que balanceen correctamente experiencia de uso y calidad de las estimaciones.
 
-TODO: Revisar si el párrafo siguiente vale la pena que esté o si alcanza con lo
-que se comente en \ref{section:preprocessing}
-
-Este mecanismo de validación se implementó para la segunda ronda de
-experimentación.
-Además de dar mayor seguridad respecto de que la herramienta haya quedado
-correctamente calibrada, nos permite normalizar luego los datos de los sujetos
-al momento de analizarlos.
-Esto se debe a que las posiciones verticales de los estímulos de nuestro diseño
-de la tarea de antisacadas coinciden con las posiciones verticales de los
-estímulos de validación.
-Las estimaciones sobre el eje horizontal pueden luego normalizarse por ejemplo
-al rango [-1, 1], tal que el valor -1 corresponda a las estimaciones obtenidas
-al mostrar el estímulo que aparece a la izquierda y el valor 1 a aquellas
-obtenidas al mostrar el estímulo derecho.
-Esta forma de normalizar permite lidiar con las desviaciones mencionadas.
+Como se detallará en la sección de preprocesamiento (sección
+\ref{section:preprocessing}), este mecanismo de validación facilita luego la
+implementación de una rutina de normalización.
 
 \subsubsection{Estimación de la mirada}
 
-Se delegó la estimación de la mirada al paquete \webgazer [10.4].
+Se delegó la estimación de la mirada al paquete \webgazer
+\cite{papoutsaki_2016_webgazer}.
 Esta se basa en un modelado explícito de la cara para localizar los ojos y un
 modelo por apariencia para estimar la mirada.
 
@@ -436,8 +424,6 @@ mirada.
   \label{fig:widths-distribution}
 \end{figure}
 
-\label{}
-
 En primer lugar, se descartaron las repeticiones cuyas estimaciones tuvieran
 una frecuencia menor a 15 Hz.
 Luego, a frecuencia de muestreo se uniformizó a 30 Hz realizando interpolación
@@ -447,6 +433,8 @@ cada 1000 / 30 ms.
 Para cada uno de estos timestamps se interpoló la estimación correspondiente
 utilizando la estimación anterior y la estimación posterior. 
 
+% TODO: Rever cómo se explican las normalizaciones
+%       capaz convenga hacer algun diagrama
 Las estimaciones de la mirada fueron luego llevadas del rango variable por
 sujeto al rango [-1, 1] buscando que al valor 0 fueran a caer las estimaciones
 correspondientes a cuando el sujeto miraba al centro de la pantalla.

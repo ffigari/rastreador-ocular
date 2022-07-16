@@ -78,7 +78,7 @@ def build_correctness_table_tex_string(ct):
         {per_subject}
 
         Los sujetos involucrados en esta tabla son aquellos que obtuvieron
-        suficiente cantidad de ensayos luegos de aplicar los criterios de 
+        suficiente cantidad de ensayos luego de aplicar los criterios de 
         filtrado.
         Todo sujeto termina con una cantidad no significativa de ensayos en
         ambos grupos incorrectos, algunos realizando incluso correctamente todo
