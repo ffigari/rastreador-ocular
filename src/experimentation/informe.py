@@ -211,6 +211,10 @@ if __name__ == "__main__":
                 'informe/build/results',
                 "results"
             ))
+    [
+        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/results/{}'.format(fn))
+        for fn in [
+            'skewed-estimations.png']]
 
     os.mkdir('informe/build/conclu')
     with open('informe/conclu.tex') as i_file:
