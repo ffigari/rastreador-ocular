@@ -292,23 +292,12 @@ estudiarse qué información es extrapolable con las estimaciones.
   \item Otro aspecto para extender y mejorar el prototipo implementado es la
 detección de descalibraciones.
   Actualmente esta se realiza a través de detección de movimiento de los ojos
-del sujeto.
-  No sólo deben de poder realizarse mejoras sobre tal detección de movimiento
-sino que tampoco es evidente si este es el mejor camino.
-  Por ejemplo, cada cierta cantidad de ensayos pueden mostrarse dos puntos
-rápidos sucesivos para los cuales es esperable una sacada reflexiva.
-  La capacidad de capturar tal sacada podría utilizarse para decidir si la
-herramienta se ha descalibrado. \\
-  % TODO: esto meterlo por acá
-  Sin embargo, los \eyetrackers comerciales implementan mecanismos consistentes
-en mostrar regularmente un punto en la pantalla para detectar si la estimación
-de la mirada coincide con la coordenada del estímulo (e.g., \textit{drift
-correction} en el \eyetracker \textit{EyeLink}).
-  Este mecanismo u otros podrían implementarse para asistir o reemplazar al
-mecanismo implementado actualmente. \\
-  % TODO: Ver bien cómo entra la línea siguiente acá
-  El diseño de los protocolos necesarios para mantener calibrado el sistema
-debe tener en cuenta la duración total del experimento \\
+del sujeto pero es posible que existan otras alternativas.
+  Por ejemplo, \eyetrackers comerciales muestran regularmente un punto para
+detectar si la estimación en ese momento coincide con las coordenadas del punto
+(e.g., \textit{drift correction} en el \eyetracker \eyelink).
+  Al momento de implementar alguno de estos mecanismos debe tenerse en cuenta
+su rendimiento y cómo se vea afectada la duración total del experimento.
   Al margen de cómo se implemente la detección de descalibración, debe
 definirse con mayor claridad qué significa que la herramienta esté
 correctamente calibrada.
