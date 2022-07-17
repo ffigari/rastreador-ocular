@@ -173,20 +173,34 @@ class Results():
 
 import sys
 import os
+import shutil
 
 sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'] + sys.path
 
 from shared.main import rm_rf
 
-# TODO: Match what is exported to '/build' with what I then copy to overleaf
-#        - intro/ (done)
-#        - metodo/
-#        - results/ (missing figures and tables)
-#        - conclu/
-#        - refs/
 if __name__ == "__main__":
     rm_rf('informe/build')
     os.mkdir('informe/build')
+
+    with open('informe/tesis.tex') as i_file:
+        with open('informe/build/tesis.tex', "w") as o_file:
+            o_file.write(i_file.read())
+
+    os.mkdir('informe/build/intro')
+    with open('informe/intro.tex') as i_file:
+        with open('informe/build/intro/main.tex', "w") as o_file:
+            o_file.write(i_file.read().format())
+
+    os.mkdir('informe/build/metodo')
+    with open('informe/metodo.tex') as i_file:
+        with open('informe/build/metodo/main.tex', "w") as o_file:
+            o_file.write(i_file.read())
+    [
+        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/metodo/{}'.format(fn))
+        for fn in [
+            'sampling-frequency-distribution.png',
+            'widths-distribution.png']]
 
     os.mkdir('informe/build/results')
     with open('informe/resultados.tex') as template_file:
@@ -198,71 +212,7 @@ if __name__ == "__main__":
                 "results"
             ))
 
-    os.mkdir('informe/build/intro')
-    with open('informe/intro.tex') as i_file:
-        with open('informe/build/intro/main.tex', "w") as o_file:
-            o_file.write(i_file.read().format())
-
-    os.mkdir('informe/build/metodo')
-    with open('informe/metodo.tex') as i_file:
-        with open('informe/build/metodo/main.tex', "w") as o_file:
-            o_file.write(i_file.read())
-
     os.mkdir('informe/build/conclu')
     with open('informe/conclu.tex') as i_file:
         with open('informe/build/conclu/main.tex', "w") as o_file:
             o_file.write(i_file.read())
-
-    with open('informe/tesis.tex') as i_file:
-        with open('informe/build/tesis.tex', "w") as o_file:
-            o_file.write(i_file.read())
-
-# TODO: Delete this content below as it gets reused for re-writing
-    #with open("informe/resultados.tex") as f:
-        #print(f.read().format())
-#    description_targets = ['frequencies', 'resolutions', 'ages']
-#    allowed_targets = \
-#        description_targets + \
-#        ['post_processing', 'response_times_distribution']
-#    if len(sys.argv) < 2:
-#        print('missing target', file=sys.stderr)
-#        sys.exit(-1)
-#    target = sys.argv[1]
-#    if target not in allowed_targets:
-#        print(
-#            'unkown target, valid ones are [{}]'.format(', '.join(allowed_targets)),
-#            file=sys.stderr
-#        )
-#        sys.exit(-1)
-#
-#    allowed_scopes = ['both', 'first', 'second']
-#    if len(sys.argv) < 3:
-#        print(
-#            'missing scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
-#            file=sys.stderr
-#        )
-#        sys.exit(-1)
-#    scope = sys.argv[2]
-#    if scope not in allowed_scopes:
-#        print(
-#            'unkown scope, valid ones are [{}]'.format(', '.join(allowed_scopes)),
-#            file=sys.stderr
-#        )
-#        sys.exit(-1)
-#
-#    instances = {}
-#    if scope == 'both':
-#    elif scope == 'first':
-#    else:
-#
-#    if target in description_targets:
-#        plot_descriptive_histograms(instances, target, scope)
-#    elif target == 'post_processing':
-#        for name in instances.keys():
-#            saccades = instances[name]['saccades']
-#            if name == 'first':
-#            elif name == 'second':
-#    elif target == 'response_times_distribution':
-#        for name in instances.keys():
-#            saccades = instances[name]['saccades']
-#            plot_responses_times_distributions(saccades)
