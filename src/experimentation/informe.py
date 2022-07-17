@@ -214,9 +214,14 @@ if __name__ == "__main__":
     [
         shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/results/{}'.format(fn))
         for fn in [
+            'sampling-frequency-by-age.png',
             'skewed-estimations.png']]
 
     os.mkdir('informe/build/conclu')
     with open('informe/conclu.tex') as i_file:
         with open('informe/build/conclu/main.tex', "w") as o_file:
             o_file.write(i_file.read())
+    [
+        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/conclu/{}'.format(fn))
+        for fn in [
+            'undetected-saccade-example.png']]

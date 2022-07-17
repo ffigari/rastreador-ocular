@@ -181,14 +181,8 @@ calibración.
 
 \subsubsection{Descalibración}
 
-En nuestro contexto web es inevitable una eventual descalibración del sistema,
-es decir alcanzar un estado del sistema tal que las estimaciones arrojadas no
-tienen suficiente calidad.
-Entonces, debe proveerse algún mecanismo que identifique tal situación para
-poder a su vez informar cuándo es necesaria una recalibración.
-
 A modo de primer acercamiento se implementó un mecanismo basado en detectar
-movimiento de la cabeza del sujeto.
+movimiento de los ojos del sujeto.
 En base al conjunto de \textit{features} de ojos capturados al calibrar, se
 obtienen un par de conjuntos de rectángulos que contienen a los ojos en cada
 uno de los correspondientes \textit{frames}.
@@ -202,23 +196,6 @@ el recuadro del ojo deberá mantenerse para que se considere que no hubo
 movimiento significativo.
 Si a partir de algún \textit{frame} el recuadro de alguno de los ojos sale de
 su multipoligono se considerará al sistema como descalibrado.
-
-TODO: El párrafo que viene me parece que se repite con lo que quedó en la
-conclu
-
-El mecanismo propuesto es únicamente un primer acercamiento al problema de
-detectar la descalibración del sistema.
-En contextos de laboratorio es posible implementar modelos de estimación de la
-mirada invariantes a movimientos de cabeza [10.1].
-Además, al estar el movimiento de la cabeza habitualmente restringido, la
-detección de descalibración suele ser menos relevante que en el contexto web
-remoto.
-Sin embargo, los \eyetrackers comerciales implementan mecanismos consistentes
-en mostrar regularmente un punto en la pantalla para detectar si la estimación
-de la mirada coincide con la coordenada del estímulo (e.g., \textit{drift
-correction} en el \eyetracker \textit{EyeLink}).
-Este mecanismo u otros podrían implementarse para asistir o reemplazar al
-mecanismo implementado actualmente.
 
 \subsubsection{Playgrounds}
 
@@ -412,15 +389,19 @@ mirada.
 
 \begin{figure}
   \centering
+  % TODO: Build plot
   \includegraphics[width=\textwidth]{metodo/sampling-frequency-distribution.png}
   \caption{Distribución de frecuencias de muestreo}
+  % TODO: Comment plot
   \label{fig:sampling-frequency-distribution}
 \end{figure}
 
 \begin{figure}
   \centering
+  % TODO: Build plot
   \includegraphics[width=\textwidth]{metodo/widths-distribution.png}
   \caption{Distribución de anchos de resoluciones}
+  % TODO: Comment plot
   \label{fig:widths-distribution}
 \end{figure}
 

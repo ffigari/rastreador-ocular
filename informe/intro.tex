@@ -442,24 +442,20 @@ en calibrar en base a interacciones por parte del sujeto.
 
 Realizadas la calibración y la validación, puede proseguirse a estimar la
 mirada del sujeto.
-Sin embargo, al no contar con invarianza frente a movimientos de cabeza ni con
-estructuras que limiten el movimiento del sujeto ocurrirá tarde o temprano una
-descalibración del sistema.
-Frente a esto una opción es realizar tareas cortas y calibrar repetidamente
-\cite{{xu_2015_turker_gaze}}.
-Esto puede resultar en un experimento de duración significativamente mayor,
-además de ser tedioso e incluso innecesario pues podría ocurrir que la
-herramienta no se haya descalibrado.
-La opción explorada en este trabajo consiste en proveer una heurística que
-decida cuándo se ha descalibrado el sistema.
-En base a ella se podrá elegir cuándo realizar una recalibración.
-No es obvio cómo implementar tal heurística, pues ocurre además que los modelos
-de estimación de la mirada no suelen incluir un mecanismo que indique cuándo el
-sistema ha pasado a estar descalibrado
-\cite{{hansen_2009_eye_of_the_beholder}}.
-
-Calibrar y mantener calibrado un sistema de \eyetracking web resulta entonces
-un problema desafiante para el cual quedan varios interrogantes por responder.
+A diferencia de un contexto de laboratorio, en un contexto web no se cuenta
+con invarianza frente a movimientos de cabeza ni con estructuras que limiten el
+movimiento del sujeto.
+En consecuencia ocurrirá tarde o temprano una descalibración del sistema.
+Esta tendrá que ser detectada para luego indicar la necesidad de realizar una
+recalibración.
+Xu et al \cite{{xu_2015_turker_gaze}} optaron por realizar tareas cortas y
+calibrar repetidamente.
+La opción explorada en este trabajo consiste en detectar continuamente
+movimientos que el sujeto realice con la cabeza.
+La necesidad de detectar descalibraciones no parece ser de igual relevancia en
+el contexto habitual de laboratorio, pues los modelos de estimación de la
+mirada no suelen incluir un mecanismos que indique cuándo el sistema ha pasado
+a estar descalibrado \cite{{hansen_2009_eye_of_the_beholder}}.
 
 \section{{Caso de estudio: Tarea de antisacadas}}
 

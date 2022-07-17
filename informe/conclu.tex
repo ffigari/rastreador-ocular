@@ -182,14 +182,16 @@ preprocesamiento debido a bajas frecuencias de muestreo (cf. Figura
   Esto puede deberse a que las características del hardware utilizado también
 se correlacionen con la edad.
 
-\end{itemize}
+  \begin{figure}
+    \centering
+    % TODO: Build plot
+    \includegraphics[width=\textwidth]{conclu/undetected-saccade-example.png}
+    \caption{Ejemplo de sacada no detectada}
+    % TODO: Comment plot
+    \label{fig:sampling-frequency-by-age}
+  \end{figure}
 
-\begin{figure}
-  \centering
-  TODO: load image
-  \caption{Ejemplo de sacada no detectada}
-  \label{fig:undetected-saccade}
-\end{figure}
+\end{itemize}
 
 \section{Trabajo futuro}
 
@@ -297,6 +299,16 @@ sino que tampoco es evidente si este es el mejor camino.
 rápidos sucesivos para los cuales es esperable una sacada reflexiva.
   La capacidad de capturar tal sacada podría utilizarse para decidir si la
 herramienta se ha descalibrado. \\
+  % TODO: esto meterlo por acá
+  Sin embargo, los \eyetrackers comerciales implementan mecanismos consistentes
+en mostrar regularmente un punto en la pantalla para detectar si la estimación
+de la mirada coincide con la coordenada del estímulo (e.g., \textit{drift
+correction} en el \eyetracker \textit{EyeLink}).
+  Este mecanismo u otros podrían implementarse para asistir o reemplazar al
+mecanismo implementado actualmente. \\
+  % TODO: Ver bien cómo entra la línea siguiente acá
+  El diseño de los protocolos necesarios para mantener calibrado el sistema
+debe tener en cuenta la duración total del experimento \\
   Al margen de cómo se implemente la detección de descalibración, debe
 definirse con mayor claridad qué significa que la herramienta esté
 correctamente calibrada.
