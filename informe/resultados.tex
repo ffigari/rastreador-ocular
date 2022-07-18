@@ -31,36 +31,37 @@ incorrectas (promedio $\pm$ desvio std: Correctas $=$
 
 {first__response_times_distribution_figure}
 
-{first__disaggregated_antisaccades_figure}
+\begin{{figure}}
+  \includegraphics{{results/first-disaggregated-antisaccades.png}}
+  \caption{{Antisacadas desagregadas}}
+\end{{figure}}
 
 \subsubsection{{Estimaciones desviadas}} \label{{section:skewed-estimates}}
 
-Se encontró que para varios sujetos las estimaciones obtenidas por el prototipo
-sobre el eje horizontal no coincidían con las posiciones reales de la mirada.
-En cambio para cada uno de estos sujetos se detectó una desviación de sus
-estimaciones durante todo el experimento.
-La Figura \ref{{fig:skewed-estimations-example}} ilustra este fenómeno:
-durante la fase de fijación para los sujetos 47 y 24 se obtienen estimaciones
-respectivamente cercanas a los valores 2100 y 1400 píxeles, cuando los valores
-reales serían 1100 y 900.
-Esto no ocurre para todos los sujetos, como puede verse con los sujetos 43 y 22.
-
-Para cada sujeto las estimaciones obtenidas son sin embargo consistentes en
-cuánto a su desviación. Si bien los valores obtenidos no coinciden con las
-coordenadas reales de los estímulos, sí se mantendrá el posicionamiento
-relativo de las estimaciones durante la duración del experimento. Entonces, es
-posible continuar identificando las regiones de interés (izquierda, centro y
-derecha) del experimento. Estas desviaciones tuvieron que tenerse en cuenta al
-momento de normalizar los datos. Asimismo, el hecho que se mantuviera el
-correcto posicionamiento relativo dió lugar al mecanismo de validación
-implementado.
+Se encontró que para varios sujetos [TODO: cuántos sujetos? con qué magnitud?]
+las estimaciones obtenidas estaban desviadas del centro (Figura
+\ref{{fig:skewed-estimations-example}}).
+Para cada sujeto, estas desviaciones fueron consistentes a lo largo de todo el
+experimento.
+Además se mantuvo la posición relativa de las estimaciones.
+Luego de ser apropiadamente normalizados, se logró entonces utilizar los datos
+recolectados para identificar si la mirada caía en algunas de las tres regiones
+de interés.
 
 \begin{{figure}}
   \centering
   % TODO: Build plot
   \includegraphics[width=\textwidth]{{results/skewed-estimations.png}}
   \caption{{Ejemplos de sujetos con estimaciones desviadas}}
-  % TODO: Comment plot
+  Durante la fase de fijación los sujetos 47 y 24 obtuvieron respectivamente
+  estimaciones cercanas a los 2100 y 1400 píxeles, cuando los valores reales
+  serían 1100 y 900.
+  Estas desviaciones no ocurrieron para todo sujeto, como lo muestran los
+  sujetos 42 y 22. \\
+  El valor de desviación reportado [TODO: cambiar cómo se reporta esto que
+  mucho no se entiende así como está] se calcula como la división entre la
+  coordenada estimada del centro (el promedio de las estimaciones durante el
+  período de fijación) y la coordenada real del centro.
   \label{{fig:skewed-estimations-example}}
 \end{{figure}}
 
@@ -123,10 +124,10 @@ válidos.
 
 \begin{{figure}}
   \centering
-  % TODO: Build plot
   \includegraphics[width=\textwidth]{{results/sampling-frequency-by-age.png}}
   \caption{{Frecuencia de muestreo en función de la edad}}
-  % TODO: Comment plot
+  [TODO: Regenerar plot y ajustar dimensiones] \\
+  [TODO: Debería escribir algún comentario acá?]
   \label{{fig:sampling-frequency-by-age}}
 \end{{figure}}
 
@@ -134,8 +135,20 @@ válidos.
 
 {second__response_times_distribution_figure}
 
-% TODO: Poner en vertical las figuras que corresponda
-%       https://tex.stackexchange.com/a/135697/273585
-{second__disaggregated_antisaccades_figure}
+\begin{{figure}}
+  \centering
+  \includegraphics{{results/second-disaggregated-antisaccades.png}}
+  \caption{{Antisacadas desagregadas}}
+  [TODO: Acá estaba explicando comentando que los datos estaban normalizados
+  pero la verdad que no aporta.
+  Sí comentar sobre los datos alineados temporalmente el efecto de la
+  normalización en la \textit{{apariencia}} final de los datos.\\
+  Lo mismo para la figura de prosacadas y para la de la primera instancia. \\
+  Capaz se las pueda unificar y hacer en simultáneo comentario de las tres.]
+  \label{{fig:second-disaggregated-antisaccades}}
+\end{{figure}}
 
-{second__disaggregated_prosaccades_figure}
+\begin{{figure}}
+  \includegraphics{{results/second-disaggregated-prosaccades.png}}
+  \caption{{Prosacadas desagregadas}}
+\end{{figure}}

@@ -95,15 +95,16 @@ from second_instance.summary import SecondInstance
 from second_instance.summary import build_second_instance_tex_context
 
 from instances_common.main import AgesDistributionFigure
-from instances_common.main import DisaggregatedAntisaccadesFigure
-from instances_common.main import DisaggregatedProsaccadesFigure
 from instances_common.main import ResponseTimesDistributionFigure
+from instances_common.main import plot
 
 def build_results_tex_string(results, template, build_path, logical_path):
     return template.format(
         **results.first_instance_context,
         **results.second_instance_context,
         **dict([
+            # TODO: Estos llamados sacarlos de acá por que el tex string va a 
+            #       a pasar a estar en el tex
             (n, f.as_tex_string(build_path, logical_path))
             for n, f
             in results.figures.items()]),
@@ -138,6 +139,9 @@ class Results():
             },
         }
 
+        plot.disaggregated_saccades(first_categorized_trials, 'first', 'anti')
+        plot.disaggregated_saccades(second_categorized_trials, 'second', 'anti')
+        plot.disaggregated_saccades(second_categorized_trials, 'second', 'pro')
         self.figures = dict([
             (
                 "first__ages_distribution_figure",
@@ -154,18 +158,6 @@ class Results():
             (
                 "second__response_times_distribution_figure",
                 ResponseTimesDistributionFigure(second_categorized_trials, 'second')
-            ),
-            (
-                "first__disaggregated_antisaccades_figure",
-                DisaggregatedAntisaccadesFigure(first_categorized_trials, 'first')
-            ),
-            (
-                "second__disaggregated_antisaccades_figure",
-                DisaggregatedAntisaccadesFigure(second_categorized_trials, 'second')
-            ),
-            (
-                "second__disaggregated_prosaccades_figure",
-                DisaggregatedProsaccadesFigure(second_categorized_trials, 'second')
             ),
         ])
 

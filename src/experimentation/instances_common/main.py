@@ -23,20 +23,11 @@ class Figure():
         raise NotImplementedError(
             'Children of `Figure` need to implement `render` method')
 
-    # This also builds the figure
+    # TODO: Rename this to `savefig` once all figures tex strings are
+    #       moved (back..) to the tex file
     def as_tex_string(self, build_path, logical_path):
-        output_format = "png"
-        output_file_name = \
-            "{}.{}".format(self.figure_name, output_format)
-        output_file_build_path = \
-            "{}/{}".format(build_path, output_file_name)
-        output_file_logical_path = \
-            "{}/{}".format(logical_path, output_file_name)
-
-        fig = self.render()
-        rm_rf(output_file_build_path)
-        fig.savefig(output_file_build_path, format=output_format)
-        plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+        output_file_logical_path = save_fig(
+            self.figure_name, build_path, logical_path, self.render)
         
         ctx = {
             "logical_path": output_file_logical_path,
@@ -90,8 +81,10 @@ class ResponseTimesDistributionFigure(Figure):
 
 class DisaggregatedSaccadesFigure(Figure):
     def __init__(self, categorized_trials, instance_tag, task_tag):
+        # TODO: Este __init__ no es necesario porque ahora solo voy a estar
+        #       ploteando
         super().__init__ (
-            "{}_disaggregated_{}saccades_figure".format(instance_tag, task_tag),
+            "{}-disaggregated-{}saccades".format(instance_tag, task_tag),
             "{} desagregadas según correctitud y tiempo de respuesta ({} instancia)".format(
                 'Antisacadas' if task_tag == 'anti' else 'Prosacadas',
                 'primera' if instance_tag == 'first' else 'segunda'
@@ -103,19 +96,40 @@ class DisaggregatedSaccadesFigure(Figure):
         self.task_tag = task_tag
 
     def render(self):
-        fig = plot_post_processing_trials(
-            self.categorized_trials[self.task_tag],
-            'prosacadas' if self.task_tag == 'pro' else 'antisacadas')
-        return fig
+        return render_disaggregated_saccades(self.categorized_trials, self.task_tag)
 
+def render_disaggregated_saccades(categorized_trials, task_tag):
+    return plot_post_processing_trials(
+            categorized_trials[task_tag],
+            'prosacadas' if task_tag == 'pro' else 'antisacadas')
 
-class DisaggregatedAntisaccadesFigure(DisaggregatedSaccadesFigure):
-    def __init__(self, categorized_trials, instance_tag):
-        super().__init__(categorized_trials, instance_tag, 'anti')
+def save_fig(figure_name, build_path, logical_path, renderer):
+    output_format = "png"
+    output_file_name = \
+        "{}.{}".format(figure_name, output_format)
+    output_file_build_path = \
+        "{}/{}".format(build_path, output_file_name)
+    output_file_logical_path = \
+        "{}/{}".format(logical_path, output_file_name)
 
-class DisaggregatedProsaccadesFigure(DisaggregatedSaccadesFigure):
-    def __init__(self, categorized_trials, instance_tag):
-        super().__init__(categorized_trials, instance_tag, 'pro')
+    fig = renderer()
+    rm_rf(output_file_build_path)
+    fig.savefig(output_file_build_path, format=output_format)
+    plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+
+    return output_file_logical_path
+
+class plot:
+    class disaggregated_saccades:
+        def __init__(self, categorized_trials, instance_tag, task_tag):
+            def renderer():
+                return render_disaggregated_saccades(categorized_trials, task_tag)
+            save_fig(
+                '{}-disaggregated-{}saccades'.format(instance_tag, task_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
 
 #####
 
