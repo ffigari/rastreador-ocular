@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-from utils.trials_collection import TrialsCollection
 from utils.parsing import parse_trials
 from utils.trial_utilities import first_saccade_interval
 from utils.constants import EARLINESS_THRESHOLD_POST_VISUAL_CUE_IN_MS

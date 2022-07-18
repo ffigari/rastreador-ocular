@@ -232,7 +232,6 @@ class SecondInstance(Instance):
 
     def _load_data(self):
         pts, counts_per_run = parse_trials()
-        # TODO: Remove this `self.counts_per_run` variable?
         self.counts_per_run = counts_per_run
         return [SecondTrial(pt) for pt in pts]
 

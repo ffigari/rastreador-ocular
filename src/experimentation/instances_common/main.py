@@ -9,6 +9,8 @@ from instances_common.plots import plot_ages
 from instances_common.plots import plot_widths
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
+from instances_common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
+from instances_common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
 
 from shared.main import rm_rf
 
@@ -57,6 +59,61 @@ class plot:
                 return plot_responses_times_distributions(categorized_trials)
             save_fig(
                 '{}-response-times-distribution'.format(instance_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
+
+    class frecuency_by_age:
+        def __init__(_, starting_sample, instance_tag):
+            def renderer():
+                ts = starting_sample.ts
+                def get_age_of(run_id):
+                    return [
+                        t for t in ts.all() if t.run_id == run_id
+                    ][0].subject_age
+                get_frequencies_of = lambda run_id: [
+                    t.original_sampling_frecuency_in_hz
+                    for t in ts.all()
+                    if t.run_id == run_id
+                ]
+                ages, mean_frequencies, stdev_frequencies = zip(*[(
+                    v['age'], v['mean'], v['std']
+                ) for _, v in dict([(
+                    run_id, {
+                        'age': get_age_of(run_id),
+                        'mean': mean(get_frequencies_of(run_id)),
+                        'std': stdev(get_frequencies_of(run_id))
+                    }
+                ) for run_id in set([t.run_id for t in ts.all()])]).items()])
+
+                fig, ax = plt.subplots()
+                ax.errorbar(
+                    ages, mean_frequencies, yerr=stdev_frequencies,
+                    linestyle='None', marker='o', capsize=3,
+                    label="frecuencia de muestreo de cada sujeto"
+                )
+                ax.axhline(
+                    MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
+                    linestyle="--",
+                    color='red',
+                    alpha=0.3,
+                    label="frecuencia mínima de muestreo"
+                )
+                ax.axhline(
+                    TARGET_SAMPLING_FREQUENCY_IN_HZ,
+                    linestyle="--",
+                    color='black',
+                    alpha=0.3,
+                    label="frecuencia objetivo de muestreo"
+                )
+                ax.set_ylabel('frecuencia de muestreo (en Hz)')
+                ax.set_xlabel('edad (en años)')
+
+                ax.legend()
+                return fig
+            save_fig(
+                '{}-sampling-frequencies-by-age'.format(instance_tag),
                 'informe/build/results',
                 'results',
                 renderer

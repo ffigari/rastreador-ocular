@@ -134,6 +134,7 @@ class Results():
         plot.response_times_distribution(second_categorized_trials, 'second')
         plot.ages_distribution(first_instance.ages, 'first')
         plot.ages_distribution(second_instance.ages, 'second')
+        plot.frecuency_by_age(second_instance.starting_sample, 'second')
 
 ###
 
@@ -180,7 +181,6 @@ if __name__ == "__main__":
     [
         shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/results/{}'.format(fn))
         for fn in [
-            'sampling-frequency-by-age.png',
             'skewed-estimations.png']]
 
     os.mkdir('informe/build/conclu')
