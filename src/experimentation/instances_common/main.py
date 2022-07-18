@@ -12,97 +12,6 @@ from instances_common.plots import plot_responses_times_distributions
 
 from shared.main import rm_rf
 
-class Figure():
-    def __init__(self, figure_name, title, label, comment):
-        self.figure_name = figure_name
-        self.title = title
-        self.label = label
-        self.comment = comment
-
-    def render(self):
-        raise NotImplementedError(
-            'Children of `Figure` need to implement `render` method')
-
-    # TODO: Rename this to `savefig` once all figures tex strings are
-    #       moved (back..) to the tex file
-    def as_tex_string(self, build_path, logical_path):
-        output_file_logical_path = save_fig(
-            self.figure_name, build_path, logical_path, self.render)
-        
-        ctx = {
-            "logical_path": output_file_logical_path,
-            "label": self.label,
-            "comment": self.comment,
-            "title": self.title,
-        }
-
-        return """
-            \\begin{{figure}}
-                \\centering
-                \\includegraphics{{{logical_path}}}
-                \\caption{{{title}}}
-                {comment}
-                \\label{{{label}}}
-            \\end{{figure}}
-        """.format(**ctx)
-
-class AgesDistributionFigure(Figure):
-    def __init__(self, ages, instance_tag):
-        super().__init__(
-            "{}_ages_distribution".format(instance_tag),
-            "Distribución de edades ({} instancia)".format(
-                'primera' if instance_tag == 'first' else 'segunda'
-            ),
-            "fig:results:{}-ages-distribution".format(instance_tag),
-            "% TODO: Write a comment for each instance"
-        )
-        self.ages = ages
-
-    def render(self):
-        fig = plot_ages(self.ages)
-        return fig
-
-
-class ResponseTimesDistributionFigure(Figure):
-    def __init__(self, categorized_trials, instance_tag):
-        super().__init__(
-            "{}_response_time_distribution".format(instance_tag),
-            "Distribución de tiempos de respuesta ({} instancia)".format(
-                'primera' if instance_tag == 'first' else 'segunda'
-            ),
-            "fig:results:{}-rts-distribution".format(instance_tag),
-            "% TODO: Write a comment"
-        )
-        self.categorized_trials = categorized_trials
-
-    def render(self):
-        fig = plot_responses_times_distributions(self.categorized_trials)
-        return fig
-
-class DisaggregatedSaccadesFigure(Figure):
-    def __init__(self, categorized_trials, instance_tag, task_tag):
-        # TODO: Este __init__ no es necesario porque ahora solo voy a estar
-        #       ploteando
-        super().__init__ (
-            "{}-disaggregated-{}saccades".format(instance_tag, task_tag),
-            "{} desagregadas según correctitud y tiempo de respuesta ({} instancia)".format(
-                'Antisacadas' if task_tag == 'anti' else 'Prosacadas',
-                'primera' if instance_tag == 'first' else 'segunda'
-            ),
-            "fig:results:{}_disaggregated_{}saccades".format(instance_tag, task_tag),
-            "Los ejes temporales de las repeticiones han sido alineados para que el valor t=0 corresponda a la aparición del estímulo visual. Las estimaciones de las coordenadas \'x\' han sido normalizadas al rango [-1, 1]."
-        )
-        self.categorized_trials = categorized_trials
-        self.task_tag = task_tag
-
-    def render(self):
-        return render_disaggregated_saccades(self.categorized_trials, self.task_tag)
-
-def render_disaggregated_saccades(categorized_trials, task_tag):
-    return plot_post_processing_trials(
-            categorized_trials[task_tag],
-            'prosacadas' if task_tag == 'pro' else 'antisacadas')
-
 def save_fig(figure_name, build_path, logical_path, renderer):
     output_format = "png"
     output_file_name = \
@@ -120,18 +29,38 @@ def save_fig(figure_name, build_path, logical_path, renderer):
     return output_file_logical_path
 
 class plot:
-    class disaggregated_saccades:
-        def __init__(self, categorized_trials, instance_tag, task_tag):
+    class ages_distribution:
+        def __init__(_, ages, instance_tag):
             def renderer():
-                return render_disaggregated_saccades(categorized_trials, task_tag)
+                return plot_ages(ages)
+            save_fig(
+                "{}-ages-distribution".format(instance_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
+    class disaggregated_saccades:
+        def __init__(_, categorized_trials, instance_tag, task_tag):
+            def renderer():
+                return plot_post_processing_trials(
+                    categorized_trials[task_tag],
+                    'prosacadas' if task_tag == 'pro' else 'antisacadas')
             save_fig(
                 '{}-disaggregated-{}saccades'.format(instance_tag, task_tag),
                 'informe/build/results',
                 'results',
                 renderer
             )
-
-#####
+    class response_times_distribution:
+        def __init__(_, categorized_trials, instance_tag):
+            def renderer():
+                return plot_responses_times_distributions(categorized_trials)
+            save_fig(
+                '{}-response-times-distribution'.format(instance_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
 
 from statistics import mean, stdev
 

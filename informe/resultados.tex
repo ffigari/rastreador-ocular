@@ -27,13 +27,22 @@ incorrectas (promedio $\pm$ desvio std: Correctas $=$
 {first__incorrect_sample__mean_response_time} ms $\pm$
 {first__incorrect_sample__stdev_response_time}).
 
-{first__ages_distribution_figure}
+\begin{{figure}}
+  \includegraphics{{results/first-ages-distribution.png}}
+  \caption{{Distribución de edades}}
+  \label{{fig:first-ages-distribution}}
+\end{{figure}}
 
-{first__response_times_distribution_figure}
+\begin{{figure}}
+  \includegraphics{{results/first-response-times-distribution.png}}
+  \caption{{Distribución de tiempos de respuesta}}
+  \label{{fig:first-response-times-distribution}}
+\end{{figure}}
 
 \begin{{figure}}
   \includegraphics{{results/first-disaggregated-antisaccades.png}}
   \caption{{Antisacadas desagregadas}}
+  \label{{fig:first-disaggregated-prosaccades}}
 \end{{figure}}
 
 \subsubsection{{Estimaciones desviadas}} \label{{section:skewed-estimates}}
@@ -123,27 +132,21 @@ válidos.
 {second__correctness_summary_table}
 
 \begin{{figure}}
-  \centering
-  \includegraphics[width=\textwidth]{{results/sampling-frequency-by-age.png}}
-  \caption{{Frecuencia de muestreo en función de la edad}}
-  [TODO: Regenerar plot y ajustar dimensiones] \\
-  [TODO: Debería escribir algún comentario acá?]
-  \label{{fig:sampling-frequency-by-age}}
+  \includegraphics{{results/second-response-times-distribution.png}}
+  \caption{{Distribución de tiempos de respuesta}}
+  \label{{fig:second-response-times-distribution}}
 \end{{figure}}
-
-{second__ages_distribution_figure}
-
-{second__response_times_distribution_figure}
 
 \begin{{figure}}
   \centering
   \includegraphics{{results/second-disaggregated-antisaccades.png}}
   \caption{{Antisacadas desagregadas}}
-  [TODO: Acá estaba explicando comentando que los datos estaban normalizados
-  pero la verdad que no aporta.
+  [TODO: \\
+  - Acá estaba explicando comentando que los datos estaban normalizados pero la
+  verdad que no aporta.
   Sí comentar sobre los datos alineados temporalmente el efecto de la
-  normalización en la \textit{{apariencia}} final de los datos.\\
-  Lo mismo para la figura de prosacadas y para la de la primera instancia. \\
+  normalización en la \textit{{apariencia}} final de los datos.
+  Lo mismo para la figura de prosacadas y para la de la primera instancia.
   Capaz se las pueda unificar y hacer en simultáneo comentario de las tres.]
   \label{{fig:second-disaggregated-antisaccades}}
 \end{{figure}}
@@ -151,4 +154,21 @@ válidos.
 \begin{{figure}}
   \includegraphics{{results/second-disaggregated-prosaccades.png}}
   \caption{{Prosacadas desagregadas}}
+  \label{{fig:second-disaggregated-prosaccades}}
+\end{{figure}}
+
+\begin{{figure}}
+  \centering
+  \includegraphics[width=\textwidth]{{results/sampling-frequency-by-age.png}}
+  \caption{{Frecuencia de muestreo en función de la edad}}
+  [TODO: \\
+  - Regenerar plot y ajustar dimensiones \\
+  - Debería escribir algún comentario acá?]
+  \label{{fig:sampling-frequency-by-age}}
+\end{{figure}}
+
+\begin{{figure}}
+  \includegraphics{{results/first-ages-distribution.png}}
+  \caption{{Distribución de edades}}
+  \label{{fig:first-ages-distribution}}
 \end{{figure}}

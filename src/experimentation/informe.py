@@ -94,8 +94,6 @@ from first_instance.summary import build_first_instance_tex_context
 from second_instance.summary import SecondInstance
 from second_instance.summary import build_second_instance_tex_context
 
-from instances_common.main import AgesDistributionFigure
-from instances_common.main import ResponseTimesDistributionFigure
 from instances_common.main import plot
 
 def build_results_tex_string(results, template, build_path, logical_path):
@@ -142,23 +140,13 @@ class Results():
         plot.disaggregated_saccades(first_categorized_trials, 'first', 'anti')
         plot.disaggregated_saccades(second_categorized_trials, 'second', 'anti')
         plot.disaggregated_saccades(second_categorized_trials, 'second', 'pro')
+        plot.response_times_distribution(first_categorized_trials, 'first')
+        plot.response_times_distribution(second_categorized_trials, 'second')
+        plot.ages_distribution(first_instance.ages, 'first')
+        plot.ages_distribution(second_instance.ages, 'second')
+
+        # TODO: Check usage of this and delete it
         self.figures = dict([
-            (
-                "first__ages_distribution_figure",
-                AgesDistributionFigure(first_instance.ages, 'first')
-            ),
-            (
-                "second__ages_distribution_figure",
-                AgesDistributionFigure(second_instance.ages, 'second')
-            ),
-            (
-                "first__response_times_distribution_figure",
-                ResponseTimesDistributionFigure(first_categorized_trials, 'first')
-            ),
-            (
-                "second__response_times_distribution_figure",
-                ResponseTimesDistributionFigure(second_categorized_trials, 'second')
-            ),
         ])
 
 ###
