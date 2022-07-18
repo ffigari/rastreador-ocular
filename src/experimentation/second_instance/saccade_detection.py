@@ -1,11 +1,3 @@
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-import random
-from math import ceil
-
-from utils.parsing import parse_trials
-from fixated_trials import drop_non_fixated_trials
-
 def compute_saccades_in_place(trials):
     for t in trials.all():
         es = t.estimations
@@ -44,54 +36,3 @@ def compute_saccades_in_place(trials):
 
         t.saccades_intervals = saccades_intervals
         t.velocities = velocities
-
-if __name__ == "__main__":
-    trials = drop_non_fixated_trials(parse_trials()[0])
-    compute_saccades_in_place(trials)
-    tss = trials.all()
-    random.shuffle(tss)
-    for t in tss:
-        es = t['estimates']
-        saccades_intervals = t['saccades_intervals']
-        velocities = t['velocities']
-        fig, ax = plt.subplots()
-        print(saccades_intervals)
-        for (i, j) in saccades_intervals:
-            interval_es = es[i:j+1]
-            min_x = min([e['x'] for e in interval_es])
-            max_x = max([e['x'] for e in interval_es])
-            color = 'red' if velocities[i]['v'] > 0 else 'blue'
-            ax.add_patch(Rectangle(
-                (es[i]['t'], min_x), es[j]['t'] - es[i]['t'], max_x - min_x,
-                color=color, alpha=0.1
-            ))
-        min_t, max_t = min([e['t'] for e in es]), max([e['t'] for e in es])
-        _t = ceil(min_t / 100) * 100
-        while _t < max_t:
-            alpha = 0.1 if _t != 0 else 0.3
-            ax.axvline(_t, color="black", alpha=alpha)
-            _t += 100
-        ax.axhline(1, color='black', alpha=0.3)
-        ax.axhline(0, color='black', alpha=0.3)
-        ax.axhline(-1, color='black', alpha=0.3)
-        ax.plot(
-            [e['t'] for e in es],
-            [e['x'] for e in es],
-            color='black',
-            alpha=0.7,
-            marker="1"
-        )
-        ax.plot(
-            [e['t'] for e in velocities],
-            [e['v'] for e in velocities],
-            color='green',
-            alpha=0.7,
-            marker="2"
-        )
-        ax.set_ylim([-1.3, 1.3])
-        fig.suptitle("saccade analysis (run_id=%d; trial_id=%d; saccade_type=%s)" % (
-            t['run_id'],
-            t['trial_id'],
-            t['saccade_type']
-        ))
-        plt.show()

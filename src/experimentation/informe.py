@@ -83,6 +83,7 @@ def plot_descriptive_histograms(instances, target, scope):
 
 ###
 
+import random
 import sys
 sys.path = [
     '/home/francisco/eye-tracking/rastreador-ocular/src/experimentation',
@@ -95,6 +96,7 @@ from second_instance.summary import SecondInstance
 from second_instance.summary import build_second_instance_tex_context
 
 from instances_common.main import plot
+from instances_common.undetected_saccades import draw_saccade_detection
 
 def build_results_tex_string(results, template, build_path, logical_path):
     return template.format(
@@ -104,38 +106,34 @@ def build_results_tex_string(results, template, build_path, logical_path):
 
 class Results():
     def __init__(self):
-        first_instance = FirstInstance()
-        self.first_instance_context = build_first_instance_tex_context(first_instance)
+        fi = FirstInstance()
+        si = SecondInstance()
+        self.first_instance = fi
+        self.second_instance = si
+        
 
-        second_instance = SecondInstance()
-        self.second_instance_context = build_second_instance_tex_context(second_instance)
+        # TODO: Estos contextos capaz convenga crearlos donde se los usa
+        self.first_instance_context = \
+            build_first_instance_tex_context(fi)
+        self.second_instance_context = \
+            build_second_instance_tex_context(si)
     
-        first_categorized_trials = {
+        self.first_categorized_trials = {
             'anti': {
-                'correct': first_instance.correct_sample.ts.all(),
-                'incorrect': first_instance.incorrect_sample.ts.all(),
+                'correct': fi.correct_sample.ts.all(),
+                'incorrect': fi.incorrect_sample.ts.all(),
             }
         }
-        second_categorized_trials = {
+        self.second_categorized_trials = {
             'anti': {
-                'correct': [t for t in second_instance.correct_sample.ts.all() if t.saccade_type == 'anti'],
-                'incorrect': [t for t in second_instance.incorrect_sample.ts.all() if t.saccade_type == 'anti'],
+                'correct': [t for t in si.correct_sample.ts.all() if t.saccade_type == 'anti'],
+                'incorrect': [t for t in si.incorrect_sample.ts.all() if t.saccade_type == 'anti'],
             },
             'pro': {
-                'correct': [t for t in second_instance.correct_sample.ts.all() if t.saccade_type == 'pro'],
-                'incorrect': [t for t in second_instance.incorrect_sample.ts.all() if t.saccade_type == 'pro'],
+                'correct': [t for t in si.correct_sample.ts.all() if t.saccade_type == 'pro'],
+                'incorrect': [t for t in si.incorrect_sample.ts.all() if t.saccade_type == 'pro'],
             },
         }
-
-        plot.disaggregated_saccades(first_categorized_trials, 'first', 'anti')
-        plot.disaggregated_saccades(second_categorized_trials, 'second', 'anti')
-        plot.disaggregated_saccades(second_categorized_trials, 'second', 'pro')
-        plot.response_times_distribution(first_categorized_trials, 'first')
-        plot.response_times_distribution(second_categorized_trials, 'second')
-        plot.ages_distribution(first_instance.ages, 'first')
-        plot.ages_distribution(second_instance.ages, 'second')
-        plot.frecuency_by_age(second_instance.starting_sample, 'second')
-
 ###
 
 import sys
@@ -147,6 +145,30 @@ sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 from shared.main import rm_rf
 
 if __name__ == "__main__":
+    r = Results()
+    if len(sys.argv) > 1 and sys.argv[1] == "display-saccade-detection":
+        def do(t):
+            print('>> saccade detection over trial')
+            print('run_id={}'.format(t.run_id))
+            print('trial_id={}'.format(t.trial_id))
+    
+            fig, ax = plt.subplots()
+            fig = draw_saccade_detection(fig, ax, t)
+            plt.show()
+            plt.close(fig)
+
+        sis = r.second_instance.inlier_sample
+        if len(sys.argv) > 2:
+            run_id = int(sys.argv[2])
+            trial_id = int(sys.argv[3])
+            t = sis.find_trial(run_id, trial_id)
+            do(t)
+        else:
+            ts = sis.ts.all()
+            random.shuffle(ts)
+            [do(t) for t in ts]
+        sys.exit(0)
+
     rm_rf('informe/build')
     os.mkdir('informe/build')
 
@@ -173,7 +195,7 @@ if __name__ == "__main__":
     with open('informe/resultados.tex') as template_file:
         with open('informe/build/results/main.tex'.format(), "w") as o_file:
             o_file.write(build_results_tex_string(
-                Results(),
+                r,
                 template_file.read(),
                 'informe/build/results',
                 "results"
@@ -187,7 +209,13 @@ if __name__ == "__main__":
     with open('informe/conclu.tex') as i_file:
         with open('informe/build/conclu/main.tex', "w") as o_file:
             o_file.write(i_file.read())
-    [
-        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/conclu/{}'.format(fn))
-        for fn in [
-            'undetected-saccade-example.png']]
+
+    plot.disaggregated_saccades(r.first_categorized_trials, 'first', 'anti')
+    plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'anti')
+    plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'pro')
+    plot.response_times_distribution(r.first_categorized_trials, 'first')
+    plot.response_times_distribution(r.second_categorized_trials, 'second')
+    plot.ages_distribution(r.first_instance.ages, 'first')
+    plot.ages_distribution(r.second_instance.ages, 'second')
+    plot.frecuency_by_age(r.second_instance.starting_sample, 'second')
+    plot.undetected_saccade_example(r.second_instance.inlier_sample)

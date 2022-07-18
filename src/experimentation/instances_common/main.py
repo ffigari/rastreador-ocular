@@ -11,6 +11,7 @@ from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
 from instances_common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 from instances_common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from instances_common.undetected_saccades import draw_trial_over_ax
 
 from shared.main import rm_rf
 
@@ -41,6 +42,7 @@ class plot:
                 'results',
                 renderer
             )
+
     class disaggregated_saccades:
         def __init__(_, categorized_trials, instance_tag, task_tag):
             def renderer():
@@ -53,6 +55,7 @@ class plot:
                 'results',
                 renderer
             )
+
     class response_times_distribution:
         def __init__(_, categorized_trials, instance_tag):
             def renderer():
@@ -116,6 +119,29 @@ class plot:
                 '{}-sampling-frequencies-by-age'.format(instance_tag),
                 'informe/build/results',
                 'results',
+                renderer
+            )
+
+    class undetected_saccade_example:
+        def __init__(_, inlier_sample):
+            def renderer():
+                fig, axes = plt.subplots(nrows=2, ncols=2)
+                def foo(ax, t):
+                    # TODO: Add 'a) ...' to the title
+                    ax.set_title(
+                        'run_id={} trial_id={}'.format(t.run_id, t.trial_id))
+                [[fn(ax, inlier_sample.find_trial(run_id, trial_id))
+                    for ax, (run_id, trial_id) in zip(
+                        [axes[0][0], axes[0][1], axes[1][0], axes[1][1]],
+                        [(105, 225), (68, 267), (76, 504), (96, 332)])]
+                    for fn in [
+                        draw_trial_over_ax, foo]]
+                return fig
+
+            save_fig(
+                'undetected-saccade-example',
+                'informe/build/conclu',
+                'conclu',
                 renderer
             )
 
@@ -201,6 +227,14 @@ class Sample():
             else None
 
         self.involved_run_ids = set([ t.run_id for t in self.ts.all() ])
+
+    def find_trial(self, run_id, trial_id):
+        for t in self.ts.all():
+            if t.run_id == run_id and t.trial_id == trial_id:
+                return t
+        raise RuntimeError(
+            'trial of run_id={} and trial_id={} was not found in the sample'.format(
+                run_id, trial_id))
 
     def subsample_by_run_id(self, run_id):
         return Sample(self.ts.get_trials_by_run(run_id))
