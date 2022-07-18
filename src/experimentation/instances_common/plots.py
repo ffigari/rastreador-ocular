@@ -125,15 +125,6 @@ def plot_post_processing_trials(task_saccades, task_label):
             )
             axes_with_at_least_one_trial.add((i, j))
     size = max_t / BUCKETS_AMOUNT
-    for i in range(BUCKETS_AMOUNT):
-        axes[i][0].set_ylabel(
-            'Estimación de\nla coordenada x\npost normalización\nRespuesta iniciada en\nrango [{:.2f}, {:.2f}] ms'.format(
-                i * size,
-                (i + 1) * size
-            ),
-            rotation='horizontal',
-            ha='right'
-        )
     ylim = 2
     for (i, j) in axes_with_at_least_one_trial:
         axes[i][j].add_patch(Rectangle(
@@ -141,6 +132,7 @@ def plot_post_processing_trials(task_saccades, task_label):
             color='red', alpha=0.1
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
+    fig.supylabel('Buckets de {:.2f} ms según tiempo de respuesta inicial'.format(size))
     return fig
 
 def plot_responses_times_distributions(trials_results):
@@ -223,9 +215,8 @@ def plot_responses_times_distributions(trials_results):
             )
     ax.set_ylabel('Proporción del total')
     ax.set_xlabel('Tiempo de respuesta (en ms)')
-    plt.title('''Distribución de tiempos de respuesta
-Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'''.format(
-        bucket_size
-    ))
+    plt.title(
+        'Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'.format(
+            bucket_size))
     plt.legend()
     return fig

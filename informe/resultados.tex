@@ -29,19 +29,19 @@ incorrectas (promedio $\pm$ desvio std: Correctas $=$
 
 \begin{{figure}}
   \includegraphics{{results/first-ages-distribution.png}}
-  \caption{{Distribución de edades}}
+  \caption{{Distribución de edades (primera instancia)}}
   \label{{fig:first-ages-distribution}}
 \end{{figure}}
 
 \begin{{figure}}
   \includegraphics{{results/first-response-times-distribution.png}}
-  \caption{{Distribución de tiempos de respuesta}}
+  \caption{{Distribución de tiempos de respuesta (primera instancia)}}
   \label{{fig:first-response-times-distribution}}
 \end{{figure}}
 
 \begin{{figure}}
   \includegraphics{{results/first-disaggregated-antisaccades.png}}
-  \caption{{Antisacadas desagregadas}}
+  \caption{{Antisacadas desagregadas (primera instancia)}}
   \label{{fig:first-disaggregated-prosaccades}}
 \end{{figure}}
 
@@ -59,9 +59,8 @@ de interés.
 
 \begin{{figure}}
   \centering
-  % TODO: Build plot
+
   \includegraphics[width=\textwidth]{{results/skewed-estimations.png}}
-  \caption{{Ejemplos de sujetos con estimaciones desviadas}}
   Durante la fase de fijación los sujetos 47 y 24 obtuvieron respectivamente
   estimaciones cercanas a los 2100 y 1400 píxeles, cuando los valores reales
   serían 1100 y 900.
@@ -71,6 +70,10 @@ de interés.
   mucho no se entiende así como está] se calcula como la división entre la
   coordenada estimada del centro (el promedio de las estimaciones durante el
   período de fijación) y la coordenada real del centro.
+
+  [TODO: Regenerar este plot para que macheen las dimensiones]
+
+  \caption{{Ejemplos de sujetos con estimaciones desviadas}}
   \label{{fig:skewed-estimations-example}}
 \end{{figure}}
 
@@ -87,22 +90,24 @@ Para los ensayos válidos se obtuvo en promedio una correctitud de
 de {second__antisaccades_correctness_percentage}$\%$ para aquella de
 antisacadas.
 
-prosacada correcto:
-mean {second__correct_prosaccades_sample__mean_response_time} ms  
-stdev {second__correct_prosaccades_sample__stdev_response_time} ms
+\begin{{table}}[htb]
+    \centering
 
-prosacada incorrecto:
-mean {second__incorrect_prosaccades_sample__mean_response_time} ms  
-stdev {second__incorrect_prosaccades_sample__stdev_response_time} ms
+              || anti            || pro             \\
+              || corr   | incorr || corr   | incorr \\
+        mean
+          || {second__correct_antisaccades_sample__mean_response_time}
+          | {second__incorrect_antisaccades_sample__mean_response_time}
+          || {second__correct_prosaccades_sample__mean_response_time}
+          | {second__incorrect_prosaccades_sample__mean_response_time} \\
+        stdev
+          || {second__correct_antisaccades_sample__stdev_response_time}
+          | {second__incorrect_antisaccades_sample__stdev_response_time}
+          || {second__correct_prosaccades_sample__stdev_response_time}
+          | {second__incorrect_prosaccades_sample__stdev_response_time}
 
-antisacada correcto:
-mean {second__correct_antisaccades_sample__mean_response_time} ms  
-stdev {second__correct_antisaccades_sample__stdev_response_time} ms
-
-antisacada incorrecto:
-mean {second__incorrect_antisaccades_sample__mean_response_time} ms  
-stdev {second__incorrect_antisaccades_sample__stdev_response_time} ms
-
+    \caption{{Tiempos de respuesta según correctitud y tarea}}
+\end{{table}}
 
 En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
 incorrectos se realizó una corrección.
@@ -132,15 +137,21 @@ válidos.
 {second__correctness_summary_table}
 
 \begin{{figure}}
+  \includegraphics{{results/second-ages-distribution.png}}
+  \caption{{Distribución de edades (segunda instancia)}}
+  \label{{fig:second-ages-distribution}}
+\end{{figure}}
+
+\begin{{figure}}
   \includegraphics{{results/second-response-times-distribution.png}}
-  \caption{{Distribución de tiempos de respuesta}}
+  \caption{{Distribución de tiempos de respuesta (segunda instancia)}}
   \label{{fig:second-response-times-distribution}}
 \end{{figure}}
 
 \begin{{figure}}
   \centering
   \includegraphics{{results/second-disaggregated-antisaccades.png}}
-  \caption{{Antisacadas desagregadas}}
+  \caption{{Antisacadas desagregadas (segunda instancia)}}
   [TODO: \\
   - Acá estaba explicando comentando que los datos estaban normalizados pero la
   verdad que no aporta.
@@ -153,7 +164,7 @@ válidos.
 
 \begin{{figure}}
   \includegraphics{{results/second-disaggregated-prosaccades.png}}
-  \caption{{Prosacadas desagregadas}}
+  \caption{{Prosacadas desagregadas (segunda instancia)}}
   \label{{fig:second-disaggregated-prosaccades}}
 \end{{figure}}
 
@@ -165,10 +176,4 @@ válidos.
   - Regenerar plot y ajustar dimensiones \\
   - Debería escribir algún comentario acá?]
   \label{{fig:sampling-frequency-by-age}}
-\end{{figure}}
-
-\begin{{figure}}
-  \includegraphics{{results/first-ages-distribution.png}}
-  \caption{{Distribución de edades}}
-  \label{{fig:first-ages-distribution}}
 \end{{figure}}

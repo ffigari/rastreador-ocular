@@ -100,16 +100,6 @@ def build_results_tex_string(results, template, build_path, logical_path):
     return template.format(
         **results.first_instance_context,
         **results.second_instance_context,
-        **dict([
-            # TODO: Estos llamados sacarlos de acá por que el tex string va a 
-            #       a pasar a estar en el tex
-            (n, f.as_tex_string(build_path, logical_path))
-            for n, f
-            in results.figures.items()]),
-        **dict([
-            ("{}__label".format(n), f.label)
-            for n, f
-            in results.figures.items()]),
     ).strip('\n')
 
 class Results():
@@ -144,10 +134,6 @@ class Results():
         plot.response_times_distribution(second_categorized_trials, 'second')
         plot.ages_distribution(first_instance.ages, 'first')
         plot.ages_distribution(second_instance.ages, 'second')
-
-        # TODO: Check usage of this and delete it
-        self.figures = dict([
-        ])
 
 ###
 

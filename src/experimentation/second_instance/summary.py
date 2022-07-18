@@ -64,8 +64,6 @@ def build_correctness_table_tex_string(ct):
     return """
     \\begin{{table}}[htb]
         \\centering
-        \\caption{{Cantidad de ensayos por resultado y por sujeto (segunda
-        instancia)}}
 
         % TODO: Armar tabla tex
 
@@ -83,6 +81,8 @@ def build_correctness_table_tex_string(ct):
         Todo sujeto termina con una cantidad no significativa de ensayos en
         ambos grupos incorrectos, algunos realizando incluso correctamente todo
         sus ensayos.
+        \\caption{{Cantidad de ensayos por resultado y por sujeto (segunda
+        instancia)}}
         \\label{{tab:correctness}}
     \\end{{table}}
     """.format(
