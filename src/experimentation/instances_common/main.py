@@ -125,17 +125,17 @@ class plot:
     class undetected_saccade_example:
         def __init__(_, inlier_sample):
             def renderer():
-                fig, axes = plt.subplots(nrows=2, ncols=2)
-                def foo(ax, t):
-                    # TODO: Add 'a) ...' to the title
-                    ax.set_title(
-                        'run_id={} trial_id={}'.format(t.run_id, t.trial_id))
-                [[fn(ax, inlier_sample.find_trial(run_id, trial_id))
-                    for ax, (run_id, trial_id) in zip(
+                fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
+                for ax, (run_id, trial_id), letter in zip(
                         [axes[0][0], axes[0][1], axes[1][0], axes[1][1]],
-                        [(105, 225), (68, 267), (76, 504), (96, 332)])]
-                    for fn in [
-                        draw_trial_over_ax, foo]]
+                        [(105, 225), (68, 267), (76, 504), (96, 332)],
+                        ['a', 'b', 'c', 'd']):
+                    t = inlier_sample.find_trial(run_id, trial_id)
+                    draw_trial_over_ax(ax, t)
+                    ax.set_title('{}) run_id={} trial_id={}'.format(
+                        letter, t.run_id, t.trial_id))
+                [ax.set_xlabel('tiempo (en ms)') for ax in axes[1]]
+                fig.subplots_adjust(hspace=0.35)
                 return fig
 
             save_fig(
@@ -298,6 +298,9 @@ class Instance():
         outlier_ts, inlier_ts = self._process_starting_sample(starting_ts)
         self.inlier_sample = Sample(inlier_ts)
 
+        # TODO: Esto de acá aplica más calcularlo afuera
+        #       Así este __init__ se corresponde a leer los datos de la
+        #       instancia
         self.frequencies, self.ages, self.widths = [], [], []
         for kept, ts in [(True, inlier_ts), (False, outlier_ts)]:
             for t in ts.all():

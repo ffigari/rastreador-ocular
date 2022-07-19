@@ -149,6 +149,9 @@ Esto puede deberse a
 66\% de los ensayos, otros trabajos reportaron descartar menos del 2\%
 \cite{unsworth_2011_distribution_analysis}. 
 
+  # TODO: Revisitar el item siguiente cuando tenga mejor armada la explicación
+  #       de detección de sacadas
+
   \item Tasas de correctitud muy elevadas.
   Por ejemplo, en la segunda instancia de experimentación se obtuvo una tasa de
 correctitud de 95\% mientras que en la bibliografía se reportan valores
@@ -185,12 +188,25 @@ se correlacionen con la edad.
   \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{conclu/undetected-saccade-example.png}
+    Se muestran arriba las estimaciones obtenidas (en negro) en cuatro ensayos.
+    Los parches azules y rojos ilustran las sacadas detectas por nuestra
+    rutina, azules siendo aquellas en dirección contraria al estímulo visual y
+    rojas aquellas en misma dirección de este. \\
+    TODO: Escribir esto dsp de decidir cómo explicar lo de los 0.6 minimo
+    En los cuatro ejemplos presentados la rutina falló en detectar 
+
+
+    se falla en reconocer la primer sacada
+    en a y c esto resulta en dirección correcta pero con rt mayor al real
+    en b y d 
+    a y c ejemplifican dirección correcta detectada pero c
+
     [TODO: \\
     - Adjust style to be coherent with the informe \\
     - Comentar sobre las dos cosas distintas
       a) se falla en encontrar el lado correcto
       b) se reporta un tiempo de respuesta mayor del real]
-    \caption{Ejemplo de sacada no detectada}
+    \caption{Sacadas no detectadas}
     \label{fig:undetected-saccade-example}
   \end{figure}
 

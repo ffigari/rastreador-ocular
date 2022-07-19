@@ -1,5 +1,29 @@
 \section{Método}
 
+Se realizaron dos rondas distintas de experimentación.
+Al realizarse en distintos momentos del proyecto, mismos elementos de ambas
+experimentaciones fueron resueltos de distinta manera.
+La estructura de ambas es sin embargo la misma, por lo que a continuación se la
+explicará intentando no hacer distinción entre ambas pero dando detalle cuando
+fuera necesario.
+
+  - diseño de protocolo experimental
+  - implementación de la tarea
+  - distribución del experimento
+  - análisis de los datos
+    + exclusión de outliers
+    + normalizado
+    + detección de sacadas
+    + clasificación de ensayos
+  - detalles implementativos adicionales
+
+# TODO:
+#       . En esta sección no comentar sobre los resultados o sobre el por qué 
+#       tal cosa se implementa de tal manera. Tiene que ilustrase en cambio qué
+#       pasos tuvieron que resolverse así como cómo se los resolvió.
+#       . Dsp en resultados comentar sobre el impacto que la primer ronda de
+#       experimentación tuvo en la segunda
+
 \subsection{Implementación}
 
 Se construyó un prototipo de \eyetracker web formado por módulos preexistentes
@@ -241,21 +265,48 @@ El objetivo de ambos fue facilitar el desarrollo del prototipo.
 
 \subsubsection{Detección de sacadas}
 
+En ambas instancias la detección se realizó luego de la uniformización y
+normalización de las estimaciones.
+
+Para cada ensayo de la primera instancia, las sacadas se buscaron en base a
+detección de cruce de umbrales.
+
+# TODO: Reconstruir esto
+
+o
 En la primera instancia se detectaron las sacadas buscando únicamente cuándo
 las estimaciones post normalización cruzaban los umbrales 0.6 o -0.6 unidades
 (post normalización al rango [-1, 1]) para respectivamente detectar sacadas
 hacia el estímulo visual o en dirección contraria a él.
 
+
+
 Para la segunda instancia se consideró como sacadas a los intervalos cuya
 duración fuera mayor a 40 ms, tuvieran estimaciones monótonas crecientes o
-decrecientes, hubieran recorrido al menos 0.6 unidades (post normalización al
-rango [-1, 1] según los estímulos de validación) y tuvieran una velocidad
-promedio de al menos 0.15 unidades / 100 ms.
+decrecientes, hubieran recorrido cierta mínima distancia y tuvieran una
+velocidad promedio de al menos 0.15 unidades / 100 ms.
+
+\begin{figure}
+  \begin{verbatim}
+  
+  \end{verbatim}
+
+  \caption{Detección de sacadas - pseudocódigo}
+\end{figure}
+
+
 Pueden realizarse mejoras en este punto, aunque tendrá que considerarse las
 limitaciones propias del contexto (e.g., frecuencia de muestreo del orden de
 los 25 Hz en contraposición a los 300 Hz reportados en herramientas
 profesionales).
 
+al menos 0.6 unidades (post normalización al
+rango [-1, 1] según los estímulos de validación)
+El valor de 0.6 u
+
+TODO: agregar pseudocódigo para la detección de sacadas y aclarar acá o en la
+      conclu que lo de la distancia mínima de movimiento evita reconocer
+      pequeñas sacadas pero que fue un tradeoff para poder tener algo andando
 
 \subsection{Modificaciones a WebGazer}
 
@@ -387,6 +438,8 @@ se descartaron aquellos datos que se consideraron inválidos.
 En ambas instancias se ignoraron los valores “y” de las estimaciones, pues para
 nuestro caso de uso sólo interesaba capturar los movimientos horizontales de la
 mirada.
+
+# TODO: Los plots de acá abajo llevarlos a resultados
 
 \begin{figure}
   \centering

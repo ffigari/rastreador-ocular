@@ -27,15 +27,8 @@ def draw_trial_over_ax(ax, t):
         [e['t'] for e in es],
         [e['x'] for e in es],
         color='black',
-        alpha=0.7,
+        alpha=0.4,
         marker="1"
-    )
-    ax.plot(
-        [e['t'] for e in vs],
-        [e['v'] for e in vs],
-        color='green',
-        alpha=0.7,
-        marker="2"
     )
     ax.set_ylim([-1.3, 1.3])
 
