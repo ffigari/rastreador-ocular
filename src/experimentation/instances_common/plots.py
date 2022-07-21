@@ -132,7 +132,8 @@ def plot_post_processing_trials(task_saccades, task_label):
             color='red', alpha=0.1
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
-    fig.supylabel('Buckets de {:.2f} ms según tiempo de respuesta inicial'.format(size))
+    fig.supylabel(
+        'Clasificación en buckets de {:.2f} ms según latencia de la primer respuesta'.format(size))
     return fig
 
 def plot_responses_times_distributions(trials_results):
