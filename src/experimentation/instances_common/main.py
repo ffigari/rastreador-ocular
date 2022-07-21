@@ -31,6 +31,8 @@ def save_fig(figure_name, build_path, logical_path, renderer):
 
     return output_file_logical_path
 
+from statistics import mean, stdev
+
 class plot:
     class ages_distribution:
         def __init__(_, ages, instance_tag):
@@ -145,8 +147,6 @@ class plot:
                 renderer
             )
 
-from statistics import mean, stdev
-
 class Trial():
     trials_counter = 0
     def __init__(self,
@@ -206,6 +206,14 @@ def build_sample_tex_context(sample, sample_name):
 def build_sample_template(instance_name):
     return "{}__{{}}_sample".format(instance_name)
 
+optional_milliseconds = lambda t: int(t) if t is not None else None
+optional_mean = lambda vs: mean(vs) if len(vs) > 0 else None
+optional_stdev = lambda vs: stdev(vs) if len(vs) > 1 else None
+o_ms = optional_milliseconds
+o_mean = optional_mean
+o_stdev = optional_stdev
+
+
 class Sample():
     def __init__(self, ts):
         self.ts = ts
@@ -218,13 +226,9 @@ class Sample():
         ]
 
         self.mean_trials_count_per_subject = \
-            mean(trials_count_per_present_subject) \
-            if len(trials_count_per_present_subject) > 0 \
-            else None
+            o_mean(trials_count_per_present_subject)
         self.stdev_trials_count_per_subject = \
-            stdev(trials_count_per_present_subject) \
-            if len(trials_count_per_present_subject) > 1 \
-            else None
+            o_stdev(trials_count_per_present_subject)
 
         self.involved_run_ids = set([ t.run_id for t in self.ts.all() ])
 
@@ -251,8 +255,8 @@ class WithResponseSample(Sample):
     def __init__(self, ts):
         super().__init__(ts)
         rts = [t.response_time for t in ts.all()]
-        self.mean_response_time = int(mean(rts))
-        self.stdev_response_time = int(stdev(rts))
+        self.mean_response_time = o_ms(o_mean(rts))
+        self.stdev_response_time = o_ms(o_stdev(rts))
 
 def build_with_correction_sample_tex_context(sample, sample_name):
     at = build_attribute_template(sample_name)
@@ -266,15 +270,14 @@ class WithCorrectionSample(WithResponseSample):
     def __init__(self, incorrect_ts):
         super().__init__(incorrect_ts)
         delays = [t.correction_time - t.response_time for t in incorrect_ts.all()]
-        self.mean_correction_delay = int(mean(delays))
-        self.stdev_correction_delay = int(stdev(delays))
+        self.mean_correction_delay = o_ms(o_mean(delays))
+        self.stdev_correction_delay = o_ms(o_stdev(delays))
 
 def build_base_instance_tex_context(bi, instance_name):
     st = build_sample_template(instance_name)
     return {
         **build_sample_tex_context(bi.starting_sample, st.format("starting")),
         **build_sample_tex_context(bi.inlier_sample, st.format("inlier")),
-        **build_sample_tex_context(bi.without_response_sample, st.format("without_response")),
         **build_with_response_sample_tex_context(bi.correct_sample, st.format("correct")),
         **build_with_response_sample_tex_context(bi.incorrect_sample, st.format("incorrect")),
     }
@@ -326,9 +329,7 @@ class Instance():
         self.post_processing_metrics = \
             PostProcessingMetrics(self.inlier_sample, Sample(outlier_ts))
 
-        without_response_ts, correct_ts, incorrect_ts = \
-            self._look_for_response(inlier_ts)
-        self.without_response_sample = Sample(without_response_ts)
+        correct_ts, incorrect_ts = self._look_for_response(inlier_ts)
         self.correct_sample = WithResponseSample(correct_ts)
         self.incorrect_sample = WithResponseSample(incorrect_ts)
 

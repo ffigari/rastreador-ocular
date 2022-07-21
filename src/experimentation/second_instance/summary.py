@@ -260,13 +260,10 @@ class SecondInstance(Instance):
         return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
 
     def _look_for_response(self, inlier_ts):
-        # Didn't got to compute this on the second instance
-        without_response_ts = TrialsCollection([])
-
         compute_response_times_in_place(inlier_ts)
         correct_ts, incorrect_ts = divide_trials_by_correctness(inlier_ts)
 
-        return without_response_ts, correct_ts, incorrect_ts
+        return correct_ts, incorrect_ts
 
     def _look_for_corrective_saccade(self, incorrect_ts):
         corrected_ts = []

@@ -1,28 +1,98 @@
 \section{Método}
 
-Se realizaron dos rondas distintas de experimentación.
+%  - experimentación; cantidad ensayos
+La experimentación realizada tuvo como objetivo entender en qué medida los
+resultados con \eyetracking web permiten replicar resultados clínicos
+reportados en la bibliografía.
+Se realizaron dos rondas de experimentación independientes entre sí.
+En particular no se buscó estudiar \{test-retest reliability} como sí hicieron
+P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
+
+Para la primera ronda se diseñó un experimento de aproximádamente 10 minutos
+durante el cual se presentó únicamente la tarea de antisacadas.
+Cada sujeto realizó 160 ensayos de ella, distribuidos en 10 ensayos iniciales
+de prueba y 3 bloques de 50 ensayos cada uno.
+En la segunda ronda se presentaron tanto antisacadas como prosacadas,
+intercalando entre ambas tareas.
+Cada sujeto tuvo que realizar 160 ensayos de cada tarea distribuidos en bloques
+de 20 ensayos, sumado a 10 ensayos iniciales de prueba para cada una.
+Se le dió también la opción de cortar tempranamente en caso de que la primera
+mitad le hubiera cansado.
+
+La figura \ref{fig:antisaccades-protocol} ilustra el protocolo resultante para
+la tarea de antisacadas en la segunda ronda de experimentación.
+las cajas para que no entre en juego la memoria espacial?
+cruces vs círculos para distinguir el tipo de tarea
+
+\begin{figure}
+    \centering
+    \frame{\includegraphics[width=0.8\linewidth]{media/antisaccades-protocol.png}}
+
+    se buscó reducir el impacto de procesos cognitivos? memoria espacial con las
+    cajas
+
+    cruces o círculos para distinguir la tarea para pro y anti
+    \caption{Protocolo de la tarea de antisacadas}
+    \label{fig:antisaccades-protocol}
+\end{figure}
+%  - distribución del experimento
+Fueron realizadas dos rondas de experimentación, distribuidas a través de la
+plataforma Cognition\footnote{\url{https://www.cognition.run/}}.
+La tarea utilizada en la segunda ronda fue además publicada en la plataforma
+NeuroPruebas\footnote{\url{https://neuropruebas.org/}}.
+%  - calibración (+ validación + detección de descalibración)
+al detectar descalibarción, calibro apenas termina el próximo ensayo?
+o espero hasta el final del bloque?
+%  - análisis de los datos
+al ser las métricas más comunes, principalmente se buscó aislar tiempo de
+respuesta y tasas de errores
+se ignoraron las coordenadas "y" de las estimaciones pues sólo fue necesario
+analizar el comportamiento horizontal de cada ensayo
+se analizaron únicamente las coordenadas x de las estimaciones obtenidas
+%    + resampling, espejado, normalizado
+espejado
+resampling (a 30 Hz, interpolación lineal a partir del timestamp inicial)
+variabilidad de resoluciones, de frecuencias de muestreo, desviaciones (figura
+que muestre estas tres cosas resumidas para ambas instancias)
+figura que muestre antes y dsp de un par de sujetos
+necesidad de poner los datos de cada experimento en la misma unidad para
+simplificar análisis posteriores (criterios de exclusión, detección de sacadas)
+%    + exclusión de outliers
+- outlier es todo aquello que no sea inlier
+- inlier son aquellos ensayos donde el sujeto dió una respuesta 
+- listar las razones por las cuales se termina siendo outlier
+ - descartados manualmente
+ - sin fijación en el estímulo central
+ - con sacada temprana
+ - sin respuesta
+ - sin suficientes ensayos por sujeto luego de aplicar todas las otras reglas
+- la correctitud y el estudio de los tiempos de repuesta se hará sobre el
+  grupo inlier
+- comentar cómo las métricas finales están impactadas por cómo se procese la
+  data en este punto (en verdad es en cada decisión que se haga)
+%    + detección de sacadas
+%    + clasificación de ensayos
+%  - detalles implementativos adicionales
+%    + qué módulos intervienen?
+%      propios, externos, modificados?
+%      modificaciones a WG (influencia en la segunda ronda de experimentación)
+%    + interfaces, playgrounds
+%    + precisión en los tiempos de presentación de los estímulos (capaz esto
+%      puede ir como limitación)
+
 Al realizarse en distintos momentos del proyecto, mismos elementos de ambas
 experimentaciones fueron resueltos de distinta manera.
 La estructura de ambas es sin embargo la misma, por lo que a continuación se la
 explicará intentando no hacer distinción entre ambas pero dando detalle cuando
 fuera necesario.
 
-  - diseño de protocolo experimental
-  - implementación de la tarea
-  - distribución del experimento
-  - análisis de los datos
-    + exclusión de outliers
-    + normalizado
-    + detección de sacadas
-    + clasificación de ensayos
-  - detalles implementativos adicionales
 
 # TODO:
-#       . En esta sección no comentar sobre los resultados o sobre el por qué 
+#       . En metodos.tex no comentar sobre los resultados o sobre el por qué 
 #       tal cosa se implementa de tal manera. Tiene que ilustrase en cambio qué
 #       pasos tuvieron que resolverse así como cómo se los resolvió.
-#       . Dsp en resultados comentar sobre el impacto que la primer ronda de
-#       experimentación tuvo en la segunda
+#       . Dsp en resultados.tex comentar sobre el impacto que la primer ronda
+#       de experimentación tuvo en la segunda
 
 \subsection{Implementación}
 
@@ -383,61 +453,7 @@ La razón de esto fue maximizar las chances de mantener compatibilidad con
 \jspsych.
 
 \subsection{Experimentación}
-
-La experimentación realizada tuvo como objetivo entender en qué medida los
-resultados con \textit{eye tracking} web permiten replicar resultados
-reportados en la bibliografía.
-Se analizaron en particular tazas de correctitud obtenidas y tiempos promedio
-de respuesta por sujeto.
-Fueron realizadas dos rondas de experimentación, distribuidas a través de la
-plataforma Cognition\footnote{\url{https://www.cognition.run/}}.
-La tarea utilizada en la segunda ronda fue además publicada en la plataforma
-NeuroPruebas\footnote{\url{https://neuropruebas.org/}}.
-
-La primera instancia estuvo limitada temporalmente por la falla comentada
-previamente, por lo que se realizaron únicamente tareas de antisacadas (150
-repeticiones divididas en tres bloques).
-Los datos de esta instancia permitieron establecer una idea general de la
-calidad de los datos resultantes.
-Su análisis (en particular aquel sobre las desviaciones laterales de las
-estimaciones) facilitó la implementación del mecanismo de validación utilizado
-luego en la segunda instancia.
-
-Para la segunda instancia se realizaron tanto tareas de prosacadas como tareas
-de antisacadas, llegando a un total de 160 repeticiones de cada tarea.
-Estas fueron realizadas en bloques de 20 repeticiones, permutando entre ambas.
-La Figura \ref{fig:antisaccades-protocol} ilustra los tiempos utilizados.
-Inicialmente se realizó un tutorial del experimento consistente en realizar una
-calibración, una validación y 10 repeticiones de cada tarea, dando al sujeto la
-posibilidad de repetir el tutorial si así lo deseara.
-Entre cada bloque se verificó que la herramienta siguiera calibrada, realizando
-una calibración si no lo estuviera.
-Se permitió además al sujeto finalizar el experimento tempranamente luego de
-terminar con la mitad de los bloques, en caso de que se hubiera cansado.
-
-\begin{figure}
-    \centering
-    \frame{\includegraphics[width=0.8\linewidth]{media/antisaccades-protocol.png}}
-    \caption{Protocolo de la tarea de antisacadas}
-    \label{fig:antisaccades-protocol}
-\end{figure}
-
 \subsection{Preprocesamiento} \label{section:preprocessing}
-
-En ambas instancias de experimentación el objetivo principal fue detectar
-dirección y latencia de la respuesta dada por los sujetos.
-Para lograr esto tuvieron que implementarse mecanismos que detectaran sacadas
-en base a las estimaciones arrojadas por nuestro prototipo.
-Sin embargo, dada la naturaleza remota de nuestra experimentación se obtuvieron
-tanto frecuencia de muestreo distintas (Figura
-\ref{fig:sampling-frequency-distribution}) como resoluciones de pantalla
-distintas (Figura \ref{fig:widths-distribution}).
-Para simplificar la implementación de la detección de sacadas se buscó
-uniformizar los datos obtenidos de distintas fuentes a un mismo formato, además
-se descartaron aquellos datos que se consideraron inválidos.
-En ambas instancias se ignoraron los valores “y” de las estimaciones, pues para
-nuestro caso de uso sólo interesaba capturar los movimientos horizontales de la
-mirada.
 
 # TODO: Los plots de acá abajo llevarlos a resultados
 
@@ -456,15 +472,6 @@ mirada.
   [TODO: Regenerar plot y ajustar dimensiones]
   \label{fig:widths-distribution}
 \end{figure}
-
-En primer lugar, se descartaron las repeticiones cuyas estimaciones tuvieran
-una frecuencia menor a 15 Hz.
-Luego, a frecuencia de muestreo se uniformizó a 30 Hz realizando interpolación
-lineal.
-A partir del timestamp de la primera muestra se tomaron timestamps subsecuentes
-cada 1000 / 30 ms.
-Para cada uno de estos timestamps se interpoló la estimación correspondiente
-utilizando la estimación anterior y la estimación posterior. 
 
 [TODO: Retrabajar la explicación de las normalización y capaz agregar un diagrama]
 

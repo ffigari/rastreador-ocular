@@ -68,7 +68,7 @@ class FirstInstance(Instance):
             if count_per_run[t.run_id] >= MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
         ]
 
-        inlier_ts, dropped_trials = [], []
+        valid_ts, dropped_trials = [], []
         kept_runs_ids = []
         for t in ts.all():
             is_kept = len([
@@ -77,25 +77,23 @@ class FirstInstance(Instance):
                 if te.run_id == t.run_id and te.trial_id == t.trial_id
             ])
             if is_kept:
-                inlier_ts.append(t)
+                valid_ts.append(t)
                 kept_runs_ids.append(t.run_id)
             else:
                 dropped_trials.append(t)
+        compute_correcteness_in_place(valid_ts)
 
+        inlier_ts = [
+            t for t in valid_ts
+            if t.subject_reacted
+        ]
         outlier_ts = [
             t for t in ts.all()
             if t.id not in set([t.id for t in inlier_ts])
         ]
-
-        compute_correcteness_in_place(inlier_ts)
-
         return TrialsCollection(outlier_ts), TrialsCollection(inlier_ts)
 
     def _look_for_response(self, inlier_ts):
-        without_response_ts = [
-            t for t in inlier_ts.all()
-            if not t.subject_reacted
-        ]
         correct_ts = [
             t for t in inlier_ts.all()
             if t.subject_reacted and t.correct_reaction
@@ -104,10 +102,7 @@ class FirstInstance(Instance):
             t for t in inlier_ts.all()
             if t.subject_reacted and not t.correct_reaction
         ]
-        return \
-            TrialsCollection(without_response_ts), \
-            TrialsCollection(correct_ts), \
-            TrialsCollection(incorrect_ts)
+        return TrialsCollection(correct_ts), TrialsCollection(incorrect_ts)
 
     def _look_for_corrective_saccade(self, incorrect_ts):
         corrected_ts = []
