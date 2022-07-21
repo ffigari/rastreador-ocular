@@ -80,6 +80,8 @@ Se detectaron limitaciones tanto a nivel implementación como experimentación:
 A nivel implementación: 
 
 \begin{itemize}
+  TODO: Reescribir un poco el punto siguiente
+
   \item Las estimaciones tuvieron una frecuencia de muestreo promedio por
 debajo de los 30 Hz para todos los sujetos, llegando incluso en algunos casos a
 estar por debajo de los 5 Hz.
@@ -92,19 +94,10 @@ y para \eyelink una frecuencia máxima de 1000 Hz en el modo que permite mover
 la cabeza \footnote{especificaciones de \eyelink:
 \url{https://www.sr-research.com/wp-content/uploads/2017/11/eyelink-1000-plus-specifications.pdf}}.
 \\
-  El límite en la frecuencia de muestreo del prototipo implementado surge del
-modelo de estimación de la mirada de \webgazer.
-  Este utiliza \raf para obtener los sucesivos \textit{frames} de la webcam
-\footnote{uso de \raf: \url{
-https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs\#L232
-}} \footnote{uso de \raf: \url{
-https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs\#L349
-}} por lo que la máxima frecuencia obtenible está ligada a la tasa de refresco
-del monitor \footnote{documentación de \raf: \url{
-https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-}}. \\
-  Cualquier monitor comercial moderno tendrá al menos 60 Hz, por lo que el uso
-de \raf por sí sólo no explica la baja frecuencia de muestreo obtenida.
+  La frecuencia máxima obtenible está limitada por la frecuencia del monitor
+utilizado por el sujeto.
+  Dado que los monitores modernos comerciales suelen tener al menos 60 Hz, esto
+no explica por sí sólo la baja frecuencia obtenida. \\
   Al margen no haber terminado de dilucidar la razón de la baja frecuencia para
 todas las variantes de hardware, ocurre que esta dificulta análisis posteriores
 y, en particular, la implementación de una rutina de detección de sacadas.

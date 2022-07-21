@@ -1,6 +1,5 @@
 \section{Método}
 
-%  - experimentación; cantidad ensayos
 La experimentación realizada tuvo como objetivo entender en qué medida los
 resultados con \eyetracking web permiten replicar resultados clínicos
 reportados en la bibliografía.
@@ -8,8 +7,76 @@ Se realizaron dos rondas de experimentación independientes entre sí.
 En particular no se buscó estudiar \{test-retest reliability} como sí hicieron
 P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
-Para la primera ronda se diseñó un experimento de aproximádamente 10 minutos
-durante el cual se presentó únicamente la tarea de antisacadas.
+Inicialmente tuvo que definirse el protocolo de la tarea que sería presentada a
+los sujetos.
+La figura \ref{fig:antisaccades-protocol} ilustra el protocolo resultante para
+la tarea de antisacadas en la segunda ronda de experimentación.
+En base a este se obtiene un tiempo promedio de 3 segundos por ensayo.
+
+\begin{figure}
+    \centering
+    \frame{\includegraphics[width=0.8\linewidth]{media/antisaccades-protocol.png}}
+
+    El sujeto sabrá si está ante un ensayo de antisacadas o de prosacadas según
+    la forma del estímulo central de fijación.
+    Un círculo representa un ensayo de prosacadas mientras que una cruz
+    representa un ensayo de antisacadas \footnote{forma del estímulo de
+    fijación:
+    \url{https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L65-L74}}.
+    El estímulo lateral fue representado con un círculo.
+    Las duraciones de cada fase \footnote{duraciones de fases:
+    \url{https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L30-L34}}
+    fueron basados en aquellos encontrados en la bibliografía.
+    Con el fin de evitar que entrara en juego la memoria visual espacial,
+    fueron dibujadas cajas sobre las posiciones en las cuales aparecerían los
+    estímulos laterales.
+
+    \caption{Protocolo de la tarea de antisacadas}
+    \label{fig:antisaccades-protocol}
+\end{figure}
+
+La calibración del sistema fue basada en aquellas encontradas en otros
+\eyetrackers, ya sean \eyetrackers comerciales o trabajos recientes de
+\eyetracking web.
+En ella el sujeto tendrá que fijar la mirada en una secuencia de estímulos,
+presionando la barra de espacio cada vez que lo hiciera (figura
+\ref{fig:calibration-protocol}).
+La validación luego de cada calibración siguió las mismas líneas.
+Para cada uno de estos estímulos presentados se selecciona el frame anterior a
+la interacción del sujeto.
+El frame es luego asociado a la coordenada del estímulo presentado.
+
+\begin{figure}
+    \centering
+
+    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-left.png}
+    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-center.png}
+    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-right.png}
+
+    Los estímulos presentados son círculos negros en coordenadas específicas de
+    la pantalla.
+    Durante cada fase de calibración, el sujeto es presentado en total con 11
+    de ellos.
+    9 de ellos se alinean sobre el eje medio horizontal, 3 de ellos en cada
+    región de interés (izquierda, centro y derecha).
+    Otros 2 se muestran sobre el eje central vertical, uno en el bloque
+    superior y otro en el bloque inferior.
+    La fijación en el estímulo es indicada mediante una interacción con el
+    navegador web, puntualmente con un presionado de la barra de espacio.
+
+    \caption{Protocolo de calibración}
+    \label{fig:calibration-protocol}
+\end{figure}
+
+Tanto la tarea de antisacadas como la rutina de calibración fueron
+implementadas en compatibilidad con \jspsych y utilizando su \textit{plugin}
+\psychophysics.
+
+TODO: Reestricciones de tiempo
+
+TODO: Distribución de ensayos, bloques, calibraciones
+Durante la primera ronda el sujeto fue presentado únicamente con ensayos de la
+tarea de antisacadas.
 Cada sujeto realizó 160 ensayos de ella, distribuidos en 10 ensayos iniciales
 de prueba y 3 bloques de 50 ensayos cada uno.
 En la segunda ronda se presentaron tanto antisacadas como prosacadas,
@@ -19,30 +86,165 @@ de 20 ensayos, sumado a 10 ensayos iniciales de prueba para cada una.
 Se le dió también la opción de cortar tempranamente en caso de que la primera
 mitad le hubiera cansado.
 
-La figura \ref{fig:antisaccades-protocol} ilustra el protocolo resultante para
-la tarea de antisacadas en la segunda ronda de experimentación.
-las cajas para que no entre en juego la memoria espacial?
-cruces vs círculos para distinguir el tipo de tarea
+con recalibarción entre bloques o dsp de detectar desc.
+
+%%
+
+
+El prototipo implementado para cubrir el rol de eye tracker web nació de
+estudiar la posibilidad del paquete \webgazer en cumplir nuestras
+especificaciones.
+Este paquete provee lo necesario para realizar estimación de la mirada.
+Incluye \begin{enumerate*}
+  \item localización de los ojos \ref{fig:eyes-localization},
+  \item traducción de los recuadros de los ojos a la entrada del modelo
+    interno de regresión lineal \textit{ridge} y
+    \ref{fig:eye-features-to-model-input}
+  \item emición de estimaciones sobre la coordenada observada en la pantalla a
+    través de tal modelo
+\end{enumerate*}.
+
+\begin{figure}
+  TODO: Add eyes localization pseudocode
+
+  TODO: Comentar que la versión actual surgió de actualizar la versión del
+        facemesh (+ cómo se construye el recuadro del ojo) y de cómo esto
+        resolvió el problema de que crasheara \webgazer
+
+  \caption{Rutina de localización de los ojos}
+  \label{fig:eyes-localization}
+\end{figure}
+
+\begin{figure}
+  TODO: Add pseudocode
+  \caption{Generación de entrada del modelo de estimación de la mirada}
+  \label{fig:eye-features-to-model-input}
+\end{figure}
+
+Las especificaciones del software que nos iba a ser necesario no estaban claras
+inicialmente, sino que fueron estableciendose a medida que el trabajo avanzaba.
+Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
+nuestro protocolo y de un mecanismo de detección de descalibración del sistema.
+Por lo tanto, se realizaron múltiples adiciones, extensiones y modificaciones a
+\webgazer.
+
+El sistema resultante nace de una propagación \frame a \frame de \features de
+cada ojo.
+Estas contienen el parche resultante de la rutina de localización de los ojos
+(almacenado en un objeto \texttt{ImageData} \footnote{documentación de
+\texttt{ImageData}:
+\url{https://developer.mozilla.org/en-US/docs/Web/API/ImageData}}), sus
+dimensiones y la coordenada de su esquina superior izquierda, todos valores en
+píxeles.
+La localización de los ojos depende depende de la salida del modelo de
+\facemesh de \tfjs.
+
+TODO: Comentar modificación de la librería de tf y de cómo se captura el
+      recuadro del ojo
+
+La frecuencia de propagación de estos pares está sujeta a \raf que a su vez
+está sujeto a la tasa de refresco del monitor \footnote{documentación de \raf:
+\url{
+  https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+}}
+
+\begin{figure}
+  \newcommand{\rvurl}{\texttt{repo\_versioned\_url}\xspace}
+
+  with \rvurl as \url{https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5}
+
+  \begin{itemize}
+    \item
+      propagación de features de los ojos:
+      \href
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
+        {<\rvurl>/src/index.mjs\#L608},
+      \href
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L225-L233}
+        {<\rvurl>/src/index.mjs\#L225-L233}
+
+    \item 
+      pedido de estimación de \textit{facemesh} a \tfjs:
+      \url
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/facemesh.mjs#L41-L46}
+        {<\rvurl>/src/facemesh.mjs\#L41-L46}
+
+    \item
+      uso de \raf para \begin{itemize}:
+        \item
+          iniciar el \loop de emisión de \features:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
+            {<\rvurl>/src/index.mjs\#L608}
+
+        \item
+          continuar ese \loop:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L232}
+            {<\rvurl>/src/index.mjs\#L232}
+
+        \item
+          iniciar y cotinuar el \loop de emisión de estimaciones de la mirada:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L349}
+            {<\rvurl>/src/index.mjs\#L349};
+          este \loop se combina con una variable \booleana \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L45}
+            {<\rvurl>/src/index.mjs\#L45};
+          para permitir pausar la generación de estimaciones.
+
+      \end{itemize}
+  \end{itemize}
+
+  \caption{Atajos al código}
+  \label{fig:code-shortcuts}
+\end{figure}
+
+ante cada nuevo par de ojos se generan y propagan features de ellos (cuáles?
+posicion dimension pixeles)
+
+en cada instante de calibración se guarda el par (
+coordenada,
+features ojo izquierdo,
+features ojo derecho,
+)
+
+correspondiente a la
+coordenada del estímulo mostrado y al par compuesto por las features de cada
+ojo 
+
+estimacion de la mriada
+calibarción
+detección de descaclibración
+unificadas en un unico componente
+
+extracción de features en base a los frames (se usa para estas tres cosas de
+arriba)
+Las \textit{features} utilizadas incluyen las coordenadas y dimensiones del
+recuadro capturado en relación al \textit{frame} entero, así como un vector
+correspondiente al recuadro en sí como una imagen.
+La conversión de \textit{frames} a \textit{features} es realizada continuamente
+por \webgazer.
+
 
 \begin{figure}
     \centering
-    \frame{\includegraphics[width=0.8\linewidth]{media/antisaccades-protocol.png}}
+    \includegraphics[width=0.8\linewidth]{media/components.png}
 
-    se buscó reducir el impacto de procesos cognitivos? memoria espacial con las
-    cajas
+    TODO: Rearmar esto para que no se mencione `rastoc` y para que quede más
+          clara qué es propio, qué es adaptado y que es usado tal cual
+          Capaz ni aplica tener esta figura
 
-    cruces o círculos para distinguir la tarea para pro y anti
-    \caption{Protocolo de la tarea de antisacadas}
-    \label{fig:antisaccades-protocol}
+    \caption{Componentes del prototipo implementado}
+    \label{fig:components}
 \end{figure}
-%  - distribución del experimento
-Fueron realizadas dos rondas de experimentación, distribuidas a través de la
-plataforma Cognition\footnote{\url{https://www.cognition.run/}}.
-La tarea utilizada en la segunda ronda fue además publicada en la plataforma
-NeuroPruebas\footnote{\url{https://neuropruebas.org/}}.
-%  - calibración (+ validación + detección de descalibración)
-al detectar descalibarción, calibro apenas termina el próximo ensayo?
-o espero hasta el final del bloque?
+
+
+%%
+distribuido con \cognition \footnote{\url{https://www.cognition.run/}} y
+\neuropruebas \footnote{\url{https://neuropruebas.org/}}
+
+
 %  - análisis de los datos
 al ser las métricas más comunes, principalmente se buscó aislar tiempo de
 respuesta y tasas de errores
@@ -72,6 +274,11 @@ simplificar análisis posteriores (criterios de exclusión, detección de sacada
   data en este punto (en verdad es en cada decisión que se haga)
 %    + detección de sacadas
 %    + clasificación de ensayos
+
+
+
+  % Esto que sigue no sé si es necesario, con ir explicando a medida que surja
+  % debería alcanzar
 %  - detalles implementativos adicionales
 %    + qué módulos intervienen?
 %      propios, externos, modificados?
@@ -80,73 +287,14 @@ simplificar análisis posteriores (criterios de exclusión, detección de sacada
 %    + precisión en los tiempos de presentación de los estímulos (capaz esto
 %      puede ir como limitación)
 
-Al realizarse en distintos momentos del proyecto, mismos elementos de ambas
-experimentaciones fueron resueltos de distinta manera.
-La estructura de ambas es sin embargo la misma, por lo que a continuación se la
-explicará intentando no hacer distinción entre ambas pero dando detalle cuando
-fuera necesario.
 
 
-# TODO:
-#       . En metodos.tex no comentar sobre los resultados o sobre el por qué 
-#       tal cosa se implementa de tal manera. Tiene que ilustrase en cambio qué
-#       pasos tuvieron que resolverse así como cómo se los resolvió.
-#       . Dsp en resultados.tex comentar sobre el impacto que la primer ronda
-#       de experimentación tuvo en la segunda
+
+%%%%
 
 \subsection{Implementación}
-
-Se construyó un prototipo de \eyetracker web formado por módulos preexistentes
-y desarrollos propios.
-El contexto remoto no supervisado explicado previamente tiene implicaciones
-sobre su implementación.
-Este debe funcionar en un navegador web, y en particular debe ser compatible
-con la herramienta de experimentos conductuales \jspsych. 
-l sujeto no contará con alguien que lo supervise durante el experimento ni con
-una estructura que le ayude a mantener la cabeza quieta.
-Por lo tanto se deberá definir algún criterio que nos indique cuándo es
-necesaria una recalibración.
-
-Se implementó entonces una herramienta que provee una estimación de la mirada
-con fases explícitas de calibración, verificando a lo largo del tiempo si el
-sujeto movía la cabeza respecto de su posición durante la calibración.
-De \webgazer se reutilizó principalmente su modelo de estimación de la mirada y
-utilidades como aquella que muestra en la pantalla la coordenada estimada de la
-mirada.
-Sin embargo, se descartó utilizar sus elementos de calibración pues no aplican
-a nuestro caso.
-Además, se mantuvo una división explícita entre el código correspondiente al
-\eyetracking (el \textit{core}) respecto de la interfaz con \jspsych.
-Al prototipo implementado se le dio el nombre \rastoc para poder referirse a él
-dentro del código.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{media/components.png}
-    \caption{Relaciones entres componentes implementados y componentes
-    existentes}
-    [TODO: Poner línea punteada a los componentes propios]
-    \label{fig:components}
-\end{figure}
-
 \subsubsection{Calibración}
 
-La calibración del sistema consiste en acumular un conjunto de pares
-$<$\textit{features} de los ojos, coordenada$>$.
-Cada uno de estos pares representa a qué coordenada de la pantalla estaba
-mirando el sujeto cuando la imagen de sus ojos tenía un determinado aspecto.
-Las \textit{features} utilizadas incluyen las coordenadas y dimensiones del
-recuadro capturado en relación al \textit{frame} entero, así como un vector
-correspondiente al recuadro en sí como una imagen.
-La conversión de \textit{frames} a \textit{features} es realizada continuamente
-por \webgazer (cf. estimación de la mirada).
-
-La construcción del conjunto de calibración se hará en base a una secuencia de
-interacciones por parte del sujeto.
-Al momento de tal interacción se guardará el par formado por el último
-\textit{frame} capturado y la coordenada de la interacción.
-Esto puede hacerse únicamente luego de iniciar una fase explícita de
-calibración.
 La Figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
 calibración recorridas por el sistema.
 Al finalizar esta etapa el conjunto acumulado se utiliza para: a) entrenar el
@@ -181,29 +329,7 @@ distintas que el experimentador puede utilizar para que el sujeto calibre el
 sistema.
 Por un lado, está la calibración libre, en la cual el sujeto tendrá que
 clickear en la pantalla mientras mira el puntero.
-Por otro lado está la calibración asistida, que funciona a través del paquete
-\psychophysics [0.2] y durante la cual se dibujan una serie de estímulos en la
-pantalla, ilustrado en la Figura \ref{fig:calibration_stimulus}.
-Cada vez que aparece uno de estos, el sujeto tendrá que fijar la mirada en él y
-presionar la barra de espacio para indicar que lo está mirando.
-Buscando minimizar la cantidad de puntos mostrados, esta calibración prioriza
-asegurar buenas estimaciones únicamente en las regiones de interés, que en el
-caso de la tarea de antisacadas son tres.
-Para esto se eligen mostrar estímulos de calibración sobre un eje horizontal
-central en el centro, en la derecha y en la izquierda.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-left.png}
-    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-center.png}
-    \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-right.png}
-    \caption{Estímulos de calibración}
-    Al realizar una calibración asistida el sujeto es presentado con estímulos
-    visuales en las regiones de interés.
-    Para avanzar con la calibración, el sujeto deberá fijar la mirada en cada
-    estímulo que aparece y luego presionar la barra de espacio. \\
-    \label{fig:calibration_stimulus}
-\end{figure}
 
 Finalizada la etapa explícita de calibración, el sistema puede recalibrarse
 cuando se considere necesario.
@@ -212,48 +338,13 @@ reemplazará los datos de la calibración anterior.
 
 \subsubsection{Validación}
 
-La interfaz \jspsych provee la opción de realizar una validación luego de cada
-calibración.
-En esta se muestran progresivamente estímulos en el centro y en las cuatro
-esquinas de la pantalla.
-Al igual que con la calibración asistida, cada vez que aparezca un estímulo, el
-sujeto deberá fijar la mirada en él y presionar la barra de espacio.
-Durante la presentación de estos estímulos se estará estimando la mirada en la
-pantalla.
-Idealmente se verificaría que durante un período previo a la interacción del
-sujeto estas estimaciones coincidan en algún grado con las coordenadas de los
-estímulos presentados \cite{huang_2016_pace}.
-Sin embargo, debido a las desviaciones detectadas en la primer fase de
-experimentación (cf. sección \ref{section:skewed-estimates}) se
-verifica, en cambio, un correcto posicionamiento relativo.
-Dicho de otra manera, en lugar de verificar que al mostrar un estímulo en la
-esquina superior derecha las estimaciones coinciden con la coordenada de tal
-estímulo, se verificará en cambio que tales estimaciones están a la derecha de
-las estimaciones obtenidas al mostrar el estímulo superior izquierdo.
-Debido a lo ya mencionado respecto de los mecanismos de calibración (cf.
-sección \ref{section:intro:calibration}) y a que en este trabajo no interesa
-analizar las coordenadas verticales de las estimaciones (pues implementamos
-únicamente la tarea de antisacada) se optó además por verificar únicamente que
-hubiera un correcto posicionamiento relativo horizontal.
-Queda pendiente estudiar e implementar mecanismos de calibración y validación
-que balanceen correctamente experiencia de uso y calidad de las estimaciones.
-
-Como se detallará en la sección de preprocesamiento (sección
-\ref{section:preprocessing}), este mecanismo de validación facilita luego la
-implementación de una rutina de normalización.
-
 \subsubsection{Estimación de la mirada}
 
-Se delegó la estimación de la mirada al paquete \webgazer
-\cite{papoutsaki_2016_webgazer}.
-Esta se basa en un modelado explícito de la cara para localizar los ojos y un
-modelo por apariencia para estimar la mirada.
-
-La localización de los ojos se realiza a través del modelo de \textit{facemesh}
-de \texttt{TensorFlowJS}
-\footnote{\url{https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection}}.
+La localización de los ojos se realiza a través del modelo de .
 Utilizando los \textit{keypoints} obtenidos se recorta de cada \textit{frame}
 un recuadro para cada ojo.
+
+TODO: Sto de aca abajo son limitaciones
 No está claro si este mecanismo es ideal pues, por ejemplo, se está modelando
 toda la cara mientras que nos importa únicamente la posición de un par de
 recuadros de los ojos.
