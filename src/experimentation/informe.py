@@ -215,7 +215,10 @@ if __name__ == "__main__":
     plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'pro')
     plot.response_times_distribution(r.first_categorized_trials, 'first')
     plot.response_times_distribution(r.second_categorized_trials, 'second')
-    plot.ages_distribution(r.first_instance.ages, 'first')
-    plot.ages_distribution(r.second_instance.ages, 'second')
-    plot.frecuency_by_age(r.second_instance.starting_sample, 'second')
+    plot.ages_distribution(
+        r.first_instance.post_processing_metrics.ages, 'first')
+    plot.ages_distribution(
+        r.second_instance.post_processing_metrics.ages, 'second')
+    plot.frecuency_by_age(
+        r.second_instance.starting_sample, 'second')
     plot.undetected_saccade_example(r.second_instance.inlier_sample)

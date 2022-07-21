@@ -279,32 +279,12 @@ def build_base_instance_tex_context(bi, instance_name):
         **build_with_response_sample_tex_context(bi.incorrect_sample, st.format("incorrect")),
     }
 
-class Instance():
-    def _load_data(self):
-        raise NotImplementedError('Instance._load_data')
-
-    def _process_starting_sample(self, starting_ts):
-        raise NotImplementedError('Instance._process_starting_sample')
-
-    def _look_for_response(self, inlier_ts):
-        raise NotImplementedError('Instance._look_for_response')
-
-    def _look_for_corrective_saccade(self, incorrect_ts):
-        raise NotImplementedError('Instance._look_for_corrective_saccade')
-
-    def __init__(self):
-        starting_ts = TrialsCollection(self._load_data())
-        self.starting_sample = Sample(starting_ts)
-        outlier_ts, inlier_ts = self._process_starting_sample(starting_ts)
-        self.inlier_sample = Sample(inlier_ts)
-
-        # TODO: Esto de acá aplica más calcularlo afuera
-        #       Así este __init__ se corresponde a leer los datos de la
-        #       instancia
-        self.frequencies, self.ages, self.widths = [], [], []
-        for kept, ts in [(True, inlier_ts), (False, outlier_ts)]:
+class PostProcessingMetrics:
+    def __init__(self, inlier_sample, outlier_sample):
+        self.sampling_frequencies, self.ages, self.widths = [], [], []
+        for kept, ts in [(True, inlier_sample.ts), (False, outlier_sample.ts)]:
             for t in ts.all():
-                self.frequencies.append({
+                self.sampling_frequencies.append({
                     'frequency': t.original_sampling_frecuency_in_hz,
                     'run_id': t.run_id,
                     'kept': kept,
@@ -319,6 +299,32 @@ class Instance():
                     'run_id': t.run_id,
                     'kept': kept,
                 })
+
+class Instance():
+    def _load_data(self):
+        raise NotImplementedError('Instance._load_data')
+
+    def _process_starting_sample(self, starting_ts):
+        raise NotImplementedError('Instance._process_starting_sample')
+
+    def _look_for_response(self, inlier_ts):
+        raise NotImplementedError('Instance._look_for_response')
+
+    def _look_for_corrective_saccade(self, incorrect_ts):
+        raise NotImplementedError('Instance._look_for_corrective_saccade')
+
+    def metrics(self):
+        return {
+            'sampling_frequencies': sampling_frequencies,
+        }
+
+    def __init__(self):
+        starting_ts = TrialsCollection(self._load_data())
+        self.starting_sample = Sample(starting_ts)
+        outlier_ts, inlier_ts = self._process_starting_sample(starting_ts)
+        self.inlier_sample = Sample(inlier_ts)
+        self.post_processing_metrics = \
+            PostProcessingMetrics(self.inlier_sample, Sample(outlier_ts))
 
         without_response_ts, correct_ts, incorrect_ts = \
             self._look_for_response(inlier_ts)
