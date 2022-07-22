@@ -76,12 +76,24 @@ incompatibilidad.
 
 \section{Limitaciones}
 
+TODO: Chequear si las siguientes limitaciones están listadas en esta sección
+- No está claro si el facemesh es ideal para localizar ojos, por ejemplo, se
+está modelando toda la cara mientras que nos importa únicamente la posición de
+un par de recuadros de los ojos.
+No sólo parece excesivo en términos de costos computacionales, si no que al no
+estar modelando específicamente los ojos sería esperable no obtener la mejor
+precisión que podría obtenerse.
+Existen en cambio mecanismos específicos para la localización de los ojos
+\cite{hansen_2009_eye_of_the_beholder}.
+- variabilidad e imprecisión en la duración de cada frame; molesto para cuando
+se tien que mostrar un estímulo por poco tiempo (< 100 ms)
+
+
+
 Se detectaron limitaciones tanto a nivel implementación como experimentación:
 A nivel implementación: 
 
 \begin{itemize}
-  TODO: Reescribir un poco el punto siguiente
-
   \item Las estimaciones tuvieron una frecuencia de muestreo promedio por
 debajo de los 30 Hz para todos los sujetos, llegando incluso en algunos casos a
 estar por debajo de los 5 Hz.
@@ -102,6 +114,8 @@ no explica por sí sólo la baja frecuencia obtenida. \\
 todas las variantes de hardware, ocurre que esta dificulta análisis posteriores
 y, en particular, la implementación de una rutina de detección de sacadas.
   Lo cual implica un desafío en sí mismo.
+
+  TODO: Reescribir el punto anterior
 
   \item En la implementación actual no se tuvieron en cuenta los pestañeos.
   Por un lado, esto posibilita la entrada de datos inválidos de calibración al
@@ -142,8 +156,8 @@ Esto puede deberse a
 66\% de los ensayos, otros trabajos reportaron descartar menos del 2\%
 \cite{unsworth_2011_distribution_analysis}. 
 
-  # TODO: Revisitar el item siguiente cuando tenga mejor armada la explicación
-  #       de detección de sacadas
+TODO: Revisitar el item siguiente cuando tenga mejor armada la explicación
+      de detección de sacadas
 
   \item Tasas de correctitud muy elevadas.
   Por ejemplo, en la segunda instancia de experimentación se obtuvo una tasa de

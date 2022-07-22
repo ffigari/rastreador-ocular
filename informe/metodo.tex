@@ -4,11 +4,17 @@ La experimentación realizada tuvo como objetivo entender en qué medida los
 resultados con \eyetracking web permiten replicar resultados clínicos
 reportados en la bibliografía.
 Se realizaron dos rondas de experimentación independientes entre sí.
-En particular no se buscó estudiar \{test-retest reliability} como sí hicieron
-P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
+En particular no se buscó estudiar \textit{test-retest reliability} como sí
+hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
+
+\subsection{Protocolo experimental}
 
 Inicialmente tuvo que definirse el protocolo de la tarea que sería presentada a
 los sujetos.
+Se consideró los protocolos encontrados en la bibliografía
+\cite{munoz_2004_look_away, unsworth_2011_distribution_analysis,
+olincy_1997_age_diminishes_performance} para guiar las fases de la tarea, su
+presentación y su explicación.
 La figura \ref{fig:antisaccades-protocol} ilustra el protocolo resultante para
 la tarea de antisacadas en la segunda ronda de experimentación.
 En base a este se obtiene un tiempo promedio de 3 segundos por ensayo.
@@ -20,13 +26,10 @@ En base a este se obtiene un tiempo promedio de 3 segundos por ensayo.
     El sujeto sabrá si está ante un ensayo de antisacadas o de prosacadas según
     la forma del estímulo central de fijación.
     Un círculo representa un ensayo de prosacadas mientras que una cruz
-    representa un ensayo de antisacadas \footnote{forma del estímulo de
-    fijación:
-    \url{https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L65-L74}}.
+    representa un ensayo de antisacadas.
     El estímulo lateral fue representado con un círculo.
-    Las duraciones de cada fase \footnote{duraciones de fases:
-    \url{https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L30-L34}}
-    fueron basados en aquellos encontrados en la bibliografía.
+    Las duraciones de cada fase se eligieron entre los rangos encontrados en
+    otros protocolos.
     Con el fin de evitar que entrara en juego la memoria visual espacial,
     fueron dibujadas cajas sobre las posiciones en las cuales aparecerían los
     estímulos laterales.
@@ -36,8 +39,9 @@ En base a este se obtiene un tiempo promedio de 3 segundos por ensayo.
 \end{figure}
 
 La calibración del sistema fue basada en aquellas encontradas en otros
-\eyetrackers, ya sean \eyetrackers comerciales o trabajos recientes de
-\eyetracking web.
+\eyetrackers, ya sean \eyetrackers comerciales (\tobii, \eyelink) o trabajos
+recientes de \eyetracking web \cite{xu_2015_turker_gaze,
+papoutsaki_2016_webgazer}.
 En ella el sujeto tendrá que fijar la mirada en una secuencia de estímulos,
 presionando la barra de espacio cada vez que lo hiciera (figura
 \ref{fig:calibration-protocol}).
@@ -48,6 +52,8 @@ El frame es luego asociado a la coordenada del estímulo presentado.
 
 \begin{figure}
     \centering
+
+    Ejemplos de estímulos de calibración:
 
     \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-left.png}
     \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-center.png}
@@ -70,289 +76,87 @@ El frame es luego asociado a la coordenada del estímulo presentado.
 
 Tanto la tarea de antisacadas como la rutina de calibración fueron
 implementadas en compatibilidad con \jspsych y utilizando su \textit{plugin}
-\psychophysics.
+\psychophysics para dibujar estímulos.
 
-TODO: Reestricciones de tiempo
+En ambos experimentos tuvo que considerarse su duración total al momento de 
+elegir la cantidad de ensayos que serían presentados a cada sujeto.
+En la primera ronda se apuntó a una duración cercana a los 10 minutos.
+Fallas intermitentes de \webgazer causaban \crashes del prototipo implementado
+o incluso de la pestaña en uso del navegador.
+Estas fallas ya habían sido reportadas por octubre de 2020 en el repositorio
+original \footnote{reporte inicial de falla:
+\url{https://github.com/brownhci/WebGazer/issues/171}} pero a falta de
+respuesta se lo reportó también a la comunidad de JSPsych \footnote{segundo
+reporte: \url{https://github.com/jspsych/jsPsych/discussions/2490}}.
+Para la segunda instancia en base a este mismo trabajo y modificaciones sobre
+\webgazer, tal falla había sido resuelta.
+En consecuencia se estiró la duración del experimento a entre 20 y 25 minutos.
 
-TODO: Distribución de ensayos, bloques, calibraciones
-Durante la primera ronda el sujeto fue presentado únicamente con ensayos de la
-tarea de antisacadas.
-Cada sujeto realizó 160 ensayos de ella, distribuidos en 10 ensayos iniciales
-de prueba y 3 bloques de 50 ensayos cada uno.
-En la segunda ronda se presentaron tanto antisacadas como prosacadas,
-intercalando entre ambas tareas.
-Cada sujeto tuvo que realizar 160 ensayos de cada tarea distribuidos en bloques
-de 20 ensayos, sumado a 10 ensayos iniciales de prueba para cada una.
-Se le dió también la opción de cortar tempranamente en caso de que la primera
-mitad le hubiera cansado.
+Durante la primera ronda el sujeto fue presentado únicamente con ensayos de
+antisacadas.
+Cada sujeto realizó 160 ensayos de ella, distribuidos en 10 de prueba seguidos
+de 3 bloques de 50 ensayos cada uno.
+Luego de cada ensayo en el cual se detectara una descalibración, se prosiguió
+a una calibración del sistema.
+En la segunda ronda se realizaron tanto antisacadas como prosacadas.
+Cada sujeto debió realizar 160 ensayos de cada tarea, estos distribuidos en
+bloques intercalados de 20 ensayos, sumado a 10 ensayos iniciales de prueba
+para cada tarea.
+En esta instancia se dió también la opción de cortar tempranamente a la mitad
+del experimento en caso de que el sujeto se hubiera cansado luego de la primera
+mitad.
+A diferencia de la ronda anterior, en esta se calibró únicamente al final de
+cada bloque.
+Además se agregó una fase de validación posterior a cada calibración.
 
-con recalibarción entre bloques o dsp de detectar desc.
+Los experimentos fueron distribuidos a través de las plataformas \cognition
+(\url{https://www.cognition.run/}) y \neuropruebas
+(\url{https://neuropruebas.org/}).
+Se informó a los sujetos sobre la posibilidad de realizar los experimentos a
+través de redes sociales, del \textit{mailing list} provisto por \neuropruebas
+y de círculos privados de familiares y amigos.
+Los sujetos fueron informados sobre cómo sería utilizada su cámara web.
+Entre quienes hubieran realizado el experimento a través de \neuropruebas se 
+realizaron sorteos por libros del gato y la caja
+(\url{https://twitter.com/liaa_icc/status/1528028122465058816}).
 
-%%
-
+\subsection{Prototipo de estimación de la mirada aplicado a estudios clínicos}
 
 El prototipo implementado para cubrir el rol de eye tracker web nació de
 estudiar la posibilidad del paquete \webgazer en cumplir nuestras
 especificaciones.
 Este paquete provee lo necesario para realizar estimación de la mirada.
 Incluye \begin{enumerate*}
-  \item localización de los ojos \ref{fig:eyes-localization},
-  \item traducción de los recuadros de los ojos a la entrada del modelo
-    interno de regresión lineal \textit{ridge} y
-    \ref{fig:eye-features-to-model-input}
-  \item emición de estimaciones sobre la coordenada observada en la pantalla a
+  \item localización de los ojos (cf. figura \ref{fig:eyes-localization}),
+  \item traducción de los recuadros de los ojos a la entrada del modelo interno
+    de regresión lineal \textit{ridge} (cf. figura
+    \ref{fig:eye-features-to-model-input}) y
+  \item emisión de estimaciones sobre la coordenada observada en la pantalla a
     través de tal modelo
 \end{enumerate*}.
 
 \begin{figure}
   TODO: Add eyes localization pseudocode
 
+La localización de los ojos se realiza a través del modelo de .
+Utilizando los \textit{keypoints} obtenidos se recorta de cada \textit{frame}
+un recuadro para cada ojo.
++
+
+
   TODO: Comentar que la versión actual surgió de actualizar la versión del
         facemesh (+ cómo se construye el recuadro del ojo) y de cómo esto
-        resolvió el problema de que crasheara \webgazer
+        resolvió el problema de que crasheara \webgazer.
+        Resolver este \crash fue la principal motivación para mejoras
+        realizadas.
 
   \caption{Rutina de localización de los ojos}
   \label{fig:eyes-localization}
 \end{figure}
 
 \begin{figure}
-  TODO: Add pseudocode
-  \caption{Generación de entrada del modelo de estimación de la mirada}
-  \label{fig:eye-features-to-model-input}
-\end{figure}
-
-Las especificaciones del software que nos iba a ser necesario no estaban claras
-inicialmente, sino que fueron estableciendose a medida que el trabajo avanzaba.
-Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
-nuestro protocolo y de un mecanismo de detección de descalibración del sistema.
-Por lo tanto, se realizaron múltiples adiciones, extensiones y modificaciones a
-\webgazer.
-
-El sistema resultante nace de una propagación \frame a \frame de \features de
-cada ojo.
-Estas contienen el parche resultante de la rutina de localización de los ojos
-(almacenado en un objeto \texttt{ImageData} \footnote{documentación de
-\texttt{ImageData}:
-\url{https://developer.mozilla.org/en-US/docs/Web/API/ImageData}}), sus
-dimensiones y la coordenada de su esquina superior izquierda, todos valores en
-píxeles.
-La localización de los ojos depende depende de la salida del modelo de
-\facemesh de \tfjs.
-
-TODO: Comentar modificación de la librería de tf y de cómo se captura el
-      recuadro del ojo
-
-La frecuencia de propagación de estos pares está sujeta a \raf que a su vez
-está sujeto a la tasa de refresco del monitor \footnote{documentación de \raf:
-\url{
-  https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-}}
-
-\begin{figure}
-  \newcommand{\rvurl}{\texttt{repo\_versioned\_url}\xspace}
-
-  with \rvurl as \url{https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5}
-
-  \begin{itemize}
-    \item
-      propagación de features de los ojos:
-      \href
-        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
-        {<\rvurl>/src/index.mjs\#L608},
-      \href
-        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L225-L233}
-        {<\rvurl>/src/index.mjs\#L225-L233}
-
-    \item 
-      pedido de estimación de \textit{facemesh} a \tfjs:
-      \url
-        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/facemesh.mjs#L41-L46}
-        {<\rvurl>/src/facemesh.mjs\#L41-L46}
-
-    \item
-      uso de \raf para \begin{itemize}:
-        \item
-          iniciar el \loop de emisión de \features:
-          \href
-            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
-            {<\rvurl>/src/index.mjs\#L608}
-
-        \item
-          continuar ese \loop:
-          \href
-            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L232}
-            {<\rvurl>/src/index.mjs\#L232}
-
-        \item
-          iniciar y cotinuar el \loop de emisión de estimaciones de la mirada:
-          \href
-            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L349}
-            {<\rvurl>/src/index.mjs\#L349};
-          este \loop se combina con una variable \booleana \href
-            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L45}
-            {<\rvurl>/src/index.mjs\#L45};
-          para permitir pausar la generación de estimaciones.
-
-      \end{itemize}
-  \end{itemize}
-
-  \caption{Atajos al código}
-  \label{fig:code-shortcuts}
-\end{figure}
-
-ante cada nuevo par de ojos se generan y propagan features de ellos (cuáles?
-posicion dimension pixeles)
-
-en cada instante de calibración se guarda el par (
-coordenada,
-features ojo izquierdo,
-features ojo derecho,
-)
-
-correspondiente a la
-coordenada del estímulo mostrado y al par compuesto por las features de cada
-ojo 
-
-estimacion de la mriada
-calibarción
-detección de descaclibración
-unificadas en un unico componente
-
-extracción de features en base a los frames (se usa para estas tres cosas de
-arriba)
-Las \textit{features} utilizadas incluyen las coordenadas y dimensiones del
-recuadro capturado en relación al \textit{frame} entero, así como un vector
-correspondiente al recuadro en sí como una imagen.
-La conversión de \textit{frames} a \textit{features} es realizada continuamente
-por \webgazer.
-
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{media/components.png}
-
-    TODO: Rearmar esto para que no se mencione `rastoc` y para que quede más
-          clara qué es propio, qué es adaptado y que es usado tal cual
-          Capaz ni aplica tener esta figura
-
-    \caption{Componentes del prototipo implementado}
-    \label{fig:components}
-\end{figure}
-
-
-%%
-distribuido con \cognition \footnote{\url{https://www.cognition.run/}} y
-\neuropruebas \footnote{\url{https://neuropruebas.org/}}
-
-
-%  - análisis de los datos
-al ser las métricas más comunes, principalmente se buscó aislar tiempo de
-respuesta y tasas de errores
-se ignoraron las coordenadas "y" de las estimaciones pues sólo fue necesario
-analizar el comportamiento horizontal de cada ensayo
-se analizaron únicamente las coordenadas x de las estimaciones obtenidas
-%    + resampling, espejado, normalizado
-espejado
-resampling (a 30 Hz, interpolación lineal a partir del timestamp inicial)
-variabilidad de resoluciones, de frecuencias de muestreo, desviaciones (figura
-que muestre estas tres cosas resumidas para ambas instancias)
-figura que muestre antes y dsp de un par de sujetos
-necesidad de poner los datos de cada experimento en la misma unidad para
-simplificar análisis posteriores (criterios de exclusión, detección de sacadas)
-%    + exclusión de outliers
-- outlier es todo aquello que no sea inlier
-- inlier son aquellos ensayos donde el sujeto dió una respuesta 
-- listar las razones por las cuales se termina siendo outlier
- - descartados manualmente
- - sin fijación en el estímulo central
- - con sacada temprana
- - sin respuesta
- - sin suficientes ensayos por sujeto luego de aplicar todas las otras reglas
-- la correctitud y el estudio de los tiempos de repuesta se hará sobre el
-  grupo inlier
-- comentar cómo las métricas finales están impactadas por cómo se procese la
-  data en este punto (en verdad es en cada decisión que se haga)
-%    + detección de sacadas
-%    + clasificación de ensayos
-
-
-
-  % Esto que sigue no sé si es necesario, con ir explicando a medida que surja
-  % debería alcanzar
-%  - detalles implementativos adicionales
-%    + qué módulos intervienen?
-%      propios, externos, modificados?
-%      modificaciones a WG (influencia en la segunda ronda de experimentación)
-%    + interfaces, playgrounds
-%    + precisión en los tiempos de presentación de los estímulos (capaz esto
-%      puede ir como limitación)
-
-
-
-
-%%%%
-
-\subsection{Implementación}
-\subsubsection{Calibración}
-
-La Figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
-calibración recorridas por el sistema.
-Al finalizar esta etapa el conjunto acumulado se utiliza para: a) entrenar el
-modelo de regresión utilizado por \webgazer para estimar la mirada; b)
-instanciar el mecanismo de detección de movimiento.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{media/calibration_cycle.png}
-    \caption{Posibles estados de calibración del prototipo implementado}
-    En los estados con linea punteada el sistema no podrá realizar estimaciones
-    de la mirada.
-    Notar que se continuará dando estimaciones incluso cuando se considere que
-    el sistema se ha descalibrado.
-    Los distintos mecanismos de calibración se adaptan a este esquema y
-    difieren en cómo el usuario realiza el mapeo coordenada a \textit{frame}.
-    \label{fig:calibration_cycle}
-\end{figure}
-
-Al iniciar una fase explícita de calibración, el \textit{core} provee dos
-métodos para indicar tales coordenadas.
-El primero (\texttt{calibrationType === “click”}) permite al experimentador
-indicar que cada click realizado en la pantalla tendrá que ser usado para
-calibrar el sistema.
-El segundo (\texttt{calibrationType === “external”}) devuelve un
-\textit{callback} que el experimentador podrá utilizar cuando lo desee,
-permitiéndole entonces implementar el mecanismo de calibración que prefiera.
-Se asume siempre que el sujeto estará mirando a la coordenada input.
-
-A nivel \jspsych, a través de estos dos mecanismos se ofrecen dos opciones
-distintas que el experimentador puede utilizar para que el sujeto calibre el
-sistema.
-Por un lado, está la calibración libre, en la cual el sujeto tendrá que
-clickear en la pantalla mientras mira el puntero.
-
-
-Finalizada la etapa explícita de calibración, el sistema puede recalibrarse
-cuando se considere necesario.
-Para esto debe iniciarse una nueva fase de calibración explícita que
-reemplazará los datos de la calibración anterior.
-
-\subsubsection{Validación}
-
-\subsubsection{Estimación de la mirada}
-
-La localización de los ojos se realiza a través del modelo de .
-Utilizando los \textit{keypoints} obtenidos se recorta de cada \textit{frame}
-un recuadro para cada ojo.
-
-TODO: Sto de aca abajo son limitaciones
-No está claro si este mecanismo es ideal pues, por ejemplo, se está modelando
-toda la cara mientras que nos importa únicamente la posición de un par de
-recuadros de los ojos.
-No sólo parece excesivo en términos de costos computacionales, si no que al no
-estar modelando específicamente los ojos sería esperable no obtener la mejor
-precisión que podría obtenerse.
-Existen en cambio mecanismos específicos para la localización de los ojos
-\cite{hansen_2009_eye_of_the_beholder}.
+  TODO: Agregar pseudocódigo sobre la transformación de los parches de los ojos
+        en los vectores con los cuales se alimenta al modelo de regresión
 
 Cada recuadro tiene luego su tamaño ajustado a una dimensión fija de 10x6
 píxeles.
@@ -365,14 +169,106 @@ un modelo de \textit{ridge regression}.
 Los coeficientes de este modelo se calculan al finalizar la fase explícita de
 calibración.
 
-\subsubsection{Descalibración}
+  TODO: Hablar de modelado por apariencia?
 
-A modo de primer acercamiento se implementó un mecanismo basado en detectar
-movimiento de los ojos del sujeto.
-En base al conjunto de \textit{features} de ojos capturados al calibrar, se
-obtienen un par de conjuntos de rectángulos que contienen a los ojos en cada
-uno de los correspondientes \textit{frames}.
+  \caption{Generación de entrada del modelo de estimación de la mirada}
+  \label{fig:eye-features-to-model-input}
+\end{figure}
 
+Las especificaciones del software que nos iba a ser necesario no estaban claras
+inicialmente, sino que fueron estableciendose a medida que el trabajo avanzaba.
+Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
+nuestro protocolo y de un mecanismo de detección de descalibración del sistema.
+Realizamos múltiples adiciones, extensiones y modificaciones a \webgazer para
+ir cubriendo estas necesidades que surgían.
+La versión con nuestras modificaciones puede consultarse en un \fork
+personal de \webgazer \footnote{\fork propio:
+\url{https://github.com/ffigari/WebGazer}}.
+Para este \fork no se partió del repositorio original de \webgazer
+\footnote{repositorio original: \url{https://github.com/brownhci/WebGazer}}
+sino del \fork realizado por \jspsych \footnote{\fork de \jspsych:
+\url{https://github.com/jspsych/WebGazer}}.
+La razón de esto fue maximizar las chances de mantener compatibilidad con
+\jspsych.
+
+El sistema resultante nace de una propagación \textit{frame} a \textit{frame}
+de \features de cada ojo.
+Estas contienen el parche del \textit{frame} seleccionado por la rutina de
+localización de los ojos (almacenado en un objeto \texttt{ImageData}
+\footnote{documentación de \texttt{ImageData}:
+\url{https://developer.mozilla.org/en-US/docs/Web/API/ImageData}} equivalente a
+una matriz con la información de cada píxel), sus dimensiones y la coordenada
+de su esquina superior izquierda, todos valores en píxeles.
+
+La localización de los ojos de \webgazer depende de la salida del modelo de
+\facemesh de \tfjs (cf. figura \ref{fig:eyes-localization}).
+Este sector del paquete tuvo que ser modificado para resolver las fallas
+mencionadas previamente.
+Para lograrlo fue necesario reemplazar el paquete utilizado para la generación
+del \facemesh.
+Aquel de la versión original de \webgazer era
+\texttt{@tensorflow-models/facemesh}
+\footnote{\texttt{@tensorflow-models/facemesh}:
+\url{https://www.npmjs.com/package/@tensorflow-models/facemesh}} pero este
+paquete se encontraba deprecado.
+Siguiendo la sugerencia de ese mismo paquete, se lo reemplazó por
+\texttt{@tensorflow-models/face-landmarks-detection}
+\footnote{\texttt{@tensorflow-models/face-landmarks-detection}:
+\url{https://www.npmjs.com/package/@tensorflow-models/face-landmarks-detection}}.
+A la par de esa actualización también se retrabajó la generación en cada
+\textit{frame} del recuadro de cada ojo en base a la salida del modelo de
+\facemesh (cf. figura \ref{fig:facemesh-to-eyes-bbox}) \footnote{reemplazo del
+paquete de generación de \facemesh:
+\url{https://github.com/ffigari/WebGazer/commit/e5df9f9c3521ec3e384e962db49d94b2411789bb}}.
+Esta modificación fue luego \mergeada en el repositorio original de \webgazer
+\footnote{\merge en repositorio original:
+\url{https://github.com/brownhci/WebGazer/commit/96ecaa8b84a5d09ba4f0bcf5c4000a0bc3623f0a}}.
+Resolver esta falla fue la principal motivación detrás de las otras mejoras
+realizadas.
+
+\begin{figure}
+  TODO: Agregar pseudocódigo de cómo se arman los bboxes de los ojos en base al
+        output del modelo de \facemesh
+
+  \caption{Generación de recuadros de los ojos}
+  \label{fig:facemesh-to-eyes-bbox}
+\end{figure}
+
+La frecuencia de propagación de los pares de \features está sujeta a \raf que a
+su vez está sujeto a la tasa de refresco del monitor \footnote{documentación de
+\raf:
+\url{https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame}}.
+Estos \features no eran inicialmente propagados al contexto global.
+Sin embargo, dado que se los necesitaba para la implementación del detector de
+movimiento, se los expuso \footnote{exposición de \features:
+\url{https://github.com/ffigari/WebGazer/commit/7c6b7fb4dcefea2b85d7a24b3e86bd9a31b938d4}}
+a través de eventos de \js de navegador \footnote{documentación sobre
+\texttt{CustomEvent}:
+\url{https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}}.
+
+En cada instante de calibración se notifica a \webgazer para que en base al
+último par de \features construya la entrada de su modelo de regresión.
+Además se almacenan los recuadros correspondientes a las posiciones de los
+ojos.
+Al finalizar la fase de calibración, estos datos recolectados se utilizan para
+instanciar la detección de movimiento y el modelo interno de regresión de
+\webgazer.
+Sobre el modelo de regresión se realizó una tercera mejora \footnote{llamado
+explícito para calcular coeficientes:
+\url{https://github.com/ffigari/WebGazer/commit/16f69474d40132c7faa826b2afc7fd464bc6c6c5}}.
+Originalmente \webgazer permitía agregar datos de calibración en cualquier
+momento durante el ciclo de vida del estimador de la mirada.
+Sin embargo esto implicaba recalcular en cada \textit{frame} los coeficientes
+del modelo interno de regresión, mientras que para nuestro caso alcanzaba con
+calcularlos al final de la fase explícita de calibración.
+Al ser esto una optimización de recursos, se optó por modificar \webgazer y su
+interfaz para que el calculo de coeficientes se realice a través de un pedido
+explícito.
+
+TODO: Explicar instanciación de detección de movimiento
+      Y dsp cómo se la usa para decidir cuándo se descalibra la herramienta
+      Incluir pseudocodigo tanto de la instanciación y como del chequeo que se
+      hace
 Se definen luego, para cada ojo, un multipoligono (i.e., una forma geométrica
 definida en base a múltiples polígonos) correspondiente a la unión de los
 rectángulos de cada ojo, agrandados luego por un factor de 1.8 (elección
@@ -383,7 +279,11 @@ movimiento significativo.
 Si a partir de algún \textit{frame} el recuadro de alguno de los ojos sale de
 su multipoligono se considerará al sistema como descalibrado.
 
-\subsubsection{Playgrounds}
+TODO: Comentar sobre los playgrounds e interfaces
+  - por arriba y mas que nada para que se entienda que lo armado se pueda armar
+  tanto con como sin \jspsych
+  - mencionar la calibración libre ya que permite explorar el efecto de la
+  calibración
 
 Para ambas interfaces implementadas se construyó también un \textit{playground}
 que permitiera interactuar con ellas.
@@ -393,6 +293,8 @@ pantalla al mismo tiempo que imprime ciertos datos de la calibración.
 El de \jspsych (Figura \ref{fig:rastoc-jspsych-playground}) implementa un
 \textit{timeline} de la misma librería.
 El objetivo de ambos fue facilitar el desarrollo del prototipo.
+
+TODO: Ver si siguen aplicando las figuras de los playground y del ciclo de calibración
 
 \begin{figure}
     \centering
@@ -424,147 +326,114 @@ El objetivo de ambos fue facilitar el desarrollo del prototipo.
     \label{fig:rastoc-playground}
 \end{figure}
 
-\subsubsection{Detección de sacadas}
-
-En ambas instancias la detección se realizó luego de la uniformización y
-normalización de las estimaciones.
-
-Para cada ensayo de la primera instancia, las sacadas se buscaron en base a
-detección de cruce de umbrales.
-
-# TODO: Reconstruir esto
-
-o
-En la primera instancia se detectaron las sacadas buscando únicamente cuándo
-las estimaciones post normalización cruzaban los umbrales 0.6 o -0.6 unidades
-(post normalización al rango [-1, 1]) para respectivamente detectar sacadas
-hacia el estímulo visual o en dirección contraria a él.
-
-
-
-Para la segunda instancia se consideró como sacadas a los intervalos cuya
-duración fuera mayor a 40 ms, tuvieran estimaciones monótonas crecientes o
-decrecientes, hubieran recorrido cierta mínima distancia y tuvieran una
-velocidad promedio de al menos 0.15 unidades / 100 ms.
+La Figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
+calibración recorridas por el sistema.
+Al finalizar esta etapa el conjunto acumulado se utiliza para: a) entrenar el
+modelo de regresión utilizado por \webgazer para estimar la mirada; b)
+instanciar el mecanismo de detección de movimiento.
 
 \begin{figure}
-  \begin{verbatim}
-  
-  \end{verbatim}
-
-  \caption{Detección de sacadas - pseudocódigo}
+    \centering
+    \includegraphics[width=0.8\linewidth]{media/calibration_cycle.png}
+    \caption{Posibles estados de calibración del prototipo implementado}
+    En los estados con linea punteada el sistema no podrá realizar estimaciones
+    de la mirada.
+    Notar que se continuará dando estimaciones incluso cuando se considere que
+    el sistema se ha descalibrado.
+    Los distintos mecanismos de calibración se adaptan a este esquema y
+    difieren en cómo el usuario realiza el mapeo coordenada a \textit{frame}.
+    \label{fig:calibration_cycle}
 \end{figure}
 
 
-Pueden realizarse mejoras en este punto, aunque tendrá que considerarse las
-limitaciones propias del contexto (e.g., frecuencia de muestreo del orden de
-los 25 Hz en contraposición a los 300 Hz reportados en herramientas
-profesionales).
-
-al menos 0.6 unidades (post normalización al
-rango [-1, 1] según los estímulos de validación)
-El valor de 0.6 u
-
-TODO: agregar pseudocódigo para la detección de sacadas y aclarar acá o en la
-      conclu que lo de la distancia mínima de movimiento evita reconocer
-      pequeñas sacadas pero que fue un tradeoff para poder tener algo andando
-
-\subsection{Modificaciones a WebGazer}
-
-En fases iniciales del desarrollo descripto en la sección previa se encontró
-una falla vital en el paquete \webgazer.
-Tal falla hacía que el paquete dejara de funcionar.
-Si bien no ocurría en cualquier computadora, podía suceder en tiempos menores a
-diez minutos (limitando el experimento).
-Este problema había sido reportado ya en octubre del 2020
-\footnote{\url{https://github.com/brownhci/WebGazer/issues/171}} sin mucha
-respuesta, por lo que se lo reportó también a la comunidad de \jspsych
-\footnote{\url{https://github.com/jspsych/jsPsych/discussions/2490}}.
-Para nuestro caso de uso son esperables experimentos con duraciones cercanas a
-los 20 minutos, por lo que dificultaba el uso de \webgazer en nuestra
-implementación.
-Se decidió investigar y modificar el paquete con el objetivo de corregir la
-falla en cuestión.
-Se realizaron las siguientes modificaciones, la última siendo aquella que
-resolvió el problema:
-\begin{enumerate}
-    \item
-    Reutilización del \textit{facemesh} interno de \webgazer\footnote{diff:
-    \url{https://github.com/ffigari/WebGazer/commit/7c6b7fb4dcefea2b85d7a24b3e86bd9a31b938d4}}:
-    Al implementar el mecanismo de detección de movimiento se agregó un modelo
-    de \textit{facemesh} propio externo al paquete \webgazer.
-    Ante la hipótesis de que esto estuviera causando una sobrecarga de
-    recursos, se eliminó este \textit{facemesh} externo y se expuso en cambio
-    el modelo interno.
-    Para lograr esto, a medida que se calculan las \textit{features} de los
-    ojos en cada \textit{frame}, se agregó la emisión de eventos
-    \textit{custom} de \js que notificaban constantemente las actualizaciones
-    permitiendo así su propagación.
-    \item
-    Se evitaron recomputaciones innecesarias de coeficientes\footnote{diff:
-    \url{https://github.com/ffigari/WebGazer/commit/16f69474d40132c7faa826b2afc7fd464bc6c6c5}}:
-    \webgazer está diseñado para permitir un agregado constante de datos de
-    calibración en base a movimientos del puntero.
-    Los coeficientes del modelo deben recalcularse cada vez que se modifique el
-    conjunto de calibración.
-    En la implementación original los coeficientes del modelo de regresión se
-    recomputan en cada \textit{frame}, probablemente debido a que el agregado
-    mencionado puede ocurrir en cualquier momento.
-    Por otro lado, en nuestro caso de uso se agregará data de calibración
-    únicamente durante la fase explícita de calibración.
-    Alcanza entonces computar los coeficientes del modelo de regresión
-    únicamente al finalizar la fase explícita de calibración.
-    Se modificó entonces el paquete y su interfaz para permitir tal
-    comportamiento.
-    Al igual que la mejora anterior, esto no resolvió la falla pero sí reduce
-    la carga sobre los recursos y resulta en una implementación más coherente
-    al diseño que se busca implementar.
-    \item
-    Actualización del modelo interno de \textit{facemesh}\footnote{diff:
-    \url{https://github.com/ffigari/WebGazer/commit/e5df9f9c3521ec3e384e962db49d94b2411789bb}}:
-    Originalmente \webgazer utilizaba el paquete
-    \texttt{@tensorflow-models/facemesh}\footnote{\url{https://www.npmjs.com/package/@tensorflow-models/facemesh}}
-    para generar el modelo de \textit{facemesh}.
-    Tal paquete se encuentra sin embargo deprecado y se sugiere en cambio
-    utilizar
-    \texttt{@tensorflow-models/face-landmarks-detection}\footnote{\url{https://www.npmjs.com/package/@tensorflow-models/face-landmarks-detection}}.
-    Tal reemplazo implicó revisitar la sección de \webgazer encargada de
-    extraer las \textit{features} de los ojos.
-    Este cambio sí resolvió la falla original, por lo que fue también
-    \textit{mergeada} al repositorio original.
-\end{enumerate}
-
-La versión con los cambios realizados puede consultarse en un \textit{fork}
-personal de \webgazer\footnote{\url{https://github.com/ffigari/WebGazer}}.
-Para este \textit{fork} no se partió del repositorio original de
-\webgazer\footnote{\url{https://github.com/brownhci/WebGazer}} sino del
-\textit{fork} realizado por
-\jspsych\footnote{\url{https://github.com/jspsych/WebGazer}}.
-La razón de esto fue maximizar las chances de mantener compatibilidad con
-\jspsych.
-
-\subsection{Experimentación}
-\subsection{Preprocesamiento} \label{section:preprocessing}
-
-# TODO: Los plots de acá abajo llevarlos a resultados
-
 \begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{metodo/sampling-frequency-distribution.png}
-  \caption{Distribución de frecuencias de muestreo}
-  [TODO: Regenerar plot y ajustar dimensiones]
-  \label{fig:sampling-frequency-distribution}
+  \newcommand{\wgvurl}{\texttt{wg\_repo\_versioned\_url}\xspace}
+  \newcommand{\rvurl}{\texttt{rastoc\_repo\_versioned\_url}\xspace}
+
+  TODO: Emprolijar esta figura y ver si hay más links que valga la pena
+        facilitar
+
+  with
+  \wgvurl as \url{https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5}
+
+  \begin{itemize}
+    \item
+      propagación de features de los ojos:
+      \href
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
+        {<\wgvurl>/src/index.mjs\#L608},
+      \href
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L225-L233}
+        {<\wgvurl>/src/index.mjs\#L225-L233}
+
+    \item 
+      pedido de estimación de \textit{facemesh} a \tfjs:
+      \url
+        {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/facemesh.mjs#L41-L46}
+        {<\wgvurl>/src/facemesh.mjs\#L41-L46}
+
+    \item
+      uso de \raf para: \begin{itemize}
+        \item
+          iniciar el loop de emisión de \features:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
+            {<\wgvurl>/src/index.mjs\#L608}
+
+        \item
+          continuar ese loop:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L232}
+            {<\wgvurl>/src/index.mjs\#L232}
+
+        \item
+          iniciar y cotinuar el loop de emisión de estimaciones de la mirada:
+          \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L349}
+            {<\wgvurl>/src/index.mjs\#L349};
+          este loop se combina con una variable \booleana \href
+            {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L45}
+            {<\wgvurl>/src/index.mjs\#L45};
+          para permitir pausar la generación de estimaciones.
+
+      \end{itemize}
+
+    \item
+      forma del estímulo de fijación:
+      \url
+        {https://github.com/ffigari/rastreador-ocular/blob/ac35c016f528ee5bc652c00e4cafce34d22b1fc3/www/antisaccades.js#L65-L72}
+
+    \item
+      duraciones de fases:
+      \url
+        {https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L30-L34}
+  \end{itemize}
+
+  \caption{Atajos al código}
+  \label{fig:code-shortcuts}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{metodo/widths-distribution.png}
-  \caption{Distribución de anchos de resoluciones}
-  [TODO: Regenerar plot y ajustar dimensiones]
-  \label{fig:widths-distribution}
-\end{figure}
+\subsection{Extracción de información}
 
-[TODO: Retrabajar la explicación de las normalización y capaz agregar un diagrama]
+TODO
+
+al ser las métricas más comunes, principalmente se buscó aislar tiempo de
+respuesta y tasas de errores
+se ignoraron las coordenadas "y" de las estimaciones pues sólo fue necesario
+analizar el comportamiento horizontal de cada ensayo
+se analizaron únicamente las coordenadas x de las estimaciones obtenidas
+
+TODO: resampling, normalizado, espejado
+
+- resampling
+a 30 Hz, interpolación lineal a partir del timestamp inicial
+variabilidad de resoluciones, de frecuencias de muestreo, desviaciones (figura
+que muestre estas tres cosas resumidas para ambas instancias)
+
+- normalizado
+necesidad de poner los datos de cada experimento en la misma unidad para
+simplificar análisis posteriores (criterios de exclusión, detección de sacadas)
+cómo se normalizan los datos en base a la validación?
 
 Las estimaciones de la mirada fueron luego llevadas del rango variable por
 sujeto al rango [-1, 1] buscando que al valor 0 fueran a caer las estimaciones
@@ -584,6 +453,7 @@ centro y derecha.
 Luego, similar a la instancia anterior, el rango [l, c] fue llevado al rango
 [-1, 0] y el rango [c, r] fue llevado al rango [0, 1].
 
+- espejado
 Post normalización, las estimaciones fueron modificadas tal que pudiera
 asumirse que el estímulo lateral aparecía siempre del mismo lado.
 Para esto, en las repeticiones en las cuales el estímulo visual aparecía a la
@@ -597,10 +467,40 @@ salto de valores cercanos a 0 a valores cercanos a 1, y análogamente para
 identificar antisacadas correctas tendrá que verificarse un salto de valores
 cercanos a 0 a valores cercanos a -1.
 
-Se descartaron luego las repeticiones en las cuales el sujeto no estuviera
-fijando la posición del estímulo de fijación durante los 500 ms previos a la
-aparición del estímulo visual lateral.
-Si un sujeto terminó con menos de 30 de repeticiones por tarea entonces se
-descartó también el resto de sus repeticiones.
-Además se descartaron a mano las repeticiones de sujetos cuyos datos se
-considerarán inválidos.
+figura que muestre antes y dsp de un par de sujetos
+
+TODO: exclusión de outliers
+
+- outlier es todo aquello que no sea inlier
+- inlier son aquellos ensayos donde el sujeto dió una respuesta 
+- listar las razones por las cuales se termina siendo outlier; acá tendría
+sentido armar una figura con ejemplos de las distintas causas de descarte
+ - descartados manualmente
+ - sin fijación en el estímulo central
+ - con sacada temprana
+ - sin respuesta
+ - sin suficientes ensayos por sujeto luego de aplicar todas las otras reglas
+ (qué umbral se tomó)
+- la correctitud y el estudio de los tiempos de repuesta se hará sobre el
+  grupo inlier
+- comentar cómo las métricas finales están impactadas por cómo se procese la
+  data en este punto (en verdad es en cada decisión que se haga)
+
+TODO: detección de sacadas
+
+En la primera instancia se detectaron las sacadas buscando únicamente cuándo
+las estimaciones post normalización cruzaban los umbrales 0.6 o -0.6 unidades
+(post normalización al rango [-1, 1]) para respectivamente detectar sacadas
+hacia el estímulo visual o en dirección contraria a él.
+
+Para la segunda instancia se consideró como sacadas a los intervalos cuya
+duración fuera mayor a 40 ms, tuvieran estimaciones monótonas crecientes o
+decrecientes, hubieran recorrido cierta mínima distancia y tuvieran una
+velocidad promedio de al menos 0.15 unidades / 100 ms.
+
+TODO: agregar pseudocódigo para la detección de sacadas y aclarar acá o en la
+      conclu que lo de la distancia mínima de movimiento evita reconocer
+      pequeñas sacadas pero que fue un tradeoff para poder tener algo andando
+
+
+TODO: clasificación de ensayos
