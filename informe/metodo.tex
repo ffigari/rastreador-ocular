@@ -123,9 +123,9 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 \subsection{Prototipo de estimación de la mirada aplicado a estudios clínicos}
 
   El prototipo implementado para cubrir el rol de eye tracker web nació de
-  estudiar la posibilidad del paquete \webgazer en cumplir nuestras
-  especificaciones.
-  Este paquete provee lo necesario para realizar estimación de la mirada.
+  estudiar la posibilidad del paquete \webgazer en cumplir nuestros objetivos.
+  Este paquete provee los bloques elementales para realizar estimación de la
+  mirada.
   Incluye \begin{enumerate*}
     \item localización de los ojos (cf. figura \ref{fig:eyes-localization}),
     \item traducción de los recuadros de los ojos a la entrada del modelo interno
@@ -134,6 +134,25 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     \item emisión de estimaciones sobre la coordenada observada en la pantalla a
       través de tal modelo
   \end{enumerate*}.
+  Las especificaciones del software que nos iba a ser necesario no estaban
+  claras inicialmente, sino que fueron estableciendose a medida que el trabajo
+  avanzaba.
+  Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
+  nuestro protocolo y de un mecanismo de detección de descalibración del
+  sistema.
+  El software resultante, sumado al código de los experimentos y al código de
+  análisis de datos, fue liberado en un repositorio público
+  \footnote{repositorio principal:
+  \url{https://github.com/ffigari/rastreador-ocular}}.
+  Los cambios realizados sobre \webgazer pueden consultarse en un \fork
+  personal de paquete \footnote{\fork propio:
+  \url{https://github.com/ffigari/WebGazer}}.
+  Para este \fork no se partió del repositorio original de \webgazer
+  \footnote{repositorio original: \url{https://github.com/brownhci/WebGazer}}
+  sino del \fork realizado por \jspsych \footnote{\fork de \jspsych:
+  \url{https://github.com/jspsych/WebGazer}}.
+  La razón de esto fue maximizar las chances de mantener compatibilidad con
+  \jspsych.
 
   \begin{figure}
     \centering
@@ -167,7 +186,14 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
           el recuadro
           definido por las esquinas esi y eid
     \end{verbatim}
-    Los recuadros devueltos por esta rutina son de dimensión variable.
+    Los recuadros devueltos por esta rutina son de dimensión variable. \\
+    Además asume que una y sólo una cara será detectada por el modelo de
+    \facemesh.
+    El modelo de \tfjs utilizado da la opción de detectar una única cara.
+    Es sin embargo posible, aunque sea por la valida razón de que nadie se
+    encuentre sentado frente a la webcam, que en algún \textit{frame} no se
+    detecte ninguna cara.
+    El resto del programa tiene que tener en cuenta esta posibilidad.
     \caption{Localización de los ojos}
     \label{fig:eyes-localization}
   \end{figure}
@@ -185,105 +211,85 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     \end{verbatim}
     El vector resultante tendrá 120 dimensiones.
     Esta rutina es un ejemplo de modelado por apariencia.
-
     \caption{Generación de entrada del modelo de estimación de la mirada}
     \label{fig:eye-features-to-model-input}
   \end{figure}
 
-  Las especificaciones del software que nos iba a ser necesario no estaban claras
-  inicialmente, sino que fueron estableciendose a medida que el trabajo avanzaba.
-  Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
-  nuestro protocolo y de un mecanismo de detección de descalibración del sistema.
-  Realizamos múltiples adiciones, extensiones y modificaciones a \webgazer para
-  ir cubriendo estas necesidades que surgían.
-  La versión con nuestras modificaciones puede consultarse en un \fork
-  personal de \webgazer \footnote{\fork propio:
-  \url{https://github.com/ffigari/WebGazer}}.
-  Para este \fork no se partió del repositorio original de \webgazer
-  \footnote{repositorio original: \url{https://github.com/brownhci/WebGazer}}
-  sino del \fork realizado por \jspsych \footnote{\fork de \jspsych:
-  \url{https://github.com/jspsych/WebGazer}}.
-  La razón de esto fue maximizar las chances de mantener compatibilidad con
-  \jspsych.
-
-  El sistema resultante nace de una propagación \textit{frame} a \textit{frame}
-  de \features de cada ojo.
+  El sistema resultante nace en la localización \textit{frame} a \textit{frame}
+  de los ojos (cf. figura \ref{fig:eyes-localization})
+  \footnote{
+    La localización de los ojos de \webgazer tuvo que ser modificada para
+    resolver la falla que limitó temporalmente la primera ronda de
+    experimentación.
+    Para lograrlo fue necesario reemplazar el paquete utilizado para la
+    generación del \facemesh
+    (\url{https://github.com/ffigari/WebGazer/commit/e5df9f9c3521ec3e384e962db49d94b2411789bb}).
+    Aquel de la versión original de \webgazer era
+    \texttt{@tensorflow-models/facemesh}
+    (\url{https://www.npmjs.com/package/@tensorflow-models/facemesh}) pero este
+    paquete se encontraba deprecado.
+    Siguiendo la sugerencia de ese mismo paquete, se lo reemplazó por
+    \texttt{@tensorflow-models/face-landmarks-detection}
+    (\url{https://www.npmjs.com/package/@tensorflow-models/face-landmarks-detection}).
+    Tal reemplazo implicó retrabajar cómo se seleccionaba el recuadro del ojo
+    en base a la salida del modelo de \facemesh.
+    Esta modificación fue luego \mergeada en el repositorio original de
+    \webgazer
+    (\url{https://github.com/brownhci/WebGazer/commit/96ecaa8b84a5d09ba4f0bcf5c4000a0bc3623f0a}).
+    Resolver esta falla fue la principal motivación detrás de las otras mejoras
+    realizadas.
+  }.
+  Al localizar los ojos, se calculan \features sobre ellos.
   Estas contienen el parche del \textit{frame} seleccionado por la rutina de
   localización de los ojos (almacenado en un objeto \texttt{ImageData}
-  \footnote{documentación de \texttt{ImageData}:
-  \url{https://developer.mozilla.org/en-US/docs/Web/API/ImageData}} equivalente a
-  una matriz con la información de cada píxel), sus dimensiones y la coordenada
-  de su esquina superior izquierda, todos valores en píxeles.
-
-  La localización de los ojos de \webgazer depende de la salida del modelo de
-  \facemesh de \tfjs (cf. figura \ref{fig:eyes-localization}).
-  Este sector del paquete tuvo que ser modificado para resolver las fallas
-  mencionadas previamente.
-  Para lograrlo fue necesario reemplazar el paquete utilizado para la generación
-  del \facemesh.
-  Aquel de la versión original de \webgazer era
-  \texttt{@tensorflow-models/facemesh}
-  \footnote{\texttt{@tensorflow-models/facemesh}:
-  \url{https://www.npmjs.com/package/@tensorflow-models/facemesh}} pero este
-  paquete se encontraba deprecado.
-  Siguiendo la sugerencia de ese mismo paquete, se lo reemplazó por
-  \texttt{@tensorflow-models/face-landmarks-detection}
-  \footnote{\texttt{@tensorflow-models/face-landmarks-detection}:
-  \url{https://www.npmjs.com/package/@tensorflow-models/face-landmarks-detection}}.
-  A la par de esa actualización también se retrabajó la generación en cada
-  \textit{frame} del recuadro de cada ojo en base a la salida del modelo de
-  \facemesh (cf. figura \ref{fig:facemesh-to-eyes-bbox}) \footnote{reemplazo del
-  paquete de generación de \facemesh:
-  \url{https://github.com/ffigari/WebGazer/commit/e5df9f9c3521ec3e384e962db49d94b2411789bb}}.
-  Esta modificación fue luego \mergeada en el repositorio original de \webgazer
-  \footnote{\merge en repositorio original:
-  \url{https://github.com/brownhci/WebGazer/commit/96ecaa8b84a5d09ba4f0bcf5c4000a0bc3623f0a}}.
-  Resolver esta falla fue la principal motivación detrás de las otras mejoras
-  realizadas.
-
-  \begin{figure}
-    TODO: Agregar pseudocódigo de cómo se arman los bboxes de los ojos en base al
-          output del modelo de \facemesh
-
-    \caption{Generación de recuadros de los ojos}
-    \label{fig:facemesh-to-eyes-bbox}
-  \end{figure}
-
-  La frecuencia de propagación de los pares de \features está sujeta a \raf que a
-  su vez está sujeto a la tasa de refresco del monitor \footnote{documentación de
-  \raf:
-  \url{https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame}}.
-  Estos \features no eran inicialmente propagados al contexto global.
-  Sin embargo, dado que se los necesitaba para la implementación del detector de
-  movimiento, se los expuso \footnote{exposición de \features:
-  \url{https://github.com/ffigari/WebGazer/commit/7c6b7fb4dcefea2b85d7a24b3e86bd9a31b938d4}}
-  a través de eventos de \js de navegador \footnote{documentación sobre
-  \texttt{CustomEvent}:
-  \url{https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}}.
+  \footnote{
+    documentación de \texttt{ImageData}:
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/ImageData}
+  } equivalente a una matriz con la información de cada píxel), sus dimensiones
+  y la coordenada de su esquina superior izquierda, todos valores en píxeles.
+  La frecuencia de generación de estos \features está sujeta a \raf que a su
+  vez está sujeto a la tasa de refresco del monitor \footnote{
+    documentación de \raf:
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame}
+  }.
+  Además, son propagadas al contexto global del navegador a través de eventos
+  de \js de navegador \footnote{
+    documentación sobre \texttt{CustomEvent}:
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
+  }.
+  Esto no ocurría originalmente, sino luego de un cambio necesario para poder
+  reutilizarlas en la detección de movimiento \footnote{
+    propagación de \features:
+    \url{https://github.com/ffigari/WebGazer/commit/7c6b7fb4dcefea2b85d7a24b3e86bd9a31b938d4}
+  }.
 
   En cada instante de calibración se notifica a \webgazer para que en base al
-  último par de \features construya la entrada de su modelo de regresión.
-  Además se almacenan los recuadros correspondientes a las posiciones de los
+  último par de \features construya la entrada de su modelo de regresión
+  \ref{fig:eye-features-to-model-input} y la almacene junto a la coordenada del
+  estímulo presentado.
+  Además, se almacenan los recuadros correspondientes a las posiciones de los
   ojos.
-  Al finalizar la fase de calibración, estos datos recolectados se utilizan para
-  instanciar la detección de movimiento y el modelo interno de regresión de
-  \webgazer.
-  Sobre el modelo de regresión se realizó una tercera mejora \footnote{llamado
-  explícito para calcular coeficientes:
-  \url{https://github.com/ffigari/WebGazer/commit/16f69474d40132c7faa826b2afc7fd464bc6c6c5}}.
-  Originalmente \webgazer permitía agregar datos de calibración en cualquier
-  momento durante el ciclo de vida del estimador de la mirada.
-  Sin embargo esto implicaba recalcular en cada \textit{frame} los coeficientes
-  del modelo interno de regresión, mientras que para nuestro caso alcanzaba con
-  calcularlos al final de la fase explícita de calibración.
-  Al ser esto una optimización de recursos, se optó por modificar \webgazer y su
-  interfaz para que el calculo de coeficientes se realice a través de un pedido
-  explícito.
+  En base a los datos recolectados, al finalizar la fase de calibración se
+  notifica nuevamente a \webgazer para que instancie su modelo de regresión
+  \footnote{
+    La instanciación del modelo de regresión de \webgazer estuvo sujeta a
+    cambios
+    (\url{https://github.com/ffigari/WebGazer/commit/16f69474d40132c7faa826b2afc7fd464bc6c6c5}).
+    Originalmente \webgazer permitía agregar datos de calibración en cualquier
+    momento durante el ciclo de vida del estimador de la mirada.
+    Sin embargo esto implicaba recalcular en cada \textit{frame} los coeficientes
+    del modelo interno de regresión, mientras que para nuestro caso alcanzaba con
+    calcularlos al final de la fase explícita de calibración.
+    Al ser esto una optimización de recursos, se optó por modificar \webgazer y su
+    interfaz para que el calculo de coeficientes se realice a través de un pedido
+    explícito.
+  }
 
   TODO: Explicar instanciación de detección de movimiento
         Y dsp cómo se la usa para decidir cuándo se descalibra la herramienta
         Incluir pseudocodigo tanto de la instanciación y como del chequeo que se
         hace
+  Al finalizar la calibración se instancia además detección de movimiento blabla
   Se definen luego, para cada ojo, un multipoligono (i.e., una forma geométrica
   definida en base a múltiples polígonos) correspondiente a la unión de los
   rectángulos de cada ojo, agrandados luego por un factor de 1.8 (elección
@@ -293,6 +299,15 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   movimiento significativo.
   Si a partir de algún \textit{frame} el recuadro de alguno de los ojos sale de
   su multipoligono se considerará al sistema como descalibrado.
+
+  \begin{figure}
+    TODO: Agregar pseudocódigo de cómo se arman los bboxes de los ojos en base al
+          output del modelo de \facemesh
+
+    \caption{Generación de multibbox}
+    \label{fig:facemesh-to-eyes-bbox}
+  \end{figure}
+
 
   TODO: Comentar sobre los playgrounds e interfaces
     - por arriba y mas que nada para que se entienda que lo armado se pueda armar
