@@ -347,13 +347,11 @@ imágenes y las coordenadas de la pantalla.
 \turkergaze \cite{{xu_2015_turker_gaze}} y luego \webgazer
 \cite{{papoutsaki_2016_webgazer}} ilustran una implementación de este tipo de
 modelos.
-Luego de localizar los ojos, se redimensiona el recuadro de cada ojo a un
-tamaño fijo de 6 x 10 píxeles al cual se aplica también normalización por
-histograma (\textit{{histogram normalization}}).
-La combinación del vector obtenido para cada ojo resulta en un vector de 120
-dimensiones en cada \textit{{frame}}.
-A través de un modelo de \textit{{ridge regression}}, de este espacio se pasa
-luego al mundo dos dimensional de las coordenadas de la pantalla.
+Para ello luego de localizar los ojos, transforman su recuadro de la imagen en
+vectores de 120 dimensiones con los cuales se alimenta un modelo de regresión
+\textit{ridge}.
+Así, dado un \textit{frame} de la webcam, la salida del modelo será la
+coordenada de la pantalla que se está miranddo.
 \pace \cite{{huang_2016_pace}} utiliza un mecanismo híbrido en el cual a las
 imágenes de los ojos se agregan variables estimadas de la posición de la cabeza
 (orientación, rotación y apertura de los ojos).

@@ -136,8 +136,14 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   \end{enumerate*}.
 
   \begin{figure}
+    \centering
     \begin{verbatim}
-    def localizar-ojos:
+    def localizar-ojos(frame):
+        en base al frame de entrada
+        generar
+          el facemesh f
+          correspondiente a la salida del modelo de facemesh
+
         para cada ojo
         definir
           la región de interés
@@ -146,7 +152,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
         de la salida del modelo de facemesh
         seleccionar
           los conjuntos
-          as, ai = keypoints correspondientes a
+          as, ai = keypoints del facemesh f correspondientes a
                    los arcos superior e inferior de ri
         
         para cada ojo
@@ -161,27 +167,24 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
           el recuadro
           definido por las esquinas esi y eid
     \end{verbatim}
-    TODO: Agregar algún comentario?
-    \caption{Rutina de localización de los ojos}
+    Los recuadros devueltos por esta rutina son de dimensión variable.
+    \caption{Localización de los ojos}
     \label{fig:eyes-localization}
   \end{figure}
 
   \begin{figure}
-    TODO: Agregar pseudocódigo sobre la transformación de los parches de los ojos
-          en los vectores con los cuales se alimenta al modelo de regresión
+    \begin{verbatim}
+    def generar-input(recuadros):
+        llevar cada recuadro
+        a un vector
+          de dimensión fija de 6 píxeles de alto y 10 píxeles de ancho
+          en escala de grises
+          y ecualizado por histograma
 
-  Cada recuadro tiene luego su tamaño ajustado a una dimensión fija de 10x6
-  píxeles.
-  Se los convierte luego a una escala de grises y son ecualizados a través de
-  histogramas.
-  De esta manera, para cada \textit{frame} de la webcam se obtiene un vector de
-  120 dimensiones correspondiente a la apariencia de los dos ojos.
-  De este universo 120D se pasa luego al universo de coordenadas 2D a través de
-  un modelo de \textit{ridge regression}.
-  Los coeficientes de este modelo se calculan al finalizar la fase explícita de
-  calibración.
-
-    TODO: Hablar de modelado por apariencia?
+        retorn la concatenación de ambos vectores
+    \end{verbatim}
+    El vector resultante tendrá 120 dimensiones.
+    Esta rutina es un ejemplo de modelado por apariencia.
 
     \caption{Generación de entrada del modelo de estimación de la mirada}
     \label{fig:eye-features-to-model-input}
