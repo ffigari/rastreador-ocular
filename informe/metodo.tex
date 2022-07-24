@@ -402,92 +402,101 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
 \subsection{Extracción de información}
 
-  TODO
+  La experimentación realizada permitió obtener estimaciones de la mirada para
+  múltiples ensayos provenientes de múltiples sujetos, tanto para la tarea de
+  antisacadas como para la tarea de prosacadas.
+  Con el análisis posterior se buscó principalmente aislar la respuesta dada en
+  cada ensayo ante la aparición del estímulo visual lateral, así como la
+  latencia en dar tal respuesta.
+  Para ello se aplicaron rutinas \adhoc de detección de sacadas para encontrar
+  la dirección y el inicio de la primera sacada en cada ensayo si esta
+  existiera.
+  Previo a esto se descartaron datos que se consideraran inválidos.
+  Ante la variabilidad encontrada en los datos (TODO: Citar figura que muestre
+  resoluciones y frecuencias de muestreo sin mucha distinción) y desviaciones
+  encontradas en ellos (TODO: Citar figura que ilustre las desviaciones), se
+  los normalizó a un rango común de valores.
+  El análisis de datos implementado ignoró el eje vertical (\ie, la coordenada
+  ``y'' de cada estimación) pues no interesaba a nuestro objeto de estudio.
 
-  al ser las métricas más comunes, principalmente se buscó aislar tiempo de
-  respuesta y tasas de errores
-  se ignoraron las coordenadas "y" de las estimaciones pues sólo fue necesario
-  analizar el comportamiento horizontal de cada ensayo
-  se analizaron únicamente las coordenadas x de las estimaciones obtenidas
+  El primer punto que se atacó fue la variabilidad de la frecuencia de
+  muestreo.
+  Para esto se realizó un remuestreo de las estimaciones de todo ensayo a 30
+  Hz.
+  Esto se hizo utilizando interpolación lineal \footnote{
+    interpolación lineal:
+    \url{https://es.wikipedia.org/wiki/Interpolaci\%C3\%B3n\_lineal}
+  }.
 
-  TODO: resampling, normalizado, espejado
+  Las estimaciones fueron luego normalizadas tal que el valor $0$ se
+  correspondiera con la posición de fijación.
+  Para la primera ronda se calculó para cada sujeto el promedio de la
+  coordenada ``x'' estimada durante la fase de fijación de cada ensayo.
+  A las estimaciones de los ensayos de cada sujeto se sustrajo luego tal valor
+  con el fin de centrarlos alrededor del $0$.
+  Cada ensayo fue luego llevado al rango $[-1, 1]$ tal que $-1$ se
+  correspondiera al valor mínimo del ensayo y $1$ al valor máximo.
 
-  - resampling
-  a 30 Hz, interpolación lineal a partir del timestamp inicial
-  variabilidad de resoluciones, de frecuencias de muestreo, desviaciones (figura
-  que muestre estas tres cosas resumidas para ambas instancias)
+  En cambio, para la segunda ronda se normalizó en base a las validaciones
+  realizadas luego de cada calibración.
+  En estas validaciones, las coordenadas de los estímulos laterales presentados
+  coincidieron con las coordenadas de los estímulos visuales laterales de las
+  tareas de pro y antisacadas.
+  Para cada ensayo se tomó entonces la última validación y se calcularon los
+  valores $l$, $c$ y $r$ correspondientes respectivamente al promedio de las
+  estimaciones durante la presentación de los estímulos a la izquierda, al
+  centro y a la derecha.
+  Luego, las estimaciones en el rango $[l, c]$ fueron llevadas al rango $[-1,
+  0]$ y aquellas en el rango $[c, r]$ al rango $[0, 1]$.
 
-  - normalizado
-  necesidad de poner los datos de cada experimento en la misma unidad para
-  simplificar análisis posteriores (criterios de exclusión, detección de sacadas)
-  cómo se normalizan los datos en base a la validación?
+  Luego de normalizar las estimaciones se espejó la mitad de ellas tal que
+  pudiera asumirse que el estímulo visual lateral aparecía siempre del mismo
+  lado.
+  El espejado se realizó multiplicando por $-1$ las estimaciones de los ensayos
+  en los cuales el estímulo lateral apareciera a izquierda.
+  Esto no era estrictamente necesario, pero simplificó análisis posteriores.
+  Luego de este cambio, toda antisacada correcta tendrá que mostrar en sus
+  estimaciones un salto de un valor cercano a $0$ a un valor cercano a $-1$.
+  Similarmente, toda prosacada correcta tendrá que mostrar un salto hacia los
+  valores negativos.
 
-  Las estimaciones de la mirada fueron luego llevadas del rango variable por
-  sujeto al rango [-1, 1] buscando que al valor 0 fueran a caer las estimaciones
-  correspondientes a cuando el sujeto miraba al centro de la pantalla.
-  En la primera, instancia se normalizó cada tarea individualmente utilizando el
-  centro estimado de cada sujeto c (calculado como el promedio de los valores de
-  tal sujeto) y los valores mínimos $min_x$ y máximos $max_x$ de la repetición:
-  las estimaciones en el rango [$min_x$, c] se llevaron con interpolación lineal
-  al rango [-1, 0] y análogamente las estimaciones en el rango [c, $max_x$] se
-  llevaron al rango [0, 1].
-  Para la segunda instancia, la normalización se realizó en base a las
-  validaciones realizadas durante la tarea.
-  Para cada conjunto de repeticiones posteriores a una calibración + validación
-  se calcularon los valores l, c y r como el promedio de las estimaciones
-  obtenidas al mostrar respectivamente los estímulos de validación a izquierda,
-  centro y derecha.
-  Luego, similar a la instancia anterior, el rango [l, c] fue llevado al rango
-  [-1, 0] y el rango [c, r] fue llevado al rango [0, 1].
+  TODO: Figura que muestre cómo se "emprolija" la forma de los datos cuando se
+        aplica el espejado
 
-  - espejado
-  Post normalización, las estimaciones fueron modificadas tal que pudiera
-  asumirse que el estímulo lateral aparecía siempre del mismo lado.
-  Para esto, en las repeticiones en las cuales el estímulo visual aparecía a la
-  izquierda, se multiplicaron los valores de las estimaciones horizontales por
-  -1.
-  De esta manera se podrá asumir que si los valores de las estimaciones son
-  positivos entonces el sujeto miró al estímulo, mientras que si las estimaciones
-  son negativas entonces el sujeto habrá mirado en la dirección contraria.
-  Así, para identificar prosacadas correctas tendrá que verificarse que haya un
-  salto de valores cercanos a 0 a valores cercanos a 1, y análogamente para
-  identificar antisacadas correctas tendrá que verificarse un salto de valores
-  cercanos a 0 a valores cercanos a -1.
+  Se buscó luego descartar aquellos ensayos donde no pudiera determinarse una
+  respuesta por parte del sujeto ya fuera esta correcta o incorrecta.
+  Así, se clasificó como \outlier a todo ensayo en el cual:
+  \begin{itemize}
+    \item la frecuencia original de muestreo fuera menor a 15 Hz
+    \item no hubiera habido fijación en el estímulo central durante los 500 ms
+      anteriores a la aparición del estímulo lateral
+    \item hubiera una sacada temprana antes de los 100 ms posteriores a la
+      aparición del estímulo lateral
+    \item no hubiera sacada
+  \end{itemize}
+  Para algunos sujetos la totalidad de sus datos fue manualmente marcada como
+  \outlier.
+  Los \outliers fueron luego descartados, así como todas las estimaciones de
+  los sujetos que terminaran con menos de 30 ensayos luego de haber aplicado
+  los criterios de filtrado anteriores.
 
-  figura que muestre antes y dsp de un par de sujetos
+  TODO: Figura que ejemplifique ensayos filtrados
 
-  TODO: exclusión de outliers
+  Los ensayos no descartados definieron el grupo \inlier, grupo sobre el cual
+  se reportarán luego las tasas de correctitud y las latencias en las
+  respuestas.
 
-  - outlier es todo aquello que no sea inlier
-  - inlier son aquellos ensayos donde el sujeto dió una respuesta 
-  - listar las razones por las cuales se termina siendo outlier; acá tendría
-  sentido armar una figura con ejemplos de las distintas causas de descarte
-   - descartados manualmente
-   - sin fijación en el estímulo central
-   - con sacada temprana
-   - sin respuesta
-   - sin suficientes ensayos por sujeto luego de aplicar todas las otras reglas
-   (qué umbral se tomó)
-  - la correctitud y el estudio de los tiempos de repuesta se hará sobre el
-    grupo inlier
-  - comentar cómo las métricas finales están impactadas por cómo se procese la
-    data en este punto (en verdad es en cada decisión que se haga)
+  La detección de sacadas de la primera ronda se implementó en base a detectar
+  cuándo las estimaciones post normalización cruzaban los umbrales $0.6$ o
+  $-0.6$ indicando respectivamente una sacada hacia el estímulo o en dirección
+  contraria.
 
-  TODO: detección de sacadas
-
-  En la primera instancia se detectaron las sacadas buscando únicamente cuándo
-  las estimaciones post normalización cruzaban los umbrales 0.6 o -0.6 unidades
-  (post normalización al rango [-1, 1]) para respectivamente detectar sacadas
-  hacia el estímulo visual o en dirección contraria a él.
-
-  Para la segunda instancia se consideró como sacadas a los intervalos cuya
-  duración fuera mayor a 40 ms, tuvieran estimaciones monótonas crecientes o
-  decrecientes, hubieran recorrido cierta mínima distancia y tuvieran una
-  velocidad promedio de al menos 0.15 unidades / 100 ms.
-
-  TODO: agregar pseudocódigo para la detección de sacadas y aclarar acá o en la
-        conclu que lo de la distancia mínima de movimiento evita reconocer
-        pequeñas sacadas pero que fue un tradeoff para poder tener algo andando
-
-
-  TODO: clasificación de ensayos
+  En la segunda instancia se buscó aplicar elementos comunmente utilizados en
+  la bibliografía.
+  Para ello post normalización se clasificó como sacada a los intervalos que
+  \begin{enumerate*}
+    \item duraran al menos 40 ms,
+    \item tuvieran estimaciones monotónicamente crecientes o decrecientes,
+    \item hubieran recorrido al menos 0.6 unidades y
+    \item tuvieran una velocidad promedio de al menos 0.15 unidades / 100 ms
+  \end{enumerate*}.

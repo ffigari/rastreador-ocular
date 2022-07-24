@@ -225,30 +225,34 @@ El trabajo a futuro deberá avanzar sobre el desarrollo de la herramienta web y
 sobre un esquema de análisis adaptado a ese tipo de datos. \\
 Respecto del análisis de datos: 
 \begin{itemize}
-  \item Se deben buscar (o desarrollar) métodos de detección de sacadas capaces
-de capturar pequeñas sacadas con las restricciones del \eyetracking web.
-  Esto evitará, en el caso de la tarea de antisacadas, que se pasen por alto
-pequeñas sacadas iniciales.
-  Estas muchas veces iban en la dirección incorrecta y luego eran corregidas
-con sacadas más grandes que si eran detectadas, aumentando la tasa de
-correctitud.
-  Para esto pueden, por ejemplo, buscarse los ensayos que se consideren
-incorrectamente descartados. 
-
-  \item En el mismo sentido se pueden revisar los criterios de exclusión.
-  En la implementación actual, para conservar un ensayo es requisito que el
-sujeto haya estado mirando al estímulo central de fijación durante los 500 ms
-previos a la aparición del estímulo lateral.
-  Sin embargo no se incluye un mecanismo de detección de fijaciones sino que se
-verifica que durante ese período \begin{enumerate*}
-    \item en promedio las estimaciones coincidan con el centro y
-    \item no haya sacadas
-\end{enumerate*}.
-  Esto se puede mejorar implementando efectivamente mecanismos de detección de
-fijaciones.
-  También puede estudiarse si y cómo los criterios de filtrado modifican las
-proporciones de cada población de sujetos, o si estos tienen por ejemplo mayor
-tendencia a descartar ensayos que hubieran sido clasificados como incorrectos.
+  \item
+    Se deben buscar o desarrollar métodos de detección de sacadas capaces de
+    capturar pequeñas sacadas con las restricciones del \eyetracking web.
+    Esto evitará que se pasen por alto pequeñas sacadas iniciales lo cual
+    seguramente tenga que ver con las altas tasas de correctitud encontradas.
+    Para explorar esto en mayor detalle podrían etiquetarse sacadas en un
+    dataset de estimaciones obtenidas con el prototipo implementado.
+    De esta manera se obtendría un \groundtruth con el cual podría medirse la
+    efectividad de las rutinas que se implemente.
+ 
+  \item
+    En el mismo sentido se pueden revisar los criterios de exclusión.
+    Por ejemplo, en la implementación actual, para conservar un ensayo es
+    requisito que el sujeto haya estado mirando al estímulo central de fijación
+    durante los 500 ms previos a la aparición del estímulo lateral.
+    Sin embargo no se incluye un mecanismo de detección de fijaciones sino que
+    se verifica que durante ese período \begin{enumerate*}
+      \item en promedio las estimaciones coincidan con el centro y
+      \item no haya sacadas
+    \end{enumerate*}.
+    Esto se puede mejorar implementando efectivamente mecanismos de detección
+    de fijaciones. \\
+    La definición de estos criterios impacta en la cantidad de ensayos que
+    alcanzan el grupo \inlier así como la calidad de sus estimaciones.
+    Debería entonces asegurarse también que estos criterios y transformaciones
+    sobre los datos sean adecuados en cuanto al impacto sobre las métricas
+    obtenidas (\eg que no ocurra que haya mayor tendencia a descartar ensayos
+    con respuesta incorrecta que ensayos con respuesta correcta).
 \end{itemize}
 
 En base a estos puntos, también puede estimarse la tasa de ensayos que el
