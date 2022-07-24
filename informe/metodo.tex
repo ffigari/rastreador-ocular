@@ -128,11 +128,11 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   mirada.
   Incluye \begin{enumerate*}
     \item localización de los ojos (figura \ref{fig:eyes-localization}),
-    \item traducción de los recuadros de los ojos a la entrada del modelo interno
-      de regresión lineal \textit{ridge} (figura
+    \item traducción de los recuadros de los ojos a la entrada del modelo
+      interno de regresión lineal \textit{ridge} (figura
       \ref{fig:eye-features-to-model-input}) y
-    \item emisión de estimaciones sobre la coordenada observada en la pantalla a
-      través de tal modelo
+    \item emisión de estimaciones sobre la coordenada observada en la pantalla
+      a través de tal modelo
   \end{enumerate*}.
   Las especificaciones del software que nos iba a ser necesario no estaban
   claras inicialmente, sino que fueron estableciendose a medida que el trabajo
@@ -141,16 +141,22 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   nuestro protocolo y de un mecanismo de detección de descalibración del
   sistema.
   El software resultante, sumado al código de los experimentos y al código de
-  análisis de datos, fue liberado en un repositorio público
-  \footnote{repositorio principal:
-  \url{https://github.com/ffigari/rastreador-ocular}}.
+  análisis de datos, fue liberado en un repositorio público \footnote{
+    repositorio principal:
+    \url{https://github.com/ffigari/rastreador-ocular}
+  }.
   Los cambios realizados sobre \webgazer pueden consultarse en un \fork
-  personal de paquete \footnote{\fork propio:
-  \url{https://github.com/ffigari/WebGazer}}.
-  Para este \fork no se partió del repositorio original de \webgazer
-  \footnote{repositorio original: \url{https://github.com/brownhci/WebGazer}}
-  sino del \fork realizado por \jspsych \footnote{\fork de \jspsych:
-  \url{https://github.com/jspsych/WebGazer}}.
+  personal de paquete \footnote{
+    \fork propio:
+    \url{https://github.com/ffigari/WebGazer}
+  }.
+  Para este \fork no se partió del repositorio original de \webgazer \footnote{
+    repositorio original:
+    \url{https://github.com/brownhci/WebGazer}
+  } sino del \fork realizado por \jspsych \footnote{
+    \fork de \jspsych:
+    \url{https://github.com/jspsych/WebGazer}
+  }.
   La razón de esto fue maximizar las chances de mantener compatibilidad con
   \jspsych.
 
@@ -185,7 +191,8 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
         retornar para cada ojo
           el recuadro
           definido por las esquinas esi y eid\end{verbatim}
-    Los recuadros devueltos por esta rutina son de dimensión variable. \\
+
+    Los recuadros devueltos por esta rutina son de dimensión variable.
     Además asume que una y sólo una cara será detectada por el modelo de
     \facemesh.
     El modelo de \tfjs utilizado da la opción de detectar una única cara.
@@ -199,7 +206,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
   \begin{figure}
     \begin{verbatim}
-    def generar-input(recuadros):
+    def generar-input-de-webgazer(recuadros):
         llevar cada recuadro
         a un vector
           de dimensión fija de 6 píxeles de alto y 10 píxeles de ancho
@@ -261,31 +268,32 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     \url{https://github.com/ffigari/WebGazer/commit/7c6b7fb4dcefea2b85d7a24b3e86bd9a31b938d4}
   }.
 
-  En cada instante de calibración se notifica a \webgazer para que en base al
-  último par de \features construya la entrada de su modelo de regresión
+  En cada instante de calibración se notifica a \webgazer para que transforme
+  el último par de \features al formato necesario a su modelo de regresión
   (figura \ref{fig:eye-features-to-model-input}) y la almacene junto a la
   coordenada del estímulo presentado.
   Además, se almacenan los recuadros correspondientes a las posiciones de los
   ojos.
   En base a los datos recolectados, al finalizar la fase de calibración se
-  notifica nuevamente a \webgazer para que instancie su modelo de regresión
+  notifica finalmente a \webgazer para que instancie su modelo de regresión
   \footnote{
     La instanciación del modelo de regresión de \webgazer estuvo sujeta a
     cambios
     (\url{https://github.com/ffigari/WebGazer/commit/16f69474d40132c7faa826b2afc7fd464bc6c6c5}).
     Originalmente \webgazer permitía agregar datos de calibración en cualquier
     momento durante el ciclo de vida del estimador de la mirada.
-    Sin embargo esto implicaba recalcular en cada \textit{frame} los coeficientes
-    del modelo interno de regresión, mientras que para nuestro caso alcanzaba con
-    calcularlos al final de la fase explícita de calibración.
-    Al ser esto una optimización de recursos, se optó por modificar \webgazer y su
-    interfaz para que el calculo de coeficientes se realice a través de un pedido
-    explícito.
+    Sin embargo esto implicaba recalcular en cada \textit{frame} los
+    coeficientes del modelo interno de regresión, mientras que para nuestro
+    caso alcanzaba con calcularlos al final de la fase explícita de
+    calibración.
+    Al ser esto una optimización de recursos, se optó por modificar \webgazer y
+    su interfaz para que el calculo de coeficientes se realice a través de un
+    pedido explícito.
   }
 
   Al finalizar la calibración se instancia además la detección de movimiento.
   Los recuadros almacenados definen a su vez una región de ``quietud'' (figura
-  \ref{fig:features-to-stillnes-region}) dentro de la cual tendrán que estar
+  \ref{fig:features-to-stillness-region}) dentro de la cual tendrán que estar
   contenidos los recuadros subsecuentes.
   Si en algún \textit{frame} alguno de los recuadros sale de tal región
   entonces se considerará que el sujeto se movió (figura
@@ -295,7 +303,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
   \begin{figure}
     \begin{verbatim}
-    def define-stillness-region(recuadros):
+    def definir-region-de-quietud(recuadros):
         para cada ojo
         definir
           su región de quietud
@@ -310,12 +318,12 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     La elección del valor de este factor impacta posteriormente en el rigor de
     la detección.
     \caption{Definición de regiones de quietud}
-    \label{fig:features-to-stillnes-region}
+    \label{fig:features-to-stillness-region}
   \end{figure}
 
   \begin{figure}
     \begin{verbatim}
-    def detect-movement(par de regiones de quietud):
+    def detectar-movimiento(par de regiones de quietud):
         cada vez que sea propagado un par de features de los ojos
           para cada feature
           verificar que esta esté contenida en su región de quietud
@@ -338,8 +346,8 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   Para esto se distinguieron dos interfaces lógicas:
   \begin{enumerate}
     \item
-      La externa, que busca facilitar la inicialización e interacción con el
-      prototipo a través de \timelines de \jspsych.
+      La externa, que proveyendo \timelines de \jspsych apunta a facilitar la
+      implementación de experimentos clínicos que requieran \eyetracking.
       Durante el \runtime de un experimento, estos permiten calibrar el
       sistema, validar tal calibración y realizar recalibraciones si fuera
       necesario.
@@ -349,7 +357,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
       calibración.
   \end{enumerate}
   En base a esta distinción se implementaron dos \playgrounds, los cuales son
-  interfaces web que permiten interactuar con estas interfaces lógicas (figuras
+  interfaces web que permiten interactuar con cada interfaz lógica (figuras
   \ref{fig:external-playground} y \ref{fig:internal-playground}).
   Estos facilitan el desarrollo de cada interfaz lógica y por lo tanto de todo
   el prototipo.
@@ -390,76 +398,6 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
     \caption{\textit{Playground} interno}
     \label{fig:internal-playground}
-  \end{figure}
-
-  \begin{figure}
-    \newcommand{\wgvurl}{\texttt{wg\_repo\_versioned\_url}\xspace}
-    \newcommand{\rvurl}{\texttt{rastoc\_repo\_versioned\_url}\xspace}
-
-    TODO: Esta figura no sé si aplica tanto, capaz conviene nomás ir poniendo
-          footnotes 
-
-    TODO: Emprolijar esta figura y ver si hay más links que valga la pena
-          facilitar
-
-    with
-    \wgvurl as \url{https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5}
-
-    \begin{itemize}
-      \item
-        propagación de features de los ojos:
-        \href
-          {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
-          {<\wgvurl>/src/index.mjs\#L608},
-        \href
-          {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L225-L233}
-          {<\wgvurl>/src/index.mjs\#L225-L233}
-
-      \item 
-        pedido de estimación de \textit{facemesh} a \tfjs:
-        \url
-          {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/facemesh.mjs#L41-L46}
-          {<\wgvurl>/src/facemesh.mjs\#L41-L46}
-
-      \item
-        uso de \raf para: \begin{itemize}
-          \item
-            iniciar el loop de emisión de \features:
-            \href
-              {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L608}
-              {<\wgvurl>/src/index.mjs\#L608}
-
-          \item
-            continuar ese loop:
-            \href
-              {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L232}
-              {<\wgvurl>/src/index.mjs\#L232}
-
-          \item
-            iniciar y cotinuar el loop de emisión de estimaciones de la mirada:
-            \href
-              {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L349}
-              {<\wgvurl>/src/index.mjs\#L349};
-            este loop se combina con una variable \booleana \href
-              {https://github.com/ffigari/WebGazer/blob/bd0cbc3cde29a736b921d6bbc96ab46476f221c5/src/index.mjs#L45}
-              {<\wgvurl>/src/index.mjs\#L45};
-            para permitir pausar la generación de estimaciones.
-
-        \end{itemize}
-
-      \item
-        forma del estímulo de fijación:
-        \url
-          {https://github.com/ffigari/rastreador-ocular/blob/ac35c016f528ee5bc652c00e4cafce34d22b1fc3/www/antisaccades.js#L65-L72}
-
-      \item
-        duraciones de fases:
-        \url
-          {https://github.com/ffigari/rastreador-ocular/blob/c195928110be271eccfa53ca5b919df36e0a5071/www/antisaccades.js#L30-L34}
-    \end{itemize}
-
-    \caption{Atajos al código}
-    \label{fig:code-shortcuts}
   \end{figure}
 
 \subsection{Extracción de información}
