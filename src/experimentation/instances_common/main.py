@@ -316,11 +316,6 @@ class Instance():
     def _look_for_corrective_saccade(self, incorrect_ts):
         raise NotImplementedError('Instance._look_for_corrective_saccade')
 
-    def metrics(self):
-        return {
-            'sampling_frequencies': sampling_frequencies,
-        }
-
     def __init__(self):
         starting_ts = TrialsCollection(self._load_data())
         self.starting_sample = Sample(starting_ts)
