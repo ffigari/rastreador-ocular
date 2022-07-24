@@ -188,6 +188,8 @@ if __name__ == "__main__":
     [
         shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/metodo/{}'.format(fn))
         for fn in [
+            'internal-playground.png',
+            'external-playground.png',
             'sampling-frequency-distribution.png',
             'widths-distribution.png']]
 

@@ -184,8 +184,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
       
         retornar para cada ojo
           el recuadro
-          definido por las esquinas esi y eid
-    \end{verbatim}
+          definido por las esquinas esi y eid\end{verbatim}
     Los recuadros devueltos por esta rutina son de dimensión variable. \\
     Además asume que una y sólo una cara será detectada por el modelo de
     \facemesh.
@@ -207,8 +206,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
           en escala de grises
           y ecualizado por histograma
 
-        retornar la concatenación de ambos vectores
-    \end{verbatim}
+        retornar la concatenación de ambos vectores\end{verbatim}
     El vector resultante tendrá 120 dimensiones.
     Esta rutina es un ejemplo de modelado por apariencia.
     \caption{Generación de entrada del modelo de estimación de la mirada}
@@ -305,8 +303,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
               de sus recuadros
               agrandados por un factor de 1.8
 
-        retornar ambas regiones de quietud
-    \end{verbatim}
+        retornar ambas regiones de quietud\end{verbatim}
     Los recuadros de cada ojo son representados con rectángulos y cada
     región de quietud con un ``multirectángulo'' (i.e., la unión de varios
     rectángulos).
@@ -325,8 +322,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
         si alguno de los dos features
         no estuviera contenido en su región de quietud
-        entonces notificar que se detectó movimiento
-    \end{verbatim}
+        entonces notificar que se detectó movimiento\end{verbatim}
     \caption{Detección de movimiento}
     \label{fig:movement-detection}
   \end{figure}
@@ -357,12 +353,16 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   \ref{fig:external-playground} y \ref{fig:internal-playground}).
   Estos facilitan el desarrollo de cada interfaz lógica y por lo tanto de todo
   el prototipo.
-
-  TODO: Mencionar calibración libre vs asistida
+  La interfaz externa permite calibrar el sistema utilizando el protocolo ya
+  mencionado durante el cual se dibujan estímulos en la pantalla.
+  Además, ambas interfaces permiten calibrar libremente.
+  Esto consiste en generar datos de calibración a partir de clicks en la
+  pantalla durante los cuales se deberá fijar la mirada en el puntero.
 
   \begin{figure}
     \centering
-    \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-jspsych-playground-presentation.png}}
+    \frame{\includegraphics[width=0.8\linewidth]{metodo/external-playground.png}}
+
     Se puede elegir entre:
     a) calibrar libremente;
     b) calibrar asistidamente;
@@ -370,13 +370,15 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     d) realizar una secuencia de repeticiones de una tarea de juguete mientras
     entre repeticiones se asegura la correcta calibración del sistema;
     e) finalizar la sesión para exportar la data recolectada.
+
     \caption{\textit{Playground} externo}
     \label{fig:external-playground}
   \end{figure}
 
   \begin{figure}
     \centering
-    \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-playground-presentation.png}}
+    \frame{\includegraphics[width=0.8\linewidth]{metodo/internal-playground.png}}
+
     Información del estado del \eyetracker es presentada al mismo tiempo que se
     permite realizar calibraciones libres.
     El recuadro verde corresponde a la posición dentro de la cual el paquete
@@ -384,6 +386,8 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     a los recuadros de los ojos en cada \textit{frame} y los rectángulos azules
     corresponden a las posiciones dentro de las cuales los recuadros de los
     ojos deben mantenerse para considerar que no hubo movimiento.
+    El punto rojo correspode a la posición estimada de la mirada.
+
     \caption{\textit{Playground} interno}
     \label{fig:internal-playground}
   \end{figure}
