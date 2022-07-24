@@ -317,31 +317,37 @@ profesionales, como lo han hecho en otros trabajos de \eyetracking web
   Con una mayor comprensión de las precisiones alcanzables podrá luego
 estudiarse qué información es extrapolable con las estimaciones.
 
-  \item Otro aspecto para extender y mejorar el prototipo implementado es la
-detección de descalibraciones.
-  Actualmente esta se realiza a través de detección de movimiento de los ojos
-del sujeto pero es posible que existan otras alternativas.
-  Por ejemplo, \eyetrackers comerciales muestran regularmente un punto para
-detectar si la estimación en ese momento coincide con las coordenadas del punto
-(e.g., \textit{drift correction} en el \eyetracker \eyelink).
-  Al momento de implementar alguno de estos mecanismos debe tenerse en cuenta
-su rendimiento y cómo se vea afectada la duración total del experimento.
-  Al margen de cómo se implemente la detección de descalibración, debe
-definirse con mayor claridad qué significa que la herramienta esté
-correctamente calibrada.
-  Como ha mostrado nuestra experimentación, es posible que las estimaciones
-arrojadas por la herramienta no coincidan con la mirada real pero que aun así
-pueda extrapolarse información.
-  La definición de calibración está entonces ligada a la pregunta que se busca
-responder.
-  Si como en nuestro caso alcanza con poder discernir la posición relativa de
-las estimaciones a lo largo del tiempo, entonces sería esperable poder relajar
-el criterio de descalibración actual.
-  Similarmente, en el concepto de calibración debería considerarse la
-granularidad espacial deseada para las estimaciones.
-  En nuestro caso alcanzó con distinguir tres regiones de interés (centro,
-izquierda y derecha) pero en otros problemas (e.g., rastreo de la atención
-durante una tarea de lectura) serán deseables mayores niveles de precisión.
+  \item
+    Otro aspecto del prototipo a explorar con mayor detalle es la
+    detección de descalibraciones.
+    Una primera opción es explorar modificaciones sobre la detección de
+    movimiento en la cual esta esta basada.
+    Por ejemplo, puede modificarse el factor de cambio de tamaño de los
+    recuadros del ojo (figura \ref{fig:features-to-stillnes-region}) y estudiar
+    el impacto en la notificación de descalibraciones.
+    Es esperable también poder detectar descalibraciones sin recurrir a
+    detección de movimiento.
+    Por ejemplo, \eyetrackers comerciales muestran regularmente un punto para
+    detectar si la estimación en ese momento coincide con las coordenadas del
+    punto (e.g., \textit{drift correction} en el \eyetracker \eyelink).
+    Al momento de implementar alguno de estos mecanismos debe tenerse en cuenta
+    su rendimiento y cómo se vea afectada la duración total del experimento. \\
+    Al margen de cómo se implemente la detección de descalibración, debe
+    definirse con mayor claridad qué significa que la herramienta esté
+    correctamente calibrada.
+    Como ha mostrado nuestra experimentación, es posible que las estimaciones
+    arrojadas por la herramienta no coincidan con la mirada real pero que aun
+    así pueda extrapolarse información.
+    La definición de calibración está entonces ligada a la pregunta que se
+    busca responder.
+    Si como en nuestro caso alcanza con poder discernir la posición relativa de
+    las estimaciones a lo largo del tiempo, entonces sería esperable poder
+    relajar el criterio de descalibración actual.
+    Similarmente, en el concepto de calibración debería considerarse la
+    granularidad espacial deseada para las estimaciones.
+    En nuestro caso alcanzó con distinguir tres regiones de interés (centro,
+    izquierda y derecha) pero en otros problemas (e.g., rastreo de la atención
+    durante una tarea de lectura) serán deseables mayores niveles de precisión.
 
   \item Es esperable poder encontrar rutinas más sofisticadas para la
 calibración que la rutina actual.

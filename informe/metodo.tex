@@ -127,9 +127,9 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   Este paquete provee los bloques elementales para realizar estimación de la
   mirada.
   Incluye \begin{enumerate*}
-    \item localización de los ojos (cf. figura \ref{fig:eyes-localization}),
+    \item localización de los ojos (figura \ref{fig:eyes-localization}),
     \item traducción de los recuadros de los ojos a la entrada del modelo interno
-      de regresión lineal \textit{ridge} (cf. figura
+      de regresión lineal \textit{ridge} (figura
       \ref{fig:eye-features-to-model-input}) y
     \item emisión de estimaciones sobre la coordenada observada en la pantalla a
       través de tal modelo
@@ -168,10 +168,10 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
           la región de interés
           ri = area entre ambos párpados y ambas comisuras
         
-        de la salida del modelo de facemesh
+        de la salida del modelo de facemesh f
         seleccionar
           los conjuntos
-          as, ai = keypoints del facemesh f correspondientes a
+          as, ai = keypoints correspondientes a
                    los arcos superior e inferior de ri
         
         para cada ojo
@@ -207,7 +207,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
           en escala de grises
           y ecualizado por histograma
 
-        retorn la concatenación de ambos vectores
+        retornar la concatenación de ambos vectores
     \end{verbatim}
     El vector resultante tendrá 120 dimensiones.
     Esta rutina es un ejemplo de modelado por apariencia.
@@ -216,7 +216,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   \end{figure}
 
   El sistema resultante nace en la localización \textit{frame} a \textit{frame}
-  de los ojos (cf. figura \ref{fig:eyes-localization})
+  de los ojos (figura \ref{fig:eyes-localization})
   \footnote{
     La localización de los ojos de \webgazer tuvo que ser modificada para
     resolver la falla que limitó temporalmente la primera ronda de
@@ -265,8 +265,8 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
   En cada instante de calibración se notifica a \webgazer para que en base al
   último par de \features construya la entrada de su modelo de regresión
-  \ref{fig:eye-features-to-model-input} y la almacene junto a la coordenada del
-  estímulo presentado.
+  (figura \ref{fig:eye-features-to-model-input}) y la almacene junto a la
+  coordenada del estímulo presentado.
   Además, se almacenan los recuadros correspondientes a las posiciones de los
   ojos.
   En base a los datos recolectados, al finalizar la fase de calibración se
@@ -285,29 +285,56 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     explícito.
   }
 
-  TODO: Explicar instanciación de detección de movimiento
-        Y dsp cómo se la usa para decidir cuándo se descalibra la herramienta
-        Incluir pseudocodigo tanto de la instanciación y como del chequeo que se
-        hace
-  Al finalizar la calibración se instancia además detección de movimiento blabla
-  Se definen luego, para cada ojo, un multipoligono (i.e., una forma geométrica
-  definida en base a múltiples polígonos) correspondiente a la unión de los
-  rectángulos de cada ojo, agrandados luego por un factor de 1.8 (elección
-  arbitraria basada en experimentación al desarrollar el prototipo).
-  El multipoligono obtenido para cada ojo representa el espacio dentro del cual
-  el recuadro del ojo deberá mantenerse para que se considere que no hubo
-  movimiento significativo.
-  Si a partir de algún \textit{frame} el recuadro de alguno de los ojos sale de
-  su multipoligono se considerará al sistema como descalibrado.
+  Al finalizar la calibración se instancia además la detección de movimiento.
+  Los recuadros almacenados definen a su vez una región de ``quietud'' (figura
+  \ref{fig:features-to-stillnes-region}) dentro de la cual tendrán que estar
+  contenidos los recuadros subsecuentes.
+  Si en algún \textit{frame} alguno de los recuadros sale de tal región
+  entonces se considerará que el sujeto se movió (figura
+  \ref{fig:movement-detection}).
+  Cuando esto suceda se considerará y notificará que el sistema ha pasado a 
+  estar descalibrado.
 
   \begin{figure}
-    TODO: Agregar pseudocódigo de cómo se arman los bboxes de los ojos en base al
-          output del modelo de \facemesh
+    \begin{verbatim}
+    def define-stillness-region(recuadros):
+        para cada ojo
+        definir
+          su región de quietud
+          q = la unión
+              de sus recuadros
+              agrandados por un factor de 1.8
 
-    \caption{Generación de multibbox}
-    \label{fig:facemesh-to-eyes-bbox}
+        retornar ambas regiones de quietud
+    \end{verbatim}
+    Los recuadros de cada ojo son representados con rectángulos y cada
+    región de quietud con un ``multirectángulo'' (i.e., la unión de varios
+    rectángulos).
+    La elección del valor de este factor impacta posteriormente en el rigor de
+    la detección.
+    \caption{Definición de regiones de quietud}
+    \label{fig:features-to-stillnes-region}
   \end{figure}
 
+  \begin{figure}
+    \begin{verbatim}
+    def detect-movement(par de regiones de quietud):
+        cada vez que sea propagado un par de features de los ojos
+          para cada feature
+          verificar que esta esté contenida en su región de quietud
+
+        si alguno de los dos features
+        no estuviera contenido en su región de quietud
+        entonces notificar que se detectó movimiento
+    \end{verbatim}
+    \caption{Detección de movimiento}
+    \label{fig:movement-detection}
+  \end{figure}
+
+  La detección de descalibraciones no interrumpirá la generación de
+  estimaciones de la mirada.
+  En cambio, el protocolo experimental será aquel que defina cómo lidiar con
+  las descalibraciones y cuándo proceder a una nueva calibración del sistema.
 
   TODO: Comentar sobre los playgrounds e interfaces
     - por arriba y mas que nada para que se entienda que lo armado se pueda armar
@@ -317,10 +344,10 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
 
   Para ambas interfaces implementadas se construyó también un \textit{playground}
   que permitiera interactuar con ellas.
-  El del \textit{core} (Figura \ref{fig:rastoc-playground}) permite realizar
+  El del \textit{core} (figura \ref{fig:rastoc-playground}) permite realizar
   calibraciones libres y visualizar la coordenada estimada de la mirada en la
   pantalla al mismo tiempo que imprime ciertos datos de la calibración.
-  El de \jspsych (Figura \ref{fig:rastoc-jspsych-playground}) implementa un
+  El de \jspsych (figura \ref{fig:rastoc-jspsych-playground}) implementa un
   \textit{timeline} de la misma librería.
   El objetivo de ambos fue facilitar el desarrollo del prototipo.
 
@@ -356,7 +383,7 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
       \label{fig:rastoc-playground}
   \end{figure}
 
-  La Figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
+  La figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
   calibración recorridas por el sistema.
   Al finalizar esta etapa el conjunto acumulado se utiliza para: a) entrenar el
   modelo de regresión utilizado por \webgazer para estimar la mirada; b)
