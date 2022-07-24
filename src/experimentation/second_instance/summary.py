@@ -16,6 +16,8 @@ from utils.trial_utilities import second_saccade_interval
 from statistics import mean, stdev
 
 from common.main import Instance
+from common.main import format_float
+from common.main import format_percentage
 from common.main import build_base_instance_tex_context
 from common.main import build_with_response_sample_tex_context
 from common.main import build_with_correction_sample_tex_context
@@ -40,12 +42,6 @@ class SecondTrial(Trial):
             parsed_trial['age'],
             parsed_trial['viewport_width'],
         )
-
-def format_float(f):
-    return str((int(f * 100) / 100))
-
-def format_percentage(p):
-    return str((int(p * 10000) / 100))
 
 def union(*ss):
     return set().union(*ss)

@@ -1,5 +1,101 @@
 \section{{Resultados}}
 
+La tabla \ref{{tab:processing-results}} muestra las cantidades de ensayos
+obtenidos y su considerable reducción luego de aplicar los criterios de
+filtrado.
+
+TODO: Hacer \ref a las tablas y figuras que describen un poco todo
+
+\begin{{table}}[h]
+  \centering
+  \begin{{tabular}}{{ c c | c c }}
+     & & primera ronda & segunda ronda \\ 
+    \hline
+    \multirow{{2}}{{10em}}{{pre-limpieza}}
+      & sujetos
+      & {first__starting_sample__subjects_count}
+      & {second__starting_sample__subjects_count} \\  
+      & ensayos
+      & {first__starting_sample__trials_count}
+      & {second__starting_sample__trials_count} \\  
+    \hline
+    \multirow{{2}}{{10em}}{{post-limpieza}}
+      & sujetos
+      & {first__inlier_sample__subjects_count}
+      & {second__inlier_sample__subjects_count} \\  
+      & ensayos
+      & {first__inlier_sample__trials_count}
+      & {second__inlier_sample__trials_count} \\  
+    \hline
+    \multirow{{2}}{{10em}}{{proporción conservada}}
+      & sujetos
+      & {first__kept_subjects_proportion}
+      & {second__kept_subjects_proportion} \\  
+      & ensayos
+      & {first__kept_trials_proportion}
+      & {second__kept_trials_proportion} \\  
+  \end{{tabular}}
+
+  \caption{{Ensayos pre y post limpieza}}
+  \label{{tab:processing-results}}
+\end{{table}}
+
+TODO: Tabla de correctitud
+
+TODO: Figura con distribuciones para primera
+
+TODO: Figura con distribuciones para segunda
+
+TODO: Las tres figuras con ensayos desagregados por correctitud
+
+TODO: Las dos figuras con las distribuciones de los tiempos de respuesta
+
+
+# TODO: Algún comentario más concreto sobre las desviaciones?
+
+# TODO: Alguna figura sobre las desviaciones?
+
+
+Pudieron replicarse resultados generales esperados en la tarea de antisacadas.
+Las antisacadas incorrectas mostraron tiempos de respuesta menores que las
+antisacadas correctas.
+Esto es consistente con la noción de que realizar correctamente la tarea
+implica un costo cognitivo adicional.
+En la primera instancia de experimentación se obtuvo, para la tarea de
+antisacadas, una tasa de correctitud dentro del rango esperable.
+Mientras que en la segunda fue mayor, pero sí se comportó como era esperado ya
+que fue mayor para el caso prosacada que para antisacada.
+
+# TODO: Nula representatividad de gente mayor
+
+# TODO: Figura de frecuencia de muestreo en función de la edad
+
+
+# TODO: Baja representatividad de grupo incorrecto por sujeto
+
+# TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
+
+%
+
+# TODO: Rever la conclu para que no se repita con esta sección
+
+%%%%%
+
+Inicialmente se obtuvieron {first__starting_sample__trials_count} ensayos
+provenientes de {first__starting_sample__subjects_count} sujetos para la
+primera ronda y {second__starting_sample__trials_count} ensayos provenientes de
+{second__starting_sample__subjects_count} sujetos para la segunda.
+Luego de aplicar los criterios de filtrado, estos valores se redujeron a
+{first__inlier_sample__trials_count} ensayos provenientes de
+{first__inlier_sample__subjects_count} sujetos para la primera ronda y
+{second__inlier_sample__trials_count} ensayos provenientes de
+{second__inlier_sample__subjects_count} sujetos para la segunda.
+
+
+La tabla tanto resume los resultados obtenidos
+
+S
+
 Como se mencionó anteriormente, se realizaron dos instancias de experimentación.
 En una primera instancia se consideraron únicamente antisacadas (N =
 {first__starting_sample__subjects_count} sujetos) y en una segunda

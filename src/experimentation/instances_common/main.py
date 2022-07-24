@@ -193,6 +193,12 @@ class TrialsCollection():
 
 ###
 
+def format_float(f):
+    return str((int(f * 100) / 100))
+
+def format_percentage(p):
+    return str((int(p * 10000) / 100))
+
 def build_attribute_template(host_name):
     return "{}__{{}}".format(host_name)
 
@@ -275,11 +281,16 @@ class WithCorrectionSample(WithResponseSample):
 
 def build_base_instance_tex_context(bi, instance_name):
     st = build_sample_template(instance_name)
+    at = build_attribute_template(instance_name)
     return {
         **build_sample_tex_context(bi.starting_sample, st.format("starting")),
         **build_sample_tex_context(bi.inlier_sample, st.format("inlier")),
         **build_with_response_sample_tex_context(bi.correct_sample, st.format("correct")),
         **build_with_response_sample_tex_context(bi.incorrect_sample, st.format("incorrect")),
+        at.format("kept_trials_proportion"): \
+            format_float(bi.inlier_sample.trials_count / bi.starting_sample.trials_count),
+        at.format("kept_subjects_proportion"): \
+            format_float(bi.inlier_sample.subjects_count / bi.starting_sample.subjects_count),
     }
 
 class PostProcessingMetrics:
