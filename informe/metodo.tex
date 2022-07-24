@@ -252,8 +252,8 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
     documentación de \raf:
     \url{https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame}
   }.
-  Además, son propagadas al contexto global del navegador a través de eventos
-  de \js de navegador \footnote{
+  Estas \features son propagadas al contexto global del navegador a través de
+  eventos de \js de navegador \footnote{
     documentación sobre \texttt{CustomEvent}:
     \url{https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent}
   }.
@@ -336,72 +336,57 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   En cambio, el protocolo experimental será aquel que defina cómo lidiar con
   las descalibraciones y cuándo proceder a una nueva calibración del sistema.
 
-  TODO: Comentar sobre los playgrounds e interfaces
-    - por arriba y mas que nada para que se entienda que lo armado se pueda armar
-    tanto con como sin \jspsych
-    - mencionar la calibración libre ya que permite explorar el efecto de la
-    calibración
+  Con la implementación presentada se apuntó a mantener compatibilidad con
+  \jspsych.
+  En paralelo se busco minimizar las dependencias a tal \framework.
+  Para esto se distinguieron dos interfaces lógicas:
+  \begin{enumerate}
+    \item
+      La externa, que busca facilitar la inicialización e interacción con el
+      prototipo a través de \timelines de \jspsych.
+      Durante el \runtime de un experimento, estos permiten calibrar el
+      sistema, validar tal calibración y realizar recalibraciones si fuera
+      necesario.
+    \item
+      La interna, que provee lo esencial al funcionamiento.
+      Esto incluye la interacción con \webgazer y el seguimiento del estado de
+      calibración.
+  \end{enumerate}
+  En base a esta distinción se implementaron dos \playgrounds, los cuales son
+  interfaces web que permiten interactuar con estas interfaces lógicas (figuras
+  \ref{fig:external-playground} y \ref{fig:internal-playground}).
+  Estos facilitan el desarrollo de cada interfaz lógica y por lo tanto de todo
+  el prototipo.
 
-  Para ambas interfaces implementadas se construyó también un \textit{playground}
-  que permitiera interactuar con ellas.
-  El del \textit{core} (figura \ref{fig:rastoc-playground}) permite realizar
-  calibraciones libres y visualizar la coordenada estimada de la mirada en la
-  pantalla al mismo tiempo que imprime ciertos datos de la calibración.
-  El de \jspsych (figura \ref{fig:rastoc-jspsych-playground}) implementa un
-  \textit{timeline} de la misma librería.
-  El objetivo de ambos fue facilitar el desarrollo del prototipo.
-
-  TODO: Ver si siguen aplicando las figuras de los playground y del ciclo de calibración
+  TODO: Mencionar calibración libre vs asistida
 
   \begin{figure}
-      \centering
-      \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-jspsych-playground-presentation.png}}
-      \caption{\texttt{rastoc-jspsych}’s playground}
-      Las distintas utilidades de la interfaz \jspsych son provistas, permitiendo
-      ciclar sobre ellas.
-      Se puede elegir entre:
-      a) calibrar libremente;
-      b) calibrar asistidamente;
-      c) mostrar un HTML básico mientras se estima la mirada;
-      d) realizar una secuencia de repeticiones de una tarea de juguete mientras
-      entre repeticiones se asegura la correcta calibración del sistema;
-      e) finalizar la sesión para exportar la data recolectada.
-      \label{fig:rastoc-jspsych-playground}
+    \centering
+    \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-jspsych-playground-presentation.png}}
+    Se puede elegir entre:
+    a) calibrar libremente;
+    b) calibrar asistidamente;
+    c) mostrar un HTML básico mientras se estima la mirada;
+    d) realizar una secuencia de repeticiones de una tarea de juguete mientras
+    entre repeticiones se asegura la correcta calibración del sistema;
+    e) finalizar la sesión para exportar la data recolectada.
+    \caption{\textit{Playground} externo}
+    \label{fig:external-playground}
   \end{figure}
 
   \begin{figure}
-      \centering
-      \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-playground-presentation.png}}
-      \caption{\texttt{rastoc}’s playground}
-      Información del estado del \eyetracker es presentada al mismo tiempo que se
-      permite realizar calibraciones libres.
-      El recuadro verde corresponde a la posición dentro de la cual el paquete
-      \webgazer exige que aparezca la cabeza, los rectángulos rojos corresponden
-      a los recuadros de los ojos en cada \textit{frame} y los rectángulos azules
-      corresponden a las posiciones dentro de las cuales los recuadros de los
-      ojos deben mantenerse para considerar que no hubo movimiento.
-      \label{fig:rastoc-playground}
+    \centering
+    \frame{\includegraphics[width=0.8\linewidth]{media/rastoc-playground-presentation.png}}
+    Información del estado del \eyetracker es presentada al mismo tiempo que se
+    permite realizar calibraciones libres.
+    El recuadro verde corresponde a la posición dentro de la cual el paquete
+    \webgazer exige que aparezca la cabeza, los rectángulos rojos corresponden
+    a los recuadros de los ojos en cada \textit{frame} y los rectángulos azules
+    corresponden a las posiciones dentro de las cuales los recuadros de los
+    ojos deben mantenerse para considerar que no hubo movimiento.
+    \caption{\textit{Playground} interno}
+    \label{fig:internal-playground}
   \end{figure}
-
-  La figura \ref{fig:calibration_cycle} ilustra las distintas etapas de
-  calibración recorridas por el sistema.
-  Al finalizar esta etapa el conjunto acumulado se utiliza para: a) entrenar el
-  modelo de regresión utilizado por \webgazer para estimar la mirada; b)
-  instanciar el mecanismo de detección de movimiento.
-
-  \begin{figure}
-      \centering
-      \includegraphics[width=0.8\linewidth]{media/calibration_cycle.png}
-      \caption{Posibles estados de calibración del prototipo implementado}
-      En los estados con linea punteada el sistema no podrá realizar estimaciones
-      de la mirada.
-      Notar que se continuará dando estimaciones incluso cuando se considere que
-      el sistema se ha descalibrado.
-      Los distintos mecanismos de calibración se adaptan a este esquema y
-      difieren en cómo el usuario realiza el mapeo coordenada a \textit{frame}.
-      \label{fig:calibration_cycle}
-  \end{figure}
-
 
   \begin{figure}
     \newcommand{\wgvurl}{\texttt{wg\_repo\_versioned\_url}\xspace}
