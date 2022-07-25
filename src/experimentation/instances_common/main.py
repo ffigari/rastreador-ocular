@@ -287,10 +287,25 @@ def build_base_instance_tex_context(bi, instance_name):
         **build_sample_tex_context(bi.inlier_sample, st.format("inlier")),
         **build_with_response_sample_tex_context(bi.correct_sample, st.format("correct")),
         **build_with_response_sample_tex_context(bi.incorrect_sample, st.format("incorrect")),
-        at.format("kept_trials_proportion"): \
-            format_float(bi.inlier_sample.trials_count / bi.starting_sample.trials_count),
-        at.format("kept_subjects_proportion"): \
-            format_float(bi.inlier_sample.subjects_count / bi.starting_sample.subjects_count),
+        at.format("kept_trials_percentage"): \
+            format_percentage(bi.inlier_sample.trials_count / bi.starting_sample.trials_count),
+        at.format("kept_subjects_percentage"): \
+            format_percentage(bi.inlier_sample.subjects_count / bi.starting_sample.subjects_count),
+        at.format("antisaccades_correctness_percentage"): \
+            format_percentage(bi.antisaccades_correctness_percentage()),
+        at.format("antisaccades_correction_percentage"): \
+            format_percentage(bi.antisaccades_correction_percentage()),
+        at.format("mean_incorrect_antisaccades_count_per_subject"): \
+            format_float(bi.mean_incorrect_antisaccades_count_per_subject()),
+        **build_with_response_sample_tex_context(
+            bi.correct_antisaccades_sample,
+            st.format("correct_antisaccades")),
+        **build_with_response_sample_tex_context(
+            bi.incorrect_antisaccades_sample,
+            st.format("incorrect_antisaccades")),
+        **build_with_correction_sample_tex_context(
+            bi.corrected_antisaccades_sample,
+            st.format("corrected_antisaccades")),
     }
 
 class PostProcessingMetrics:
@@ -315,6 +330,18 @@ class PostProcessingMetrics:
                 })
 
 class Instance():
+    def mean_incorrect_antisaccades_count_per_subject(self):
+        return self.incorrect_antisaccades_sample.mean_trials_count_per_subject
+
+    def antisaccades_correction_percentage(self):
+        return \
+                self.corrected_antisaccades_sample.trials_count / \
+                self.incorrect_antisaccades_sample.trials_count 
+
+    def antisaccades_correctness_percentage(self):
+        cas__count = self.correct_antisaccades_sample.trials_count
+        return cas__count / (cas__count + self.incorrect_antisaccades_sample.trials_count)
+
     def _load_data(self):
         raise NotImplementedError('Instance._load_data')
 

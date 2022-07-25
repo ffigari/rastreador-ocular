@@ -145,22 +145,6 @@ def build_second_instance_tex_context(si):
             si.incorrect_prosaccades_sample,
             st.format("incorrect_prosaccades")),
 
-        at.format("antisaccades_correctness_percentage"): \
-            format_percentage(si.antisaccades_correctness_percentage()),
-        at.format("antisaccades_correction_percentage"): \
-            format_percentage(si.antisaccades_correction_percentage()),
-        at.format("mean_incorrect_antisaccades_count_per_subject"): \
-            format_float(si.mean_incorrect_antisaccades_count_per_subject()),
-        **build_with_response_sample_tex_context(
-            si.correct_antisaccades_sample,
-            st.format("correct_antisaccades")),
-        **build_with_response_sample_tex_context(
-            si.incorrect_antisaccades_sample,
-            st.format("incorrect_antisaccades")),
-        **build_with_correction_sample_tex_context(
-            si.corrected_antisaccades_sample,
-            st.format("corrected_antisaccades")),
-
         at.format("early_subjects_count"): si.early_subjects_count(),
         "second__correctness_summary_table": build_correctness_table_tex_string(CorrectnesTable(si))
     }
@@ -168,18 +152,6 @@ def build_second_instance_tex_context(si):
 class SecondInstance(Instance):
     def mean_incorrect_prosaccades_count_per_subject(self):
         return self.incorrect_prosaccades_sample.mean_trials_count_per_subject
-
-    def mean_incorrect_antisaccades_count_per_subject(self):
-        return self.incorrect_antisaccades_sample.mean_trials_count_per_subject
-
-    def antisaccades_correction_percentage(self):
-        return \
-                self.corrected_antisaccades_sample.trials_count / \
-                self.incorrect_antisaccades_sample.trials_count 
-
-    def antisaccades_correctness_percentage(self):
-        cas__count = self.correct_antisaccades_sample.trials_count
-        return cas__count / (cas__count + self.incorrect_antisaccades_sample.trials_count)
 
     def prosaccades_correctness_percentage(self):
         cps__count = self.correct_prosaccades_sample.trials_count

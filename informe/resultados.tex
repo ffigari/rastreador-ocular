@@ -1,15 +1,19 @@
 \section{{Resultados}}
 
-La tabla \ref{{tab:processing-results}} muestra las cantidades de ensayos
+La tabla \ref{{tab:clean-up-results}} muestra las cantidades de ensayos
 obtenidos y su considerable reducción luego de aplicar los criterios de
 filtrado.
 
-TODO: Hacer \ref a las tablas y figuras que describen un poco todo
+tabla \ref{{tab:correcteness-rates}}
 
-\begin{{table}}[h]
+tabla \ref{{tab:response-times}}
+
+TODO: Hacer \verb|\ref| a las tablas y figuras que describen un poco todo
+
+\begin{{table}}
   \centering
-  \begin{{tabular}}{{ c c | c c }}
-     & & primera ronda & segunda ronda \\ 
+  \begin{{tabular}}{{ c c | c | c }}
+    \multicolumn{{2}}{{c|}}{{ronda}} & primera & segunda \\ 
     \hline
     \multirow{{2}}{{10em}}{{pre-limpieza}}
       & sujetos
@@ -29,18 +33,83 @@ TODO: Hacer \ref a las tablas y figuras que describen un poco todo
     \hline
     \multirow{{2}}{{10em}}{{proporción conservada}}
       & sujetos
-      & {first__kept_subjects_proportion}
-      & {second__kept_subjects_proportion} \\  
+      & {first__kept_subjects_percentage}\%
+      & {second__kept_subjects_percentage}\% \\  
       & ensayos
-      & {first__kept_trials_proportion}
-      & {second__kept_trials_proportion} \\  
+      & {first__kept_trials_percentage}\%
+      & {second__kept_trials_percentage}\% \\  
   \end{{tabular}}
 
   \caption{{Ensayos pre y post limpieza}}
-  \label{{tab:processing-results}}
+  \label{{tab:clean-up-results}}
 \end{{table}}
 
-TODO: Tabla de correctitud
+\begin{{table}}
+  \centering
+  \begin{{tabular}}{{c | c | c c}}
+    ronda
+      & primera
+      & \multicolumn{{2}}{{c}}{{segunda}} \\
+    tarea
+      & antisacada
+      & antisacada
+      & prosacada \\
+    \hline
+    tasa de correctitud
+      & {first__antisaccades_correctness_percentage}\%
+      & {second__antisaccades_correctness_percentage}\%
+      & {second__prosaccades_correctness_percentage}\% \\
+  \end{{tabular}}
+  \caption{{Tasas de correctitud}}
+  \label{{tab:correcteness-rates}}
+\end{{table}}
+
+\begin{{table}}
+  \centering
+  \begin{{tabular}}{{c|cc|cccc}}
+    ronda
+      & \multicolumn{{2}}{{|c|}}{{primera}}
+      & \multicolumn{{4}}{{|c|}}{{segunda}} \\
+    tarea
+      & \multicolumn{{2}}{{|c|}}{{antisacada}}
+      & \multicolumn{{2}}{{|c }}{{antisacada}}
+      & \multicolumn{{2}}{{ c}}{{prosacada}} \\
+    correctitud
+     & correcto & incorrecto
+     & correcto & incorrecto
+     & correcto & incorrecto \\
+    \hline
+    tiempo de respuesta en
+     &  {first__correct_antisaccades_sample__mean_response_time}
+       ({first__correct_antisaccades_sample__stdev_response_time})
+     &  {first__incorrect_antisaccades_sample__mean_response_time}
+       ({first__incorrect_antisaccades_sample__stdev_response_time})
+     &  {second__correct_antisaccades_sample__mean_response_time}
+       ({second__correct_antisaccades_sample__stdev_response_time})
+     &  {second__incorrect_antisaccades_sample__mean_response_time}
+       ({second__incorrect_antisaccades_sample__stdev_response_time})
+     &  {second__correct_prosaccades_sample__mean_response_time}
+       ({second__correct_prosaccades_sample__stdev_response_time})
+     &  {second__incorrect_prosaccades_sample__mean_response_time}
+       ({second__incorrect_prosaccades_sample__stdev_response_time}) \\
+    ms, promedio (desvio std) & & & & & & \\
+  \end{{tabular}}
+  \caption{{Tiempos de respuesta}}
+  \label{{tab:response-times}}
+\end{{table}}
+
+\begin{{figure}}
+  \centering
+
+  \includegraphics[width=0.9\linewidth]{{results/first-ages-distribution.png}}
+
+  \includegraphics[width=0.9\linewidth]{{results/first-widths-distribution.png}}
+
+  \includegraphics[width=0.9\linewidth]{{results/first-sampling-frequency-distribution.png}}
+
+  \caption{{Descripción general (primera instancia)}}
+  \label{{fig:first-starting-sample-distribution}}
+\end{{figure}}
 
 TODO: Figura con distribuciones para primera
 
@@ -51,9 +120,9 @@ TODO: Las tres figuras con ensayos desagregados por correctitud
 TODO: Las dos figuras con las distribuciones de los tiempos de respuesta
 
 
-# TODO: Algún comentario más concreto sobre las desviaciones?
+TODO: Algún comentario más concreto sobre las desviaciones?
 
-# TODO: Alguna figura sobre las desviaciones?
+TODO: Alguna figura sobre las desviaciones?
 
 
 Pudieron replicarse resultados generales esperados en la tarea de antisacadas.
@@ -66,18 +135,18 @@ antisacadas, una tasa de correctitud dentro del rango esperable.
 Mientras que en la segunda fue mayor, pero sí se comportó como era esperado ya
 que fue mayor para el caso prosacada que para antisacada.
 
-# TODO: Nula representatividad de gente mayor
+TODO: Nula representatividad de gente mayor
 
-# TODO: Figura de frecuencia de muestreo en función de la edad
+TODO: Figura de frecuencia de muestreo en función de la edad
 
 
-# TODO: Baja representatividad de grupo incorrecto por sujeto
+TODO: Baja representatividad de grupo incorrecto por sujeto
 
-# TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
+TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
 
 %
 
-# TODO: Rever la conclu para que no se repita con esta sección
+TODO: Rever la conclu para que no se repita con esta sección
 
 %%%%%
 
