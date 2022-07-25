@@ -16,7 +16,7 @@ def plot_distinguished_outliers(axs, trials_by_run, NROWS, NCOLS):
                 [e['x'] for e in t['estimations']],
                 color="red",
                 alpha=0.1,
-                label="repeticiones descartadas"
+                label="ensayos descartados"
             )
         for t in run_trials:
             if t['outlier']:
@@ -26,7 +26,7 @@ def plot_distinguished_outliers(axs, trials_by_run, NROWS, NCOLS):
                 [e['x'] for e in t['estimations']],
                 color="black",
                 alpha=0.1,
-                label="repeticiones conservadas"
+                label="ensayos conservados"
             )
 
 def show_common_legend(fig, axs):

@@ -9,10 +9,9 @@ def separated_hist(ax1, ax2, values, key):
     run_ids = list(set([f['run_id'] for f in values]))
     kept_freqs_run_ids = list(set([f['run_id'] for f in values if f['kept']]))
     dropped_run_ids = [r for r in run_ids if r not in kept_freqs_run_ids]
-    for ax, title, kept_freqs, dropped_freqs in [
+    for ax, kept_freqs, dropped_freqs in [
         (
             ax1,
-            'con repeticiones agrupadas por sujeto',
             [
                 mean([
                     d[key] for d in values if d['run_id'] == run_id
@@ -26,7 +25,6 @@ def separated_hist(ax1, ax2, values, key):
         ),
         (
             ax2,
-            'con repeticiones miradas individualmente',
             [d[key] for d in values if d['kept']],
             [d[key] for d in values if not d['kept']]
         )
@@ -44,14 +42,14 @@ def draw_sampling_frequecies_marks(ax):
         linestyle="--",
         color='red',
         alpha=0.3,
-        label="frecuencia mínima de sampleo"
+        label="frecuencia mínima"
     )
     ax.axvline(
         TARGET_SAMPLING_FREQUENCY_IN_HZ,
         linestyle="--",
         color='black',
         alpha=0.3,
-        label="frecuencia target de sampleo"
+        label="frecuencia target"
     )
 
 def plot_sampling_frequencies(frequencies):
@@ -60,7 +58,7 @@ def plot_sampling_frequencies(frequencies):
     separated_hist(ax1, ax2, frequencies, 'frequency')
 
     ax1.set_ylabel('# sujetos')
-    ax2.set_ylabel('# repeticiones')
+    ax2.set_ylabel('# ensayos')
     ax2.set_xlabel('frecuencia (en Hz)')
 
     for ax in [ax1, ax2]:
@@ -94,7 +92,7 @@ def plot_widths(widths):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
 
     ax1.set_ylabel('# sujetos')
-    ax2.set_ylabel('# repeticiones')
+    ax2.set_ylabel('# ensayos')
     ax2.set_xlabel('ancho de pantalla (en píxeles)')
 
     separated_hist(ax1, ax2, widths, 'width')
@@ -117,9 +115,9 @@ def plot_post_processing_trials(task_saccades, task_label):
     axes_with_at_least_one_trial = set()
     fig, axes = plt.subplots(nrows=BUCKETS_AMOUNT, ncols=2, sharex=True)
     for j, (task_result, ts) in enumerate([
-        ('correctas', correct_ts), ('incorrectas', incorrect_ts)
+        ('correctos', correct_ts), ('incorrectos', incorrect_ts)
     ]):
-        axes[0][j].set_title('Repeticiones {}'.format(task_result))
+        axes[0][j].set_title('Ensayos {}'.format(task_result))
         axes[BUCKETS_AMOUNT - 1][j].set_xlabel('Tiempo (en ms)')
         for t in ts:
             i = min(
@@ -142,7 +140,7 @@ def plot_post_processing_trials(task_saccades, task_label):
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     fig.supylabel(
-        'Buckets de {:.2f} ms'.format(size))
+        'Buckets de {:.2f} ms de la primera respuesta'.format(size))
     return fig
 
 def plot_responses_times_distributions(trials_results):

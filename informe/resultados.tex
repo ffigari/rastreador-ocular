@@ -1,35 +1,20 @@
 \section{{Resultados}}
 
-La tabla \ref{{tab:clean-up-results}} muestra las cantidades de ensayos
-obtenidos y su considerable reducción luego de aplicar los criterios de
-filtrado.
+En ambas instancias luego de la limpieza de los datos se finalizó con menos de
+16 sujetos, descartando en el proceso aproximadamente 2 tercios de los ensayos
+realizados (tabla \ref{{tab:clean-up-results}}).
+Las figuras \ref{{fig:first-starting-sample-distribution}} y
+\ref{{fig:second-starting-sample-distribution}} muestran la distribución de
+ensayos según edad, frecuencia de muestreo y anchos de pantalla.
+Se destaca la ausencia de sujetos de edad mayor a 50 años luego de aplicar los
+criterios de filtrado.
 
-tabla \ref{{tab:correcteness-rates}}
-
-tabla \ref{{tab:response-times}}
-
-figura \ref{{fig:first-starting-sample-distribution}}
-
-figura \ref{{fig:second-starting-sample-distribution}}
-
-TODO: Hacer \verb|\ref| a las tablas y figuras que describen un poco todo
-
-TODO: Sacadas correctivas
-
-De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
-una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
-al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
-
-En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
-incorrectos se realizó una corrección.
-Tal corrección tomó en promedio
-{second__corrected_antisaccades_sample__mean_correction_delay} ms (stdev
-{second__corrected_antisaccades_sample__stdev_correction_delay} ms).
+TODO: Figura de frecuencia de muestreo en función de la edad
 
 \begin{{table}}
   \centering
   \begin{{tabular}}{{ c c | c | c }}
-    \multicolumn{{2}}{{c|}}{{ronda}} & primera & segunda \\ 
+    \multicolumn{{2}}{{c}}{{ronda}} & primera & segunda \\ 
     \hline
     \multirow{{2}}{{10em}}{{pre-limpieza}}
       & sujetos
@@ -59,6 +44,62 @@ Tal corrección tomó en promedio
   \caption{{Ensayos pre y post limpieza}}
   \label{{tab:clean-up-results}}
 \end{{table}}
+
+\begin{{figure}}
+  \centering
+
+  \includegraphics[width=0.8\linewidth]{{results/first-ages-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/first-widths-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/first-sampling-frequencies-distribution.png}}
+
+  \caption{{Descripción general (primera instancia)}}
+  \label{{fig:first-starting-sample-distribution}}
+\end{{figure}}
+
+\begin{{figure}}
+  \centering
+
+  \includegraphics[width=0.8\linewidth]{{results/second-ages-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/second-widths-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/second-sampling-frequencies-distribution.png}}
+
+  \caption{{Descripción general (segunda instancia)}}
+  \label{{fig:second-starting-sample-distribution}}
+\end{{figure}}
+
+Pudieron replicarse resultados generales esperados en la tarea de antisacadas.
+Las antisacadas incorrectas mostraron tiempos de respuesta menores que las
+antisacadas correctas.
+Esto es consistente con la noción de que realizar correctamente la tarea
+implica un costo cognitivo adicional.
+En la primera instancia de experimentación se obtuvo, para la tarea de
+antisacadas, una tasa de correctitud dentro del rango esperable.
+Mientras que en la segunda fue mayor, pero sí se comportó como era esperado ya
+que fue mayor para el caso prosacada que para antisacada.
+Las tablas \ref{{tab:correcteness-rates}} y \ref{{tab:response-times}} así como
+las figuras \ref{{fig:first-response-times-distribution}} y
+\ref{{fig:second-response-times-distribution}} muestran el detalle de las
+correctitudes y tiempos de respuesta obtenidos.
+Las figuras \ref{{fig:first-disaggregated-prosaccades}},
+\ref{{fig:second-disaggregated-antisaccades}} y
+\ref{{fig:second-disaggregated-prosaccades}} muestran los ensayos obtenidos
+clasificados según correctitud y tiempo de respuesta.
+
+TODO: Sacadas correctivas
+
+De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
+una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
+al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
+
+En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
+incorrectos se realizó una corrección.
+Tal corrección tomó en promedio
+{second__corrected_antisaccades_sample__mean_correction_delay} ms (stdev
+{second__corrected_antisaccades_sample__stdev_correction_delay} ms).
 
 \begin{{table}}
   \centering
@@ -115,32 +156,6 @@ Tal corrección tomó en promedio
 \end{{table}}
 
 \begin{{figure}}
-  \centering
-
-  \includegraphics[width=0.8\linewidth]{{results/first-ages-distribution.png}}
-
-  \includegraphics[width=0.8\linewidth]{{results/first-widths-distribution.png}}
-
-  \includegraphics[width=0.8\linewidth]{{results/first-sampling-frequencies-distribution.png}}
-
-  \caption{{Descripción general (primera instancia)}}
-  \label{{fig:first-starting-sample-distribution}}
-\end{{figure}}
-
-\begin{{figure}}
-  \centering
-
-  \includegraphics[width=0.8\linewidth]{{results/second-ages-distribution.png}}
-
-  \includegraphics[width=0.8\linewidth]{{results/second-widths-distribution.png}}
-
-  \includegraphics[width=0.8\linewidth]{{results/second-sampling-frequencies-distribution.png}}
-
-  \caption{{Descripción general (segunda instancia)}}
-  \label{{fig:second-starting-sample-distribution}}
-\end{{figure}}
-
-\begin{{figure}}
   \includegraphics[width=\linewidth]{{results/first-response-times-distribution.png}}
   \caption{{Distribución de tiempos de respuesta (primera instancia)}}
   \label{{fig:first-response-times-distribution}}
@@ -177,24 +192,10 @@ TODO: Algún comentario más concreto sobre las desviaciones?
 TODO: Alguna figura sobre las desviaciones?
 
 
-Pudieron replicarse resultados generales esperados en la tarea de antisacadas.
-Las antisacadas incorrectas mostraron tiempos de respuesta menores que las
-antisacadas correctas.
-Esto es consistente con la noción de que realizar correctamente la tarea
-implica un costo cognitivo adicional.
-En la primera instancia de experimentación se obtuvo, para la tarea de
-antisacadas, una tasa de correctitud dentro del rango esperable.
-Mientras que en la segunda fue mayor, pero sí se comportó como era esperado ya
-que fue mayor para el caso prosacada que para antisacada.
-
-TODO: Nula representatividad de gente mayor
-
-TODO: Figura de frecuencia de muestreo en función de la edad
-
-
 TODO: Baja representatividad de grupo incorrecto por sujeto
 
 TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
+
 
 {second__correctness_summary_table}
 

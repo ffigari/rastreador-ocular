@@ -9,8 +9,7 @@ from instances_common.plots import plot_ages
 from instances_common.plots import plot_widths
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
-from instances_common.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
-from instances_common.constants import TARGET_SAMPLING_FREQUENCY_IN_HZ
+from instances_common.plots import draw_sampling_frequecies_marks
 from instances_common.undetected_saccades import draw_trial_over_ax
 
 from shared.main import rm_rf
@@ -118,22 +117,9 @@ class plot:
                 ax.errorbar(
                     ages, mean_frequencies, yerr=stdev_frequencies,
                     linestyle='None', marker='o', capsize=3,
-                    label="frecuencia de muestreo de cada sujeto"
+                    label="frecuencia de cada sujeto"
                 )
-                ax.axhline(
-                    MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
-                    linestyle="--",
-                    color='red',
-                    alpha=0.3,
-                    label="frecuencia mínima de muestreo"
-                )
-                ax.axhline(
-                    TARGET_SAMPLING_FREQUENCY_IN_HZ,
-                    linestyle="--",
-                    color='black',
-                    alpha=0.3,
-                    label="frecuencia objetivo de muestreo"
-                )
+                draw_sampling_frequecies_marks(ax)
                 ax.set_ylabel('frecuencia de muestreo (en Hz)')
                 ax.set_xlabel('edad (en años)')
 
