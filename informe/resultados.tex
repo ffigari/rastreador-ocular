@@ -8,7 +8,23 @@ tabla \ref{{tab:correcteness-rates}}
 
 tabla \ref{{tab:response-times}}
 
+figura \ref{{fig:first-starting-sample-distribution}}
+
+figura \ref{{fig:second-starting-sample-distribution}}
+
 TODO: Hacer \verb|\ref| a las tablas y figuras que describen un poco todo
+
+TODO: Sacadas correctivas
+
+De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
+una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
+al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
+
+En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
+incorrectos se realizó una corrección.
+Tal corrección tomó en promedio
+{second__corrected_antisaccades_sample__mean_correction_delay} ms (stdev
+{second__corrected_antisaccades_sample__stdev_correction_delay} ms).
 
 \begin{{table}}
   \centering
@@ -101,19 +117,28 @@ TODO: Hacer \verb|\ref| a las tablas y figuras que describen un poco todo
 \begin{{figure}}
   \centering
 
-  \includegraphics[width=0.9\linewidth]{{results/first-ages-distribution.png}}
+  \includegraphics[width=0.8\linewidth]{{results/first-ages-distribution.png}}
 
-  \includegraphics[width=0.9\linewidth]{{results/first-widths-distribution.png}}
+  \includegraphics[width=0.8\linewidth]{{results/first-widths-distribution.png}}
 
-  \includegraphics[width=0.9\linewidth]{{results/first-sampling-frequency-distribution.png}}
+  \includegraphics[width=0.8\linewidth]{{results/first-sampling-frequencies-distribution.png}}
 
   \caption{{Descripción general (primera instancia)}}
   \label{{fig:first-starting-sample-distribution}}
 \end{{figure}}
 
-TODO: Figura con distribuciones para primera
+\begin{{figure}}
+  \centering
 
-TODO: Figura con distribuciones para segunda
+  \includegraphics[width=0.8\linewidth]{{results/second-ages-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/second-widths-distribution.png}}
+
+  \includegraphics[width=0.8\linewidth]{{results/second-sampling-frequencies-distribution.png}}
+
+  \caption{{Descripción general (segunda instancia)}}
+  \label{{fig:second-starting-sample-distribution}}
+\end{{figure}}
 
 TODO: Las tres figuras con ensayos desagregados por correctitud
 
@@ -144,80 +169,15 @@ TODO: Baja representatividad de grupo incorrecto por sujeto
 
 TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
 
+{second__correctness_summary_table}
+
 %
 
 TODO: Rever la conclu para que no se repita con esta sección
 
 %%%%%
 
-Inicialmente se obtuvieron {first__starting_sample__trials_count} ensayos
-provenientes de {first__starting_sample__subjects_count} sujetos para la
-primera ronda y {second__starting_sample__trials_count} ensayos provenientes de
-{second__starting_sample__subjects_count} sujetos para la segunda.
-Luego de aplicar los criterios de filtrado, estos valores se redujeron a
-{first__inlier_sample__trials_count} ensayos provenientes de
-{first__inlier_sample__subjects_count} sujetos para la primera ronda y
-{second__inlier_sample__trials_count} ensayos provenientes de
-{second__inlier_sample__subjects_count} sujetos para la segunda.
-
-
-La tabla tanto resume los resultados obtenidos
-
-S
-
-Como se mencionó anteriormente, se realizaron dos instancias de experimentación.
-En una primera instancia se consideraron únicamente antisacadas (N =
-{first__starting_sample__subjects_count} sujetos) y en una segunda
-instancia se incluyeron tanto antisacadas como prosacadas (N =
-{second__starting_sample__subjects_count} sujetos).
-
-TODO: Ajustar las figuras con las distribuciones de las frecuencias de muestreo
-      y de las resoluciones
-
-\begin{{figure}}
-  \centering
-  \includegraphics[width=\textwidth]{{metodo/sampling-frequency-distribution.png}}
-  TODO: Regenerar plot y ajustar dimensiones
-
-  \caption{{Distribución de frecuencias de muestreo}}
-  \label{{fig:sampling-frequency-distribution}}
-\end{{figure}}
-
-\begin{{figure}}
-  \centering
-  \includegraphics[width=\textwidth]{{metodo/widths-distribution.png}}
-  TODO: Regenerar plot y ajustar dimensiones
-
-  \caption{{Distribución de anchos de resoluciones}}
-  \label{{fig:widths-distribution}}
-\end{{figure}}
-
-
 \subsection{{Primera instancia}}
-
-En la primera instancia se realizaron únicamente antisacadas. Se obtuvieron un
-total de {first__starting_sample__trials_count} ensayos provenientes de
-{first__starting_sample__subjects_count} sujetos.
-Luego de aplicar el pre-procesamiento, la cantidad de ensayos se redujo a
-{first__inlier_sample__trials_count} provenientes de
-{first__inlier_sample__subjects_count} sujetos.
-De estos, {first__correct_sample__trials_count} obtuvieron respuesta correcta y
-{first__incorrect_sample__trials_count} obtuvieron respuesta incorrecta.
-De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
-una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
-al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
-Los ensayos correctos tuvieron un tiempo de respuesta mayor al de las
-incorrectas (promedio $\pm$ desvio std: Correctas $=$ 
-{first__correct_sample__mean_response_time} ms $\pm$ 
-{first__correct_sample__stdev_response_time}; Incorrectas $=$
-{first__incorrect_sample__mean_response_time} ms $\pm$
-{first__incorrect_sample__stdev_response_time}).
-
-\begin{{figure}}
-  \includegraphics{{results/first-ages-distribution.png}}
-  \caption{{Distribución de edades (primera instancia)}}
-  \label{{fig:first-ages-distribution}}
-\end{{figure}}
 
 \begin{{figure}}
   \includegraphics{{results/first-response-times-distribution.png}}
@@ -252,81 +212,17 @@ de interés.
   serían 1100 y 900.
   Estas desviaciones no ocurrieron para todo sujeto, como lo muestran los
   sujetos 42 y 22. \\
-  El valor de desviación reportado [TODO: cambiar cómo se reporta esto que
-  mucho no se entiende así como está] se calcula como la división entre la
+  El valor de desviación reportado se calcula como la división entre la
   coordenada estimada del centro (el promedio de las estimaciones durante el
   período de fijación) y la coordenada real del centro.
 
-  [TODO: Regenerar este plot para que macheen las dimensiones]
+  TODO: Regenerar este plot para que macheen las dimensiones
 
   \caption{{Ejemplos de sujetos con estimaciones desviadas}}
   \label{{fig:skewed-estimations-example}}
 \end{{figure}}
 
 \subsection{{Segunda instancia}}
-
-Se obtuvieron un total de {second__starting_sample__trials_count} ensayos
-provenientes de {second__starting_sample__subjects_count} sujetos.
-{second__early_subjects_count} de estos tomaron la decisión de cortar
-tempranamente el experimento.
-Luego del preprocesamiento se terminó con {second__inlier_sample__trials_count}
-ensayos provenientes de {second__inlier_sample__subjects_count} sujetos.
-Para los ensayos válidos se obtuvo en promedio una correctitud de 
-{second__prosaccades_correctness_percentage}$\%$ para la tarea de prosacadas y
-de {second__antisaccades_correctness_percentage}$\%$ para aquella de
-antisacadas.
-
-\begin{{table}}[htb]
-    \centering
-
-              || anti            || pro             \\
-              || corr   | incorr || corr   | incorr \\
-        mean
-          || {second__correct_antisaccades_sample__mean_response_time}
-          | {second__incorrect_antisaccades_sample__mean_response_time}
-          || {second__correct_prosaccades_sample__mean_response_time}
-          | {second__incorrect_prosaccades_sample__mean_response_time} \\
-        stdev
-          || {second__correct_antisaccades_sample__stdev_response_time}
-          | {second__incorrect_antisaccades_sample__stdev_response_time}
-          || {second__correct_prosaccades_sample__stdev_response_time}
-          | {second__incorrect_prosaccades_sample__stdev_response_time}
-
-    \caption{{Tiempos de respuesta según correctitud y tarea}}
-\end{{table}}
-
-En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
-incorrectos se realizó una corrección.
-Tal corrección tomó en promedio
-{second__corrected_antisaccades_sample__mean_correction_delay} ms (stdev
-{second__corrected_antisaccades_sample__stdev_correction_delay} ms).
-
-
-Para ambas tareas la categoría incorrecta presenta baja representatividad.
-Luego de aplicar las reglas de filtrado se cuenta en total con
-{second__incorrect_prosaccades_sample__trials_count} ensayos de prosacadas
-incorrectas y {second__incorrect_antisaccades_sample__trials_count} ensayos de
-antisacadas incorrectas.
-En promedio cada sujeto termina con
-{second__mean_incorrect_prosaccades_count_per_subject} ensayos de prosacadas
-incorrectas y {second__mean_incorrect_antisaccades_count_per_subject}
-ensayos de antisacadas incorrectas (cf. Tabla \ref{{tab:correctness}}).
-Estas cantidades no significativas de ensayos imposibilitan analizar tiempos
-obtenidos individualmente.
-En futuras instancias de experimentación se deberá aumentar la cantidad de
-ensayos inicial, tal que queden suficientes ensayos luego del
-pre-procesamiento.
-También se podrían revisar los criterios de exclusión de ensayos durante el
-pre-procesamiento para asegurarse de que no se están descartando ensayos
-válidos.
-
-{second__correctness_summary_table}
-
-\begin{{figure}}
-  \includegraphics{{results/second-ages-distribution.png}}
-  \caption{{Distribución de edades (segunda instancia)}}
-  \label{{fig:second-ages-distribution}}
-\end{{figure}}
 
 \begin{{figure}}
   \includegraphics{{results/second-response-times-distribution.png}}

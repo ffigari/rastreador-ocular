@@ -31,7 +31,6 @@ def separated_hist(ax1, ax2, values, key):
             [d[key] for d in values if not d['kept']]
         )
     ]:
-        ax.set_title(title)
         ax.hist(
             [kept_freqs, dropped_freqs],
             bins=15,
@@ -57,45 +56,55 @@ def draw_sampling_frequecies_marks(ax):
 
 def plot_sampling_frequencies(frequencies):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
-    fig.suptitle('Distribución de frecuencias de sampleo')
 
     separated_hist(ax1, ax2, frequencies, 'frequency')
 
-    ax1.set_ylabel('Cantidad de sujetos')
-    ax2.set_ylabel('Cantidad de repeticiones')
-    ax2.set_xlabel('Frecuencia (en Hz)')
+    ax1.set_ylabel('# sujetos')
+    ax2.set_ylabel('# repeticiones')
+    ax2.set_xlabel('frecuencia (en Hz)')
 
     for ax in [ax1, ax2]:
         draw_sampling_frequecies_marks(ax)
 
     ax2.legend()
-    plt.show()
+
+    fig.set_size_inches(6.4, 3.8)
+    fig.suptitle('c) Distribución de frecuencias de muestreo originales')
+
+    return fig
 
 ##
 def plot_ages(ages):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
 
-    ax1.set_ylabel('Cantidad de sujetos')
-    ax2.set_ylabel('Cantidad de repeticiones')
-    ax2.set_xlabel('Edad')
+    ax1.set_ylabel('# sujetos')
+    ax2.set_ylabel('# ensayos')
+    ax2.set_xlabel('edad (en años)')
 
     separated_hist(ax1, ax2, ages, 'age')
     for ax in [ax1, ax2]:
         ax.legend()
+
+    fig.set_size_inches(6.4, 3.8)
+    fig.suptitle('a) Distribución de edades')
+
     return fig
 
 def plot_widths(widths):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
-    fig.suptitle('Distribución de anchos de pantalla')
 
-    ax1.set_ylabel('Cantidad de sujetos')
-    ax2.set_ylabel('Cantidad de repeticiones')
-    ax2.set_xlabel('Ancho de pantalla (en píxeles)')
+    ax1.set_ylabel('# sujetos')
+    ax2.set_ylabel('# repeticiones')
+    ax2.set_xlabel('ancho de pantalla (en píxeles)')
 
     separated_hist(ax1, ax2, widths, 'width')
     for ax in [ax1, ax2]:
         ax.legend()
-    plt.show()
+
+    fig.set_size_inches(6.4, 3.8)
+    fig.suptitle('b) Distribución de anchos de pantalla')
+
+    return fig
 
 def plot_post_processing_trials(task_saccades, task_label):
     correct_ts = task_saccades['correct']

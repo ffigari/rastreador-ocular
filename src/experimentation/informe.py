@@ -189,9 +189,7 @@ if __name__ == "__main__":
         shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/metodo/{}'.format(fn))
         for fn in [
             'internal-playground.png',
-            'external-playground.png',
-            'sampling-frequency-distribution.png',
-            'widths-distribution.png']]
+            'external-playground.png']]
 
     os.mkdir('informe/build/results')
     with open('informe/resultados.tex') as template_file:
@@ -217,10 +215,20 @@ if __name__ == "__main__":
     plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'pro')
     plot.response_times_distribution(r.first_categorized_trials, 'first')
     plot.response_times_distribution(r.second_categorized_trials, 'second')
+
     plot.ages_distribution(
         r.first_instance.post_processing_metrics.ages, 'first')
     plot.ages_distribution(
         r.second_instance.post_processing_metrics.ages, 'second')
+    plot.widths_distribution(
+        r.first_instance.post_processing_metrics.widths, 'first')
+    plot.widths_distribution(
+        r.second_instance.post_processing_metrics.widths, 'second')
+    plot.sampling_frequencies_distribution(
+        r.first_instance.post_processing_metrics.sampling_frequencies, 'first')
+    plot.sampling_frequencies_distribution(
+        r.second_instance.post_processing_metrics.sampling_frequencies, 'second')
+
     plot.frecuency_by_age(
         r.second_instance.starting_sample, 'second')
     plot.undetected_saccade_example(r.second_instance.inlier_sample)

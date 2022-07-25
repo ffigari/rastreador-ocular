@@ -45,6 +45,28 @@ class plot:
                 renderer
             )
 
+    class widths_distribution:
+        def __init__(_, widths, instance_tag):
+            def renderer():
+                return plot_widths(widths)
+            save_fig(
+                "{}-widths-distribution".format(instance_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
+
+    class sampling_frequencies_distribution:
+        def __init__(_, sampling_frequencies, instance_tag):
+            def renderer():
+                return plot_sampling_frequencies(sampling_frequencies)
+            save_fig(
+                "{}-sampling-frequencies-distribution".format(instance_tag),
+                'informe/build/results',
+                'results',
+                renderer
+            )
+
     class disaggregated_saccades:
         def __init__(_, categorized_trials, instance_tag, task_tag):
             def renderer():
