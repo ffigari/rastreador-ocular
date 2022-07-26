@@ -10,6 +10,10 @@ from first_instance.summary import build_first_instance_tex_context
 from second_instance.summary import SecondInstance
 from second_instance.summary import build_second_instance_tex_context
 
+import matplotlib
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
+
 import matplotlib.pyplot as plt
 from instances_common.main import plot
 from instances_common.undetected_saccades import draw_saccade_detection
