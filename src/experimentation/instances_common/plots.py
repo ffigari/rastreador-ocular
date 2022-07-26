@@ -53,6 +53,27 @@ def draw_sampling_frequecies_marks(ax, horizontal=False):
         label="frecuencia target"
     )
 
+def draw_trials_with_center(ax, run_subsample, run_id):
+    ts = run_subsample.ts.all()
+    for t in ts:
+        ax.plot(
+            [e['t'] for e in t.estimations],
+            [e['pre_normalization_x'] for e in t.estimations],
+            color="black",
+            alpha=0.1
+        )
+    ax.axhline(
+        ts[0].run_center_x,
+        color="black",
+        label="Coordenada x real del centro de la pantalla"
+    )
+    ax.axhline(
+        mean([t.run_estimated_center_mean for t in ts]),
+        linestyle="--",
+        color="red",
+        label="Coordenada promedio estimada durante la fase de fijación"
+    )
+
 def plot_sampling_frequencies(frequencies):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
 

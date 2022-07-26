@@ -17,6 +17,7 @@ matplotlib.rcParams['font.family'] = 'STIXGeneral'
 import matplotlib.pyplot as plt
 from instances_common.main import plot
 from instances_common.undetected_saccades import draw_saccade_detection
+from instances_common.plots import draw_trials_with_center
 
 def build_results_tex_string(results, template, build_path, logical_path):
     return template.format(
@@ -89,6 +90,21 @@ if __name__ == "__main__":
             [do(t) for t in ts]
         sys.exit(0)
 
+    if len(sys.argv) > 1 and sys.argv[1] == "display-subjects-trials":
+        sst = r.first_instance.starting_sample.per_subject_subsamples()
+        random.shuffle(sst)
+        for run_id, subsample in sst:
+            print('>> subject trials with center')
+            print('run_id={}'.format(run_id))
+            fig, ax = plt.subplots()
+            draw_trials_with_center(ax, subsample, run_id)
+            fig.suptitle('sujeto {}'.format(run_id))
+
+            plt.show()
+            plt.close(fig)
+
+        sys.exit(0)
+
     rm_rf('informe/build')
     os.mkdir('informe/build')
 
@@ -120,10 +136,6 @@ if __name__ == "__main__":
                 'informe/build/results',
                 "results"
             ))
-    [
-        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/results/{}'.format(fn))
-        for fn in [
-            'skewed-estimations.png']]
 
     os.mkdir('informe/build/conclu')
     with open('informe/conclu.tex') as i_file:
@@ -154,4 +166,6 @@ if __name__ == "__main__":
     plot.frecuency_by_age(
         r.second_instance.starting_sample, 'second')
 
-    plot.undetected_saccade_example(r.second_instance.inlier_sample)
+    plot.skewed_estimations_examples(r.first_instance.starting_sample)
+
+    plot.undetected_saccade_examples(r.second_instance.inlier_sample)

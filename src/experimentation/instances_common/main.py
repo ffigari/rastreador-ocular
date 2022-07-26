@@ -10,6 +10,7 @@ from instances_common.plots import plot_widths
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
 from instances_common.plots import draw_sampling_frequecies_marks
+from instances_common.plots import draw_trials_with_center
 from instances_common.undetected_saccades import draw_trial_over_ax
 
 from shared.main import rm_rf
@@ -140,7 +141,7 @@ class plot:
                 renderer
             )
 
-    class undetected_saccade_example:
+    class undetected_saccade_examples:
         def __init__(_, inlier_sample):
             def renderer():
                 fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
@@ -157,9 +158,38 @@ class plot:
                 return fig
 
             save_fig(
-                'undetected-saccade-example',
+                'undetected-saccades-examples',
                 'informe/build/conclu',
                 'conclu',
+                renderer
+            )
+
+    class skewed_estimations_examples:
+        def __init__(_, starting_sample):
+            def renderer():
+                fig, axes = plt.subplots(nrows=4, ncols=1, sharex=True)
+
+                for run_id, ax in [
+                    (47, axes[0]),
+                    (24, axes[1]),
+                    (22, axes[2]),
+                    (43, axes[3]),
+                ]:
+                    draw_trials_with_center(
+                        ax,
+                        starting_sample.subsample_by_run_id(run_id),
+                        run_id)
+                    ax.title.set_text('sujeto {}'.format(run_id))
+
+                handles, labels = (axes[-1]).get_legend_handles_labels()
+                fig.legend(handles, labels, loc='lower center')
+                fig.set_size_inches(6.4, 8)
+                return fig
+
+            save_fig(
+                'skewed-estimations-examples',
+                'informe/build/metodo',
+                'metodo',
                 renderer
             )
 
@@ -264,6 +294,13 @@ class Sample():
 
     def subsample_by_run_id(self, run_id):
         return Sample(self.ts.get_trials_by_run(run_id))
+
+    def per_subject_subsamples(self):
+        return [
+            (ri, self.subsample_by_run_id(ri))
+            for ri
+            in set([t.run_id for t in self.ts.all()])
+        ]
 
 def build_with_response_sample_tex_context(sample, sample_name):
     at = build_attribute_template(sample_name)

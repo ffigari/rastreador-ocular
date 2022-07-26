@@ -1,5 +1,7 @@
 \chapter{Conclusiones}
 
+TODO: Rever la conclu para que no se repita con metodos
+
 El \eyetracking web es un campo en sus primeros pasos de desarrollo pero que
 suscita un creciente interés de distintos grupos.
 Muchos de estos ya estaban explorando experimentos con \eyetracking web antes
@@ -32,7 +34,7 @@ En el marco del trabajo, se realizó un análisis intuitivo sobre el rendimiento
 de la implementación, el cual muestra frecuencias de muestreo menores a los 30
 Hz y estimaciones con desviaciones respecto del punto real de la mirada, aunque
 con correcto posicionamiento relativo (cf. sección
-\ref{section:skewed-estimates}).
+\ref{fig:skewed-estimations-example}).
 Además se adaptó a nuestras necesidades el modelo de estimación de la mirada de
 \webgazer.
 En líneas con los beneficios mencionados respecto de la existencia de
@@ -147,26 +149,30 @@ Esto puede deberse a
 66\% de los ensayos, otros trabajos reportaron descartar menos del 2\%
 \cite{unsworth_2011_distribution_analysis}. 
 
-TODO: Revisitar el item siguiente cuando tenga mejor armada la explicación
-      de detección de sacadas
-
   \item Tasas de correctitud muy elevadas.
-  Por ejemplo, en la segunda instancia de experimentación se obtuvo una tasa de
-correctitud de 95\% mientras que en la bibliografía se reportan valores
-cercanos al rango [60\%, 70\%].
-  Esto puede sugerir que ensayos incorrectos de la tarea son clasificados
-incorrectamente como correctos.
-  Y, a su vez, podría deberse a una incapacidad en detectar pequeñas sacadas
-iniciales (cf. Figura \ref{fig:undetected-saccade-example}).
-  Si bien se buscó implementar la rutina de detección de sacadas en base a
-conceptos mencionados en la bibliografía (distancia recorrida, velocidad
-promedio \cite{stuart_2019_saccade_detection_algorithms}) no se midió su
-eficacia ni se comparó sus resultados contra otras implementaciones.
-  En cualquier caso, la baja cantidad de ensayos incorrectos imposibilitó
-realizar análisis por sujeto.
-  Consecuentemente, no se pudo estudiar la capacidad de asistencia al
-diagnóstico de la tarea de antisacadas en un contexto web remoto, lo cual era
-uno de los objetivos iniciales del trabajo.
+    TODO: Revisitar el item siguiente cuando tenga mejor armada la explicación
+          de detección de sacadas
+          tiene que quedar claro que pifiarle a sacadas pequeñas era esperado
+          por el constraint de distancia mínima de la rutina de detección y que
+          tal decision fue un tradeoff para poder sacar algo andando comentar
+          que se va a fallar en detectar ensayos erroneos y que además el rt
+          reportado va a ser mayor que el real \\
+    Por ejemplo, en la segunda instancia de experimentación se obtuvo una tasa
+    de correctitud de 95\% mientras que en la bibliografía se reportan valores
+    cercanos al rango [60\%, 70\%].
+    Esto puede sugerir que ensayos incorrectos de la tarea son clasificados
+    incorrectamente como correctos.
+    Y, a su vez, podría deberse a una incapacidad en detectar pequeñas sacadas
+    iniciales (cf. Figura \ref{fig:undetected-saccades-examples}).
+    Si bien se buscó implementar la rutina de detección de sacadas en base a
+    conceptos mencionados en la bibliografía (distancia recorrida, velocidad
+    promedio \cite{stuart_2019_saccade_detection_algorithms}) no se midió su
+    eficacia ni se comparó sus resultados contra otras implementaciones.
+    En cualquier caso, la baja cantidad de ensayos incorrectos imposibilitó
+    realizar análisis por sujeto.
+    Consecuentemente, no se pudo estudiar la capacidad de asistencia al
+    diagnóstico de la tarea de antisacadas en un contexto web remoto, lo cual
+    era uno de los objetivos iniciales del trabajo.
 
   \item Al momento de presentar la tesis no se logró la representatividad
 esperada de distintos grupos etarios.
@@ -185,27 +191,16 @@ se correlacionen con la edad.
 
   \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{conclu/undetected-saccade-example.png}
-    Se muestran arriba las estimaciones obtenidas (en negro) en cuatro ensayos.
-    Los parches azules y rojos ilustran las sacadas detectas por nuestra
-    rutina, azules siendo aquellas en dirección contraria al estímulo visual y
-    rojas aquellas en misma dirección de este. \\
-    TODO: Escribir esto dsp de decidir cómo explicar lo de los 0.6 minimo
-    En los cuatro ejemplos presentados la rutina falló en detectar 
 
+    \includegraphics[width=\textwidth]{conclu/undetected-saccades-examples.png}
 
-    se falla en reconocer la primer sacada
-    en a y c esto resulta en dirección correcta pero con rt mayor al real
-    en b y d 
-    a y c ejemplifican dirección correcta detectada pero c
+    Se muestran estimaciones obtenidas (en negro) en cuatro ensayos.
+    Los parches azules y rojos ilustran las sacadas detectas por la rutina,
+    azules siendo aquellas en dirección contraria al estímulo visual y rojas
+    aquellas en misma dirección.
 
-    [TODO: \\
-    - Adjust style to be coherent with the informe \\
-    - Comentar sobre las dos cosas distintas
-      a) se falla en encontrar el lado correcto
-      b) se reporta un tiempo de respuesta mayor del real]
     \caption{Sacadas no detectadas}
-    \label{fig:undetected-saccade-example}
+    \label{fig:undetected-saccades-examples}
   \end{figure}
 
 \end{itemize}

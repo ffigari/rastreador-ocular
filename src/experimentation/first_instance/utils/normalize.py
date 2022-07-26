@@ -14,6 +14,7 @@ def normalize_trial(trial):
         else:
             xa, ya = center, 0
             xb, yb = max_x, 1
+        e['pre_normalization_x'] = e['x']
         e['x'] = interpolate_between(e['x'], xa, ya, xb, yb)
     return trial
 

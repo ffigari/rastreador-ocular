@@ -412,12 +412,33 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   la dirección y el inicio de la primera sacada en cada ensayo si esta
   existiera.
   Previo a esto se descartaron datos que se consideraran inválidos.
-  Ante la variabilidad encontrada en los datos (TODO: Citar figura que muestre
-  resoluciones y frecuencias de muestreo sin mucha distinción) y desviaciones
-  encontradas en ellos (TODO: Citar figura que ilustre las desviaciones), se
-  los normalizó a un rango común de valores.
+  Los datos conservados fueron normalizados a un rango común de valores debido
+  a las desviaciones encontradas en los datos (figura
+  \ref{fig:skewed-estimations-example}) y su variabilidad en cuanto a
+  frecuencias de muestreo y resoluciones de pantalla (figuras
+  \ref{fig:first-starting-sample-distribution} y
+  \ref{fig:second-starting-sample-distribution}).
   El análisis de datos implementado ignoró el eje vertical (\ie, la coordenada
   ``y'' de cada estimación) pues no interesaba a nuestro objeto de estudio.
+
+  \begin{figure}
+    \centering
+
+    \includegraphics[width=\textwidth]{metodo/skewed-estimations-examples.png}
+
+    Durante la fase de fijación los sujetos 47 y 24 obtuvieron respectivamente
+    estimaciones cercanas a los 2100 y 1400 píxeles cuando los valores reales
+    serían 1100 y 900.
+    Estas desviaciones no ocurrieron para todo sujeto, como lo muestran los
+    sujetos 43 y 22. \\
+    Las estimaciones mantienen sin embargo un correcto posicionamiento
+    relativo.
+    Por lo tanto pueden utilizarse para extrapolar data a pesar de las
+    desviaciones.
+
+    \caption{Ejemplos de sujetos con estimaciones desviadas}
+    \label{fig:skewed-estimations-example}
+  \end{figure}
 
   El primer punto que se atacó fue la variabilidad de la frecuencia de
   muestreo.
@@ -434,11 +455,11 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   coordenada ``x'' estimada durante la fase de fijación de cada ensayo.
   A las estimaciones de los ensayos de cada sujeto se sustrajo luego tal valor
   con el fin de centrarlos alrededor del $0$.
-  Cada ensayo fue luego llevado al rango $[-1, 1]$ tal que $-1$ se
-  correspondiera al valor mínimo del ensayo y $1$ al valor máximo.
+  Cada ensayo fue luego llevado al rango $[-1, 1]$ tal que aproximadamente $-1$
+  se correspondiera al valor mínimo del ensayo y $1$ al valor máximo.
 
-  En cambio, para la segunda ronda se normalizó en base a las validaciones
-  realizadas luego de cada calibración.
+  Para la segunda ronda se normalizó en base a las validaciones realizadas
+  luego de cada calibración.
   En estas validaciones, las coordenadas de los estímulos laterales presentados
   coincidieron con las coordenadas de los estímulos visuales laterales de las
   tareas de pro y antisacadas.
