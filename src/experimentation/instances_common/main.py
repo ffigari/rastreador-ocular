@@ -82,7 +82,9 @@ class plot:
     class response_times_distribution:
         def __init__(_, categorized_trials, instance_tag):
             def renderer():
-                return plot_responses_times_distributions(categorized_trials)
+                return plot_responses_times_distributions(
+                        categorized_trials,
+                        instance_tag)
             save_fig(
                 '{}-response-times-distribution'.format(instance_tag),
                 'informe/build/results',

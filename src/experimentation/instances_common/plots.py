@@ -141,15 +141,13 @@ def plot_post_processing_trials(task_saccades, task_label):
         ))
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     fig.supylabel(
-        'Buckets de {:.2f} ms de la primera respuesta'.format(size))
+        'Buckets de {:.2f} ms en base al instante de la primera respuesta'.format(size))
 
-    # TODO: Agrandar esto 
-    # fig.set_size_inches(6.4, 3.8)
-    #       o juntar los dos plots en una figura
+    fig.set_size_inches(6.4, 8)
 
     return fig
 
-def plot_responses_times_distributions(trials_results):
+def plot_responses_times_distributions(trials_results, instance_tag):
     min_rt, max_rt = [f([
         t.response_time
         for task_type in trials_results.keys()
@@ -234,8 +232,9 @@ def plot_responses_times_distributions(trials_results):
             bucket_size))
     plt.legend()
 
-    # TODO: Agrandar esto 
-    # fig.set_size_inches(6.4, 3.8)
-    #       o juntar los dos plots en una figura
+    fig.suptitle(
+        'Primera instancia' if instance_tag == 'first' else \
+        'Segunda instancia'
+    )
 
     return fig

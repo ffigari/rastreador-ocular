@@ -10,9 +10,9 @@ Se destaca la ausencia de sujetos de edad mayor a 50 años luego de aplicar los
 criterios de filtrado.
 Los pocos sujetos de tal grupo que sí realizaron el experimento (2 en la
 primera ronda y 5 en la segunda) fueron en su mayoría descartados por obtener
-una baja frecuencia de muestreo (figura \ref{{fig:sampling-frequency-by-age}}).
+una baja frecuencia de muestreo (figura \ref{{fig:sampling-frequencies-by-age}}).
 
-\begin{{table}}
+\begin{{table}}[ht]
   \centering
   \begin{{tabular}}{{ c c | c | c }}
     \multicolumn{{2}}{{c}}{{ronda}} & primera & segunda \\ 
@@ -75,11 +75,11 @@ una baja frecuencia de muestreo (figura \ref{{fig:sampling-frequency-by-age}}).
 \begin{{figure}}
   \centering
 
-  \includegraphics[width=\linewidth]{{results/first-sampling-frequencies-by-age.png}}
+  \includegraphics[width=0.9\linewidth]{{results/first-sampling-frequencies-by-age.png}}
 
-  \includegraphics[width=\linewidth]{{results/second-sampling-frequencies-by-age.png}}
+  \includegraphics[width=0.9\linewidth]{{results/second-sampling-frequencies-by-age.png}}
 
-  \label{{fig:sampling-frequency-by-age}}
+  \label{{fig:sampling-frequencies-by-age}}
   \caption{{Frecuencia de muestreo en función de la edad}}
 \end{{figure}}
 
@@ -93,15 +93,15 @@ antisacadas, una tasa de correctitud dentro del rango esperable.
 Mientras que en la segunda fue mayor, pero sí se comportó como era esperado ya
 que fue mayor para el caso prosacada que para antisacada.
 Las tablas \ref{{tab:correcteness-rates}} y \ref{{tab:response-times}} así como
-las figuras \ref{{fig:first-response-times-distribution}} y
-\ref{{fig:second-response-times-distribution}} muestran el detalle de las
+las figuras \ref{{fig:response-times-distribution}} y
+\ref{{fig:response-times-distribution}} muestran el detalle de las
 correctitudes y tiempos de respuesta obtenidos.
 Las figuras \ref{{fig:first-disaggregated-prosaccades}},
 \ref{{fig:second-disaggregated-antisaccades}} y
 \ref{{fig:second-disaggregated-prosaccades}} muestran los ensayos obtenidos
 clasificados según correctitud y tiempo de respuesta.
 
-\begin{{table}}
+\begin{{table}}[ht]
   \centering
   \begin{{tabular}}{{c | c | c c}}
     ronda
@@ -121,7 +121,7 @@ clasificados según correctitud y tiempo de respuesta.
   \label{{tab:correcteness-rates}}
 \end{{table}}
 
-\begin{{table}}
+\begin{{table}}[ht]
   \centering
   \begin{{tabular}}{{c|cc|cccc}}
     ronda
@@ -156,21 +156,20 @@ clasificados según correctitud y tiempo de respuesta.
 \end{{table}}
 
 \begin{{figure}}
-  \includegraphics[width=\linewidth]{{results/first-response-times-distribution.png}}
-  \caption{{Distribución de tiempos de respuesta (primera instancia)}}
-  \label{{fig:first-response-times-distribution}}
+  \centering
+
+  \includegraphics[width=0.9\linewidth]{{results/first-response-times-distribution.png}}
+
+  \includegraphics[width=0.9\linewidth]{{results/second-response-times-distribution.png}}
+
+  \caption{{Distribución de tiempos de respuesta}}
+  \label{{fig:response-times-distribution}}
 \end{{figure}}
 
 \begin{{figure}}
   \includegraphics[width=\linewidth]{{results/first-disaggregated-antisaccades.png}}
   \caption{{Antisacadas desagregadas (primera instancia)}}
   \label{{fig:first-disaggregated-prosaccades}}
-\end{{figure}}
-
-\begin{{figure}}
-  \includegraphics[width=\linewidth]{{results/second-response-times-distribution.png}}
-  \caption{{Distribución de tiempos de respuesta (segunda instancia)}}
-  \label{{fig:second-response-times-distribution}}
 \end{{figure}}
 
 \begin{{figure}}
@@ -192,7 +191,7 @@ segunda sacada hacia la dirección correcta antes de la finalización del ensayo
 Esto es un indicio de que la tarea fue correctamente comprendida por los
 sujetos.
 
-\begin{{table}}
+\begin{{table}}[ht]
   \centering
 
   \begin{{tabular}}{{c|c|c}}
@@ -218,6 +217,8 @@ sujetos.
   \caption{{Correcciones en las antisacadas incorrectas}}
   \label{{tab:corrective-saccades}}
 \end{{table}}
+
+En la segunda ronda se obtuvo baja representatividad
 
 TODO: Algún comentario más concreto sobre las desviaciones?
 
@@ -268,17 +269,4 @@ de interés.
 
   \caption{{Ejemplos de sujetos con estimaciones desviadas}}
   \label{{fig:skewed-estimations-example}}
-\end{{figure}}
-
-\subsection{{Segunda instancia}}
-
-\begin{{figure}}
-  \centering
-  \includegraphics[width=\textwidth]{{
-    results/second-sampling-frequencies-by-age.png}}
-  \caption{{Frecuencia de muestreo en función de la edad}}
-  [TODO: \\
-  - Regenerar plot y ajustar dimensiones \\
-  - Debería escribir algún comentario acá?]
-  \label{{fig:sampling-frequencies-by-age}}
 \end{{figure}}
