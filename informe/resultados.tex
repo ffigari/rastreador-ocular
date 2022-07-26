@@ -125,10 +125,10 @@ clasificados según correctitud y tiempo de respuesta.
   \centering
   \begin{{tabular}}{{c|cc|cccc}}
     ronda
-      & \multicolumn{{2}}{{|c|}}{{primera}}
+      & \multicolumn{{2}}{{|c}}{{primera}}
       & \multicolumn{{4}}{{|c }}{{segunda}} \\
     tarea
-      & \multicolumn{{2}}{{|c|}}{{antisacada}}
+      & \multicolumn{{2}}{{|c}}{{antisacada}}
       & \multicolumn{{2}}{{|c }}{{antisacada}}
       & \multicolumn{{2}}{{ c }}{{prosacada}} \\
     correctitud
@@ -207,7 +207,8 @@ sujetos.
     \% de corrección
       & {first__antisaccades_correction_percentage}
       & {second__antisaccades_correction_percentage} \\
-    tiempo de corrección (en ms)
+    tiempo de  & & \\
+    corrección (en ms)
      &  {first__corrected_antisaccades_sample__mean_correction_delay}
        ({first__corrected_antisaccades_sample__stdev_correction_delay})
      &  {second__corrected_antisaccades_sample__mean_correction_delay}
@@ -219,19 +220,17 @@ sujetos.
   \label{{tab:corrective-saccades}}
 \end{{table}}
 
-En la segunda ronda se obtuvo baja representatividad
+En la segunda ronda, para todo sujeto se obtuvo una cantidad no significativa
+de ensayos en ambos grupos incorrectos, algunos realizando incluso
+correctamente todo sus ensayos
+(tabla \ref{{tab:second-incorrect-count-per-subject}}).
+
+{second__correctness_summary_table}
+
 
 TODO: Algún comentario más concreto sobre las desviaciones?
 
 TODO: Alguna figura sobre las desviaciones?
-
-
-TODO: Baja representatividad de grupo incorrecto por sujeto
-
-TODO: Tabla cantidades de correctitud por sujeto de la segunda instancia
-
-
-{second__correctness_summary_table}
 
 %
 

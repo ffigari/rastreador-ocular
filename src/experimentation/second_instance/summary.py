@@ -59,27 +59,29 @@ def build_correctness_table_tex_string(ct):
     )
     return """
     \\begin{{table}}[htb]
-        \\centering
+      \\centering
 
-        % TODO: Armar tabla tex
-
-              || anti            || pro             \\\\
-              || corr   | incorr || corr   | incorr \\\\
-        total || {act}  | {ait}  || {pct}  | {pit}  \\\\
-        mean  || {acm}  | {aim}  || {pcm}  | {pim}  \\\\
-        stdev || {acsd} | {aisd} || {pcsd} | {pisd} \\\\
-        ------------------------------------------- \\\\
+      \\begin{{tabular}}{{c|cc|cc}}
+        ronda
+          & \\multicolumn{{2}}{{|c}}{{antisacadas}}
+          & \\multicolumn{{2}}{{|c}}{{prosacadas}} \\\\
+        correctitud
+          & correcto & incorrecto
+          & correcto & incorrecto \\\\
+        \\hline
+        total
+          & {act}  & {ait}  & {pct}  & {pit}  \\\\
+        mean
+          & {acm}  & {aim}  & {pcm}  & {pim}  \\\\
+        stdev
+          & {acsd} & {aisd} & {pcsd} & {pisd} \\\\
+        \\hline
+        id de sujeto & & & & \\\\
         {per_subject}
-
-        Los sujetos involucrados en esta tabla son aquellos que obtuvieron
-        suficiente cantidad de ensayos luego de aplicar los criterios de 
-        filtrado.
-        Todo sujeto termina con una cantidad no significativa de ensayos en
-        ambos grupos incorrectos, algunos realizando incluso correctamente todo
-        sus ensayos.
-        \\caption{{Cantidad de ensayos por resultado y por sujeto (segunda
-        instancia)}}
-        \\label{{tab:correctness}}
+      \\end{{tabular}}
+      \\caption{{Cantidad de ensayos por correctitud y por sujeto (segunda
+      instancia)}}
+      \\label{{tab:second-incorrect-count-per-subject}}
     \\end{{table}}
     """.format(
         act=acs.trials_count,
@@ -99,7 +101,7 @@ def build_correctness_table_tex_string(ct):
         pisd=format_float(pis.stdev_trials_count_per_subject),
 
         per_subject="".join(["""
-        {run_id} || {acc} | {aic} || {pcc} | {pic} \\\\""".format(
+        {run_id} & {acc} & {aic} & {pcc} & {pic} \\\\""".format(
             run_id=run_id,
             **counts,
         ) for run_id, counts in dict([(run_id, {
