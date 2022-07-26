@@ -36,15 +36,16 @@ def separated_hist(ax1, ax2, values, key):
             label=['conservadas', 'descartadas']
         )
 
-def draw_sampling_frequecies_marks(ax):
-    ax.axvline(
+def draw_sampling_frequecies_marks(ax, horizontal=False):
+    f = ax.axhline if horizontal else ax.axvline
+    f(
         MINIMUM_SAMPLING_FREQUENCY_IN_HZ,
         linestyle="--",
         color='red',
         alpha=0.3,
         label="frecuencia mínima"
     )
-    ax.axvline(
+    f(
         TARGET_SAMPLING_FREQUENCY_IN_HZ,
         linestyle="--",
         color='black',
@@ -141,6 +142,11 @@ def plot_post_processing_trials(task_saccades, task_label):
     [ax.set_ylim([-ylim, ylim]) for axe in axes for ax in axe]
     fig.supylabel(
         'Buckets de {:.2f} ms de la primera respuesta'.format(size))
+
+    # TODO: Agrandar esto 
+    # fig.set_size_inches(6.4, 3.8)
+    #       o juntar los dos plots en una figura
+
     return fig
 
 def plot_responses_times_distributions(trials_results):
@@ -227,4 +233,9 @@ def plot_responses_times_distributions(trials_results):
         'Los tiempos de respuesta han sido divididos en buckets de {:.2f} ms.'.format(
             bucket_size))
     plt.legend()
+
+    # TODO: Agrandar esto 
+    # fig.set_size_inches(6.4, 3.8)
+    #       o juntar los dos plots en una figura
+
     return fig

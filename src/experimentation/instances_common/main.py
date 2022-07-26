@@ -119,11 +119,17 @@ class plot:
                     linestyle='None', marker='o', capsize=3,
                     label="frecuencia de cada sujeto"
                 )
-                draw_sampling_frequecies_marks(ax)
+                draw_sampling_frequecies_marks(ax, horizontal=True)
                 ax.set_ylabel('frecuencia de muestreo (en Hz)')
                 ax.set_xlabel('edad (en años)')
 
                 ax.legend()
+
+                fig.suptitle(
+                    'Primera instancia' if instance_tag == 'first' else \
+                    'Segunda instancia'
+                )
+
                 return fig
             save_fig(
                 '{}-sampling-frequencies-by-age'.format(instance_tag),

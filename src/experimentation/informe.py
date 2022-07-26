@@ -146,5 +146,8 @@ if __name__ == "__main__":
         r.second_instance.post_processing_metrics.sampling_frequencies, 'second')
 
     plot.frecuency_by_age(
+        r.first_instance.starting_sample, 'first')
+    plot.frecuency_by_age(
         r.second_instance.starting_sample, 'second')
+
     plot.undetected_saccade_example(r.second_instance.inlier_sample)
