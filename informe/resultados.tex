@@ -101,18 +101,6 @@ Las figuras \ref{{fig:first-disaggregated-prosaccades}},
 \ref{{fig:second-disaggregated-prosaccades}} muestran los ensayos obtenidos
 clasificados según correctitud y tiempo de respuesta.
 
-TODO: Sacadas correctivas
-
-De las respuestas incorrectas, {first__corrected_sample__trials_count} tuvieron
-una segunda sacada correctiva antes del fin del ensayo, es decir que tras mirar
-al punto incorrecto, corrigió y realizó una sacada hacia el punto correcto.
-
-En un {second__antisaccades_correction_percentage}$\%$ de las antisacadas
-incorrectos se realizó una corrección.
-Tal corrección tomó en promedio
-{second__corrected_antisaccades_sample__mean_correction_delay} ms (stdev
-{second__corrected_antisaccades_sample__stdev_correction_delay} ms).
-
 \begin{{table}}
   \centering
   \begin{{tabular}}{{c | c | c c}}
@@ -148,7 +136,7 @@ Tal corrección tomó en promedio
      & correcto & incorrecto
      & correcto & incorrecto \\
     \hline
-    tiempo de respuesta en
+    tiempo de respuesta (en ms)
      &  {first__correct_antisaccades_sample__mean_response_time}
        ({first__correct_antisaccades_sample__stdev_response_time})
      &  {first__incorrect_antisaccades_sample__mean_response_time}
@@ -161,7 +149,7 @@ Tal corrección tomó en promedio
        ({second__correct_prosaccades_sample__stdev_response_time})
      &  {second__incorrect_prosaccades_sample__mean_response_time}
        ({second__incorrect_prosaccades_sample__stdev_response_time}) \\
-    ms, promedio (desvio std) & & & & & & \\
+    promedio (desvio std) & & & & & & \\
   \end{{tabular}}
   \caption{{Tiempos de respuesta}}
   \label{{tab:response-times}}
@@ -198,6 +186,38 @@ Tal corrección tomó en promedio
   \label{{fig:second-disaggregated-prosaccades}}
 \end{{figure}}
 
+En ambos casos, en aproximadamente 80\% de los ensayos de antisacadas
+incorrectas (tabla \ref{{tab:corrective-saccades}}) el sujeto realizó una
+segunda sacada hacia la dirección correcta antes de la finalización del ensayo.
+Esto es un indicio de que la tarea fue correctamente comprendida por los
+sujetos.
+
+\begin{{table}}
+  \centering
+
+  \begin{{tabular}}{{c|c|c}}
+    ronda & primera & segunda \\
+    \hline
+    \# antisacadas incorrectas
+      & {first__incorrect_antisaccades_sample__trials_count}
+      & {second__incorrect_antisaccades_sample__trials_count} \\
+    \# antisacadas corregidas
+      & {first__corrected_antisaccades_sample__trials_count}
+      & {second__corrected_antisaccades_sample__trials_count} \\
+    \% de corrección
+      & {first__antisaccades_correction_percentage}
+      & {second__antisaccades_correction_percentage} \\
+    tiempo de corrección (en ms)
+     &  {first__corrected_antisaccades_sample__mean_correction_delay}
+       ({first__corrected_antisaccades_sample__stdev_correction_delay})
+     &  {second__corrected_antisaccades_sample__mean_correction_delay}
+       ({second__corrected_antisaccades_sample__stdev_correction_delay}) \\
+    promedio (desvio std) & & \\
+  \end{{tabular}}
+
+  \caption{{Correcciones en las antisacadas incorrectas}}
+  \label{{tab:corrective-saccades}}
+\end{{table}}
 
 TODO: Algún comentario más concreto sobre las desviaciones?
 
