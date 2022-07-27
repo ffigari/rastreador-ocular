@@ -48,14 +48,13 @@ class FirstTrial(Trial):
             parsed_trial['estimations'],
             int(parsed_trial['subject_data']['edad']),
             parsed_trial['inner_width'],
+            parsed_trial['run_center_x'],
+            parsed_trial['run_estimated_center_mean']
         )
         self.is_outlier = parsed_trial['outlier']
         self.fixation_start = parsed_trial['fixation_start']
         self.mid_start = parsed_trial['mid_start']
         self.cue_start = parsed_trial['cue_start']
-        self.run_center_x = parsed_trial['run_center_x']
-        self.run_estimated_center_mean = \
-            parsed_trial['run_estimated_center_mean']
 
 class FirstInstance(Instance):
     def _load_data(self):

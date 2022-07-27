@@ -10,7 +10,7 @@ from instances_common.plots import plot_widths
 from instances_common.plots import plot_post_processing_trials
 from instances_common.plots import plot_responses_times_distributions
 from instances_common.plots import draw_sampling_frequecies_marks
-from instances_common.plots import draw_trials_with_center
+from instances_common.plots import draw_pre_normalization_trials
 from instances_common.undetected_saccades import draw_trial_over_ax
 
 from shared.main import rm_rf
@@ -175,10 +175,9 @@ class plot:
                     (22, axes[2]),
                     (43, axes[3]),
                 ]:
-                    draw_trials_with_center(
+                    draw_pre_normalization_trials(
                         ax,
-                        starting_sample.subsample_by_run_id(run_id),
-                        run_id)
+                        starting_sample.subsample_by_run_id(run_id).ts.all())
                     ax.title.set_text('sujeto {}'.format(run_id))
 
                 handles, labels = (axes[-1]).get_legend_handles_labels()
@@ -202,7 +201,9 @@ class Trial():
             saccade_type,
             estimations,
             subject_age,
-            inner_width
+            inner_width,
+            run_center_x,
+            run_estimated_center_mean
         ):
         self.id = Trial.trials_counter
         Trial.trials_counter += 1
@@ -213,6 +214,8 @@ class Trial():
         self.estimations = estimations
         self.subject_age = subject_age
         self.inner_width = inner_width
+        self.run_center_x = run_center_x
+        self.run_estimated_center_mean = run_estimated_center_mean
 
 class TrialsCollection():
     def __init__(self, ts):

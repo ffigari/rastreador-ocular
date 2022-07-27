@@ -58,8 +58,9 @@ def drop_invalid_trials(trials):
     return divide_trials(trials)[3]
 
 def mirror_trial(t):
-    if t['cue_shown_at_left']:
-        for e in t['estimations']:
+    for e in t['estimations']:
+        e['pre_mirroring_x'] = e['x']
+        if t['cue_shown_at_left']:
             e['x'] *= -1
     return t
 

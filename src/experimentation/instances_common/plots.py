@@ -53,8 +53,7 @@ def draw_sampling_frequecies_marks(ax, horizontal=False):
         label="frecuencia target"
     )
 
-def draw_trials_with_center(ax, run_subsample, run_id):
-    ts = run_subsample.ts.all()
+def draw_pre_normalization_trials(ax, ts):
     for t in ts:
         ax.plot(
             [e['t'] for e in t.estimations],

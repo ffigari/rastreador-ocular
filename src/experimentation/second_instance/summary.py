@@ -41,6 +41,8 @@ class SecondTrial(Trial):
             parsed_trial['estimates'],
             parsed_trial['age'],
             parsed_trial['viewport_width'],
+            parsed_trial['run_center_x'],
+            parsed_trial['run_estimated_center_mean'],
         )
 
 def union(*ss):

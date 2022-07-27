@@ -1,5 +1,7 @@
 import os, re, csv, json
+from statistics import mean
 
+from constants import MINIMUM_TIME_FOR_SACCADE_IN_MS
 from utils.normalizer import Normalizer
 from utils.second_sampling import second_uniformize_sampling
 
@@ -18,6 +20,7 @@ def parse_trials():
         counts_per_run[run_id]['pro']['original_count'] = 0
         counts_per_run[run_id]['anti'] = dict()
         counts_per_run[run_id]['anti']['original_count'] = 0
+        run_parsed_trials = []
         with open(os.path.join(data_path, file_name), 'r') as f:
             csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
             headers = next(csv_rows_iterator, None)
@@ -36,6 +39,8 @@ def parse_trials():
     
             saccade_type_idx = headers.index('typeOfSaccade')
             webgazer_data_idx = headers.index('webgazer_data')
+            iti_end_idx = headers.index('itiEnd')
+            fix_end_idx = headers.index('fixEnd')
             intra_end_idx = headers.index('intraEnd')
             response_end_idx = headers.index('responseEnd')
             cue_was_shown_at_left_idx = headers.index('cueShownAtLeft')
@@ -108,44 +113,62 @@ def parse_trials():
                             json.loads(row[cue_was_shown_at_left_idx]),
                         'original_frequency': \
                             len(original_estimates) / (trial_duration_in_ms / 1000),
-                        'viewport_width': int(row[viewport_width_idx])
+                        'viewport_width': int(row[viewport_width_idx]),
+                        'run_center_x': int(int(row[viewport_width_idx]) / 2)
                     }
                     counts_per_run[run_id][parsed_trial['saccade_type']]['original_count'] += 1
-    
-                    # Normalize estimates
-                    normalized_x_estimates = normalizer.normalize_estimates([
+
+                    uniformized_estimates = \
+                        second_uniformize_sampling(original_estimates)
+
+                    iti_end = int(row[iti_end_idx])
+                    fix_end = int(row[fix_end_idx])
+                    parsed_trial['trial_estimated_center_mean'] = mean([
+                        e['x']
+                        for e in uniformized_estimates
+                        if iti_end + MINIMUM_TIME_FOR_SACCADE_IN_MS <= e['t'] <= fix_end
+                    ])
+
+                    pre_normalization_xs = [
+                        e['x'] for e in uniformized_estimates]
+                    normalized_estimates = normalizer.normalize_estimates([
                         { 'x': e['x'], 't': e['t'] }
                         for e in original_estimates
                     ])
-    
-                    # Estimate will be mirrored so that we can assume that the trial
-                    # visual cue was shown to the right in all trials
+
+                    pre_mirroring_xs = [e['x'] for e in normalized_estimates]
                     if parsed_trial['cue_was_shown_at_left']:
-                        normalized_x_estimates = [
+                        normalized_estimates = [
                             { 'x': -e['x'], 't': e['t'] }
-                            for e in normalized_x_estimates
+                            for e in normalized_estimates
                         ]
-    
-                    # Uniformize sampling
-                    interpolated_x_estimates = \
-                        second_uniformize_sampling(normalized_x_estimates)
-    
-                    # Center time axis of estimations so that we can assume that t=0
-                    # corresponds to when the visual cue appears
+                    for i, e in enumerate(normalized_estimates):
+                        e['pre_normalization_x'] = pre_normalization_xs[i]
+                        e['pre_mirroring_x'] = pre_mirroring_xs[i]
+
                     cue_start_in_ms = int(row[intra_end_idx])
                     centered_x_estimates = [
                         {
+                            'pre_normalization_x': e['pre_normalization_x'],
+                            'pre_mirroring_x': e['pre_mirroring_x'],
                             'x': e['x'],
                             't': e['t'] - cue_start_in_ms
                         }
-                        for e in interpolated_x_estimates
+                        for e in normalized_estimates
                     ]
     
-                    # Save trial
                     parsed_trial['estimates'] = centered_x_estimates
-                    parsed_trials.append(parsed_trial)
-    
+                    run_parsed_trials.append(parsed_trial)
                 else:
                     pass
+
+            if len(run_parsed_trials) > 0:
+                run_estimated_center_mean = mean([
+                    t['trial_estimated_center_mean']
+                    for t in run_parsed_trials
+                ])
+                for t in run_parsed_trials:
+                    t['run_estimated_center_mean'] = run_estimated_center_mean
+                    parsed_trials.append(t)
     
     return parsed_trials, counts_per_run
