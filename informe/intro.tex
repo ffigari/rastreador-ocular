@@ -3,8 +3,8 @@
 \section{{Motivación}}
 
 En el contexto de la neuropsicología digital y de la psiquiatría computacional
-es común realizar análisis de movimientos oculares de sujetos al ser estos
-presentados con distintos estímulos visuales \cite{{munoz_2004_look_away,
+es común realizar análisis de movimientos oculares de sujetos mientras les son
+presentados distintos estímulos visuales \cite{{munoz_2004_look_away,
 clifton_2016_eye_movements_in_reading}}.
 Habitualmente este tipo de ensayos se realiza en contextos presenciales de
 laboratorio con equipos de seguimiento ocular especializados pero existen
@@ -38,7 +38,7 @@ potencial de asistirlo en conjunto de otras medidas
 En este contexto han aparecido herramientas que buscan ser alternativas a los
 \eyetrackers comerciales habituales.
 Entre ellas se remarca \pupilext que busca proveer el software necesario para
-un sistema de detección de pupilas.
+populometría (detección de pupilas).
 Quien esté levantando tal sistema no requiere un conocimiento profundo sobre
 cómo implementar un \eyetracker: alcanza en cambio con proveer el hardware
 necesario, seguir las instrucciones y correr el software provisto
@@ -46,8 +46,6 @@ necesario, seguir las instrucciones y correr el software provisto
 Otros trabajos han comenzado a explorar la utilización de las cámaras web
 domésticas para proveer estimación de la mirada \cite{{xu_2015_turker_gaze,
 papoutsaki_2016_webgazer, huang_2016_pace}}.
-La tabla \ref{{tab:implementations}} ilustra algunas implementaciones que han
-surgido recientemente.
 El correcto uso de estas herramientas podría abrir la puerta a su uso en el
 desarrollo de interfaces humano - máquina (HMI) o a la realización de ensayos
 clínicos de manera remota y más económica.
@@ -60,85 +58,111 @@ prototipo de \eyetracker web.
 Se experimentará luego con él para buscar replicar resultados obtenidos en
 análisis tradicionales.
 
-\begin{{table}}[htb]
-\centering
-\tiny
-\begin{{tabular}}{{|p{{0.1\linewidth}}|p{{0.15\linewidth}}|p{{0.1\linewidth}}|p{{0.35\linewidth}}|p{{0.3\linewidth}}|}}
-    \hline
-    trabajo
-    & hardware necesario
-    & es navegador compatible?
-    & calidad reportada (MAE=\textit{{mean average error}}
-    & experimentación \\
-    \hline
-    \hline
-    Santini et al, EyeRecToo \cite{{santini_2017_eyerectoo}}, \eyetracking
-    montado a la cabeza
-    & soporte para tres modelos comerciables montables a la cabeza, aunque
-    generalizable
-    & no
-    & MAE $<$ 1°
-    & una instancia de 5 sujetos de los cuales 2 usan anteojos, no se indica
-    cómo calculan el valor ni qué experimento realizan
-    \\ \hline
-    Zandi et al, PupilEXT \cite{{zandi_2021_pupilext}}, populometría
-    & una o dos cámaras industriales, un emisor de luz NIR (Near Infra Red)
-    & no
-    & MAE $\approx$ 0.0059 mm en el diámetro de la pupila, frecuencia alcanzada
-    de 120 Hz según el algoritmo de estimación utilizado 
-    & no mencionada
-    \\ \hline
-    Huang et al, PACE \cite{{huang_2016_pace}}, \eyetracking auto calibrante
-    & webcam
-    & no
-    & MAE $\approx$ 2.56°, pero ese valor se alcanza después de 7 iteraciones
-    de autocalibración.
-    En promedio toma 4 horas alcanzar esa precisión.
-    No se menciona la precisión al inicio.
-    & 10 sujetos que debían elegir entre 1 de 5 tareas en las cuales hay mucha
-    interacción.
-    Realizan la tarea hasta alcanzar 1500 interacciones.
-    Además realizan mucha experimentación respecto de la correlación entre la
-    mirada y distintos tipos de interacción.
-    \\ \hline
-    Xu et al, TurkerGaze \cite{{xu_2015_turker_gaze}}, \textit{{crowdsourcing}}
-    de mapas de saliencia
-    & webcam
-    & sí
-    & MAE $\approx$ 1.06° respecto de 33 puntos estáticos en la pantalla.
-    MAE $\approx$ 1.32° respecto de \eyetracker comercial.
-    Los mapas de saliencia resultantes tienen sesgo hacia el centro que no
-    debería estar.
-    & Los puntos estáticos son mostrados por 1,5 s, usando los últimos 0,5 para
-    tomar la medida.
-    Al comprar con el \eyetracker comercial utilizan sus predicciones como
-    \textit{{ground truth}}.
-    No se aclara como es la intercalación entre tareas y calibraciones.
-    \\ \hline
-    Papoutsaki et al, WebGazer \cite{{papoutsaki_2016_webgazer}}, \eyetracking
-    auto calibrante
-    & webcam
-    & sí
-    & MAE entre 150 px y 250 px
-    & una instancia online con 82 sujetos y otra instancia presencial con 5 en
-    las cuales debían llenar un \textit{{múltiple choice}} de 40
-    \textit{{yes/no questions}}.
-    En la instancia presencial comparan contra un eye tracker comercial pero en
-    la online no queda claro qué se usa de ground truth.
-    \\ \hline
-\end{{tabular}}
+\section{{Implementaciones recientes}}
+
+A continuación se listan resúmenes de implementaciones recientes.
 Las distintas propuestas comparten el deseo de proveer software para que luego
 quien lo utilice tenga que a lo sumo proveer hardware.
 Se diferencian según el problema que buscan solucionar (e.g., pupilometría,
 \eyetracking montado a la cabeza) y en los requerimientos impuestos de
 hardware.
 
-TODO: Cómo presento esta tabla? Si no le achico la letra o bien se va del
-margen o bien quedan muy pocas palabras por columna
+\begin{{itemize}}
 
-\caption{{Implementaciones abiertas basadas en \eyetracking}}
-\label{{tab:implementations}}
-\end{{table}}
+  \item \begin{{enumerate}}
+    \item \textbf{{autores}}:
+      Santini et al, EyeRecToo \cite{{santini_2017_eyerectoo}} (\eyetracking
+      montado a la cabeza).
+    \item \textbf{{hardware necesario}}:
+      Soporte para tres modelos comerciables de cámaras montables a la cabeza.
+      Generalizable a hardwares compatibles con ciertas librerías que utilizan
+      en su implementación.
+    \item \textbf{{compatible con navegador}}:
+      No.
+    \item \textbf{{calidad reportada}}:
+      Error promedio menor a 1º.
+    \item \textbf{{experimentación}}:
+      Una instancia de 5 sujetos de los cuales 2 usan anteojos, no se indica
+      cómo calculan el valor ni qué experimento realizan.
+  \end{{enumerate}}
+
+  \item \begin{{enumerate}}
+    \item \textbf{{autores}}:
+      Zandi et al, PupilEXT \cite{{zandi_2021_pupilext}} (populometría).
+    \item \textbf{{hardware necesario}}:
+      Una o dos cámaras industriales y un emisor de luz NIR (\textit{{Near
+      Infra Red}}, cercano a las ondas infrarrojas).
+    \item \textbf{{compatible con navegador}}:
+      No.
+    \item \textbf{{calidad reportada}}:
+      Error promedio de aproximadamente 0.0059 mm respecto del diámetro de la
+      pupila.
+      Frecuencia alcanzada de 120 Hz
+      Variante según cuál algoritmo de los provistos se elija.
+    \item \textbf{{experimentación}}:
+      No mencionada.
+  \end{{enumerate}}
+
+  \item \begin{{enumerate}}
+    \item \textbf{{autores}}:
+      Huang et al, PACE \cite{{huang_2016_pace}} (\eyetracking auto
+      calibrante).
+    \item \textbf{{hardware necesario}}:
+      Webcam.
+    \item \textbf{{compatible con navegador}}:
+      No (implementado como aplicación nativa).
+    \item \textbf{{calidad reportada}}:
+      Error promedio de 2.56º.
+      Valor alcanzado luego de 7 iteraciones de autocalibración.
+      En promedio toma 4 horas alcanzar esa precisión.
+      No se menciona la calidad de las estimaciones durante el período inicial.
+    \item \textbf{{experimentación}}:
+      10 sujetos que debían elegir entre 1 de 5 tareas en las cuales hay mucha
+      interacción.
+      Realizan la tarea hasta alcanzar 1500 interacciones.
+      Además realizan mucha experimentación respecto de la correlación entre la
+      mirada y distintos tipos de interacción.
+  \end{{enumerate}}
+
+  \item \begin{{enumerate}}
+    \item \textbf{{autores}}:
+      Xu et al, TurkerGaze \cite{{xu_2015_turker_gaze}} (generación de mapas de
+      saliencia vía \textit{{crowdsourcing}}).
+    \item \textbf{{hardware necesario}}:
+      Webcam.
+    \item \textbf{{compatible con navegador}}:
+      Sí.
+    \item \textbf{{calidad reportada}}:
+      Error promedio de 1.06º respecto de 33 puntos estáticos mostrados en la
+      pantalla.
+      Error promedio de 1.32º respecto de \eyetracker comercial.
+      Sesgo hacia el centro en los mapas de saliencia resultantes.
+    \item \textbf{{experimentación}}:
+      Los puntos estáticos son mostrados por 1,5 s, usando los últimos 0,5 para
+      tomar la medida.
+      Al comprar con el \eyetracker comercial utilizan sus predicciones como
+      \textit{{ground truth}}.
+      No se aclara como es la intercalación entre tareas y calibraciones.
+  \end{{enumerate}}
+
+  \item \begin{{enumerate}}
+    \item \textbf{{autores}}:
+      Papoutsaki et al, WebGazer \cite{{papoutsaki_2016_webgazer}}
+      (\eyetracking auto calibrante).
+    \item \textbf{{hardware necesario}}:
+      Webcam.
+    \item \textbf{{compatible con navegador}}:
+      Sí.
+    \item \textbf{{calidad reportada}}:
+      Error promedio de entre 150 y 250 píxeles.
+    \item \textbf{{experimentación}}:
+      Una instancia online con 82 sujetos y otra instancia presencial con 5 en
+      las cuales debían llenar un \textit{{múltiple choice}} de 40
+      \textit{{yes/no questions}}.
+      En la instancia presencial comparan contra un eye tracker comercial.
+  \end{{enumerate}}
+
+\end{{itemize}}
 
 \section{{Eye tracking web remoto}}
 
