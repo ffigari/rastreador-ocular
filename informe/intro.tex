@@ -6,10 +6,23 @@ En el contexto de la neuropsicología digital y de la psiquiatría computacional
 es común realizar análisis de movimientos oculares de sujetos mientras les son
 presentados distintos estímulos visuales \cite{{munoz_2004_look_away,
 clifton_2016_eye_movements_in_reading}}.
-Habitualmente este tipo de ensayos se realiza en contextos presenciales de
-laboratorio con equipos de seguimiento ocular especializados pero existen
-diversos motivos para explorar la utilización de implementaciones abiertas de
-\eyetrackers en navegadores web.
+Esto se debe al rol central que los ojos juegan en expresar estados emocionales
+y procesos cognitivos que una persona está atravesando.
+Su estudio y posterior modelado permiten su localización en imágenes, una
+posterior estimación de la posición de la mirada y de manera más general una
+estimación del comportamiento de un individuo.
+En varias tareas de visión es entonces central su estudio incluso cuando no son
+el eje del análisis (e.g., detección de caras
+\cite{{hansen_2009_eye_of_the_beholder}}).
+La mirada es un reflejo del foco de atención del pensamiento, por lo que su
+análisis está también por ejemplo ligado a la teoría de la lectura
+\cite{{just_1980_theory_of_reading}}.
+
+Los análisis clínicos realizados para estudiar los ojos son habitualmente
+realizados en contextos presenciales de laboratorio con equipos de seguimiento
+ocular especializados.
+Sin embargo, existen diversos motivos para explorar la utilización de
+implementaciones abiertas de \eyetrackers en navegadores web.
 El costo de los equipos especializados puede resultar prohibitivo
 \cite{{zandi_2021_pupilext}}.
 La disparidad entre el costo final de estos equipos y el hardware que los
@@ -31,8 +44,8 @@ para la estimación del campo visual
 \cite{{leitner_2021_eyetracking_based_visual_field,
 murray_2009_children_perimetry_using_eye_tracking}}.
 Si bien lo más probable es que estos análisis por sí sólos no sean suficientes
-para realizar un diagnóstico sobre condiciones neuropsicológicas, sí tienen
-potencial de asistirlo en conjunto de otras medidas
+para realizar un diagnóstico sobre condiciones neuropsicológicas, en conjunto
+con otras medidas sí tienen potencial de asistirlo
 \cite{{clark_2019_eye_tracking_potential_in_ophtalmology}}.
 
 En este contexto han aparecido herramientas que buscan ser alternativas a los
@@ -51,12 +64,12 @@ desarrollo de interfaces humano - máquina (HMI) o a la realización de ensayos
 clínicos de manera remota y más económica.
 
 Con el presente trabajo se busca explorar la aplicabilidad del \eyetracking
-\textit{{online}} al diagnóstico de condiciones neuropsicológicas.
-Para ello se evaluarán las implementaciones existentes.
-En base a ellas y a desarrollos propios se buscará la construcción de un
-prototipo de \eyetracker web.
-Se experimentará luego con él para buscar replicar resultados obtenidos en
-análisis tradicionales.
+\online al diagnóstico de condiciones neuropsicológicas.
+Para ello se evaluarán implementaciones existentes en la bibliografía.
+De ser posible, se las utilizará o extenderá para construir un prototipo de
+\eyetracker web utilizable en análisis clínicos remotos.
+Posteriormente se lo utilizará en experimentos clínicos remotos con el fin de
+entender la capacidad de replicar resultados reportados en la bibliografía.
 
 \section{{Implementaciones recientes}}
 
@@ -166,23 +179,8 @@ hardware.
 
 \section{{Eye tracking web remoto}}
 
-Los ojos tienen un rol central en la expresión de estados emocionales y
-procesos cognitivos que una persona está atravesando.
-A la par del estudio de la cara, el estudio de los ojos permite tanto su
-localización en imágenes como una posterior estimación del comportamiento de un
-individuo.
-En varias tareas de visión es entonces central su estudio incluso cuando no son
-el eje del análisis (e.g., detección de caras
-\cite{{hansen_2009_eye_of_the_beholder}}).
-La mirada es un reflejo del foco de atención del pensamiento, por lo que su
-análisis está también por ejemplo ligado a la teoría de la lectura
-\cite{{just_1980_theory_of_reading}}.
-
-De entre estas tareas se destaca la estimación de la mirada de un sujeto en una
-pantalla.
-En este trabajo se la explora aplicada al diagnóstico de condiciones
-neuropsicológicas en un contexto web remoto, el cual implica diferencias
-respecto del contexto habitual de laboratorio.
+El contexto web remoto presenta múltilpes diferencias respecto del contexto
+habitual de laboratorio.
 En primer lugar, nuestro hardware se limitará a una única cámara web sin la
 posibilidad de agregar otras cámaras o emisores de luz.
 En segundo lugar, tampoco se tendrá control directo sobre el entorno.
