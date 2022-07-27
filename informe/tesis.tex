@@ -15,8 +15,6 @@
 
 \usepackage[inline]{enumitem}  % https://tex.stackexchange.com/a/146311/273585
 
-\newcommand{\raf}{\texttt{requestAnimationFrame}\xspace}
-
 \usepackage{svg}  % https://tex.stackexchange.com/a/445182/273585
 
 \usepackage{hyperref}  % clickable links
@@ -35,7 +33,11 @@
                                  % intermedio pasaba a ser link clickeable.
                                  % https://tex.stackexchange.com/a/32210/273585
 
-\usepackage{multirow}
+\usepackage{multirow}  % to combine cells in tables
+
+\usepackage{subcaption}  % para poner subtitulos a imagenes dentro de una
+                         % figura
+                         % https://tex.stackexchange.com/a/173872/
 
 % algunas constantes para asegurarme de que quede todo parejo
 \usepackage{xspace}  % para garantizar un espacio dsp de los newcommand
@@ -60,6 +62,7 @@
 \newcommand{\webgazer}{\texttt{WebGazer}\xspace}
 \newcommand{\pace}{\texttt{PACE}\xspace}
 \newcommand{\rastoc}{\texttt{rastoc}\xspace}
+\newcommand{\raf}{\texttt{requestAnimationFrame}\xspace}
 
 \newcommand{\booleana}{\textit{booleana}\xspace}
 \newcommand{\crashes}{\textit{crashes}\xspace}
@@ -69,6 +72,8 @@
 \newcommand{\feature}{\textit{feature}\xspace}
 \newcommand{\fork}{\textit{fork}\xspace}
 \newcommand{\framework}{\textit{framework}\xspace}
+\newcommand{\glint}{\textit{glint}\xspace}
+\newcommand{\glints}{\textit{glints}\xspace}
 \newcommand{\groundtruth}{\textit{ground truth}\xspace}
 \newcommand{\inlier}{\textit{inlier}\xspace}
 \newcommand{\mergeada}{\textit{mergeada}\xspace}

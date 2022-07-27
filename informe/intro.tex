@@ -328,39 +328,50 @@ correspondiente a la mirada \cite{{hansen_2009_eye_of_the_beholder}}.
 
 \begin{{figure}}
     \centering
-    \includesvg{{media/four_Purkinje_images.svg}}
-    \caption{{Reflejos de Purkinje (fuente: Wikipedia\protect\footnotemark)}}
-    A medida que un rayo de luz atraviesa las distintas estructuras del ojo
-    aparecen múltiples puntos de refracción desde los cuales ocurren reflejos
-    de luz.
-    P1, P2, P3 y P4 corresponden a los cuatro reflejos de Purkinje.
-    De entre estos el primero (P1) es aquel que se denomina \textit{{glint}} y
-    es utilizado en la estimación de la mirada al realizar un modelado
-    explícito de la visión.
-    \label{{fig:purkinje_images}}
+
+    \begin{{subfigure}}{{\linewidth}}
+      \centering
+
+      \includesvg[width=0.5\linewidth]{{media/four_Purkinje_images.svg}}
+
+      A medida que un rayo de luz atraviesa las distintas estructuras del ojo
+      aparecen múltiples puntos de refracción desde los cuales ocurren reflejos
+      de luz.
+      P1, P2, P3 y P4 corresponden a los cuatro reflejos de Purkinje.
+      De entre estos el primero (P1) es aquel que se denomina \glint
+      y es utilizado en la estimación de la mirada al realizar un modelado
+      explícito de la visión.
+
+      Imagen tomada de Wikipedia:
+      \url{{https://commons.wikimedia.org/wiki/File:Diagram_of_four_Purkinje_images.svg}}
+
+      \caption{{Reflejos de Purkinje}}
+      \label{{fig:purkinje_images}}
+    \end{{subfigure}}
+
+    \begin{{subfigure}}{{0.7\linewidth}}
+      \centering
+
+      \includegraphics[width=\linewidth]{{media/optical_visual_axis.png}}
+
+      El eje óptico y el eje visual se definen como los ejes entre el centro
+      del cristalino y respectivamente el centro de la retina y el centro de la
+      fóvea.
+      Estos son comúnmente utilizados como estimación del vector de la mirada.
+
+      Imagen tomada de Wikipedia y modificada:
+      \url{{https://commons.wikimedia.org/wiki/File:Three_Main_Layers_of_the_Eye.png}}
+
+      \caption{{Ejes óptico y visual}}
+      \label{{fig:optical_visual_axis}}
+    \end{{subfigure}}
+
+    \caption{{Estructura del ojo}}
+    \label{{fig:eye-structure}}
 \end{{figure}}
-\footnotetext{{\url{{https://commons.wikimedia.org/wiki/File:Diagram_of_four_Purkinje_images.svg}}}}
-
-\begin{{figure}}
-    \centering
-
-    \includegraphics[width=\linewidth]{{media/optical_visual_axis.png}}
-
-    El eje óptico y el eje visual se definen como los ejes entre el centro del
-    cristalino y respectivamente el centro de la retina y el centro de la fóvea.
-    Estos son comúnmente utilizados como estimación del vector de la mirada.
-
-    TODO: Tendría sentido juntar las dos figuras de los ojos en una misma
-    figura que sumarice la estructura del ojo?
-
-    \caption{{Ejes óptico y visual (fuente: Wikipedia\protect\footnotemark,
-    modificada)}}
-    \label{{fig:optical_visual_axis}}
-\end{{figure}}
-\footnotetext{{\url{{https://commons.wikimedia.org/wiki/File:Three_Main_Layers_of_the_Eye.png}}}}
 
 En nuestro contexto no es sin embargo posible el agregado de emisores de luz,
-por lo que la generación de \textit{{glints}} no es posible.
+por lo que la generación de \glints no es posible.
 En consecuencia se descarta el modelado explícito de la mirada.
 El modelado por apariencia consiste en cambio en tratar los \textit{{frames}}
 como imágenes genéricas aplicando luego técnicas tradicionales de métodos
@@ -373,7 +384,7 @@ Para ello luego de localizar los ojos, transforman su recuadro de la imagen en
 vectores de 120 dimensiones con los cuales se alimenta un modelo de regresión
 \textit{{ridge}}.
 Así, dado un \textit{{frame}} de la webcam, la salida del modelo será la
-coordenada de la pantalla que se está miranddo.
+coordenada de la pantalla que se está mirando.
 \pace \cite{{huang_2016_pace}} utiliza un mecanismo híbrido en el cual a las
 imágenes de los ojos se agregan variables estimadas de la posición de la cabeza
 (orientación, rotación y apertura de los ojos).
