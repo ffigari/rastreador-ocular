@@ -169,6 +169,7 @@ class plot:
             def renderer():
                 fig, axes = plt.subplots(nrows=4, ncols=1, sharex=True)
 
+                # primera instancia
                 for run_id, ax in [
                     (47, axes[0]),
                     (24, axes[1]),
@@ -187,6 +188,52 @@ class plot:
 
             save_fig(
                 'skewed-estimations-examples',
+                'informe/build/metodo',
+                'metodo',
+                renderer
+            )
+
+    class normalization_looks_example:
+        def __init__(_, subject_2_44_sample):
+            def renderer():
+                ts = [
+                    t for t in subject_2_44_sample.ts.all()
+                    if t.saccade_type == 'anti']
+
+                fig, axes = plt.subplots(nrows=3)
+
+                draw_pre_normalization_trials(axes[0], ts)
+                axes[0].set_title('a) aspecto inicial')
+
+                for t in ts:
+                    axes[1].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['pre_mirroring_x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[1].set_title('b) aspecto post normalización y pre espejado')
+
+                for t in ts:
+                    axes[2].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[2].set_title('c) aspecto final')
+
+                axes[1].set_ylim(-1.5, 1.5)
+                axes[2].set_ylim(-1.5, 1.5)
+
+                fig.subplots_adjust(hspace=0.4)
+                fig.legend()
+                fig.set_size_inches(6.4, 8)
+
+                return fig
+
+            save_fig(
+                'normalization-looks-example',
                 'informe/build/metodo',
                 'metodo',
                 renderer

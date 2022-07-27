@@ -192,6 +192,6 @@ if __name__ == "__main__":
     plot.frecuency_by_age(
         r.second_instance.starting_sample, 'second')
 
+    plot.normalization_looks_example(r.second_instance.starting_sample.subsample_by_run_id(44))
     plot.skewed_estimations_examples(r.first_instance.starting_sample)
-
     plot.undetected_saccade_examples(r.second_instance.inlier_sample)

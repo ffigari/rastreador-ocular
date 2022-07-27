@@ -92,7 +92,6 @@ def plot_sampling_frequencies(frequencies):
 
     return fig
 
-##
 def plot_ages(ages):
     fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True)
 

@@ -480,9 +480,20 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   estimaciones un salto de un valor cercano a $0$ a un valor cercano a $-1$.
   Similarmente, toda prosacada correcta tendrá que mostrar un salto hacia los
   valores negativos.
+  La figura \ref{fig:normalization-looks-example} ejemplifica las
+  transformaciones ocurridas en las estimaciones al normalizarlas.
 
-  TODO: Figura que muestre cómo se "emprolija" la forma de los datos cuando se
-        aplica el espejado
+  \begin{figure}
+    \centering
+
+    \includegraphics[width=\linewidth]{metodo/normalization-looks-example.png}
+
+    Se muestran las estimaciones de los ensayos de antisacadas para el sujeto
+    44 de la segunda instancia.
+
+    \caption{Cambios en el aspecto de las estimaciones al normalizarlas}
+    \label{fig:normalization-looks-example}
+  \end{figure}
 
   Se buscó luego descartar aquellos ensayos donde no pudiera determinarse una
   respuesta por parte del sujeto ya fuera esta correcta o incorrecta.
@@ -500,8 +511,6 @@ hicieron P{\l}omecka et al. \cite{plomecka_2020_retest_reliability}.
   Los \outliers fueron luego descartados, así como todas las estimaciones de
   los sujetos que terminaran con menos de 30 ensayos luego de haber aplicado
   los criterios de filtrado anteriores.
-
-  TODO: Figura que ejemplifique ensayos filtrados
 
   Los ensayos no descartados definieron el grupo \inlier, grupo sobre el cual
   se reportarán luego las tasas de correctitud y las latencias en las
