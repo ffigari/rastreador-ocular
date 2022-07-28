@@ -33,7 +33,6 @@ class Results():
         self.second_instance = si
         
 
-        # TODO: Estos contextos capaz convenga crearlos donde se los usa
         self.first_instance_context = \
             build_first_instance_tex_context(fi)
         self.second_instance_context = \
