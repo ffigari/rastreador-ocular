@@ -12,7 +12,7 @@ Su estudio y posterior modelado permiten su localización en imágenes, una
 posterior estimación de la posición de la mirada y de manera más general una
 estimación del comportamiento de un individuo.
 En varias tareas de visión es entonces central su estudio incluso cuando no son
-el eje del análisis (e.g., detección de caras
+el eje del análisis (\eg, detección de caras
 \cite{{hansen_2009_eye_of_the_beholder}}).
 La mirada es un reflejo del foco de atención del pensamiento, por lo que su
 análisis está también por ejemplo ligado a la teoría de la lectura
@@ -76,7 +76,7 @@ entender la capacidad de replicar resultados reportados en la bibliografía.
 A continuación se listan resúmenes de implementaciones recientes.
 Las distintas propuestas comparten el deseo de proveer software para que luego
 quien lo utilice tenga que a lo sumo proveer hardware.
-Se diferencian según el problema que buscan solucionar (e.g., pupilometría,
+Se diferencian según el problema que buscan solucionar (\eg, pupilometría,
 \eyetracking montado a la cabeza) y en los requerimientos impuestos de
 hardware.
 
@@ -84,7 +84,7 @@ hardware.
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Santini et al, EyeRecToo \cite{{santini_2017_eyerectoo}} (\eyetracking
+      Santini \etal, EyeRecToo \cite{{santini_2017_eyerectoo}} (\eyetracking
       montado a la cabeza).
     \item \textbf{{hardware necesario}}:
       Soporte para tres modelos comerciables de cámaras montables a la cabeza.
@@ -101,7 +101,7 @@ hardware.
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Zandi et al, PupilEXT \cite{{zandi_2021_pupilext}} (populometría).
+      Zandi \etal, PupilEXT \cite{{zandi_2021_pupilext}} (populometría).
     \item \textbf{{hardware necesario}}:
       Una o dos cámaras industriales y un emisor de luz NIR (\textit{{Near
       Infra Red}}, cercano a las ondas infrarrojas).
@@ -118,7 +118,7 @@ hardware.
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Huang et al, PACE \cite{{huang_2016_pace}} (\eyetracking auto
+      Huang \etal, PACE \cite{{huang_2016_pace}} (\eyetracking auto
       calibrante).
     \item \textbf{{hardware necesario}}:
       Webcam.
@@ -139,7 +139,7 @@ hardware.
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Xu et al, TurkerGaze \cite{{xu_2015_turker_gaze}} (generación de mapas de
+      Xu \etal, TurkerGaze \cite{{xu_2015_turker_gaze}} (generación de mapas de
       saliencia vía \textit{{crowdsourcing}}).
     \item \textbf{{hardware necesario}}:
       Webcam.
@@ -160,7 +160,7 @@ hardware.
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Papoutsaki et al, WebGazer \cite{{papoutsaki_2016_webgazer}}
+      Papoutsaki \etal, WebGazer \cite{{papoutsaki_2016_webgazer}}
       (\eyetracking auto calibrante).
     \item \textbf{{hardware necesario}}:
       Webcam.
@@ -216,8 +216,8 @@ papoutsaki_2016_webgazer}} como para \eyetracking montado a la cabeza
 \cite{{santini_2017_eyerectoo}} y \eyetracking tradicional de laboratorio
 \cite{{zandi_2021_pupilext}}.
 El punto común a las distintas implementaciones es la búsqueda de aprovechar
-hardware existente (e.g., cámaras web) o de que por lo menos el técnico pueda
-proveer su propio equipo (i.e., adquirir cámaras industriales por una fracción
+hardware existente (\eg, cámaras web) o de que por lo menos el técnico pueda
+proveer su propio equipo (\ie, adquirir cámaras industriales por una fracción
 del costo de \eyetrackers comerciales y encargarse uno mismo de levantar el
 sistema).
 El \eyetracking web tiene la particularidad de ser distribuible a través de
@@ -288,7 +288,7 @@ landmarks}} \cite{{papoutsaki_2016_webgazer}}.
 Estos modelos construyen una red de puntos clave (\textit{{keypoints}}) que dan
 información sobre la estructura de la cara en una imagen.
 Utilizando este tipo de modelo pueden luego implementarse heurísticas para
-localizar la posición de los ojos (c.f. figura \ref{{fig:facemesh_keypoints}}).
+localizar la posición de los ojos (figura \ref{{fig:facemesh_keypoints}}).
 
 \begin{{figure}}
     \centering
@@ -299,7 +299,7 @@ localizar la posición de los ojos (c.f. figura \ref{{fig:facemesh_keypoints}}).
     }}
     La documentación del \textit{{facemesh}} indica cómo acceder a cada uno de
     sus \textit{{keypoint}}.
-    De esta manera se pueden extraer elementos que sean de interés (e.g., el
+    De esta manera se pueden extraer elementos que sean de interés (\eg, el
     recuadro de cada ojo) y construir algoritmos que usen tal información.
     \label{{fig:facemesh_keypoints}}
 \end{{figure}}
@@ -317,12 +317,11 @@ métodos aplican a nuestro caso de uso.
 El modelado explícito de los ojos suele basarse en reflejos causados por
 emisores externos de luz.
 Cuando la luz de estos atraviesa la lente del ojo y la córnea, se generan
-reflejos llamados imágenes de Purkinje (c.f. figura
-\ref{{fig:purkinje_images}}).
+reflejos llamados imágenes de Purkinje (figura \ref{{fig:purkinje_images}}).
 El primero de estos suele denominarse \textit{{glint}}.
 A través de este es posible estimar el \textit{{visual axis}} (vector entre el
 centro del cristalino y el centro de la fóvea) y el \textit{{optical axis}}
-(vector entre el centro del cristalino y el centro de la retina) (c.f. figura
+(vector entre el centro del cristalino y el centro de la retina) (figura
 \ref{{fig:optical_visual_axis}}), ambos pudiendo ser utilizados como el vector
 correspondiente a la mirada \cite{{hansen_2009_eye_of_the_beholder}}.
 
@@ -375,7 +374,7 @@ por lo que la generación de \glints no es posible.
 En consecuencia se descarta el modelado explícito de la mirada.
 El modelado por apariencia consiste en cambio en tratar los \textit{{frames}}
 como imágenes genéricas aplicando luego técnicas tradicionales de métodos
-numéricos (e.g., regresión) para obtener un mapa entre el dominio de estas
+numéricos (\eg, regresión) para obtener un mapa entre el dominio de estas
 imágenes y las coordenadas de la pantalla.
 \turkergaze \cite{{xu_2015_turker_gaze}} y luego \webgazer
 \cite{{papoutsaki_2016_webgazer}} ilustran una implementación de este tipo de
@@ -419,7 +418,7 @@ las imágenes resultantes \cite{{hansen_2009_eye_of_the_beholder}}.
 
 Para reducir el impacto de movimientos de cabeza, ciertos trabajos de
 \eyetracking web \cite{{papoutsaki_2016_webgazer, huang_2016_pace}} exploran la
-captura de datos de calibración a través de las interacciones (e.g., clicks)
+captura de datos de calibración a través de las interacciones (\eg, clicks)
 que el sujeto realice.
 Estos trabajos no aplican a nuestro caso de uso pues no podemos garantizar que
 el usuario vaya a tener que interactuar con el navegador durante las tareas que
@@ -444,7 +443,7 @@ No se encontró un protocolo que indique cómo llevarla adelante.
 Para la implementación de una calibración se necesita definir la cantidad de
 estímulos a mostrar así como la disposición con la cual serán presentados.
 Debe también decidirse si cada estímulo será mostrado una cantidad fija de
-tiempo o si será mostrado hasta que el sujeto interactúe con el sistema (e.g.,
+tiempo o si será mostrado hasta que el sujeto interactúe con el sistema (\eg,
 a través de un click en el estímulo presentado).
 En base a esto debe luego definirse tanto qué \textit{{frames}} se utilizarán
 para calibrar el sistema así como a qué coordenada serán asociado cada
@@ -493,7 +492,7 @@ movimiento del sujeto.
 En consecuencia ocurrirá tarde o temprano una descalibración del sistema.
 Esta tendrá que ser detectada para luego indicar la necesidad de realizar una
 recalibración.
-Xu et al \cite{{xu_2015_turker_gaze}} optaron por realizar tareas cortas y
+Xu \etal \cite{{xu_2015_turker_gaze}} optaron por realizar tareas cortas y
 calibrar repetidamente.
 La opción explorada en este trabajo consiste en detectar continuamente
 movimientos que el sujeto realice con la cabeza.
@@ -550,10 +549,10 @@ indicios sobre la memoria visual espacial
 Rápidas sucesiones de ensayos de la tarea permiten estudiar la capacidad
 de los sujetos de mantenerse atentos al objetivo planteado
 \cite{{olincy_1997_age_diminishes_performance}}, lo cual a su vez permite
-categorizar los procesos entre \textit{{competition resolution}} (i.e., la
+categorizar los procesos entre \textit{{competition resolution}} (\ie, la
 competencia entre el proceso de respuesta reflexiva y el proceso de inhibir tal
 respuesta para generar una sacada en la dirección contraria) y \textit{{goal
-maintenance}} (i.e., la capacidad de recordar y mantener activado el objetivo).
+maintenance}} (\ie, la capacidad de recordar y mantener activado el objetivo).
 De manera más general, la tarea permite estudiar la \textit{{working memory
 capacity}} \cite{{unsworth_2011_distribution_analysis,
 unsworth_2021_working_memory_capacity}} de los sujetos.
@@ -587,7 +586,7 @@ Además de estudiar el promedio de los tiempos de respuesta obtenidos, puede
 estudiarse su distribución utilizando ajuste de funciones
 \cite{{unsworth_2011_distribution_analysis}}.
 Manipulaciones experimentales permiten luego aislar características de estas
-distribuciones (e.g., desplazamientos o estiramientos).
+distribuciones (\eg, desplazamientos o estiramientos).
 
 Para múltiples condiciones neuropsicológicas se ha estudiado la correlación
 entre quienes han sido diagnosticados con tales condiciones y sus resultados en
@@ -600,7 +599,7 @@ edad \cite{{olincy_1997_age_diminishes_performance,
 plomecka_2020_retest_reliability}}, enfermedad de Huntington y demencia senil
 \cite{{smyrnis_2002_big_sample}}, entre otros.
 La tarea muestra además potencial para \textit{{test retest reliability}}
-(i.e., sus resultados para mismos individuos son consistentes a lo largo de
+(\ie, sus resultados para mismos individuos son consistentes a lo largo de
 distintas instancias de análisis clínicos)
 \cite{{plomecka_2020_retest_reliability}}. 
 
@@ -610,7 +609,7 @@ de antisacadas:
 
   \item \begin{{enumerate}}
     \item \textbf{{trabajo}}:
-      Munoz et al \cite{{munoz_2004_look_away}}, analizan patrones de actividad
+      Munoz \etal \cite{{munoz_2004_look_away}}, analizan patrones de actividad
       neuronal en monos.
     \item \textbf{{diseño de la tarea}}:
       Se intercalan sacadas y antisacadas, distinguiendo ambas tareas según el
@@ -629,7 +628,7 @@ de antisacadas:
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Unsworth et al \cite{{unsworth_2011_distribution_analysis}}, buscan
+      Unsworth \etal \cite{{unsworth_2011_distribution_analysis}}, buscan
       aislar procesos cognitivos en sujetos de entre 22 y 50 años utilizando un
       mecanismo de ajuste de funciones.
     \item \textbf{{diseño de la tarea}}:
@@ -677,7 +676,7 @@ de antisacadas:
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      Smyrnis et al \cite{{smyrnis_2002_big_sample}}, estudio sobre más de 2000
+      Smyrnis \etal \cite{{smyrnis_2002_big_sample}}, estudio sobre más de 2000
       hombres de entre 18 y 25 años.
     \item \textbf{{diseño de la tarea}}:
       Realizan múltiples estudios entres los cuales está la tarea de
@@ -696,7 +695,7 @@ de antisacadas:
 
   \item \begin{{enumerate}}
     \item \textbf{{autores}}:
-      P{{\l}}omecka et al \cite{{plomecka_2020_retest_reliability}}, estudio
+      P{{\l}}omecka \etal \cite{{plomecka_2020_retest_reliability}}, estudio
       del efecto de la edad en el control inhibitorio, realizado sobre dos
       grupos etarios (20-35 años y 60-80 años).
     \item \textbf{{diseño de la tarea}}:

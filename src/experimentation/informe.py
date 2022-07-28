@@ -134,9 +134,12 @@ if __name__ == "__main__":
     rm_rf('informe/build')
     os.mkdir('informe/build')
 
-    with open('informe/tesis.tex') as i_file:
-        with open('informe/build/tesis.tex', "w") as o_file:
-            o_file.write(i_file.read())
+    [
+        shutil.copyfile('informe/{}'.format(fn), 'informe/build/{}'.format(fn))
+        for fn in [
+            'tesis.tex',
+            'abstract.tex',
+            'dedicatoria.tex']]
 
     os.mkdir('informe/build/intro')
     with open('informe/intro.tex') as i_file:
