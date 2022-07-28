@@ -1,13 +1,13 @@
 \chapter{Conclusiones}
 
-El \eyetracking web es un campo en sus primeros pasos de desarrollo pero que
-suscita un creciente interés de distintos grupos.
+El \eyetracking web remoto es un campo en sus primeros pasos de desarrollo pero
+que suscita un creciente interés de distintos grupos.
 Muchos de estos ya estaban explorando experimentos con \eyetracking web antes
 del 2020 pero el aislamiento potenció y realzó su importancia.
-En particular, el \eyetracking remoto gana mucho interés en el campo sustentado
-en su amplia historia en el laboratorio, donde ha mostrado ser una ventana para
-estudiar procesos cognitivos de forma no invasiva y con un contacto mínimo con
-el sujeto experimental.
+Este interés se sustenta en la amplia historia del \eyetracking en el
+laboratorio, donde ha mostrado ser una ventana para estudiar procesos
+cognitivos de forma no invasiva y con mínimo contacto con el sujeto
+experimental.
 Nuestra pregunta original puede reformularse como hasta qué punto el
 \eyetracking web puede reemplazar o extender a otros contextos el uso de
 \eyetrackers tradicionales (en particular aquellos utilizados en laboratorio).
@@ -23,8 +23,6 @@ mecanismos de calibración y validación similares a aquellos de \eyetrackers
 comerciales e incluye un mecanismo de detección de descalibraciones.
 Se ofrece también la posibilidad de utilizar el prototipo a través de una
 interfaz no dependiente de \jspsych.
-En ambos casos se provee un \textit{playground} en los cuales se podrá
-interactuar con las interfaces implementadas.
 Además, se proveen criterios de exclusión y normalización para las estimaciones
 obtenidas y mecanismos de detección de sacadas.
 
@@ -33,35 +31,23 @@ de la implementación, el cual muestra frecuencias de muestreo menores a los 30
 Hz y estimaciones con desviaciones respecto del punto real de la mirada, aunque
 con correcto posicionamiento relativo (figura
 \ref{fig:skewed-estimations-example}).
-Además se adaptó a nuestras necesidades el modelo de estimación de la mirada de
-\webgazer.
-En líneas con los beneficios mencionados respecto de la existencia de
-implementaciones abiertas, el código del prototipo y aquel de análisis de
-estimaciones fue liberado en un repositorio público \footnote{repositorio
-correspondiente a este trabajo:
-\url{https://github.com/ffigari/rastreador-ocular}}, lo cual permitirá
-realizar nuevas rondas de experimentación.
-Las modificaciones sobre \webgazer se encuentran almacenadas en un
-\textit{fork} propio \footnote{\textit{fork} propio de \webgazer:
-\url{https://github.com/ffigari/WebGazer}}.
-Este \textit{fork} se realizó desde el repositorio correspondiente al
-\textit{fork} de \webgazer realizado por \jspsych \footnote{repositorio origen
-del \textit{fork} propio de \webgazer:
-\url{https://github.com/jspsych/WebGazer}}.
 Al no estar estandarizado el reporte de errores en las herramientas de
 \eyetracking \cite{zandi_2021_pupilext}, se dificulta comparar conclusiones de
 distintos análisis clínicos.
-Lo mismo ocurre cuando, en distintos trabajos se realizan implementaciones de
-detección de sacadas propias \cite{salvucci_2000_identifying_fixations}.
+Lo mismo ocurre cuando en distintos trabajos se realizan implementaciones
+\adhoc de detección de sacadas \cite{salvucci_2000_identifying_fixations}.
 En el campo de la oftalmología, para el caso de la perimetría automatizada
 \cite{pubmed_1996_automated_perimetry}, aparece también esta dificultad para
-comparar resultados obtenidos por distintas herramientas, aunque existen que
-intentan compararlas \cite{landers_2007_automated_perimeters_comparison}.
-Mientras que dentro de una misma herramienta se realizan incluso trabajos para
-establecer valores normativos \cite{brenton_1986_humphrey_normal_visual_field}.
+comparar resultados obtenidos por distintas herramientas, aunque existan
+trabajos que intenten compararlas
+\cite{landers_2007_automated_perimeters_comparison}.
 La existencia de una herramienta abierta para realizar estudios de movimientos
 oculares online eliminaría a las diferencias implementativas como factor de
-incompatibilidad.
+incomparabilidad.
+En base a esto y en líneas con los beneficios mencionados respecto de la
+existencia de implementaciones abiertas, se liberaron en un repositorio público
+tanto el código del prototipo como aquel de análisis de estimaciones y aquel
+utilizado para realizar los experimentos remotos.
 
 \section{Limitaciones}
 
