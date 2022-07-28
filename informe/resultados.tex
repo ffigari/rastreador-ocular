@@ -123,37 +123,40 @@ clasificados según correctitud y tiempo de respuesta.
 
 \begin{{table}}[ht]
   \centering
-  \begin{{tabular}}{{c|cc|cccc}}
-    ronda
-      & \multicolumn{{2}}{{|c}}{{primera}}
-      & \multicolumn{{4}}{{|c }}{{segunda}} \\
-    tarea
-      & \multicolumn{{2}}{{|c}}{{antisacada}}
-      & \multicolumn{{2}}{{|c }}{{antisacada}}
-      & \multicolumn{{2}}{{ c }}{{prosacada}} \\
-    correctitud
-     & correcto & incorrecto
-     & correcto & incorrecto
-     & correcto & incorrecto \\
-    \hline
-    tiempo de & & & & & & \\
-    respuesta (en ms)
-     &  {first__correct_antisaccades_sample__mean_response_time}
-       ({first__correct_antisaccades_sample__stdev_response_time})
-     &  {first__incorrect_antisaccades_sample__mean_response_time}
-       ({first__incorrect_antisaccades_sample__stdev_response_time})
-     &  {second__correct_antisaccades_sample__mean_response_time}
-       ({second__correct_antisaccades_sample__stdev_response_time})
-     &  {second__incorrect_antisaccades_sample__mean_response_time}
-       ({second__incorrect_antisaccades_sample__stdev_response_time})
-     &  {second__correct_prosaccades_sample__mean_response_time}
-       ({second__correct_prosaccades_sample__stdev_response_time})
-     &  {second__incorrect_prosaccades_sample__mean_response_time}
-       ({second__incorrect_prosaccades_sample__stdev_response_time}) \\
-    promedio (desvio std) & & & & & & \\
-  \end{{tabular}}
 
-  TODO: Rever esta tabla que se va al margen
+  \begin{{tabular}}{{ccc|c}}
+          &       &             & tiempo de \\
+    ronda & tarea & correctitud & respuesta (en ms) \\
+          &       &             & \textit{{promedio (desvio std)}} \\
+    \hline
+    \multirow{{2}}*{{primera}}
+      & \multirow{{2}}*{{antisacada}}
+        & correcto
+          & {first__correct_antisaccades_sample__mean_response_time}
+            ({first__correct_antisaccades_sample__stdev_response_time}) \\
+      &
+        & incorrecto
+          & {first__incorrect_antisaccades_sample__mean_response_time}
+            ({first__incorrect_antisaccades_sample__stdev_response_time}) \\
+    \hline
+    \multirow{{4}}*{{segunda}}
+      & \multirow{{2}}*{{antisacada}}
+        & correcto
+          & {second__correct_antisaccades_sample__mean_response_time}
+            ({second__correct_antisaccades_sample__stdev_response_time}) \\
+      &
+        & incorrecto
+          & {second__incorrect_antisaccades_sample__mean_response_time}
+            ({second__incorrect_antisaccades_sample__stdev_response_time}) \\
+      & \multirow{{2}}*{{prosacada}}
+        & correcto
+          & {second__correct_prosaccades_sample__mean_response_time}
+            ({second__correct_prosaccades_sample__stdev_response_time}) \\
+      &
+        & incorrecto
+          & {second__incorrect_prosaccades_sample__mean_response_time}
+            ({second__incorrect_prosaccades_sample__stdev_response_time})
+  \end{{tabular}}
 
   \caption{{Tiempos de respuesta}}
   \label{{tab:response-times}}

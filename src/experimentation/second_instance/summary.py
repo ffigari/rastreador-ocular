@@ -73,9 +73,9 @@ def build_correctness_table_tex_string(ct):
         \\hline
         total
           & {act}  & {ait}  & {pct}  & {pit}  \\\\
-        mean
+        promedio
           & {acm}  & {aim}  & {pcm}  & {pim}  \\\\
-        stdev
+        desvío std
           & {acsd} & {aisd} & {pcsd} & {pisd} \\\\
         \\hline
         id de sujeto & & & & \\\\
