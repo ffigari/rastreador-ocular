@@ -15,18 +15,14 @@ if (process.argv.length < 3) {
 }
 const action = process.argv[2];
 
-[
-  'www/build',
-  'www/old-facemesh.js',
-  'www/new-facemesh.js',
-].forEach(p => fs.rmSync(p, { recursive: true, force: true }));
+fs.rmSync('www/build', { recursive: true, force: true });
 const compiler = webpack({
   mode: 'none',
   entry: {
-    'build/rastoc': path.resolve(path.dirname(''), '/src/rastoc/index.js'),
-    'build/rastoc-jspsych': path.resolve(path.dirname(''), '/src/rastoc-jspsych/index.js'),
-    //'old-facemesh': path.resolve(path.dirname(''), 'src/experimental/old-facemesh.js'),
-    //'new-facemesh': path.resolve(path.dirname(''), 'src/experimental/new-facemesh.js'),
+    'build/eye-tracker': path.resolve(
+      path.dirname(''), '/src/eye-tracker/index.js'),
+    'build/jspsych-interface': path.resolve(
+      path.dirname(''), '/src/jspsych-interface/index.js'),
   },
   output: {
     path: path.resolve(path.dirname(''), 'www'),
