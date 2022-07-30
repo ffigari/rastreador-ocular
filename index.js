@@ -20,9 +20,9 @@ const compiler = webpack({
   mode: 'none',
   entry: {
     'build/eye-tracker': path.resolve(
-      path.dirname(''), '/src/eye-tracker/index.js'),
+      path.dirname(''), '/eye-tracker/index.js'),
     'build/jspsych-interface': path.resolve(
-      path.dirname(''), '/src/jspsych-interface/index.js'),
+      path.dirname(''), '/jspsych-interface/index.js'),
   },
   output: {
     path: path.resolve(path.dirname(''), 'www'),

@@ -1,4 +1,4 @@
-import { Point, BBox, MultiBBox } from '../types/index.js';
+import { Point, BBox, MultiBBox } from './lib/types/index.js';
 
 class EyesFeatures {
   constructor(bboxes) {

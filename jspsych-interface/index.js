@@ -1,5 +1,5 @@
-import { Point } from '../types/index.js';
-import { shuffle } from '../utils.js';
+import { Point } from './lib/types/index.js';
+import { shuffle } from './lib/index.js';
 
 const getPsychophysicsCanvasCenter = () => {
   // This assumes the canvas is always present. Note that if you run multiple
