@@ -47,25 +47,23 @@ class display:
                 plt.show()
                 plt.close(fig)
 
+    class single_trial_saccades_detection:
+        def __init__(_, run_id, trial_id):
+            r = load_results()
+            t = r.second_instance.inlier_sample.find_trial(run_id, trial_id)
+            fig = plot.saccade_detection(t).fig
+            plt.show()
+            plt.close(fig)
+
     class saccades_detection:
         def __init__(_):
             r = load_results()
-            def do(t):
+            ts = r.second_instance.inlier_sample.ts.all()
+            random.shuffle(ts)
+            for t in ts:
                 print('>> saccade detection over trial')
-                print('run_id={}'.format(t.run_id))
-                print('trial_id={}'.format(t.trial_id))
-
+                print('instance=second; run_id={}; trial_id={}'.format(
+                    t.run_id, t.trial_id))
                 fig = plot.saccade_detection(t).fig
                 plt.show()
                 plt.close(fig)
-
-            sis = r.second_instance.inlier_sample
-            if len(sys.argv) > 3:
-                run_id = int(sys.argv[3])
-                trial_id = int(sys.argv[4])
-                t = sis.find_trial(run_id, trial_id)
-                do(t)
-            else:
-                ts = sis.ts.all()
-                random.shuffle(ts)
-                [do(t) for t in ts]
