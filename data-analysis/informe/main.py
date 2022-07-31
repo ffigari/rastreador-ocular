@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from data_extraction.main import load_results
 from plotting import plot
 
+from lib.main import rm_rf
+
 def union(*ss):
     return set().union(*ss)
 
@@ -192,13 +194,6 @@ def build_results_tex_string(results, template, build_path, logical_path):
         **build_first_instance_tex_context(results.first_instance),
         **build_second_instance_tex_context(results.second_instance),
     ).strip('\n')
-
-# https://stackoverflow.com/a/9559881/2923526
-def rm_rf(path):
-    if os.path.isdir(path) and not os.path.islink(path):
-        shutil.rmtree(path)
-    elif os.path.exists(path):
-        os.remove(path)
 
 def _save_fig(figure_name, build_path, logical_path, renderer):
     output_format = "png"
