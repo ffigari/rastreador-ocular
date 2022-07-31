@@ -46,13 +46,14 @@ Node 14 is recommended.
 You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since a
 `.nvmrc` file is provided.
 Then run `./install.sh` to install dependencies.  
-Run `node index.js` for build instructions.
+Use `node builder.js build` to build the client side js, or use
+`node builder.js watch` to build on each change.
+
 The project's entry point is situated at `www/index.html`.
-You can for example open it with `firefox www/index.html`.
-At `src/rastoc/` and `src/rastoc-jspsych/` you can find the entry points of the
-main code.
-There _might_ be some events' timing issues which prevent the playground from
-starting up some times.
+When opening it at your browser, you will find the antisaccades experiment, a
+playgroud for the eye tracker and another one for the jspsych interface.
+There _might_ be some events' timing issues which prevent the eye tracker's
+playground from starting up some times.
 
 ### Python env setup
 
