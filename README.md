@@ -40,7 +40,9 @@ Tasks which require other regions of interest will have incorrect estimations.
 Work could however be done to generalize how regions of interest are codified,
 allowing then for more general calibration and validation mechanisms.
 
-## Development
+## Usage
+
+### Eye tracker
 
 Node 14 is recommended.
 You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since a
@@ -49,14 +51,15 @@ Then run `./install.sh` to install dependencies.
 Use `node builder.js build` to build the client side js, or use
 `node builder.js watch` to build on each change.
 
-The project's entry point is situated at `www/index.html`.
-When opening it at your browser, you will find the antisaccades experiment, a
-playgroud for the eye tracker and another one for the jspsych interface.
+After building, if you open `www/index.html` at your browser, you will find the
+antisaccades experiment, a playgroud for the eye tracker and another one for
+the jspsych interface.
 There _might_ be some events' timing issues which prevent the eye tracker's
 playground from starting up some times.
 
-### Python env setup
+### Experimentation / Report
 
+Python env setup:
 ```sh
 python -m venv py-env
 source py-env/bin/activate
@@ -64,11 +67,10 @@ pip install -r requirements.txt
 ```  
 then `source py-env/bin/activate` each time you want to use it.
 
-## Experimentation / Report
-
-The report is stored inside `./informe/`.
-`python src/experimentation/informe.py` will build it and store it inside
-`./informe/build/`.
-
-In the `./informe/*.tex` files, `{ ... }` have to be escaped to `{{ ... }}`.
-Otherwise `{ ... }` signals a value from the results.
+Available scripts:
+```
+python data-analysis/main.py display saccades-detection
+python data-analysis/main.py display subjects-trials
+python data-analysis/main.py display single-trial-saccades-detection 44 88
+python data-analysis/main.py build informe
+```
