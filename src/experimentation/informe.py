@@ -63,26 +63,6 @@ from shared.main import rm_rf
 if __name__ == "__main__":
     r = Results()
     if len(sys.argv) > 1 and sys.argv[1] == "display-saccade-detection":
-        def do(t):
-            print('>> saccade detection over trial')
-            print('run_id={}'.format(t.run_id))
-            print('trial_id={}'.format(t.trial_id))
-    
-            fig, ax = plt.subplots()
-            fig = draw_saccade_detection(fig, ax, t)
-            plt.show()
-            plt.close(fig)
-
-        sis = r.second_instance.inlier_sample
-        if len(sys.argv) > 2:
-            run_id = int(sys.argv[2])
-            trial_id = int(sys.argv[3])
-            t = sis.find_trial(run_id, trial_id)
-            do(t)
-        else:
-            ts = sis.ts.all()
-            random.shuffle(ts)
-            [do(t) for t in ts]
         sys.exit(0)
 
     if len(sys.argv) > 1 and sys.argv[1] == "display-subjects-trials":

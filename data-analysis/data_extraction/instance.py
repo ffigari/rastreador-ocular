@@ -52,7 +52,6 @@ class Instance():
     def __init__(self):
         starting_ts = TrialsCollection(self._load_data())
         self.starting_sample = Sample(starting_ts)
-        print(self.starting_sample.trials_count)
         outlier_ts, inlier_ts = self._process_starting_sample(starting_ts)
         self.inlier_sample = Sample(inlier_ts)
         self.post_processing_metrics = \
