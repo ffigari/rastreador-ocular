@@ -15,7 +15,8 @@ class display:
             for run_id, subsample in sst:
                 print('>> subject trials')
                 print('run_id={}'.format(run_id))
-                fig = plot.normalization_effects(run_id, subsample).fig
+                fig = plot.normalization_effects(subsample).fig
+                fig.suptitle('sujeto {}, antisacadas'.format(run_id))
                 plt.show()
                 plt.close(fig)
 

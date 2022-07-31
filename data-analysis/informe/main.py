@@ -1,6 +1,8 @@
 import shutil, os
+import matplotlib.pyplot as plt
 
 from data_extraction.main import load_results
+from plotting import plot
 
 def union(*ss):
     return set().union(*ss)
@@ -198,6 +200,155 @@ def rm_rf(path):
     elif os.path.exists(path):
         os.remove(path)
 
+def _save_fig(figure_name, build_path, logical_path, renderer):
+    output_format = "png"
+    output_file_name = \
+        "{}.{}".format(figure_name, output_format)
+    output_file_build_path = \
+        "{}/{}".format(build_path, output_file_name)
+    output_file_logical_path = \
+        "{}/{}".format(logical_path, output_file_name)
+
+    fig = renderer()
+    rm_rf(output_file_build_path)
+    fig.savefig(output_file_build_path, format=output_format)
+    plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
+
+    return output_file_logical_path
+
+class save_figure:
+    class ages_distribution:
+        def __init__(_, ages, instance_tag):
+            def renderer():
+                fig = plot.ages_distribution(ages).fig
+                fig.set_size_inches(6.4, 3.8)
+                return fig
+            _save_fig(
+                "{}-ages-distribution".format(instance_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class widths_distribution:
+        def __init__(_, widths, instance_tag):
+            def renderer():
+                fig = plot.widths_distribution(widths).fig
+                fig.set_size_inches(6.4, 3.8)
+                return fig
+            _save_fig(
+                "{}-widths-distribution".format(instance_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class sampling_frequencies_distribution:
+        def __init__(_, sampling_frequencies, instance_tag):
+            def renderer():
+                fig = plot.sampling_frequencies_distribution(
+                    sampling_frequencies
+                ).fig
+                fig.set_size_inches(6.4, 3.8)
+                return fig
+            _save_fig(
+                "{}-sampling-frequencies-distribution".format(instance_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class disaggregated_saccades:
+        def __init__(_, categorized_trials, instance_tag, task_tag):
+            def renderer():
+                fig = plot.post_processing_trials(
+                    categorized_trials[task_tag],
+                    'prosacadas' if task_tag == 'pro' else 'antisacadas').fig
+                fig.set_size_inches(6.4, 8)
+                return fig
+            _save_fig(
+                '{}-disaggregated-{}saccades'.format(instance_tag, task_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class response_times_distribution:
+        def __init__(_, categorized_trials, instance_tag):
+            def renderer():
+                return plot.responses_times_distributions(
+                    categorized_trials,
+                    instance_tag
+                ).fig
+
+            _save_fig(
+                '{}-response-times-distribution'.format(instance_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class frecuency_by_age:
+        def __init__(_, starting_sample, instance_tag):
+            def renderer():
+                fig = plot.frecuency_by_age(starting_sample).fig
+                fig.suptitle(
+                    'Primera instancia' if instance_tag == 'first' else \
+                    'Segunda instancia'
+                )
+                return fig
+            _save_fig(
+                '{}-sampling-frequencies-by-age'.format(instance_tag),
+                'data-analysis/informe/build/results',
+                'results',
+                renderer
+            )
+
+    class undetected_saccade_examples:
+        def __init__(_, second_inlier_sample):
+            def renderer():
+                fig = plot.undetected_saccade_examples(second_inlier_sample).fig
+                fig.subplots_adjust(hspace=0.35)
+                return fig
+
+            _save_fig(
+                'undetected-saccades-examples',
+                'data-analysis/informe/build/conclu',
+                'conclu',
+                renderer
+            )
+
+    class skewed_estimations_examples:
+        def __init__(_, first_starting_sample):
+            def renderer():
+                fig = plot.skewed_estimations_examples(first_starting_sample).fig
+                fig.set_size_inches(6.4, 8)
+                return fig
+
+            _save_fig(
+                'skewed-estimations-examples',
+                'data-analysis/informe/build/metodo',
+                'metodo',
+                renderer
+            )
+
+    class normalization_looks_example:
+        def __init__(_, subject_2_44_sample):
+            def renderer():
+                fig = plot.normalization_effects(subject_2_44_sample).fig
+                fig.subplots_adjust(hspace=0.4)
+                fig.set_size_inches(6.4, 8)
+                return fig
+
+            _save_fig(
+                'normalization-looks-example',
+                'data-analysis/informe/build/metodo',
+                'metodo',
+                renderer
+            )
+
+
+
 def build_informe():
     rm_rf('data-analysis/informe/build')
 
@@ -243,5 +394,58 @@ def build_informe():
         for fn in [
             'internal-playground.png',
             'external-playground.png']]
+
+    first_categorized_trials = {
+        'anti': {
+            'correct': r.first_instance.correct_sample.ts.all(),
+            'incorrect': r.first_instance.incorrect_sample.ts.all(),
+        }
+    }
+    second_categorized_trials = {
+        'anti': {
+            'correct': [t for t in r.second_instance.correct_sample.ts.all() if t.saccade_type == 'anti'],
+            'incorrect': [t for t in r.second_instance.incorrect_sample.ts.all() if t.saccade_type == 'anti'],
+        },
+        'pro': {
+            'correct': [t for t in r.second_instance.correct_sample.ts.all() if t.saccade_type == 'pro'],
+            'incorrect': [t for t in r.second_instance.incorrect_sample.ts.all() if t.saccade_type == 'pro'],
+        },
+    }
+
+    save_figure.disaggregated_saccades(
+        first_categorized_trials, 'first', 'anti')
+    save_figure.disaggregated_saccades(
+        second_categorized_trials, 'second', 'anti')
+    save_figure.disaggregated_saccades(
+        second_categorized_trials, 'second', 'pro')
+    save_figure.response_times_distribution(
+        first_categorized_trials, 'first')
+    save_figure.response_times_distribution(
+        second_categorized_trials, 'second')
+
+    save_figure.ages_distribution(
+        r.first_instance.post_processing_metrics.ages, 'first')
+    save_figure.ages_distribution(
+        r.second_instance.post_processing_metrics.ages, 'second')
+    save_figure.widths_distribution(
+        r.first_instance.post_processing_metrics.widths, 'first')
+    save_figure.widths_distribution(
+        r.second_instance.post_processing_metrics.widths, 'second')
+    save_figure.sampling_frequencies_distribution(
+        r.first_instance.post_processing_metrics.sampling_frequencies, 'first')
+    save_figure.sampling_frequencies_distribution(
+        r.second_instance.post_processing_metrics.sampling_frequencies, 'second')
+
+    save_figure.frecuency_by_age(
+        r.first_instance.starting_sample, 'first')
+    save_figure.frecuency_by_age(
+        r.second_instance.starting_sample, 'second')
+
+    save_figure.normalization_looks_example(
+        r.second_instance.starting_sample.subsample_by_run_id(44))
+    save_figure.skewed_estimations_examples(
+        r.first_instance.starting_sample)
+    save_figure.undetected_saccade_examples(
+        r.second_instance.inlier_sample)
 
     print('Informe built at `data-analysis/informe/build`')
