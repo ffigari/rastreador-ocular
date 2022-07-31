@@ -15,25 +15,10 @@ from instances_common.main import plot
 from instances_common.undetected_saccades import draw_saccade_detection
 from instances_common.plots import draw_pre_normalization_trials
 
-def build_results_tex_string(results, template, build_path, logical_path):
-    return template.format(
-        **results.first_instance_context,
-        **results.second_instance_context,
-    ).strip('\n')
-
 class Results():
     def __init__(self):
-        fi = FirstInstance()
-        si = SecondInstance()
-        self.first_instance = fi
-        self.second_instance = si
         
-
-        self.first_instance_context = \
-            build_first_instance_tex_context(fi)
-        self.second_instance_context = \
-            build_second_instance_tex_context(si)
-    
+            
         self.first_categorized_trials = {
             'anti': {
                 'correct': fi.correct_sample.ts.all(),
@@ -61,17 +46,7 @@ sys.path = ['/home/francisco/eye-tracking/rastreador-ocular/src/experimentation'
 from shared.main import rm_rf
 
 if __name__ == "__main__":
-    r = Results()
 
-
-    with open('informe/resultados.tex') as template_file:
-        with open('informe/build/results/main.tex'.format(), "w") as o_file:
-            o_file.write(build_results_tex_string(
-                r,
-                template_file.read(),
-                'informe/build/results',
-                "results"
-            ))
 
     plot.disaggregated_saccades(r.first_categorized_trials, 'first', 'anti')
     plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'anti')

@@ -1,4 +1,4 @@
-import sys, matplotlib, random, shutil, os
+import sys, matplotlib, random
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 from statistics import mean
@@ -8,13 +8,7 @@ from matplotlib.patches import Rectangle
 from math import ceil
 
 from data_extraction.main import load_results
-
-# https://stackoverflow.com/a/9559881/2923526
-def rm_rf(path):
-    if os.path.isdir(path) and not os.path.islink(path):
-        shutil.rmtree(path)
-    elif os.path.exists(path):
-        os.remove(path)
+from informe.main import build_informe
 
 def draw_pre_normalization_trials(ax, ts):
     for t in ts:
@@ -73,49 +67,6 @@ def draw_saccade_detection(fig, ax, t):
         t.trial_id,
         t.saccade_type
     ))
-
-class build:
-    class informe:
-        def __init__(_):
-            rm_rf('data-analysis/informe/build')
-
-            os.mkdir('data-analysis/informe/build')
-            os.mkdir('data-analysis/informe/build/intro')
-            os.mkdir('data-analysis/informe/build/metodo')
-            os.mkdir('data-analysis/informe/build/results')
-            os.mkdir('data-analysis/informe/build/conclu')
-
-            shutil.copyfile(
-                'data-analysis/informe/intro.tex',
-                'data-analysis/informe/build/intro/main.tex'
-            )
-            shutil.copyfile(
-                'data-analysis/informe/metodo.tex',
-                'data-analysis/informe/build/metodo/main.tex'
-            )
-            shutil.copyfile(
-                'data-analysis/informe/conclu.tex',
-                'data-analysis/informe/build/conclu/main.tex'
-            )
-            #shutil.copyfile(
-            #    'data-analysis/informe/resultados.tex',
-            #    'data-analysis/informe/build/results/main.tex'
-            #)
-            [
-                shutil.copyfile(
-                    'data-analysis/informe/{}'.format(fn),
-                    'data-analysis/informe/build/{}'.format(fn))
-                for fn in [
-                    'tesis.tex',
-                    'abstract.tex',
-                    'dedicatoria.tex']]
-            [
-                shutil.copyfile(
-                    'data-analysis/informe/static/{}'.format(fn),
-                    'data-analysis/informe/build/metodo/{}'.format(fn))
-                for fn in [
-                    'internal-playground.png',
-                    'external-playground.png']]
 
 class display:
     class subject_trials:
@@ -198,7 +149,7 @@ if __name__ == "__main__":
             sys.exit(-1)
         
         if sys.argv[2] == 'informe':
-            build.informe()
+            build_informe()
             sys.exit(0)
         elif sys.argv[2] == 'defensa':
             raise NotImplementedError
