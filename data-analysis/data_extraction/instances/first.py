@@ -111,7 +111,7 @@ def group_by_run(trials):
 
 run_id_regex = re.compile('short-antisaccades_(\d{1,3}).csv')
 empty_hardware_regex = re.compile('(\{.*),"hardware":"(\})')
-antisaccades_data_path = 'src/experimentation/first_instance/data'
+antisaccades_data_path = 'data-analysis/data_extraction/raw_data/first'
 internal_id = 0
 def load_trials():
     trials = []

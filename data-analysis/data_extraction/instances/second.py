@@ -342,7 +342,7 @@ class Normalizer:
         return normalized_estimates
 
 run_id_regex = re.compile('antisacadas_(\d{1,3}).csv')
-data_path = 'src/experimentation/second_instance/data'
+data_path = 'data-analysis/data_extraction/raw_data/second'
 
 def parse_trials():
     parsed_trials = []

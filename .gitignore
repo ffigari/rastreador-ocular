@@ -8,3 +8,4 @@ www/vendor
 src/experimentation/second_instance/data
 src/experimentation/first_instance/data
 informe/build
+data-analysis/data_extraction/raw_data/

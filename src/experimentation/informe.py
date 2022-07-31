@@ -10,10 +10,6 @@ from first_instance.summary import build_first_instance_tex_context
 from second_instance.summary import SecondInstance
 from second_instance.summary import build_second_instance_tex_context
 
-import matplotlib
-matplotlib.rcParams['mathtext.fontset'] = 'cm'
-matplotlib.rcParams['font.family'] = 'STIXGeneral'
-
 import matplotlib.pyplot as plt
 from instances_common.main import plot
 from instances_common.undetected_saccades import draw_saccade_detection
@@ -91,43 +87,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1 and sys.argv[1] == "display-subjects-trials":
         #sst = r.first_instance.starting_sample.per_subject_subsamples()
-        sst = r.second_instance.starting_sample.per_subject_subsamples()
-        random.shuffle(sst)
-        for run_id, subsample in sst:
-            print('>> subject trials')
-            print('run_id={}'.format(run_id))
-            fig, axes = plt.subplots(nrows=3)
-
-            ts = [t for t in subsample.ts.all() if t.saccade_type == 'anti']
-
-            draw_pre_normalization_trials(axes[0], ts)
-            axes[0].set_title('initial look')
-
-            for t in ts:
-                axes[1].plot(
-                    [e['t'] for e in t.estimations],
-                    [e['pre_mirroring_x'] for e in t.estimations],
-                    color="black",
-                    alpha=0.1
-                )
-            axes[1].set_title('post normalization, pre mirroring')
-
-            for t in ts:
-                axes[2].plot(
-                    [e['t'] for e in t.estimations],
-                    [e['x'] for e in t.estimations],
-                    color="black",
-                    alpha=0.1
-                )
-            axes[2].set_title('final look')
-
-            axes[1].set_ylim(-1.5, 1.5)
-            axes[2].set_ylim(-1.5, 1.5)
-
-            fig.suptitle('sujeto {}, antisacadas'.format(run_id))
-            plt.show()
-            plt.close(fig)
-
         sys.exit(0)
 
     rm_rf('informe/build')

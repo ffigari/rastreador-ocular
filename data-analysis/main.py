@@ -1,12 +1,73 @@
-import sys
+import sys, matplotlib, random
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
+from statistics import mean
+
+import matplotlib.pyplot as plt
 
 from data_extraction.main import load_results
+
+def draw_pre_normalization_trials(ax, ts):
+    for t in ts:
+        ax.plot(
+            [e['t'] for e in t.estimations],
+            [e['pre_normalization_x'] for e in t.estimations],
+            color="black",
+            alpha=0.1
+        )
+    ax.axhline(
+        ts[0].run_center_x,
+        color="black",
+        label="Coordenada x real del centro de la pantalla"
+    )
+    ax.axhline(
+        mean([t.run_estimated_center_mean for t in ts]),
+        linestyle="--",
+        color="red",
+        label="Coordenada promedio estimada durante la fase de fijación"
+    )
+
 
 class display:
     class subject_trials:
         def __init__(_):
             r = load_results()
-            raise NotImplementedError()
+            sst = r.second_instance.starting_sample.per_subject_subsamples()
+            random.shuffle(sst)
+            for run_id, subsample in sst:
+                print('>> subject trials')
+                print('run_id={}'.format(run_id))
+                fig, axes = plt.subplots(nrows=3)
+
+                ts = [t for t in subsample.ts.all() if t.saccade_type == 'anti']
+
+                draw_pre_normalization_trials(axes[0], ts)
+                axes[0].set_title('initial look')
+
+                for t in ts:
+                    axes[1].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['pre_mirroring_x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[1].set_title('post normalization, pre mirroring')
+
+                for t in ts:
+                    axes[2].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[2].set_title('final look')
+
+                axes[1].set_ylim(-1.5, 1.5)
+                axes[2].set_ylim(-1.5, 1.5)
+
+                fig.suptitle('sujeto {}, antisacadas'.format(run_id))
+                plt.show()
+                plt.close(fig)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
