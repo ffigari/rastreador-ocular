@@ -42,26 +42,6 @@ def plot_trials_by_run_and_saccade_type(trials):
                 )
     plt.show()
 
-def drop_runs_without_enough(trials, counts_per_run):
-    runs_without_enough_valid_trials = []
-    for run_id, counts in sorted(
-            counts_per_run.items(),
-            key=lambda e: e[1]['pro']['post_preprocessing_count'] + e[1]['anti']['post_preprocessing_count']
-        ):
-        is_below_minimum = \
-            counts['pro']['post_preprocessing_count'] < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK or \
-            counts['anti']['post_preprocessing_count'] < MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
-    
-        if is_below_minimum:
-            runs_without_enough_valid_trials.append(run_id)
-    
-    if len(runs_without_enough_valid_trials) > 0:
-        trials = TrialsCollection([
-            t for t in trials.all()
-            if t.run_id not in runs_without_enough_valid_trials
-        ])
-    return trials
-
 if __name__ == "__main__":
     trials, counts_per_run = parse_trials()
     original_trials_count = trials.count

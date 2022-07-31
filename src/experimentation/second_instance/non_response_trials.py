@@ -7,17 +7,6 @@ from fixated_trials import drop_non_fixated_trials
 from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
 
-def divide_trials_by_non_response(trials):
-    response_trials, non_response_trials = [], []
-    for t in trials.all():
-        if len(relevant_saccades(t)) > 0:
-            response_trials.append(t)
-        else:
-            non_response_trials.append(t)
-
-    return \
-        TrialsCollection(response_trials), \
-        TrialsCollection(non_response_trials)
 
 def drop_non_response_trials(trials):
     return divide_trials_by_non_response(trials)[0]

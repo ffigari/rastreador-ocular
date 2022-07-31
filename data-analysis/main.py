@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "build":
         raise NotImplementedError()
+        sys.exit(0)
     elif sys.argv[1] == "display":
         if len(sys.argv) < 3:
             print(
@@ -27,8 +28,10 @@ if __name__ == "__main__":
         
         if sys.argv[2] == 'subjects-trials':
             display.subject_trials()
+            sys.exit(0)
         elif sys.argv[2] == 'saccades-detection':
             raise NotImplementedError()
+            sys.exit(0)
 
         print(
             "Invalid object to display, choose one from [`subjects-trials`, `saccades-detection`]",

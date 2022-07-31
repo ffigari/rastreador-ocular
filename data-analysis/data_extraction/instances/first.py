@@ -2,18 +2,24 @@ import re, os, csv, json
 from statistics import mean, stdev
 
 from data_extraction.instance import Instance
-from data_extraction.instance import PostProcessingMetrics
 from data_extraction.trial import Trial
 from data_extraction.trials_collection import TrialsCollection
 from data_extraction.constants import MINIMUM_SAMPLING_FREQUENCY_IN_HZ
 from data_extraction.constants import TARGET_SAMPLING_PERIOD_IN_MS
 from data_extraction.constants import MINIMUM_TRIALS_AMOUNT_PER_RUN_PER_TASK
-from data_extraction.interpolation import interpolate_between
+from data_extraction.constants import MINIMUM_TIME_FOR_SACCADE_IN_MS
+
+def interpolate_between(x, xa, ya, xb, yb):
+    # Here x and y are not used as the screen coordinates but as the
+    # classic horizontal vs vertical axis.
+    # Check https://en.wikipedia.org/wiki/Interpolation#Linear_interpolation
+    if not xa <= x <= xb:
+        raise Exception('can not interpolate outside of input points')
+    return ya + (yb - ya) * (x - xa) / (xb - xa)
 
 POST_NORMALIZATION_FIXATION_TRESHOLD = 0.5
 POST_NORMALIZATION_REACTION_TRESHOLD = 0.7
 VISUAL_CUE_DURATION_IN_MS = 700
-MINIMUM_TIME_FOR_SACCADE_IN_MS = 100
 
 def compute_correcteness_in_place(trials):
     for t in trials:

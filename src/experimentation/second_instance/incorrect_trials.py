@@ -9,30 +9,6 @@ from saccade_detection import compute_saccades_in_place
 from early_saccade_trials import drop_early_saccade_trials
 from non_response_trials import drop_non_response_trials
 
-CUE = "cue_directed"
-NON_CUE = "non_cue_directed"
-
-def divide_trials_by_correctness(trials):
-    correct_trials, incorrect_trials = [], []
-    for t in trials.all():
-        (i, j) = first_saccade_interval(t)
-        saccade_x_start = t.estimations[i]['x']
-        saccade_x_end = t.estimations[j]['x']
-        saccade_direction = \
-            CUE if saccade_x_start < saccade_x_end else NON_CUE
-
-        expected_direction = \
-            CUE if t.saccade_type == "pro" else NON_CUE
-
-        if saccade_direction == expected_direction:
-            correct_trials.append(t)
-        else:
-            incorrect_trials.append(t)
-
-    return \
-        TrialsCollection(correct_trials), \
-        TrialsCollection(incorrect_trials)
-
 def drop_incorrect_trials(trials):
     return divide_trials_by_correctness(trials)[0]
 
