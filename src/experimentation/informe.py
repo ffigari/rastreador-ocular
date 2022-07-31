@@ -62,39 +62,8 @@ from shared.main import rm_rf
 
 if __name__ == "__main__":
     r = Results()
-    if len(sys.argv) > 1 and sys.argv[1] == "display-saccade-detection":
-        sys.exit(0)
 
-    if len(sys.argv) > 1 and sys.argv[1] == "display-subjects-trials":
-        #sst = r.first_instance.starting_sample.per_subject_subsamples()
-        sys.exit(0)
 
-    rm_rf('informe/build')
-    os.mkdir('informe/build')
-
-    [
-        shutil.copyfile('informe/{}'.format(fn), 'informe/build/{}'.format(fn))
-        for fn in [
-            'tesis.tex',
-            'abstract.tex',
-            'dedicatoria.tex']]
-
-    os.mkdir('informe/build/intro')
-    with open('informe/intro.tex') as i_file:
-        with open('informe/build/intro/main.tex', "w") as o_file:
-            o_file.write(i_file.read().format())
-
-    os.mkdir('informe/build/metodo')
-    with open('informe/metodo.tex') as i_file:
-        with open('informe/build/metodo/main.tex', "w") as o_file:
-            o_file.write(i_file.read())
-    [
-        shutil.copyfile('informe/static/{}'.format(fn), 'informe/build/metodo/{}'.format(fn))
-        for fn in [
-            'internal-playground.png',
-            'external-playground.png']]
-
-    os.mkdir('informe/build/results')
     with open('informe/resultados.tex') as template_file:
         with open('informe/build/results/main.tex'.format(), "w") as o_file:
             o_file.write(build_results_tex_string(
@@ -103,11 +72,6 @@ if __name__ == "__main__":
                 'informe/build/results',
                 "results"
             ))
-
-    os.mkdir('informe/build/conclu')
-    with open('informe/conclu.tex') as i_file:
-        with open('informe/build/conclu/main.tex', "w") as o_file:
-            o_file.write(i_file.read())
 
     plot.disaggregated_saccades(r.first_categorized_trials, 'first', 'anti')
     plot.disaggregated_saccades(r.second_categorized_trials, 'second', 'anti')
