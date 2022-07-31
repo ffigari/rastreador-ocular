@@ -2,22 +2,20 @@
 set -euo pipefail
 
 DIST_PATH=www/vendor
-SRC_PATH=src/vendor
+INSTALL_PATH=eye-tracker/webgazer
 rm -rf $DIST_PATH
 mkdir $DIST_PATH
-rm -rf $SRC_PATH
-mkdir $SRC_PATH
+rm -rf $INSTALL_PATH
 
 # webgazer
 rm -f ./$DIST_PATH/webgazer.js
-rm -rf ./$SRC_PATH/webgazer
-git clone -b develop https://github.com/ffigari/WebGazer $SRC_PATH/webgazer
+git clone -b develop https://github.com/ffigari/WebGazer $INSTALL_PATH
 
 (
-  cd $SRC_PATH/webgazer
+  cd $INSTALL_PATH
   npm i
   npm run build
-  cp dist/webgazer.js ../../../$DIST_PATH/
+  cp dist/webgazer.js ../../$DIST_PATH/
 )
 
 # Psychophysics

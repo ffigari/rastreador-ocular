@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!-- WebGazer -->
+    <script src="./vendor/webgazer.js"></script>
+    <script src="./build/eye-tracker.js"></script>
+    <script src="./build/jspsych-interface.js"></script>
+
+    <title> Eye tracker's playground </title>
+  </head>
+  <body>
+    <script src="./eye-tracker-playground.js"> </script>
+
+    <button
+      id="free-calibration-start-button"
+      disabled
+      onClick="rastoc.startCalibrationPhase()"
+    >start free calibration</button>
+    <button
+      id="calibration-stop-button"
+      disabled
+      onClick="rastoc.endCalibrationPhase()"
+    >stop calibration phase</button>
+    <p id="calibration-status">system uncalibrated</p>
+    <p id="calibrations-points-count">&nbsp;</p>
+
+    <p>---</p>
+
+    <p id="eye-features-status">eye features unavailable</p>
+    <p id="movement-detection-status">movement detection disabled</p>
+    <div style="visibility: hidden;" id="movement-detection-report">
+      <p id="eyes-status">&nbsp;</p>
+      <p>movement detected once? <span id="moved-once"></span></p>
+    </div>
+
+    <p>---</p>
+
+    <div id="visual-debugging-container">
+      <p id="webgazer-loading-status">Loading WebGazer...</p>
+      <canvas hidden id="stillness-area"></canvas>
+      <canvas hidden id="eye-bboxes"></canvas>
+    </div>
+  </body>
+</html>
