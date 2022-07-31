@@ -469,7 +469,7 @@ def parse_trials():
                         e['x'] for e in uniformized_estimates]
                     normalized_estimates = normalizer.normalize_estimates([
                         { 'x': e['x'], 't': e['t'] }
-                        for e in original_estimates
+                        for e in uniformized_estimates
                     ])
 
                     pre_mirroring_xs = [e['x'] for e in normalized_estimates]
