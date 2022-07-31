@@ -62,10 +62,43 @@ class draw:
 
 
 class plot:
+    class normalization_effects:
+        def __init__(self, run_id, run_subsample):
+            fig, axes = plt.subplots(nrows=3)
+
+            ts = [t for t in run_subsample.ts.all() if t.saccade_type == 'anti']
+
+            draw.pre_normalization_trials(axes[0], ts)
+            axes[0].set_title('initial look')
+
+            for t in ts:
+                axes[1].plot(
+                    [e['t'] for e in t.estimations],
+                    [e['pre_mirroring_x'] for e in t.estimations],
+                    color="black",
+                    alpha=0.1
+                )
+            axes[1].set_title('post normalization, pre mirroring')
+
+            for t in ts:
+                axes[2].plot(
+                    [e['t'] for e in t.estimations],
+                    [e['x'] for e in t.estimations],
+                    color="black",
+                    alpha=0.1
+                )
+            axes[2].set_title('final look')
+
+            axes[1].set_ylim(-1.5, 1.5)
+            axes[2].set_ylim(-1.5, 1.5)
+
+            fig.suptitle('sujeto {}, antisacadas'.format(run_id))
+            self.fig = fig
+
     class saccade_detection:
-        def __init__(self, t):
+        def __init__(self, trial):
             fig, ax = plt.subplots()
-            draw.trial_over_ax(ax, t)
+            draw.trial_over_ax(ax, trial)
             fig.suptitle(
                 "saccade analysis (run_id=%d; trial_id=%d; saccade_type=%s)" % (
                     t.run_id,

@@ -15,35 +15,7 @@ class display:
             for run_id, subsample in sst:
                 print('>> subject trials')
                 print('run_id={}'.format(run_id))
-                fig, axes = plt.subplots(nrows=3)
-
-                ts = [t for t in subsample.ts.all() if t.saccade_type == 'anti']
-
-                draw.pre_normalization_trials(axes[0], ts)
-                axes[0].set_title('initial look')
-
-                for t in ts:
-                    axes[1].plot(
-                        [e['t'] for e in t.estimations],
-                        [e['pre_mirroring_x'] for e in t.estimations],
-                        color="black",
-                        alpha=0.1
-                    )
-                axes[1].set_title('post normalization, pre mirroring')
-
-                for t in ts:
-                    axes[2].plot(
-                        [e['t'] for e in t.estimations],
-                        [e['x'] for e in t.estimations],
-                        color="black",
-                        alpha=0.1
-                    )
-                axes[2].set_title('final look')
-
-                axes[1].set_ylim(-1.5, 1.5)
-                axes[2].set_ylim(-1.5, 1.5)
-
-                fig.suptitle('sujeto {}, antisacadas'.format(run_id))
+                fig = plot.normalization_effects(run_id, subsample).fig
                 plt.show()
                 plt.close(fig)
 
