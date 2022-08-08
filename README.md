@@ -19,7 +19,8 @@ https://github.com/jspsych/jsPsych/discussions/2490
 ).
 A simple appearance based heuristic is provided to decide when the tool gets
 decalibrated.  
-A [JSPsych](https://www.jspsych.org/7.1/) interface was built, which relies on
+An interface for compatiblity with [JSPsych](https://www.jspsych.org/7.1/) was
+built, which relies on
 [psychophysics](https://jspsychophysics.hes.kyushu-u.ac.jp/) for stimulus
 drawing.
 It provides utilities for calibration and decalibration detection.
@@ -39,6 +40,26 @@ focus on those three regions of interests.
 Tasks which require other regions of interest will have incorrect estimations.
 Work could however be done to generalize how regions of interest are codified,
 allowing then for more general calibration and validation mechanisms.
+
+Informal experiments have shown poor quality for the estimates obtained with
+this implementation as well as low (< 30 Hz) sampling rate.
+[This Twitter
+thread](https://twitter.com/_HanZhang_/status/1527762360076738560?t=vGxUz4ZdUnmzFq4O2GFUIw&s=08)
+by Han Zhang has more details.
+
+Estimates have also shown to be shifted to one side of the screen by
+potentially multiple pixels.
+
+![shifted estimates](/static/skewed-estimations-examples.png)
+
+This shift is consistent per session and does not happen in every session.
+Information can still be retrieved in subsequent analyzes if only relative
+positions of the estimates are needed, as it happen with the antisaccades task.
+
+In our analysis small saccades were missed, due to how the saccades detection
+was implemented.
+For the antisaccades task this causes higher than expected correctness rates,
+since small initial reflexive saccades are not detected.
 
 ## Usage
 
