@@ -61,6 +61,8 @@ was implemented.
 For the antisaccades task this causes higher than expected correctness rates,
 since small initial reflexive saccades are not detected.
 
+![undetected saccades](/static/undetected-saccades-examples.png)
+
 ## Usage
 
 ### Eye tracker
