@@ -11,7 +11,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
 
   Inicialmente tuvo que definirse el protocolo de la tarea que sería presentada
   a los sujetos.
-  Se consideró los protocolos encontrados en la bibliografía
+  Se consideraron los protocolos encontrados en la bibliografía
   \cite{munoz_2004_look_away, unsworth_2011_distribution_analysis,
   olincy_1997_age_diminishes_performance} para guiar las fases de la tarea, su
   presentación y su explicación.
@@ -22,8 +22,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   \begin{figure}
     \centering
     \frame{\includegraphics[width=0.8\linewidth]{media/antisaccades-protocol.png}}
-
-    El sujeto sabrá si está ante un ensayo de antisacadas o de prosacadas según
+    \caption{Protocolo de la tarea de antisacadas: El sujeto sabrá si está ante un ensayo de antisacadas o de prosacadas según
     la forma del estímulo central de fijación.
     Un círculo representa un ensayo de prosacadas mientras que una cruz
     representa un ensayo de antisacadas.
@@ -33,8 +32,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     Con el fin de evitar que entrara en juego la memoria visual espacial,
     fueron dibujadas cajas sobre las posiciones en las cuales aparecerían los
     estímulos laterales.
-
-    \caption{Protocolo de la tarea de antisacadas}
+}
     \label{fig:antisaccades-protocol}
   \end{figure}
 
@@ -59,7 +57,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-center.png}
     \includegraphics[width=0.4\linewidth]{media/calibration-stimulus-right.png}
 
-    Los estímulos presentados son círculos negros en coordenadas específicas de
+    \caption{Protocolo de calibración: Los estímulos presentados son círculos negros en coordenadas específicas de
     la pantalla.
     Durante cada fase de calibración, el sujeto es presentado en total con 11
     de ellos.
@@ -69,8 +67,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     superior y otro en el bloque inferior.
     La fijación en el estímulo es indicada mediante una interacción con el
     navegador web, puntualmente con un presionado de la barra de espacio.
-
-    \caption{Protocolo de calibración}
+}
     \label{fig:calibration-protocol}
   \end{figure}
 
@@ -90,14 +87,13 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   reporte: \url{https://github.com/jspsych/jsPsych/discussions/2490}}.
   Para la segunda instancia en base a este mismo trabajo y modificaciones sobre
   \webgazer, tal falla había sido resuelta.
-  En consecuencia se estiró la duración del experimento a entre 20 y 25 minutos.
+  En consecuencia se extendió el experimento a una duración de entre 20 y 25 minutos.
 
-  Durante la primera ronda el sujeto fue presentado únicamente con ensayos de
+  Durante la primera ronda se le presentaron al sujeto ensayos únicamente de tipo 
   antisacadas.
-  Cada sujeto realizó 160 ensayos de ella, distribuidos en 10 de prueba seguidos
+  Cada sujeto realizó 160 ensayos, distribuidos en 10 de prueba seguidos
   de 3 bloques de 50 ensayos cada uno.
-  Luego de cada ensayo en el cual se detectara una descalibración, se prosiguió
-  a una calibración del sistema.
+  Luego de cada ensayo en el cual se detectara una descalibración, se realizó una calibración del sistema.
   En la segunda ronda se realizaron tanto antisacadas como prosacadas.
   Cada sujeto debió realizar 160 ensayos de cada tarea, estos distribuidos en
   bloques intercalados de 20 ensayos, sumado a 10 ensayos iniciales de prueba
@@ -117,7 +113,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   y de círculos privados de familiares y amigos.
   Los sujetos fueron informados sobre cómo sería utilizada su cámara web.
   Entre quienes hubieran realizado el experimento a través de \neuropruebas se 
-  realizaron sorteos por libros del gato y la caja
+  realizaron sorteos por libros de El gato y la caja
   (\url{https://twitter.com/liaa_icc/status/1528028122465058816}).
 
 \subsection{Prototipo de estimación de la mirada aplicado a estudios clínicos}
@@ -135,7 +131,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
       a través de tal modelo
   \end{enumerate*}.
   Las especificaciones del software que nos iba a ser necesario no estaban
-  claras inicialmente, sino que fueron estableciendose a medida que el trabajo
+  claras inicialmente, sino que fueron establecidas a medida que el trabajo
   avanzaba.
   Entre otros, se denotó la ausencia de una rutina de calibración adecuada a
   nuestro protocolo y de un mecanismo de detección de descalibración del
@@ -192,15 +188,15 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
           el recuadro
           definido por las esquinas esi y eid\end{verbatim}
 
-    Los recuadros devueltos por esta rutina son de dimensión variable.
+    
+    \caption{Localización de los ojos: Los recuadros devueltos por esta rutina son de dimensión variable.
     Además asume que una y sólo una cara será detectada por el modelo de
     \facemesh.
     El modelo de \tfjs utilizado da la opción de detectar una única cara.
     Es sin embargo posible, aunque sea por la valida razón de que nadie se
     encuentre sentado frente a la webcam, que en algún \textit{frame} no se
     detecte ninguna cara.
-    El resto del programa tiene que tener en cuenta esta posibilidad.
-    \caption{Localización de los ojos}
+    El resto del programa tiene que tener en cuenta esta posibilidad.}
     \label{fig:eyes-localization}
   \end{figure}
 
@@ -214,9 +210,9 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
           y ecualizado por histograma
 
         retornar la concatenación de ambos vectores\end{verbatim}
-    El vector resultante tendrá 120 dimensiones.
-    Esta rutina es un ejemplo de modelado por apariencia.
-    \caption{Generación de entrada del modelo de estimación de la mirada}
+    
+    \caption{Generación de entrada del modelo de estimación de la mirada: El vector resultante tendrá 120 dimensiones.
+    Esta rutina es un ejemplo de modelado por apariencia.}
     \label{fig:eye-features-to-model-input}
   \end{figure}
 
@@ -270,7 +266,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
 
   En cada instante de calibración se notifica a \webgazer para que transforme
   el último par de \features al formato necesario a su modelo de regresión
-  (figura \ref{fig:eye-features-to-model-input}) y la almacene junto a la
+  (figura \ref{fig:eye-features-to-model-input}) y lo almacene junto a la
   coordenada del estímulo presentado.
   Además, se almacenan los recuadros correspondientes a las posiciones de los
   ojos.
@@ -289,7 +285,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     Al ser esto una optimización de recursos, se optó por modificar \webgazer y
     su interfaz para que el calculo de coeficientes se realice a través de un
     pedido explícito.
-  }
+  }.
 
   Al finalizar la calibración se instancia además la detección de movimiento.
   Los recuadros almacenados definen a su vez una región de ``quietud'' (figura
@@ -312,12 +308,13 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
               agrandados por un factor de 1.8
 
         retornar ambas regiones de quietud\end{verbatim}
-    Los recuadros de cada ojo son representados con rectángulos y cada
+    
+    \caption{Definición de regiones de quietud: Los recuadros de cada ojo son representados con rectángulos y cada
     región de quietud con un ``multirectángulo'' (\ie, la unión de varios
     rectángulos).
-    La elección del valor de este factor impacta posteriormente en el rigor de
-    la detección.
-    \caption{Definición de regiones de quietud}
+    El factor por el cual se agrandan los recuadros fue seleccionado experimentalmente.
+    La elección de este valor impacta posteriormente en el rigor de
+    la detección de descalibración.}
     \label{fig:features-to-stillness-region}
   \end{figure}
 
@@ -339,9 +336,10 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   estimaciones de la mirada.
   En cambio, el protocolo experimental será aquel que defina cómo lidiar con
   las descalibraciones y cuándo proceder a una nueva calibración del sistema.
-
+  
   Con la implementación presentada se apuntó a mantener compatibilidad con
   \jspsych.
+
   En paralelo se busco minimizar las dependencias a tal \framework.
   Para esto se distinguieron dos interfaces lógicas:
   \begin{enumerate}
@@ -367,19 +365,18 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   Esto consiste en generar datos de calibración a partir de clicks en la
   pantalla durante los cuales se deberá fijar la mirada en el puntero.
 
-  \begin{figure}
+  \begin{figure}[hb]
     \centering
     \frame{\includegraphics[width=0.8\linewidth]{metodo/external-playground.png}}
 
-    Se puede elegir entre:
+    \caption{\textit{Playground} externo: Se puede elegir entre:
     a) calibrar libremente;
     b) calibrar asistidamente;
     c) mostrar un HTML básico mientras se estima la mirada;
     d) realizar una secuencia de ensayos de una tarea de juguete mientras
     entre ensayos se asegura la correcta calibración del sistema;
     e) finalizar la sesión para exportar la data recolectada.
-
-    \caption{\textit{Playground} externo}
+}
     \label{fig:external-playground}
   \end{figure}
 
@@ -387,7 +384,8 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     \centering
     \frame{\includegraphics[width=0.8\linewidth]{metodo/internal-playground.png}}
 
-    Información del estado del \eyetracker es presentada al mismo tiempo que se
+    
+    \caption{\textit{Playground} interno: Información del estado del \eyetracker es presentada al mismo tiempo que se
     permite realizar calibraciones libres.
     El recuadro verde corresponde a la posición dentro de la cual el paquete
     \webgazer exige que aparezca la cabeza, los rectángulos rojos corresponden
@@ -395,8 +393,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     corresponden a las posiciones dentro de las cuales los recuadros de los
     ojos deben mantenerse para considerar que no hubo movimiento.
     El punto rojo correspode a la posición estimada de la mirada.
-
-    \caption{\textit{Playground} interno}
+}
     \label{fig:internal-playground}
   \end{figure}
 
@@ -411,7 +408,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   Para ello se aplicaron rutinas \adhoc de detección de sacadas para encontrar
   la dirección y el inicio de la primera sacada en cada ensayo si esta
   existiera.
-  Previo a esto se descartaron datos que se consideraran inválidos.
+  Previo a esto se descartaron datos considerados inválidos.
   Los datos conservados fueron normalizados a un rango común de valores debido
   a las desviaciones encontradas en los datos (figura
   \ref{fig:skewed-estimations-example}) y su variabilidad en cuanto a
@@ -426,7 +423,9 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
 
     \includegraphics[width=\textwidth]{metodo/skewed-estimations-examples.png}
 
-    Durante la fase de fijación los sujetos 47 y 24 obtuvieron respectivamente
+    
+
+    \caption{Ejemplos de sujetos con estimaciones desviadas: Durante la fase de fijación los sujetos 47 y 24 obtuvieron respectivamente
     estimaciones cercanas a los 2100 y 1400 píxeles cuando los valores reales
     serían 1100 y 900.
     Estas desviaciones no ocurrieron para todo sujeto, como lo muestran los
@@ -434,9 +433,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
     Las estimaciones mantienen sin embargo un correcto posicionamiento
     relativo.
     Por lo tanto pueden utilizarse para extrapolar data a pesar de las
-    desviaciones.
-
-    \caption{Ejemplos de sujetos con estimaciones desviadas}
+    desviaciones.}
     \label{fig:skewed-estimations-example}
   \end{figure}
 
@@ -463,7 +460,7 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
   En estas validaciones, las coordenadas de los estímulos laterales presentados
   coincidieron con las coordenadas de los estímulos visuales laterales de las
   tareas de pro y antisacadas.
-  Para cada ensayo se tomó entonces la última validación y se calcularon los
+  Para cada ensayo se tomó entonces la validación anterior y se calcularon los
   valores $l$, $c$ y $r$ correspondientes respectivamente al promedio de las
   estimaciones durante la presentación de los estímulos a la izquierda, al
   centro y a la derecha.
@@ -488,10 +485,8 @@ hicieron P{\l}omecka \etal \cite{plomecka_2020_retest_reliability}.
 
     \includegraphics[width=\linewidth]{metodo/normalization-looks-example.png}
 
-    Se muestran las estimaciones de los ensayos de antisacadas para el sujeto
-    44 de la segunda instancia.
-
-    \caption{Cambios en el aspecto de las estimaciones al normalizarlas}
+    \caption{Cambios en el aspecto de las estimaciones al normalizarlas: Se muestran las estimaciones de los ensayos de antisacadas para el sujeto
+    44 de la segunda instancia.}
     \label{fig:normalization-looks-example}
   \end{figure}
 

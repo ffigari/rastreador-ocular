@@ -1,0 +1,191 @@
+
+\begin{landscape}
+\begin{table}
+  \caption{Implementaciones recientes que involucran \eyetracking}
+  \label{tab:implementaciones}
+  \centering
+    \scriptsize
+    \begin{tabularx}{\linewidth}{XXXXX}
+    \toprule
+    \textbf{autores}  & \textbf{hardware necesario} & \textbf{compatible con navegador} & \textbf{calidad reportada} & \textbf{experimentación} \\
+    \midrule
+    Santini \etal, EyeRecToo \cite{santini_2017_eyerectoo} (eyetracking montado a la cabeza).
+    & Soporte para tres modelos comerciables de cámaras montables a la cabeza. Generalizable a hardwares compatibles con ciertas librerías que utilizan en su implementación.
+    & No.
+    & Error promedio menor a 1º.
+    & Una instancia de 5 sujetos de los cuales 2 usan anteojos, no se indica cómo calculan el valor ni qué experimento realizan. \\
+    \midrule
+    Zandi \etal, PupilEXT \cite{zandi_2021_pupilext} (pupilometría).
+    & Una o dos cámaras industriales y un emisor de luz NIR (\textit{Near Infra Red}, cercano a las ondas infrarrojas).
+    & No.
+    & Error promedio de aproximadamente 0.0059 mm respecto del diámetro de la pupila. Frecuencia alcanzada de 120 Hz Variante según cuál algoritmo de los provistos se elija.
+    & No mencionada. \\
+    \midrule
+    Huang \etal, PACE \cite{huang_2016_pace} (\eyetracking auto calibrante).
+    & Webcam.
+    & No (implementado como aplicación nativa).
+    & Error promedio de 2.56º. Valor alcanzado luego de 7 iteraciones de autocalibración. En promedio toma 4 horas alcanzar esa precisión. No se menciona la calidad de las estimaciones durante el período inicial.
+    & 10 sujetos que debían elegir entre 1 de 5 tareas en las cuales hay mucha interacción. Realizan la tarea hasta alcanzar 1500 interacciones. Además realizan mucha experimentación respecto de la correlación entre la mirada y distintos tipos de interacción. \\
+    \midrule
+    Xu \etal, TurkerGaze \cite{xu_2015_turker_gaze} (generación de mapas de saliencia vía \textit{crowdsourcing}).
+    & Webcam.
+    & Sí.
+    & Error promedio de 1.06º respecto de 33 puntos estáticos mostrados en la pantalla. Error promedio de 1.32º respecto de \eyetracker comercial. Sesgo hacia el centro en los mapas de saliencia resultantes.
+    & Los puntos estáticos son mostrados por 1,5 s, usando los últimos 0,5 para tomar la medida. Al comprar con el \eyetracker comercial utilizan sus predicciones como \textit{ground truth}. No se aclara como es la intercalación entre tareas y calibraciones. \\
+    \midrule
+    Papoutsaki \etal, WebGazer \cite{papoutsaki_2016_webgazer} (\eyetracking auto calibrante).
+    & Webcam.
+    & Sí.
+    & Error promedio de entre 150 y 250 píxeles.
+    & Una instancia online con 82 sujetos y otra instancia presencial con 5 en las cuales debían llenar un \textit{múltiple choice} de 40 \textit{yes/no questions}. En la instancia presencial comparan contra un \eyetracker comercial.\\
+    
+  \bottomrule
+  \end{tabularx}
+\end{table}
+\end{landscape}
+
+%\resizebox{\linewidth}{!}{
+%\begin{landscape}
+%\begin{table}[h]
+%  \caption{Implementaciones recientes que involucran \eyetracking}
+%  \label{tab:implementaciones}
+%  \centering
+%    \scriptsize
+%    \begin{tabularx}{\linewidth}{XXXXX}
+%    \toprule
+%    \textbf{autores}  & \textbf{hardware necesario} & \textbf{compatible con navegador} & \textbf{calidad reportada} & \textbf{experimentación} \\
+%    \midrule
+%    Santini \etal, EyeRecToo \cite{santini_2017_eyerectoo} (eyetracking montado a la cabeza).
+%    & Soporte para tres modelos comerciables de cámaras montables a la cabeza. Generalizable a hardwares compatibles con ciertas librerías que utilizan en su implementación.
+%    & No.
+%    & Error promedio menor a 1º.
+%    & Una instancia de 5 sujetos de los cuales 2 usan anteojos, no se indica cómo calculan el valor ni qué experimento realizan. \\
+%    \midrule
+%    Zandi \etal, PupilEXT \cite{zandi_2021_pupilext} (pupilometría).
+%    & Una o dos cámaras industriales y un emisor de luz NIR (\textit{Near Infra Red}, cercano a las ondas infrarrojas).
+%    & No.
+%    & Error promedio de aproximadamente 0.0059 mm respecto del diámetro de la pupila. Frecuencia alcanzada de 120 Hz Variante según cuál algoritmo de los provistos se elija.
+%    & No mencionada. \\
+%    \midrule
+%    Huang \etal, PACE \cite{huang_2016_pace} (\eyetracking auto calibrante).
+%    & Webcam.
+%    & No (implementado como aplicación nativa).
+%    & Error promedio de 2.56º. Valor alcanzado luego de 7 iteraciones de autocalibración. En promedio toma 4 horas alcanzar esa precisión. No se menciona la calidad de las estimaciones durante el período inicial.
+%    & 10 sujetos que debían elegir entre 1 de 5 tareas en las cuales hay mucha interacción. Realizan la tarea hasta alcanzar 1500 interacciones. Además realizan mucha experimentación respecto de la correlación entre la mirada y distintos tipos de interacción. \\
+%    \midrule
+%    Xu \etal, TurkerGaze \cite{xu_2015_turker_gaze} (generación de mapas de saliencia vía \textit{crowdsourcing}).
+%    & Webcam.
+%    & Sí.
+%    & Error promedio de 1.06º respecto de 33 puntos estáticos mostrados en la pantalla. Error promedio de 1.32º respecto de \eyetracker comercial. Sesgo hacia el centro en los mapas de saliencia resultantes.
+%    & Los puntos estáticos son mostrados por 1,5 s, usando los últimos 0,5 para tomar la medida. Al comprar con el \eyetracker comercial utilizan sus predicciones como \textit{ground truth}. No se aclara como es la intercalación entre tareas y calibraciones. \\
+%    \midrule
+%    Papoutsaki \etal, WebGazer \cite{papoutsaki_2016_webgazer} (\eyetracking auto calibrante).
+%    & Webcam.
+%    & Sí.
+%    & Error promedio de entre 150 y 250 píxeles.
+%    & Una instancia online con 82 sujetos y otra instancia presencial con 5 en las cuales debían llenar un \textit{múltiple choice} de 40 \textit{yes/no questions}. En la instancia presencial comparan contra un eye tracker comercial.\\
+%    
+%  \bottomrule
+%  \end{tabularx}
+%\end{table}
+%\end{landscape}
+%}
+
+
+
+% \begin{itemize}
+
+%   \item \begin{enumerate}
+%     \item \textbf{autores}:
+%       Santini \etal, EyeRecToo \cite{santini_2017_eyerectoo} (\eyetracking
+%       montado a la cabeza).
+%     \item \textbf{hardware necesario}:
+%       Soporte para tres modelos comerciables de cámaras montables a la cabeza.
+%       Generalizable a hardwares compatibles con ciertas librerías que utilizan
+%       en su implementación.
+%     \item \textbf{compatible con navegador}:
+%       No.
+%     \item \textbf{calidad reportada}:
+%       Error promedio menor a 1º.
+%     \item \textbf{experimentación}:
+%       Una instancia de 5 sujetos de los cuales 2 usan anteojos, no se indica
+%       cómo calculan el valor ni qué experimento realizan.
+%   \end{enumerate}
+
+%   \item \begin{enumerate}
+%     \item \textbf{autores}:
+%       Zandi \etal, PupilEXT \cite{zandi_2021_pupilext} (pupilometría).
+%     \item \textbf{hardware necesario}:
+%       Una o dos cámaras industriales y un emisor de luz NIR (\textit{Near
+%       Infra Red}, cercano a las ondas infrarrojas).
+%     \item \textbf{compatible con navegador}:
+%       No.
+%     \item \textbf{calidad reportada}:
+%       Error promedio de aproximadamente 0.0059 mm respecto del diámetro de la
+%       pupila.
+%       Frecuencia alcanzada de 120 Hz
+%       Variante según cuál algoritmo de los provistos se elija.
+%     \item \textbf{experimentación}:
+%       No mencionada.
+%   \end{enumerate}
+
+%   \item \begin{enumerate}
+%     \item \textbf{autores}:
+%       Huang \etal, PACE \cite{huang_2016_pace} (\eyetracking auto
+%       calibrante).
+%     \item \textbf{hardware necesario}:
+%       Webcam.
+%     \item \textbf{compatible con navegador}:
+%       No (implementado como aplicación nativa).
+%     \item \textbf{calidad reportada}:
+%       Error promedio de 2.56º.
+%       Valor alcanzado luego de 7 iteraciones de autocalibración.
+%       En promedio toma 4 horas alcanzar esa precisión.
+%       No se menciona la calidad de las estimaciones durante el período inicial.
+%     \item \textbf{experimentación}:
+%       10 sujetos que debían elegir entre 1 de 5 tareas en las cuales hay mucha
+%       interacción.
+%       Realizan la tarea hasta alcanzar 1500 interacciones.
+%       Además realizan mucha experimentación respecto de la correlación entre la
+%       mirada y distintos tipos de interacción.
+%   \end{enumerate}
+
+%   \item \begin{enumerate}
+%     \item \textbf{autores}:
+%       Xu \etal, TurkerGaze \cite{xu_2015_turker_gaze} (generación de mapas de
+%       saliencia vía \textit{crowdsourcing}).
+%     \item \textbf{hardware necesario}:
+%       Webcam.
+%     \item \textbf{compatible con navegador}:
+%       Sí.
+%     \item \textbf{calidad reportada}:
+%       Error promedio de 1.06º respecto de 33 puntos estáticos mostrados en la
+%       pantalla.
+%       Error promedio de 1.32º respecto de \eyetracker comercial.
+%       Sesgo hacia el centro en los mapas de saliencia resultantes.
+%     \item \textbf{experimentación}:
+%       Los puntos estáticos son mostrados por 1,5 s, usando los últimos 0,5 para
+%       tomar la medida.
+%       Al comprar con el \eyetracker comercial utilizan sus predicciones como
+%       \textit{ground truth}.
+%       No se aclara como es la intercalación entre tareas y calibraciones.
+%   \end{enumerate}
+
+%   \item \begin{enumerate}
+%     \item \textbf{autores}:
+%       Papoutsaki \etal, WebGazer \cite{papoutsaki_2016_webgazer}
+%       (\eyetracking auto calibrante).
+%     \item \textbf{hardware necesario}:
+%       Webcam.
+%     \item \textbf{compatible con navegador}:
+%       Sí.
+%     \item \textbf{calidad reportada}:
+%       Error promedio de entre 150 y 250 píxeles.
+%     \item \textbf{experimentación}:
+%       Una instancia online con 82 sujetos y otra instancia presencial con 5 en
+%       las cuales debían llenar un \textit{múltiple choice} de 40
+%       \textit{yes/no questions}.
+%       En la instancia presencial comparan contra un eye tracker comercial.
+%   \end{enumerate}
+
+% \end{itemize}
