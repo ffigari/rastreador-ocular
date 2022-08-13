@@ -2,12 +2,14 @@
 
 Rastoc is a study of browser based eye tracking's applicability to remote
 clinical studies.
-It built up from the ongoing research with
+It built up under the guidance of 
 [Juan Kamienkowski](https://liaa.dc.uba.ar/juan-kamienkowski/),
-[Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/) and
-[Gustavo Juantorena](https://liaa.dc.uba.ar/gustavo-juantorena-en/), who are
-directing [my](https://liaa.dc.uba.ar/francisco-figari-en/) master thesis at
-LIAA, UBA on the same topic.
+[Gustavo Juantorena](https://liaa.dc.uba.ar/gustavo-juantorena-en/) and
+[Bruno Bianchi](https://liaa.dc.uba.ar/bruno-bianchi-en/), in the
+context of the [Scholarships for Initiation to Computer Science
+Research](https://icc.fcen.uba.ar/un-primer-acercamiento-a-la-investigacion/)
+provided by Buenos Aires's [Institute of Computer
+Science](https://icc.fcen.uba.ar/).
 
 A [personal fork](https://github.com/ffigari/WebGazer) of
 [WebGazer](https://webgazer.cs.brown.edu/) is used for facemesh data and gaze
@@ -47,6 +49,11 @@ this implementation as well as low (< 30 Hz) sampling rate.
 thread](https://twitter.com/_HanZhang_/status/1527762360076738560?t=vGxUz4ZdUnmzFq4O2GFUIw&s=08)
 by Han Zhang has more details.
 
+The resulting sampling rate also varies per subject, most probably due to 
+differences in the hardware where is it run.
+
+![sampling rates distribution](/static/second-sampling-frequencies-distribution.png)
+
 Estimates have also shown to be shifted to one side of the screen by
 potentially multiple pixels.
 
@@ -63,13 +70,17 @@ since small initial reflexive saccades are not detected.
 
 ![undetected saccades](/static/undetected-saccades-examples.png)
 
+In the directory `/static` you can find plots generated with the data obtained
+through both experimentation instances.
+The data itself is not available.
+
 ## Usage
 
 ### Eye tracker
 
 Node 14 is recommended.
-You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since a
-`.nvmrc` file is provided.
+You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since
+a `.nvmrc` file is provided.
 Then run `./install.sh` to install dependencies.  
 Use `node builder.js build` to build the client side js, or use
 `node builder.js watch` to build on each change.
