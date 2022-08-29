@@ -23,7 +23,7 @@ class EyesFeatures {
   }
 }
 
-const STILLNESS_RESIZE_FACTOR = 1.8;
+const STILLNESS_RESIZE_FACTOR = 2.3;
 class StillnessChecker {
   constructor(calibrationEyesFeatures) {
     const calibrationBBoxes = calibrationEyesFeatures.map(ef => ef.bboxes)
