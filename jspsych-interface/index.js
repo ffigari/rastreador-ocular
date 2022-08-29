@@ -248,6 +248,7 @@ const validateCalibration = () => {
       ) => interestRegionsXs().forEach((
         x
       ) => validationStimulusCoordinates.push(new Point(x, y))));
+      document.dispatchEvent(new Event('rastoc:validation-started'));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -359,6 +360,12 @@ const validateCalibration = () => {
         relativePositionsAreCorrect =
           relativePositionsAreCorrect && pairHasCorrectPosition;
       }))
+
+      if (relativePositionsAreCorrect) {
+        document.dispatchEvent(new Event('rastoc:validation-succeeded'));
+      } else {
+        document.dispatchEvent(new Event('rastoc:validation-failed'));
+      }
       jsPsych.data.get().addToLast({
         "validation-results": {
           relativePositionsAreCorrect
@@ -447,6 +454,7 @@ const ensureCalibration = (options) => {
           unsucessfulCalibration = unsucessfulCalibration ||
             !lastValidation["validation-results"].relativePositionsAreCorrect;
         };
+
         return calibrationsCounts <= options.maxRetries && unsucessfulCalibration;
       },
     }],

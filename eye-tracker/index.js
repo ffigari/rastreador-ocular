@@ -174,6 +174,9 @@ const eventsHandlers = [
   'rastoc:calibration-started',
   'rastoc:calibration-succeeded',
   'rastoc:calibration-failed',
+  'rastoc:validation-started',
+  'rastoc:validation-failed',
+  'rastoc:validation-succeeded',
 ].map((eventName) => [eventName, getPayloadLessHandler(eventName)]).concat([
   [
     'rastoc:point-calibrated',
