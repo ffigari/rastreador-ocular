@@ -72,34 +72,34 @@ import dateutil.parser
 class Experiment:
     experiment_id = 0
     def __init__(self, experiment_path): 
-        jspsych_start_ts, rastoc_events, raw_gaze_estimations = \
+        self.start_ts, rastoc_events, raw_gaze_estimations = \
             read_raw_experiment(experiment_path)
 
-        calibrations_starts = []
-        calibrations_ends = []
-        validations_starts = []
-        validations_ends = []
-        decalibration_notifications = []
+        self.calibrations_starts = []
+        self.calibrations_ends = []
+        self.validations_starts = []
+        self.validations_ends = []
+        self.decalibration_notifications = []
         for e in rastoc_events:
             n = e['event_name']
 
             if n == 'rastoc:calibration-started':
-                calibrations_starts.append(e['ts'])
+                self.calibrations_starts.append(e['ts'])
             elif n == 'rastoc:calibration-succeeded' or n == 'rastoc:calibration-failed':
-                calibrations_ends.append(e['ts'])
+                self.calibrations_ends.append(e['ts'])
 
             elif n == 'rastoc:validation-started':
-                validations_starts.append(e['ts'])
+                self.validations_starts.append(e['ts'])
             elif n == 'rastoc:validation-succeeded' or n == 'rastoc:validation-failed':
-                validations_ends.append(e['ts'])
+                self.validations_ends.append(e['ts'])
 
             elif n == 'rastoc:decalibration-detected':
-                decalibration_notifications.append(e['ts'])
+                self.decalibration_notifications.append(e['ts'])
 
-        gaze_estimation_blocks = []
+        self.gaze_estimation_blocks = []
         current_block_start = 0
         def close_block(i, current_block_start):
-            gaze_estimation_blocks.append(
+            self.gaze_estimation_blocks.append(
                 raw_gaze_estimations[current_block_start:i+1])
             return i + 1
             
@@ -116,16 +116,6 @@ class Experiment:
             if is_last_position or next_estimation_is_far_away:
                 current_block_start = close_block(i, current_block_start)
                 continue
-
-        print('start:', jspsych_start_ts)
-        for b in gaze_estimation_blocks:
-            print(b[0]['ts'], b[-1]['ts'])
-        [print('calibration start:', ts) for ts in calibrations_starts]
-        [print('calibration end:', ts) for ts in calibrations_ends]
-        [print('validation start:', ts) for ts in validations_starts]
-        [print('validation end:', ts) for ts in validations_ends]
-        [print('decalibration:', ts) for ts in decalibration_notifications]
-
 
 class EyeTrackedAnalysis:
     def __init__(self, experiments_path):

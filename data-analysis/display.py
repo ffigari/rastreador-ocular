@@ -46,3 +46,13 @@ class display:
     class experiment_eye_tracking_summary:
         def __init__(_):
             sa = SensitivityAnalysis()
+            fi = sa.first_experiment
+
+            print('start:', fi.start_ts)
+            for b in fi.gaze_estimation_blocks:
+                print(b[0]['ts'], b[-1]['ts'])
+            [print('calibration start:', ts) for ts in fi.calibrations_starts]
+            [print('calibration end:', ts) for ts in fi.calibrations_ends]
+            [print('validation start:', ts) for ts in fi.validations_starts]
+            [print('validation end:', ts) for ts in fi.validations_ends]
+            [print('decalibration:', ts) for ts in fi.decalibration_notifications]
