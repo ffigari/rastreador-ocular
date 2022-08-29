@@ -17,43 +17,67 @@ def load_results():
 import os 
 import csv
 import json
+import datetime
+
+def iso_date_string_to_datetime(v):
+    return dateutil.parser.isoparse(v)
 
 def read_raw_experiment(path):
     with open(path, 'r') as f:
         jspsych_start_time = None
         rastoc_events = None
+        raw_gaze_estimations = []
 
         csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
         headers = next(csv_rows_iterator, None)
 
         jspsych_start_time_idx = headers.index('jspsych_start_time')
         trial_type_idx = headers.index('trial_type')
+        trial_start_ts_idx = headers.index('trial_start_ts')
+        time_elapsed_idx = headers.index('time_elapsed')
+
         events_idx = headers.index('events')
+        webgazer_data_idx = headers.index('webgazer_data')
 
         for row in csv_rows_iterator:
             v = row[jspsych_start_time_idx]
             if v != '':
-                jspsych_start_time = v
+                jspsych_start_time = iso_date_string_to_datetime(v)
                 continue
             
             if row[trial_type_idx] == 'events-tracking-stop':
                 rastoc_events = json.loads(row[events_idx])
                 continue
 
-        return jspsych_start_time, rastoc_events
+            if row[webgazer_data_idx] != '' and row[trial_start_ts_idx] != '':
+                trial_start_ts = \
+                    iso_date_string_to_datetime(
+                        json.loads(row[trial_start_ts_idx]))
+                def convert(e):
+                    return {
+                        'x': e['x'],
+                        'ts': trial_start_ts + datetime.timedelta(milliseconds=e['t'])
+                    }
+                raw_gaze_estimations.extend([
+                    convert(e)
+                    for e in json.loads(row[webgazer_data_idx])
+                ])
+
+        return jspsych_start_time, rastoc_events, raw_gaze_estimations
 
 import dateutil.parser
 class Experiment:
     experiment_id = 0
     def __init__(self, experiment_path): 
-        jspsych_start_ts_str, rastoc_events, gaze_estimations = \
+        jspsych_start_ts, rastoc_events, raw_gaze_estimations = \
             read_raw_experiment(experiment_path)
 
         calibrations_starts = []
         calibrations_ends = []
         decalibration_notifications = []
-        jspsych_start_ts = dateutil.parser.isoparse(jspsych_start_ts_str)
         for e in rastoc_events:
+            # TODO: Los eventos estos tmb tendria que pasarse a timestamp en 
+            #       la lectura de los datos
             e_ts = dateutil.parser.isoparse(e['timestamp'])
             t = (e_ts - jspsych_start_ts).total_seconds() * 1000
             n = e['event_name']
@@ -64,7 +88,32 @@ class Experiment:
             elif n == 'rastoc:decalibration-detected':
                 decalibration_notifications.append(t)
 
-        # TODO 
+        gaze_estimation_blocks = []
+        current_block_start = 0
+        def close_block(i, current_block_start):
+            gaze_estimation_blocks.append(
+                raw_gaze_estimations[current_block_start:i+1])
+            return i + 1
+            
+        es = raw_gaze_estimations
+        INTRA_BLOCK_MAXIMUM_MS_BETWEEN_ESTIMATE = 100
+        for i, e in enumerate(es):
+            is_last_position = i+1 == len(es)
+            next_estimation_is_far_away = False
+            if not is_last_position:
+                d_next = (es[i+1]['ts'] - e['ts']).total_seconds() * 1000
+                next_estimation_is_far_away = \
+                    d_next > INTRA_BLOCK_MAXIMUM_MS_BETWEEN_ESTIMATE;
+
+            if is_last_position or next_estimation_is_far_away:
+                current_block_start = close_block(i, current_block_start)
+                continue
+        print(len(gaze_estimation_blocks))
+        for b in gaze_estimation_blocks:
+            print('->')
+            for l in [b[:3], b[-3:]]:
+                [print(e['ts']) for e in l]
+        asd
         gaze_estimations = ...
 
 

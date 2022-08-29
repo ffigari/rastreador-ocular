@@ -53,7 +53,8 @@ const
   };
 let
   relativeStimulusXCoordinate,
-  side;
+  side,
+  trial_start_ts;
 jsPsych.run([
 // TODO: Preguntar sobre el hardware
 {
@@ -77,6 +78,9 @@ jsPsych.run([
     },
   }), {
     type: jsPsychPsychophysics,
+    on_start() {
+      trial_start_ts = new Date
+    },
     stimuli: [{
       show_start_time: 0,
       end_start_time: timeBetweenUpdatesInMs,
@@ -112,6 +116,7 @@ jsPsych.run([
     trial_duration: timeBetweenUpdatesInMs,
     extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
     on_finish(data) {
+      data.trial_start_ts = trial_start_ts;
       data.innerWidth = window.innerWidth;
 
       data.relativeStimulusXCoordinate = relativeStimulusXCoordinate;
