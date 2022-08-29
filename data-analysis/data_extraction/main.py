@@ -46,7 +46,10 @@ def read_raw_experiment(path):
                 continue
             
             if row[trial_type_idx] == 'events-tracking-stop':
-                rastoc_events = json.loads(row[events_idx])
+                rastoc_events = [{
+                    'event_name': e['event_name'],
+                    'ts': dateutil.parser.isoparse(e['timestamp'])
+                } for e in json.loads(row[events_idx])]
                 continue
 
             if row[webgazer_data_idx] != '' and row[trial_start_ts_idx] != '':
@@ -74,19 +77,24 @@ class Experiment:
 
         calibrations_starts = []
         calibrations_ends = []
+        validations_starts = []
+        validations_ends = []
         decalibration_notifications = []
         for e in rastoc_events:
-            # TODO: Los eventos estos tmb tendria que pasarse a timestamp en 
-            #       la lectura de los datos
-            e_ts = dateutil.parser.isoparse(e['timestamp'])
-            t = (e_ts - jspsych_start_ts).total_seconds() * 1000
             n = e['event_name']
+
             if n == 'rastoc:calibration-started':
-                calibrations_starts.append(t)
-            elif n == 'rastoc:calibration-succeeded':
-                calibrations_ends.append(t)
+                calibrations_starts.append(e['ts'])
+            elif n == 'rastoc:calibration-succeeded' or n == 'rastoc:calibration-failed':
+                calibrations_ends.append(e['ts'])
+
+            elif n == 'rastoc:validation-started':
+                validations_starts.append(e['ts'])
+            elif n == 'rastoc:validation-succeeded' or n == 'rastoc:validation-failed':
+                validations_ends.append(e['ts'])
+
             elif n == 'rastoc:decalibration-detected':
-                decalibration_notifications.append(t)
+                decalibration_notifications.append(e['ts'])
 
         gaze_estimation_blocks = []
         current_block_start = 0
@@ -108,13 +116,15 @@ class Experiment:
             if is_last_position or next_estimation_is_far_away:
                 current_block_start = close_block(i, current_block_start)
                 continue
-        print(len(gaze_estimation_blocks))
+
+        print('start:', jspsych_start_ts)
         for b in gaze_estimation_blocks:
-            print('->')
-            for l in [b[:3], b[-3:]]:
-                [print(e['ts']) for e in l]
-        asd
-        gaze_estimations = ...
+            print(b[0]['ts'], b[-1]['ts'])
+        [print('calibration start:', ts) for ts in calibrations_starts]
+        [print('calibration end:', ts) for ts in calibrations_ends]
+        [print('validation start:', ts) for ts in validations_starts]
+        [print('validation end:', ts) for ts in validations_ends]
+        [print('decalibration:', ts) for ts in decalibration_notifications]
 
 
 class EyeTrackedAnalysis:
