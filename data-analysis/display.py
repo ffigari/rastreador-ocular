@@ -3,6 +3,8 @@ import random, sys
 import matplotlib.pyplot as plt
 
 from data_extraction.main import load_results
+from data_extraction.main import SensitivityAnalysis
+
 from plotting import draw
 from plotting import plot
 
@@ -40,3 +42,7 @@ class display:
                 fig = plot.saccade_detection(t).fig
                 plt.show()
                 plt.close(fig)
+
+    class experiment_eye_tracking_summary:
+        def __init__(_):
+            sa = SensitivityAnalysis()

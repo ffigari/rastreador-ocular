@@ -33,8 +33,8 @@ if __name__ == "__main__":
     elif sys.argv[1] == "display":
         if len(sys.argv) < 3:
             print(
-                "An object from [`subjects-trials`, `saccades-detection`, `single-trial-saccades-detection`] has to be chosen"
-            )
+                    "An object from [`subjects-trials`, `saccades-detection`, `single-trial-saccades-detection`, `sensibility-analysis`] has to be chosen"
+                    )
             sys.exit(-1)
         
         if sys.argv[2] == 'subjects-trials':
@@ -47,6 +47,9 @@ if __name__ == "__main__":
             run_id = int(sys.argv[3])
             trial_id = int(sys.argv[4])
             display.single_trial_saccades_detection(run_id, trial_id)
+            sys.exit(0)
+        elif sys.argv[2] == 'sensibility-analysis':
+            display.experiment_eye_tracking_summary()
             sys.exit(0)
 
         print(
