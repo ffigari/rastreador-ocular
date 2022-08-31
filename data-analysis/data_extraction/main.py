@@ -99,8 +99,34 @@ class Experiment:
         self.gaze_estimation_blocks = []
         current_block_start = 0
         def close_block(i, current_block_start):
+            class GazeEstimationsBlock:
+                def __init__(self, raw_estimations):
+                    self.raw_estimations = raw_estimations
+
+                    self.sampling_frequency_rolling_average = []
+                    window_size_in_ms = 2 * 1000
+                    for i, cur_e in enumerate(self.raw_estimations):
+                        window_es = [
+                            e for e in self.raw_estimations
+                            if 0 <= (
+                                cur_e['ts'] - e['ts']
+                            ).total_seconds() * 1000 < window_size_in_ms
+                        ]
+
+                        if len(window_es) < 3:
+                            continue
+
+                        frequency_rolling_mean = ...
+
+                        self.sampling_frequency_rolling_average.append({
+                            'ts': cur_e['ts'],
+                            'frequency_rolling_mean': ...,
+                        })
+
+
             self.gaze_estimation_blocks.append(
-                raw_gaze_estimations[current_block_start:i+1])
+                GazeEstimationsBlock(
+                    raw_gaze_estimations[current_block_start:i+1]))
             return i + 1
             
         es = raw_gaze_estimations

@@ -48,9 +48,13 @@ class display:
             sa = SensitivityAnalysis()
             fi = sa.first_experiment
 
+            fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
+
+            # TODO: Plot frequency rolling average and events
             print('start:', fi.start_ts)
             for b in fi.gaze_estimation_blocks:
-                print(b[0]['ts'], b[-1]['ts'])
+                es = b.raw_estimations
+                print('first: ', es[0]['ts'], ', last: ', es[-1]['ts'])
             [print('calibration start:', ts) for ts in fi.calibrations_starts]
             [print('calibration end:', ts) for ts in fi.calibrations_ends]
             [print('validation start:', ts) for ts in fi.validations_starts]
