@@ -3,117 +3,76 @@
 \title{TODO}
 \author{Francisco Figari}
 \date{Buenos Aires, 2022}
-% https://latex-beamer.com/tutorials/logo-beamer/
 \titlegraphic{\includegraphics[width=8em]{logo-fcen.png}}  
 
-\setbeamertemplate{navigation symbols}{}  % para esconder los controles del
-                                          % beamer
-                                          % https://stackoverflow.com/a/3017066
+\setbeamertemplate{navigation symbols}{}
 
 \begin{document}
 
 \frame{\titlepage}
 
-% quiénes, qué, cuándo, dónde
-Juan, Gus, Bruno y yo
-estudiando
-  la aplicabilidad de eye tracking web
-  al diagnóstico de condiciones neuropsicológicas
-  a través de análisis clínicos remotos
-durante el último año
-acá
-  en el LIAA
-  en el contexto de las Pasantías de Iniciación en la Investigación en Computación
+\begin{frame}
+\frametitle{Eye tracking de laboratorio} % Motivación?
 
+  \begin{itemize}
+    \item los ojos como expresión de estados emocionales y procesos cognitivos
+    \item forma no invasiva de estudiarlos
+    \item aplicaciones en el estudio de interfaces, en la oftalmología
+    \item[--] altos costos asociados
+    \item[+] posibilidad de usar distribución remota de experimentos
+    \item[+] nuevas aplicaciones como en la educación digital para detectar
+      pérdidas de atención
+  \end{itemize}
 
-\section{Introducción}
-
-% más que la intro de acá abajo empezar desarmando el título, que fue cambiando
-% constantemente a lo largo del proyecto
-
-% por qué
-
-Los ojos tienen un rol central en expresar emociones y procesos cognitivos por
-los cuales una persona está pasando.
-Estudiar la mirada de un individuo frente a distintos estímulos nos da entonces
-información sobre dónde pone los focos de atención y de manera más general
-permite estimar el comportamiento del individuo.
-El eye tracking permite realizar estos estudios de manera no invasiva.
-Habitualmente para esto se realizan experimentos presenciales con eye trackers
-especializados que usualmente tienen costo alto.
-  % imgs de algun eyetracker profesional y de otro comercial
-  % qué costos, fijarse cuánto salen, si no ewstá el paper de PupilEXT que
-  % tiene algunos datos sobre esto
-Sustentado en una creciente sofisticación de tecnologías web,
-  % de cuándo son los estandares para usar la webcam en los navegadores?
-surge interés en aprovechar las cámaras web de las notebooks domésticas.
-Además de disminuir los costos, esto permitiría distribuir remotamente los
-experimentos.
-El eye tracking puede utilizarse además para estudiar la usabilidad en
-interfaces web, para detectar pérdidas de atención y para estimar el campo
-visual.
-  % representar esto con algunas imgs (screen de papers o fotos de cosas)
-
-% cómo
-Para entender la aplicabilidad nos propusimos a construir un prototipo de eye
-tracker web orientado a realizar análisis clínicos.
-
-comentar diferencias entre ambos contextos
-
-modelado de la mirada
-  % modelado explícito
-  % estructuras de los ojos
-  % modelado por apariencia
-
-estudio de las implementaciones de trabajos previos de eye tracking web para
-ver si aplicaban a nuestro objetivo, o si al menos podía reutilizarse alguna 
-parte
-  % entrar un poco más en detalle en WG, TG y PACE
-  % imgs con los titulos de los papers
-
-tarea de antisacadas como caso de estudio
-
-protoclo experimental
-qué instancias de experimetacníon hicimos
-  % concentrarse directamente en la segunda instancia
-qué implementación terminamos armando
-  % mencionar las desviaciones en las estimaciones porque eso explica porque la
-  % calibración se hizo como se hizo
-
-resultados
-  % resultados generales replicados
-  % no se pudo estudiar efectos de la edad por baja representatibvidad
+  \begin{itemize}
+    \item creciente interés en llevar eye tracking al navegador web
+    \item[+] utilización de hardware existente
+    \item[+] distribución remota de experimentos
+    \item[+] nuevas aplicaciones, \eg en la educación digital para detectar
+      pérdidas de atención
+  \end{itemize}
   
-% capaz me convenga armar directo los frames en lugar de estar escribiendo el
-% script si al final estoy haciendo medio lo mismo que la del informe
+\end{frame}
 
+\begin{frame}
+\frametitle{Objetivos}
+\end{frame}
 
-% \section{foo}
-% 
-% \begin{frame}
-% 
-% \frametitle{Sample frame title}
-% 
-% This is some text in the first frame.
-% This is some text in the first frame.
-% This is some text in the first frame.
-% 
-% \end{frame}
-% 
-% \section{baz}
-% 
-% \begin{frame}
-% 
-% \frametitle{Sample frame title}
-% 
-% This is some text in the first frame.
-% This is some text in the first frame.
-% This is some text in the first frame.
-% 
-% \begin{center}
-% \includegraphics[width=0.5\linewidth]{pipino.png}
-% \end{center}
-% 
-% \end{frame}
+\begin{frame}
+\frametitle{Caso de estudio: tarea de antisacadas}
+\end{frame}
+
+% Screens de los papers
+\begin{frame}
+\frametitle{Implementaciones recientes}
+\end{frame}
+
+% Acá van a ser varias diapos para ir dejando todo claro
+\begin{frame}
+\frametitle{Contexto web}
+\end{frame}
+
+% Comentar primera mejora a WG
+\begin{frame}
+\frametitle{Protocolo experimental}
+\end{frame}
+
+% Comentar segunda y terecera mejora a WG
+Implementación
+  - WG, puntos a favor y en contra
+  - necesidad de notificar descalibraciones + detección de movimiento
+  - interfaces lógicas, calibracion + validacion
+
+Código de análisis
+  - adelantar resultado de bajas y variables frecuencias, figura frecuencias
+  - descarte < 15 Hz, interpolación a 30 Hz
+  - normalización
+  - filtrados varios
+  - detección de sacadas
+
+Resultados
+  - elevada proporción de ensayos descartados
+  - nula representatividad de sujetos de más de 50 años
+  
 
 \end{document}
