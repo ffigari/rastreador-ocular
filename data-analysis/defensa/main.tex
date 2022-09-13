@@ -1,6 +1,7 @@
 \documentclass{beamer}
 
-\title{TODO}
+\title{Evaluación y desarrollo de \textit{eye tracking} remoto en navegadores
+\textit{web}}
 \author{Francisco Figari}
 \date{Buenos Aires, 2022}
 % https://latex-beamer.com/tutorials/logo-beamer/
@@ -10,110 +11,266 @@
                                           % beamer
                                           % https://stackoverflow.com/a/3017066
 
+\setbeamertemplate{frametitle}{
+  \insertsectionhead\par
+  \vspace*{0.2mm}
+  \insertsubsectionhead\par
+  \vspace*{0.2mm}
+  \insertframetitle
+}
+
 \begin{document}
+
+% quiénes, qué, cuándo, dónde
+% Juan, Gus, Bruno y yo
+% estudiando
+%   la aplicabilidad de eye tracking web
+%   al diagnóstico de condiciones neuropsicológicas
+%   a través de análisis clínicos remotos
+% durante el último año
+% acá
+%   en el LIAA
+%   en el contexto de las Pasantías de Iniciación en la Investigación en Computación
 
 \frame{\titlepage}
 
-% quiénes, qué, cuándo, dónde
-Juan, Gus, Bruno y yo
-estudiando
-  la aplicabilidad de eye tracking web
-  al diagnóstico de condiciones neuropsicológicas
-  a través de análisis clínicos remotos
-durante el último año
-acá
-  en el LIAA
-  en el contexto de las Pasantías de Iniciación en la Investigación en Computación
+\section{Motivación}
 
+\begin{frame}{~}
 
-\section{Introducción}
+. eye tracking de laboratorio
+. costos, necesidad de ir a un laboratorio
+. sistemas frecuentemente cerrados, lo cual imposibilita el auditaje
 
-% más que la intro de acá abajo empezar desarmando el título, que fue cambiando
-% constantemente a lo largo del proyecto
+\end{frame}
 
-% por qué
+\section{Objetivos}
 
-Los ojos tienen un rol central en expresar emociones y procesos cognitivos por
-los cuales una persona está pasando.
-Estudiar la mirada de un individuo frente a distintos estímulos nos da entonces
-información sobre dónde pone los focos de atención y de manera más general
-permite estimar el comportamiento del individuo.
-El eye tracking permite realizar estos estudios de manera no invasiva.
-Habitualmente para esto se realizan experimentos presenciales con eye trackers
-especializados que usualmente tienen costo alto.
-  % imgs de algun eyetracker profesional y de otro comercial
-  % qué costos, fijarse cuánto salen, si no ewstá el paper de PupilEXT que
-  % tiene algunos datos sobre esto
-Sustentado en una creciente sofisticación de tecnologías web,
-  % de cuándo son los estandares para usar la webcam en los navegadores?
-surge interés en aprovechar las cámaras web de las notebooks domésticas.
-Además de disminuir los costos, esto permitiría distribuir remotamente los
-experimentos.
-El eye tracking puede utilizarse además para estudiar la usabilidad en
-interfaces web, para detectar pérdidas de atención y para estimar el campo
-visual.
-  % representar esto con algunas imgs (screen de papers o fotos de cosas)
+\begin{frame}{~}
 
-% cómo
-Para entender la aplicabilidad nos propusimos a construir un prototipo de eye
-tracker web orientado a realizar análisis clínicos.
+. evaluar implementaciones recientes que compartan nuestras motivaciones 
+. implementar un prototipo de eye tracker, reutilizando los módulos que fuera
+  posible y reutilizando aquellos que faltaran
+. recolectar datos a través de experimentos que imiten análisis clínicos
 
-comentar diferencias entre ambos contextos
+\end{frame}
 
-modelado de la mirada
-  % modelado explícito
-  % estructuras de los ojos
-  % modelado por apariencia
+\section{Caso de estudio: tarea de antisacadas}
 
-estudio de las implementaciones de trabajos previos de eye tracking web para
-ver si aplicaban a nuestro objetivo, o si al menos podía reutilizarse alguna 
-parte
-  % entrar un poco más en detalle en WG, TG y PACE
-  % imgs con los titulos de los papers
+\begin{frame}{~}
 
-tarea de antisacadas como caso de estudio
+. qué es?
+. cómo se la diseña?
+. qué procesos cogntivos permite explorar?
+. qué condiciones neuropsicológicas fueron estudiadas?
 
-protoclo experimental
-qué instancias de experimetacníon hicimos
-  % concentrarse directamente en la segunda instancia
-qué implementación terminamos armando
-  % mencionar las desviaciones en las estimaciones porque eso explica porque la
-  % calibración se hizo como se hizo
+\end{frame}
 
-resultados
-  % resultados generales replicados
-  % no se pudo estudiar efectos de la edad por baja representatibvidad
-  
-% capaz me convenga armar directo los frames en lugar de estar escribiendo el
-% script si al final estoy haciendo medio lo mismo que la del informe
+\section{Alternativas al \textit{eye tracking} tradicional}
 
+\subsection{Trabajos previos}
 
-% \section{foo}
-% 
-% \begin{frame}
-% 
-% \frametitle{Sample frame title}
-% 
-% This is some text in the first frame.
-% This is some text in the first frame.
-% This is some text in the first frame.
-% 
-% \end{frame}
-% 
-% \section{baz}
-% 
-% \begin{frame}
-% 
-% \frametitle{Sample frame title}
-% 
-% This is some text in the first frame.
-% This is some text in the first frame.
-% This is some text in the first frame.
-% 
-% \begin{center}
-% \includegraphics[width=0.5\linewidth]{pipino.png}
-% \end{center}
-% 
-% \end{frame}
+\begin{frame}{~}
+
+% analizamos trabajos que compartieran los objetivos de proveer software
+% necesario para eye tracking, ya sea tq el implementador provea el software o
+% bien reutilizando cámaras web
+. PupilEXT
+. PACE
+. TG
+. Último hablar de WG y señalar como construyen sobre PACE y WG
+
+\end{frame}
+
+\subsection{Implicancias del contexto de navegador \textit{web}}
+
+\begin{frame}{~}
+
+. hardware gratis pero limitado
+
+. ambiente no controlado (dificultades de luz, variablidad de hardware)
+  comunicación a través de interfaces web
+
+\end{frame}
+
+\subsection{Modelado de la mirada}
+
+\begin{frame}{~}
+. bibliografía reducida
+
+. calibración, cómo la hago
+  no hay un estándar
+  necesidad de minimizar tiempo total del exp
+  en cada sesión hay que recalibrar
+
+. ausencia de invarianza frente a movimientos de cabeza
+  cómo decidir cuándo se descalibró la herramienta
+  importancia resaltada por ausencia de reestricciones de movimiento
+\end{frame}
+
+\section{Implementación}
+
+\subsection{WebGazer como punto de partida}
+
+\begin{frame}{~}
++ tiene hecho el laburo de conectar con la API de JS para extraer los frames de
+  la webcam
+  + localización de los ojos (TODO: Explicar facemesh acá)
++ estimación de la mirada
+- calibración inadecuada
+- ausencia de notificación de descalibraciones
+\end{frame}
+
+\subsection{Calibración y validación}
+
+\begin{frame}{~}
+. por qué no sirve el sistema de WG (basado en interacciones)
+. cómo quedó implementado
+. mejora hecha sobre WG para evitar recalcular coeficientes en cada frame
+\end{frame}
+
+\subsection{Notificación de descalibración}
+
+\begin{frame}{~}
+. cómo está implementada
+. exposición de las features de WG
+
+TODO: Pseudocódigo
+\end{frame}
+
+\subsection{Playgrounds}
+
+\begin{frame}{~}
+. interfaces lógicas
+. mayor comodidad para desarrollar el sistema
+\end{frame}
+
+\section{Experimentación}
+
+\begin{frame}{~}
+. cómo se diseño cada instancia
+. cómo se distribuyeron
+. mencionar mejora a WG sobre el paquete de facemesh
+\end{frame}
+
+% me voy a concentrar directo en lo que quedó armado para la segunda instancia
+\section{Código de análisis}
+
+\subsection{Características de los datos}
+
+\begin{frame}{Frecuencias de muestreo}
+
+TODO: Plots
+
+\end{frame}
+
+\begin{frame}{Anchos de pantalla}
+
+TODO: Plots
+
+\end{frame}
+
+\begin{frame}{Estimaciones desviadas}
+
+TODO: Plots
+
+\end{frame}
+
+\subsection{Limpieza y normalización}
+
+% No hacer mucho hincapié acá y comentar que en cualquier caso está disponible
+% la implementación
+\begin{frame}{~}
+
+TODO: Ejemplos de datos descartados
+TODO: Ejemplos de cómo quedan los datos luegos de la normalización
+
+\end{frame}
+
+\subsection{Detección de sacadas}
+
+\begin{frame}{~}
+TODO: Pseudocódigo
+\end{frame}
+
+\section{Resultados}
+
+\begin{frame}{Experimentación insuficiente}
+TODO: tablas datos filtrados
+TODO: plots edades
+\end{frame}
+
+\begin{frame}{Resultados generales replicados}
+TODO: tablas
+\end{frame}
+
+\begin{frame}{Grupos incorrectos con baja representatividad}
+TODO: tablas con datos
+. posiblemente relacinado al mecanismo de detección de sacadas implementado
+TODO: Plots de sacadas no detectadas
+\end{frame}
+
+\section{Conclusiones}
+
+\begin{frame}{~}
+. qué se obtuvo
+. potencial para realizar análisis clínicos pero muy verde
+. protocolo de utilización
+\end{frame}
+
+\subsection{Limitaciones}
+
+\begin{frame}{Implementativas}
+. bajas frecuencias
+. pestañeos
+. estimación del tamaño de la pantalla
+. imprecisión en la duración de cada frame, problemático si se quiere mostrar
+  un estímulo durante una corta duración de tiempo
+\end{frame}
+
+\begin{frame}{Experimentales}
+. proporción de datos filtrados demasiado elevada
+. necesidad de revisar la causa de las altas tasas de correctitud obtenidas
+. representatividad de distintos grupos etarios
+\end{frame}
+
+\subsection{Trabajo futuro}
+
+\begin{frame}{Análisis de datos}
+. Investigar e implementar mecanismos estándares de detección de sacadas, lo
+  cual podría basarse en la previa construcción de un dataset etiquetado de
+  sacadas
+. Revisar criterios de exclusión para asegurarse de no estar filtrando datos
+  válidos
+. Realizar nuevas rondas de experimentación, estimando previamente la cantidad
+  de ensayos necesarios para asegurar cantidades suficientes en los grupos
+  incorrectos y en los distintos grupos etarios
+\end{frame}
+
+\begin{frame}{Análisis de sensibilidad}
+. propuesta sobre experimento para recolectar datos y establecer métricas de
+  calidad sobre las estimaciones obtenidas por la herramienta
+TODO: Acá combinar un poco lo que quedó en la tesis y lo que pensé para
+      sensitivity analysis
+\end{frame}
+
+\begin{frame}{Prototipo desarrollado}
+. optimizar frecuencia de muestreo
+. reexplorar detección de descalibraciones y qué significa que el sistema esté
+  descalibrado
+. mejorar la calibración, generalizarla a más puntos de interés
+. detección de pestañeos
+. estimación del tamaño de la pantalla y posibilidad de mostrar estímulos en
+  grados
+. verificación de condiciones iniciales
+TODO: Extender con lo que haya escrito en la tesis
+\end{frame}
+
+\begin{frame}{\textit{Eye tracking} en navegadores \textit{web}}
+. extender bibliografía que aplique a nuestro contexto
+. eye tracking web no podría atacar algunos problemas que sí puede el eye
+  tracking tradicional, pero al ser remoto y de bajo costo es posible que
+  permita atacar nuevos problemas. Deben entonces buscarse tales problemas
+\end{frame}
 
 \end{document}
