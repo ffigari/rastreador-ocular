@@ -29,7 +29,7 @@ class EventsTrackingStart {
   }
   trial() {
     rastoc.startTrackingEvents();
-    jsPsych.finishTrial({
+    this.jsPsych.finishTrial({
       jspsych_start_time: this.jsPsych.getStartTime().toISOString(),
     })
   }
@@ -44,7 +44,7 @@ class EventsTrackingStop {
     this.jsPsych = jsPsych;
   }
   trial() {
-    jsPsych.finishTrial({
+    this.jsPsych.finishTrial({
       events: rastoc.stopTrackingEvents(),
     });
   }
@@ -248,6 +248,7 @@ const validateCalibration = () => {
       ) => interestRegionsXs().forEach((
         x
       ) => validationStimulusCoordinates.push(new Point(x, y))));
+      document.dispatchEvent(new Event('rastoc:validation-started'));
     },
     timeline: [{
       type: jsPsychHtmlButtonResponse,
@@ -359,6 +360,12 @@ const validateCalibration = () => {
         relativePositionsAreCorrect =
           relativePositionsAreCorrect && pairHasCorrectPosition;
       }))
+
+      if (relativePositionsAreCorrect) {
+        document.dispatchEvent(new Event('rastoc:validation-succeeded'));
+      } else {
+        document.dispatchEvent(new Event('rastoc:validation-failed'));
+      }
       jsPsych.data.get().addToLast({
         "validation-results": {
           relativePositionsAreCorrect
@@ -377,6 +384,8 @@ const ensureCalibration = (options) => {
   options.forceCalibration = options.forceCalibration || false;
   options.performValidation = options.performValidation || false;
   options.maxRetries = options.maxRetries || 3;
+  options.postCalibrationCb = options.postCalibrationCb || null;
+  options.conditionCb = options.conditionCb || null;
 
   let unsucessfulCalibration = false;
   const body = [{
@@ -401,9 +410,25 @@ const ensureCalibration = (options) => {
     body.push(validateCalibration());
   }
 
+  if (options.postCalibrationCb !== null) {
+    body.push({
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<p style="font-size: 48px;">+</p>',
+      choices: "NO_KEYS",
+      trial_duration: 0,
+      on_start: () => {
+        options.postCalibrationCb()
+      },
+    })
+  }
+
   let calibrationsCounts;
   return {
     conditional_function() {
+      if (options.conditionCb !== null && !options.conditionCb()) {
+        return false;
+      }
+
       return !rastoc.isCorrectlyCalibrated || options.forceCalibration;
     },
     on_timeline_start() {
@@ -429,6 +454,7 @@ const ensureCalibration = (options) => {
           unsucessfulCalibration = unsucessfulCalibration ||
             !lastValidation["validation-results"].relativePositionsAreCorrect;
         };
+
         return calibrationsCounts <= options.maxRetries && unsucessfulCalibration;
       },
     }],

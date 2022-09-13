@@ -23,7 +23,7 @@ class EyesFeatures {
   }
 }
 
-const STILLNESS_RESIZE_FACTOR = 1.8;
+const STILLNESS_RESIZE_FACTOR = 2.3;
 class StillnessChecker {
   constructor(calibrationEyesFeatures) {
     const calibrationBBoxes = calibrationEyesFeatures.map(ef => ef.bboxes)
@@ -174,6 +174,9 @@ const eventsHandlers = [
   'rastoc:calibration-started',
   'rastoc:calibration-succeeded',
   'rastoc:calibration-failed',
+  'rastoc:validation-started',
+  'rastoc:validation-failed',
+  'rastoc:validation-succeeded',
 ].map((eventName) => [eventName, getPayloadLessHandler(eventName)]).concat([
   [
     'rastoc:point-calibrated',

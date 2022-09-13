@@ -3,6 +3,8 @@ import random, sys
 import matplotlib.pyplot as plt
 
 from data_extraction.main import load_results
+from data_extraction.main import SensitivityAnalysis
+
 from plotting import draw
 from plotting import plot
 
@@ -40,3 +42,21 @@ class display:
                 fig = plot.saccade_detection(t).fig
                 plt.show()
                 plt.close(fig)
+
+    class experiment_eye_tracking_summary:
+        def __init__(_):
+            sa = SensitivityAnalysis()
+            fi = sa.first_experiment
+
+            fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True)
+
+            # TODO: Plot frequency rolling average and events
+            print('start:', fi.start_ts)
+            for b in fi.gaze_estimation_blocks:
+                es = b.raw_estimations
+                print('first: ', es[0]['ts'], ', last: ', es[-1]['ts'])
+            [print('calibration start:', ts) for ts in fi.calibrations_starts]
+            [print('calibration end:', ts) for ts in fi.calibrations_ends]
+            [print('validation start:', ts) for ts in fi.validations_starts]
+            [print('validation end:', ts) for ts in fi.validations_ends]
+            [print('decalibration:', ts) for ts in fi.decalibration_notifications]
