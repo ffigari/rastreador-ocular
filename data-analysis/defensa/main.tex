@@ -249,11 +249,10 @@
 \begin{frame}{~}
 
   \begin{itemize}
-    \item Posibilidad de reutilizar cámaras web
+    \item[+] Posibilidad de reutilizar cámaras web
 
-    % no sólo las webcams son variables si no que tmb la compu donde corre el 
-    % programa
-    \item Hardware variable de potencialmente bajo rendimiento
+    \item[+] Compatibilidad con otras herramientas web, en particular
+      \texttt{JSPsych}
 
     % no es el fin del mundo pero es un lenguaje bastante odiado e implica
     % dificultades en cuanto a la precisión. Por ejemplo, la duración de cada
@@ -261,14 +260,20 @@
     % cortas cantidades de tiempo
     \item Necesidad de implementar sobre JavaScript
 
+    % no sólo las webcams son variables si no que tmb la compu donde corre el 
+    % programa
+    \item[--] Hardware variable de potencialmente bajo rendimiento
+
     % deben transmitirse en texto e imagenes sin que puedan hacerse
     % aclaraciones en el momento. esto implica una duración total del
     % experimento potencialmente mayor
-    \item Las instrucciones no pueden ser transmitidas en persona
+    \item[--] Las instrucciones no pueden ser transmitidas en persona
 
     % puede variar la luz o la disposición del hardware
-    \item Ambiente físico no controlado
+    \item[--] Ambiente físico no controlado
   \end{itemize}
+
+  TODO: Screenshots de JSPsych y de Amazon Mechanical Turk
 
 \end{frame}
 
@@ -297,7 +302,7 @@
 
 \section{Implementación}
 
-\subsection{WebGazer como punto de partida}
+\subsection{\texttt{WebGazer} como punto de partida}
 
 \begin{frame}{~}
 
@@ -326,25 +331,60 @@
 \subsection{Calibración y validación}
 
 \begin{frame}{~}
-. por qué no sirve el sistema de WG (basado en interacciones)
-. cómo quedó implementado
-. mejora hecha sobre WG para evitar recalcular coeficientes en cada frame
+  \begin{itemize}
+    % La calibración de WG asume que el usuario va a estar haciendo clicks o 
+    % moviendo el mouse. Siguiendo las líneas de PACE, cuando uno realiza estas
+    % acciones se asume que el sujeto está mirando al puntero, utilizando esto
+    % como nuevos datos de calibración
+    \item Nuestro caso de uso no garantiza interacciones
+
+    \item Se muestran una serie de puntos, para cada uno de los cuales el
+      usuario tendrá que fijar la mirada y presionar la barra de espacio; TODO:
+      un diagrama que muestre las posiciones de los puntos
+    
+    \item Validación post calibración implementada de similar manera
+
+    \item Optimización sobre \texttt{WebGazer} en base a estas diferencias en
+      la calibración
+  \end{itemize}
 \end{frame}
 
-\subsection{Notificación de descalibración}
+\subsection{Descalibración}
 
 \begin{frame}{~}
-. cómo está implementada
-. exposición de las features de WG
 
-TODO: Pseudocódigo
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      TODO: Pseudocódigo instanciación al finalizar la calibración \par
+      TODO: Pseudocódigo del chequeo en cada frame
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      TODO: Screenshot del playground de la región válida
+    \end{column}
+  \end{columns}
+
 \end{frame}
 
-\subsection{Playgrounds}
+\subsection{Interfaces lógicas}
 
 \begin{frame}{~}
-. interfaces lógicas
-. mayor comodidad para desarrollar el sistema
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+        \item División explícita entre el código propio del \textit{eye
+          tracker} y aquel de la interfaz \texttt{JSPsych}
+
+          % Esto evita acoplamiento del código y facilita el desarrollo
+        \item Un \textit{playground} para cada interfaz
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      TODO: Par de screenshots de los playgrounds
+    \end{column}
+  \end{columns}
+
 \end{frame}
 
 \section{Experimentación}
@@ -421,6 +461,8 @@ TODO: Plots de sacadas no detectadas
 . protocolo de utilización
 \end{frame}
 
+% TODO: Las limitaciones y trabajo futuro no ponerlas todas y en cambio referir
+% a la tesis
 \subsection{Limitaciones}
 
 \begin{frame}{Implementativas}
