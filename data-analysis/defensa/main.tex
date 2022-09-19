@@ -71,6 +71,7 @@
     \item comunmente resuelto con sistemas comerciales cerrados
     \item costos altos (entre 5000 y 40000 euros) mientras que el hardware en
       sí representa una pequeña fracción de estos (entre 200 y 600 euros)
+
     % si falta algún dato (e.g., la precisión del diámetro de la pupila) no
     % se lo puede saber
     \item imposibilidad de auditar la implementación
@@ -95,34 +96,47 @@
 
 \begin{frame}{~}
 
-  \begin{itemize}
-    \item Interés en proveer software de \textit{eye tracking}
-  \end{itemize}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item Interés en proveer software de \textit{eye tracking}
 
-  \begin{figure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.6\linewidth]{img/external-webcam.jpg}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.6\linewidth]{img/notebook.jpg}
-    \end{subfigure}
-    \caption{Webcams domésticas ya disponibles}
-  \end{figure}
+        \item Posibilidad de \textit{crowdsourcing}
 
-  \begin{figure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.35\linewidth]{img/basler-camera.jpg}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.6\linewidth]{img/basler-cameras-with-lens.png}
-    \end{subfigure}
-    \caption{Hardware profesional adquirible por una fracción del costo}
-  \end{figure}
+          % e.g., detectar pérdidas de atención en clases masivas
+        \item Potencial para nuevas aplicaciones
+      \end{itemize}
 
+    \end{column}
+    \begin{column}{0.6\textwidth}
+
+      \begin{figure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/external-webcam.jpg}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/notebook.jpg}
+        \end{subfigure}
+        \caption{Webcams domésticas ya disponibles}
+      \end{figure}
+
+      \begin{figure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.6\linewidth]{img/basler-camera.jpg}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/basler-cameras-with-lens.png}
+        \end{subfigure}
+        \caption{Hardware profesional adquirible por una fracción del costo}
+      \end{figure}
+
+
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \section{Objetivos}
@@ -203,42 +217,82 @@
 
 \subsection{Trabajos previos}
 
+% TODO: Separar esto en varios frames
 \begin{frame}{~}
 
-% analizamos trabajos que compartieran los objetivos de proveer software
-% necesario para eye tracking, ya sea tq el implementador provea el software o
-% bien reutilizando cámaras web
-. PupilEXT
-. PACE
-. TG
-. Último hablar de WG y señalar como construyen sobre PACE y WG
+  \begin{itemize}
+    \item \texttt{PupilEXT}: software para realizar pupilometría; deben
+      proveerse cámaras profesionales y emisores de luz infrarroja; TODO:
+      imagen pupilometría
+
+    % hay que resaltar la importancia de esto de analizar el momento de mayor
+    % coincidencia
+    \item \texttt{PACE}: aplicación de escritorio basada en webcam; calibran en
+      base a interacciones del usuario; analizar el momento de mayor
+      coincidencia entre la mirada y la posición de la interacción; TODO:
+      alguna imagen del paper
+
+    \item \texttt{TurkerGaze}: aplicación web basada en webcam; generación de
+      mapas de saliencia a través de \textit{crowdsourcing}; TODO: imagen mapas
+      de saliencia
+
+    \item \texttt{WebGazer}: aplicación web basada en webcam; se basan en
+      \texttt{PACE} y \texttt{TurkerGaze}; provisto en forma de paquete; TODO:
+      screenshot del paquete
+
+  \end{itemize}
 
 \end{frame}
 
-\subsection{Implicancias del contexto de navegador \textit{web}}
+\subsection{Implicancias del contexto remoto de navegador \textit{web}}
 
 \begin{frame}{~}
 
-. hardware gratis pero limitado
+  \begin{itemize}
+    \item Posibilidad de reutilizar cámaras web
 
-. ambiente no controlado (dificultades de luz, variablidad de hardware)
-  comunicación a través de interfaces web
+    % no sólo las webcams son variables si no que tmb la compu donde corre el 
+    % programa
+    \item Hardware variable de potencialmente bajo rendimiento
+
+    % no es el fin del mundo pero es un lenguaje bastante odiado e implica
+    % dificultades en cuanto a la precisión. Por ejemplo, la duración de cada
+    % frame va a ser variable, lo que dificulta mostrar estímulos durante
+    % cortas cantidades de tiempo
+    \item Necesidad de implementar sobre JavaScript
+
+    % deben transmitirse en texto e imagenes sin que puedan hacerse
+    % aclaraciones en el momento. esto implica una duración total del
+    % experimento potencialmente mayor
+    \item Las instrucciones no pueden ser transmitidas en persona
+
+    % puede variar la luz o la disposición del hardware
+    \item Ambiente físico no controlado
+  \end{itemize}
 
 \end{frame}
 
 \subsection{Modelado de la mirada}
 
 \begin{frame}{~}
-. bibliografía reducida
+  \begin{itemize}
+    % no entrar en detalle con esto pero mencionar brevemente por qué
+    \item Limitados a una pequeña fracción de la bibliografía debido a tener
+      una y sólo una cámara
+    
+    % acuerdo en que hay que mostar una serie de puntos pero no está claro
+    % cuántos, ni cómo, ni qué información rescatar. tmb hay interés en
+    % minimizar la duración del exp
+    \item Falta de estándar respecto de cómo calibrar
 
-. calibración, cómo la hago
-  no hay un estándar
-  necesidad de minimizar tiempo total del exp
-  en cada sesión hay que recalibrar
-
-. ausencia de invarianza frente a movimientos de cabeza
-  cómo decidir cuándo se descalibró la herramienta
-  importancia resaltada por ausencia de reestricciones de movimiento
+    % ante ligeros movimientos de cabeza el sistema va a quedar descalibrado.
+    % hay que tenerlo en cuenta en el flow del experimento. puede recalibrarse
+    % cada un tiempo fijo (TG), agregar data de calibración a medida que avanza
+    % el experimento (WG) o bien implementarse alguna heurística para decidir
+    % cuándo el sistema necesita una recalibración
+    \item Ausencia de invarianza frente a movimientos de cabeza y de
+      reestricción de movimiento
+  \end{itemize}
 \end{frame}
 
 \section{Implementación}
@@ -246,12 +300,27 @@
 \subsection{WebGazer como punto de partida}
 
 \begin{frame}{~}
-+ tiene hecho el laburo de conectar con la API de JS para extraer los frames de
-  la webcam
-  + localización de los ojos (TODO: Explicar facemesh acá)
-+ estimación de la mirada
-- calibración inadecuada
-- ausencia de notificación de descalibraciones
+
+  \begin{columns}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+        \item[+] Extracción de frames a través de la API del navegador
+        \item[+] Modelos de localización de los ojos y de estimación de la
+          mirada
+        \item[--] Calibración inadecuada
+        \item[--] Ausencia de notificación de descalibraciones
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.6\linewidth]{img/facemesh-kepyoints.jpg}
+        \caption{\textit{Output} del modelo de \textit{facemesh} utilizado por
+        \texttt{WebGazer} para la localización de los ojos}
+      \end{figure}
+    \end{column}
+  \end{columns}
+
 \end{frame}
 
 \subsection{Calibración y validación}
