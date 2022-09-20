@@ -20,17 +20,6 @@
 
 \begin{document}
 
-% quiénes, qué, cuándo, dónde
-% Juan, Gus, Bruno y yo
-% estudiando
-%   la aplicabilidad de eye tracking web
-%   al diagnóstico de condiciones neuropsicológicas
-%   a través de análisis clínicos remotos
-% durante el último año
-% acá
-%   en el LIAA
-%   en el contexto de las Pasantías de Iniciación en la Investigación en Computación
-
 \frame{\titlepage}
 
 \section{Motivación}
@@ -38,16 +27,16 @@
 \begin{frame}{~}
 
   \begin{itemize}
-      \item los ojos como entrada a los procesos cognitivos y estados
+      \item Los ojos como entrada a los procesos cognitivos y estados
         emocionales de una persona
-      \item frecuentemente estudiados en el contexto de la neuropsicología
+      \item Frecuentemente estudiados en el contexto de la neuropsicología
         digital para estimar el comportamiento
-      \item importante incluso cuando no son el foco del análisis
+      \item Importante incluso cuando no son el foco del análisis
         (\textit{e.g.}, detección de caras)
       % utilizado también en el desarollo HMI, en el estudio de usabilidad de
       % interfaces, recientemente en el campo de la oftalmología para estimar
       % el campo visual
-      \item usos en otras disciplinas
+      \item Usos en otras disciplinas
   \end{itemize}
 
   \begin{figure}
@@ -68,14 +57,14 @@
 \begin{frame}{~}
 
   \begin{itemize}
-    \item comunmente resuelto con sistemas comerciales cerrados
-    \item costos altos (entre 5000 y 40000 euros) mientras que el hardware en
+    \item Comunmente resuelto con sistemas comerciales cerrados
+    \item Costos altos (entre 5000 y 40000 euros) mientras que el hardware en
       sí representa una pequeña fracción de estos (entre 200 y 600 euros)
 
     % si falta algún dato (e.g., la precisión del diámetro de la pupila) no
     % se lo puede saber
-    \item imposibilidad de auditar la implementación
-    \item necesidad de asistir a un laboratorio
+    \item Imposibilidad de auditar la implementación
+    \item Necesidad de asistir a un laboratorio
   \end{itemize}
 
   \begin{figure}
@@ -171,7 +160,8 @@
   \begin{columns}
   \begin{column}{.5\textwidth}
     \begin{itemize}
-      \item Tarea corta dónde debe \textbf{evitarse} mirar un estímulo visual lateral; en la tarea de prosacadas debe \textbf{mirarse} tal estímulo
+      \item Tarea corta dónde debe \textbf{evitarse} mirar un estímulo visual
+        lateral; en la tarea de prosacadas debe \textbf{mirarse} tal estímulo
 
       \item Variaciones sutiles en su diseño según cada trabajo
       % - qué fases, escondo el estímulo central
@@ -188,7 +178,7 @@
     \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{img/antisaccades-protocol.png}
-      \caption{Protocolo de la tarea de antisacadas}
+      \caption{Protocolo de las tareas}
     \end{figure}
   \end{column}
   \end{columns}
@@ -390,31 +380,65 @@
 \section{Experimentación}
 
 \begin{frame}{~}
-. cómo se diseño cada instancia
-. cómo se distribuyeron
-. mencionar mejora a WG sobre el paquete de facemesh
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      Primera instancia:
+      \begin{itemize}
+        \item Limitados a 10 minutos debido a una falla de \texttt{WebGazer}
+        \item Únicamente ensayos de antisacada
+        \item Recalibración luego de cada notificación de descalibración
+        \item Sin validación post calibración
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      Segunda instancia:
+      \begin{itemize}
+        \item Duración superior a 20 minutos
+        \item Ensayos de prosacadas y de antisacadas
+
+        % esto es un poco más similar a lo que hace TG
+        % tmb queda en duda en qué punto es útil la notificación de
+        % descalibración, porque no se estudió cómo evoluciona la calidad de
+        % las estimaciones, TODO: esto en trabajo futuro capaz tenga más
+        % sentido mencionarlo
+        \item Recalibración cada 10 ensayos y sólo si se detectó una
+          descalibración
+        \item Con validación post calibración
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  TODO: Screenshots JSPsych, Cognition y NeuroPruebas
 \end{frame}
 
-% me voy a concentrar directo en lo que quedó armado para la segunda instancia
-\section{Código de análisis}
+\section{Resultados}
 
 \subsection{Características de los datos}
 
 \begin{frame}{Frecuencias de muestreo}
 
-TODO: Plots
+  TODO: Acomodar subplots
+  \begin{figure}
+    \includegraphics[width=0.7\linewidth]{img/second-sampling-frequencies-distribution.png}
+  \end{figure}
 
 \end{frame}
 
 \begin{frame}{Anchos de pantalla}
 
-TODO: Plots
+  TODO: Acomodar subplots
+  \begin{figure}
+    \includegraphics[width=0.7\linewidth]{img/second-widths-distribution.png}
+  \end{figure}
 
 \end{frame}
 
 \begin{frame}{Estimaciones desviadas}
 
-TODO: Plots
+  TODO: Acomodar subplots
+  \begin{figure}
+    \includegraphics[width=0.8\linewidth]{img/skewed-estimations-examples.png}
+  \end{figure}
 
 \end{frame}
 
@@ -424,32 +448,61 @@ TODO: Plots
 % la implementación
 \begin{frame}{~}
 
-TODO: Ejemplos de datos descartados
-TODO: Ejemplos de cómo quedan los datos luegos de la normalización
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      TODO: Ejemplo de la interpolación de estimaciones
+      TODO: Ejemplo de datos descartados
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/normalization-looks-example.png}
+      \end{figure}
+    \end{column}
+  \end{columns}
 
 \end{frame}
 
 \subsection{Detección de sacadas}
 
 \begin{frame}{~}
-TODO: Pseudocódigo
+
+  Luego de normalizar, se considerará un intervalo como una sacada si:
+  \begin{enumerate}
+    \item La mirada se mueve en una misma dirección
+    \item El intervalo dura al menos 40 ms
+    \item Se recorre \textit{cierta} distancia mínima durante ese intervalo
+    \item El desplazamiento es lo \textit{suficientemente rápido}
+  \end{enumerate}
+  Implementación \textit{ad hoc} cuya calidad no fue estudiada.
+
 \end{frame}
 
-\section{Resultados}
+\subsection{Conclusiones generales replicados}
 
-\begin{frame}{Experimentación insuficiente}
-TODO: tablas datos filtrados
-TODO: plots edades
-\end{frame}
-
-\begin{frame}{Resultados generales replicados}
+\begin{frame}{~}
 TODO: tablas
 \end{frame}
 
-\begin{frame}{Grupos incorrectos con baja representatividad}
-TODO: tablas con datos
-. posiblemente relacinado al mecanismo de detección de sacadas implementado
-TODO: Plots de sacadas no detectadas
+\subsection{Menos datos de lo esperado}
+
+\begin{frame}{~}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item Descarte de aproximadamente $\frac{2}{3}$ de los datos
+        \item Nula representatividad de sujetos de edad mayor a 50 años
+        \item Baja representatividad por sujeto del grupo incorrecto
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/undetected-saccades-examples.png}
+      \end{figure}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \section{Conclusiones}
