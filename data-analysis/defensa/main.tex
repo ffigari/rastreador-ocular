@@ -4,7 +4,7 @@
 
 \title{Evaluación y desarrollo de \textit{eye tracking} remoto en navegadores
 \textit{web}}
-\author{Francisco Figari}
+\author{Francisco Figari, Juan Kamienkowski, Gustavo Juantorena, Bruno Bianchi}
 \date{Buenos Aires, 2022}
 \titlegraphic{\includegraphics[width=8em]{img/logo-fcen.png}}
 
@@ -154,6 +154,32 @@
 
 \end{frame}
 
+\section{Desarmando el problema de \textit{eye tracking} web}
+
+\begin{frame}{~}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Estimar qué coordenada de la pantalla está mirando el usuario en
+          un contexto de estudios clínicos
+        \item Un \textit{stream} de frames de la webcam como \textit{input}
+        \item Se divide en \textbf{localizar los ojos} y luego \textbf{estimar
+          la mirada}
+        \item Calibraciones necesarias en cada sesión de uso
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        TODO: Reemplazar esto por un único plot que ejemplifique el output
+        deseado
+        \includegraphics[width=\linewidth]{img/eye-tracking-output-example.png}
+        \caption{Sacadas detectadas sobre serie de tiempo de la coordenada x}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \section{Caso de estudio: tarea de antisacadas}
 
 \begin{frame}{~}
@@ -173,6 +199,8 @@
       % - inhibición respuestas reflexivas
       % - memoria visual espacial (esto por ejemplo no entra en juego con el diseño elegido)
       % - mantenimiento de la atención en un objetivo
+
+      \item Buscamos entender su potencial en asistir al diagnóstico
     \end{itemize}
   \end{column}
   \begin{column}{.5\textwidth}
@@ -208,9 +236,9 @@
 
 \subsection{Trabajos previos}
 
-% TODO: Separar esto en varios frames
 \begin{frame}{~}
 
+  TODO: Separar esto en varios frames
   \begin{itemize}
     \item \texttt{PupilEXT}: software para realizar pupilometría; deben
       proveerse cámaras profesionales y emisores de luz infrarroja; TODO:
@@ -594,33 +622,36 @@
   \end{columns}
 \end{frame}
 
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=0.9\linewidth]{img/undetected-saccades-examples.png}
-%   \caption{Ejemplos de sacadas no detectadas}
-% \end{figure}
 
 \section{Conclusiones}
 
 \begin{frame}{~}
   \begin{itemize}
-    \item qué se obtuvo
-    \item potencial para realizar análisis clínicos pero muy verde y muy por debajo de
-      la precisión alcanzable con et profesionales
-    \item protocolo de utilización
+    \item Se obtuvo un prototipo de \textit{eye tracker} para navegadores web
+    \item Potencial para realizar análisis clínicos remotos
+    \item Campo aún en sus primeros pasos
+    \item Precisión muy por debajo de aquella alcanzable por \textit{eye
+      trackers} profesionales
   \end{itemize}
 \end{frame}
 
-% TODO: Las limitaciones y trabajo futuro no ponerlas todas y en cambio referir
-% a la tesis
 \subsection{Limitaciones}
 
 \begin{frame}{Implementativas}
+  TODO: Las limitaciones y trabajo futuro no ponerlas todas y en cambio referir
+  a la tesis \par
+
 . bajas frecuencias
 . pestañeos
 . estimación del tamaño de la pantalla
 . imprecisión en la duración de cada frame, problemático si se quiere mostrar
   un estímulo durante una corta duración de tiempo
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/undetected-saccades-examples.png}
+    \caption{Ejemplos de sacadas no detectadas}
+  \end{figure}
 \end{frame}
 
 \begin{frame}{Experimentales}
