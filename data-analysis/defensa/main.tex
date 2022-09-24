@@ -23,6 +23,68 @@
 
 \frame{\titlepage}
 
+\section{Experimentación}
+
+\begin{frame}{Caso de estudio: tarea de antisacadas}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+        \item Clínicamente relevante
+        \item Resultados esperados ya establecidos
+        \item Tarea simple para validar movimientos oculares
+      \end{itemize}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/antisaccades-protocol.png}
+        \caption{Protocolo de las tareas}
+      \end{figure}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}{Primera instancia}
+  \begin{itemize}
+    \item Limitados a 10 minutos debido a una falla de \texttt{WebGazer}
+    \item Únicamente ensayos de antisacada
+    \item Recalibración luego de cada notificación de descalibración
+    \item Sin validación post calibración
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Segunda instancia}
+  \begin{itemize}
+    \item Duración superior a 20 minutos
+    \item Ensayos de prosacadas y de antisacadas
+    \item Recalibración cada 10 ensayos y sólo si se detectó una
+      descalibración
+    \item Con validación post calibración
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Implementación y distribución}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{img/jspsych-logo.jpg}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{img/cognition-run-logo.png}
+        \includegraphics[width=\textwidth]{img/neuropruebas-logo.jpg}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
 \section{Resultados}
 
 \begin{frame}{Ejemplo de \textit{output} del sistema}
@@ -326,40 +388,6 @@
   \end{columns}
 \end{frame}
 
-\section{Caso de estudio: tarea de antisacadas}
-
-\begin{frame}{~}
-
-  \begin{columns}
-  \begin{column}{.5\textwidth}
-    \begin{itemize}
-      \item Tarea corta dónde debe \textbf{evitarse} mirar un estímulo visual
-        lateral; en la tarea de prosacadas debe \textbf{mirarse} tal estímulo
-
-      \item Variaciones sutiles en su diseño según cada trabajo
-      % - qué fases, escondo el estímulo central
-      % - qué tiempos uso entre fases
-      % - forma y color de los estímulos
-
-      \item Expone distintos procesos cognitivos, en distinta medida según el diseño elegido
-      % - inhibición respuestas reflexivas
-      % - memoria visual espacial (esto por ejemplo no entra en juego con el diseño elegido)
-      % - mantenimiento de la atención en un objetivo
-
-      \item Buscamos entender su potencial en asistir al diagnóstico
-    \end{itemize}
-  \end{column}
-  \begin{column}{.5\textwidth}
-    \begin{figure}
-      \centering
-      \includegraphics[width=\linewidth]{img/antisaccades-protocol.png}
-      \caption{Protocolo de las tareas}
-    \end{figure}
-  \end{column}
-  \end{columns}
-
-\end{frame}
-
 \begin{frame}{~}
     \begin{itemize}
     \item Resultados consistentes dentro de una misma población
@@ -556,37 +584,6 @@
 
 \section{Experimentación}
 
-\begin{frame}{~}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      Primera instancia:
-      \begin{itemize}
-        \item Limitados a 10 minutos debido a una falla de \texttt{WebGazer}
-        \item Únicamente ensayos de antisacada
-        \item Recalibración luego de cada notificación de descalibración
-        \item Sin validación post calibración
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      Segunda instancia:
-      \begin{itemize}
-        \item Duración superior a 20 minutos
-        \item Ensayos de prosacadas y de antisacadas
-
-        % esto es un poco más similar a lo que hace TG
-        % tmb queda en duda en qué punto es útil la notificación de
-        % descalibración, porque no se estudió cómo evoluciona la calidad de
-        % las estimaciones, TODO: esto en trabajo futuro capaz tenga más
-        % sentido mencionarlo
-        \item Recalibración cada 10 ensayos y sólo si se detectó una
-          descalibración
-        \item Con validación post calibración
-      \end{itemize}
-    \end{column}
-  \end{columns}
-
-  TODO: Screenshots JSPsych, Cognition y NeuroPruebas
-\end{frame}
 
 \section{Resultados}
 
