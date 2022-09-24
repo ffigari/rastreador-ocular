@@ -97,6 +97,74 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Conclusiones generales replicadas}
+  \begin{table}
+    \centering
+    \begin{tabular}{ l | c | c | c }
+      & correctitud & \multicolumn{2}{ c }{tiempo de respuesta (ms)} \\
+      &             & correcto & incorrecto \\
+      \hline
+      antisacada & 81.29\% & 509 (93) & 346 (105) \\
+    \end{tabular}
+    \caption{Primera instancia}
+  \end{table}
+  
+  \begin{table}
+    \centering
+    \begin{tabular}{ l | c | c | c }
+      & correctitud & \multicolumn{2}{ c }{tiempo de respuesta (ms)} \\
+      &             & correcto & incorrecto \\
+      \hline
+      antisacada & 94.82\% & 358 (109) & 299 (103) \\
+      \hline
+      prosacada & 98.09\% & 320 (108) & 311 (150) \\
+    \end{tabular}
+    \caption{Segunda instancia}
+  \end{table}
+
+  % TODO: Poner marker negativo acá
+  En la bibliografía para la tarea de antisacadas se reportan \textbf{valores
+  de correctitud} más cercanos al rango $[60\%, 75\%]$.
+\end{frame}
+
+\begin{frame}{Menos datos de lo esperado}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item Cantidad de ensayos iniciales baja en relación a otros trabajos
+        \item Descarte de aproximadamente $\frac{2}{3}$ de los datos
+        \item Altas e inesperadas tasas de correctitud
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.6\textwidth}
+      \begin{table}
+        \centering
+
+        \begin{tabular}{ l | c | c }
+          Antisacadas   & incorrecto  & correcto \\
+          \hline
+          \# total      & 64          & 1173 \\
+          \hline
+          \# por sujeto & 4.57 (2.84) & 78.20 (40.38)
+        \end{tabular}
+
+        \vspace{0.3cm}
+
+        \begin{tabular}{ l | c | c }
+          Prosacadas    & incorrecto  & correcto \\
+          \hline
+          \# total      & 22          & 1134 \\
+          \hline
+          \# por sujeto & 2.44 (1.23) & 75.59 (38.58)
+        \end{tabular}
+
+        \caption{Desbalance entre grupos incorrecto y grupo correcto}
+      \end{table}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}{~}
   fin
 \end{frame}
@@ -573,35 +641,6 @@
 \subsection{Conclusiones generales replicadas}
 
 \begin{frame}{~}
-  \begin{table}
-    \centering
-    \begin{tabular}{ l | c | c | c }
-      & correctitud & \multicolumn{2}{ c }{tiempo de respuesta (ms)} \\
-      &             & correcto & incorrecto \\
-      \hline
-      antisacada & 81.29\% & 509 (93) & 346 (105) \\
-    \end{tabular}
-    \caption{Primera instancia}
-  \end{table}
-  
-  \begin{table}
-    \centering
-    \begin{tabular}{ l | c | c | c }
-      & correctitud & \multicolumn{2}{ c }{tiempo de respuesta (ms)} \\
-      &             & correcto & incorrecto \\
-      \hline
-      antisacada & 94.82\% & 358 (109) & 299 (103) \\
-      \hline
-      prosacada & 98.09\% & 320 (108) & 311 (150) \\
-    \end{tabular}
-    \caption{Segunda instancia}
-  \end{table}
-
-  En la bibliografía para la tarea de antisacadas se reportan \textbf{valores
-  de correctitud} más cercanos al rango $[60\%, 75\%]$.
-\end{frame}
-
-\begin{frame}{~}
   \begin{columns}
     \begin{column}{0.5\textwidth}
       \begin{figure}
@@ -643,43 +682,6 @@
 
 \subsection{Menos datos de lo esperado}
 
-\begin{frame}{~}
-  \begin{columns}
-    \begin{column}{0.4\textwidth}
-      \begin{itemize}
-        \item Cantidad de ensayos iniciales baja en relación a otros trabajos
-        \item Descarte de aproximadamente $\frac{2}{3}$ de los datos
-        \item Altas e inesperadas tasas de correctitud
-      \end{itemize}
-    \end{column}
-
-    \begin{column}{0.6\textwidth}
-      \begin{table}
-        \centering
-
-        \begin{tabular}{ l | c | c }
-          Antisacadas   & incorrecto  & correcto \\
-          \hline
-          \# total      & 64          & 1173 \\
-          \hline
-          \# por sujeto & 4.57 (2.84) & 78.20 (40.38)
-        \end{tabular}
-
-        \vspace{0.3cm}
-
-        \begin{tabular}{ l | c | c }
-          Prosacadas    & incorrecto  & correcto \\
-          \hline
-          \# total      & 22          & 1134 \\
-          \hline
-          \# por sujeto & 2.44 (1.23) & 75.59 (38.58)
-        \end{tabular}
-
-        \caption{Desbalance entre grupos incorrecto y grupo correcto}
-      \end{table}
-    \end{column}
-  \end{columns}
-\end{frame}
 
 
 \section{Conclusiones}
