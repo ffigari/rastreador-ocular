@@ -23,6 +23,19 @@ def _save_fig(figure_name, build_path, renderer):
     return output_file_logical_path
 
 class save_figure:
+    class detected_saccades_example:
+        def __init__(_, t):
+            def renderer():
+                fig = plot.single_trial.saccades(t).fig
+                fig.set_size_inches(2.9, 2.5)
+                return fig
+
+            _save_fig(
+                'detected-saccades-example',
+                'data-analysis/defensa/plots',
+                renderer
+            )
+
     class skewed_estimations_examples:
         def __init__(_, first_starting_sample):
             def renderer():
@@ -73,7 +86,7 @@ class save_figure:
     class output_example:
         def __init__(_, t):
             def renderer():
-                fig = plot.single_trial(t).fig
+                fig = plot.single_trial.phases(t).fig
                 fig.set_size_inches(5.8, 2.5)
                 return fig
 
@@ -88,9 +101,9 @@ def build_defensa():
     os.mkdir('data-analysis/defensa/plots')
 
     r = load_results()
+    good_looking_trial = r.second_instance.inlier_sample.find_trial(90, 376)
 
-    save_figure.output_example(
-        r.second_instance.inlier_sample.find_trial(90, 376))
+    save_figure.output_example(good_looking_trial)
     save_figure.starting.sampling_frequencies(
         r.first_instance.post_processing_metrics.sampling_frequencies,
         r.second_instance.post_processing_metrics.sampling_frequencies
@@ -100,3 +113,4 @@ def build_defensa():
         r.second_instance.post_processing_metrics.widths
     )
     save_figure.skewed_estimations_examples(r.first_instance.starting_sample)
+    save_figure.detected_saccades_example(good_looking_trial)
