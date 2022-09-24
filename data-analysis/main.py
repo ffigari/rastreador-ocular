@@ -1,6 +1,7 @@
 import sys
 
 from informe.main import build_informe
+from defensa.main import build_defensa
 from display import display
 
 if __name__ == "__main__":
@@ -22,7 +23,7 @@ if __name__ == "__main__":
             build_informe()
             sys.exit(0)
         elif sys.argv[2] == 'defensa':
-            raise NotImplementedError
+            build_defensa()
             sys.exit(0)
 
         print(

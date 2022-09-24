@@ -242,6 +242,10 @@ class SecondTrial(Trial):
             parsed_trial['run_center_x'],
             parsed_trial['run_estimated_center_mean'],
         )
+        self.iti_end = parsed_trial['iti_end']
+        self.fix_end = parsed_trial['fix_end']
+        self.intra_end = parsed_trial['intra_end']
+        self.response_end = parsed_trial['response_end']
 
 def interpolate_with(x, xa, ya, xb, yb):
     # Here x and y are not used as the screen coordinates but as the
@@ -492,6 +496,15 @@ def parse_trials():
                         }
                         for e in normalized_estimates
                     ]
+
+                    parsed_trial['iti_end'] = \
+                        int(row[iti_end_idx]) - cue_start_in_ms
+                    parsed_trial['fix_end'] = \
+                        int(row[fix_end_idx]) - cue_start_in_ms
+                    parsed_trial['intra_end'] = \
+                        int(row[intra_end_idx ]) - cue_start_in_ms
+                    parsed_trial['response_end'] = \
+                        int(row[response_end_idx]) - cue_start_in_ms
     
                     parsed_trial['estimates'] = centered_x_estimates
                     run_parsed_trials.append(parsed_trial)

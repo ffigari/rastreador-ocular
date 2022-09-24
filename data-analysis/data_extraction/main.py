@@ -116,6 +116,7 @@ class Experiment:
                         if len(window_es) < 3:
                             continue
 
+                        # TODO:
                         frequency_rolling_mean = ...
 
                         self.sampling_frequency_rolling_average.append({

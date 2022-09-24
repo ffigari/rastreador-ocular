@@ -111,8 +111,90 @@ class draw:
             )
             ax.set_ylim([-1.3, 1.3])
 
-
 class plot:
+    class starting_screens_widths:
+        def __init__(self, first_sws, second_sws):
+            fig, ax = plt.subplots()
+
+            def fn(sws):
+                runs_width = dict()
+                for d in sws:
+                    runs_width[d['run_id']] = d['width']
+                return list(runs_width.values())
+
+            ax.hist(
+                [fn(first_sws), fn(second_sws)],
+                bins=15,
+                ec='black',
+                label=['Primera instancia', 'Segunda instancia']
+            )
+            ax.set_ylabel('Cantidad de sujetos')
+            ax.set_xlabel('Ancho de pantalla (en píxeles)')
+            plt.legend()
+            self.fig = fig
+
+    class starting_sampling_frequencies:
+        def __init__(self, first_sfs, second_sfs):
+            fig, ax = plt.subplots()
+            ax.hist(
+                [
+                    [x['frequency'] for x in first_sfs],
+                    [x['frequency'] for x in second_sfs]
+                ],
+                bins=15,
+                ec='black',
+                label=['Primera instancia', 'Segunda instancia']
+            )
+            ax.set_ylabel('Cantidad de ensayos')
+            ax.set_xlabel('Frecuencia (en Hz)')
+            plt.legend()
+            self.fig = fig
+
+    class single_trial:
+        def __init__(self, t):
+            fig, ax = plt.subplots()
+
+            es = t.estimations
+            pre_n_xs = [e['pre_normalization_x'] for e in es]
+            min_x, max_x = min(pre_n_xs), max(pre_n_xs)
+
+            [ax.add_patch(Rectangle(
+                (bot, min_x), top - bot, max_x - min_x,
+                color=color, alpha=0.1, label=label
+            )) for (bot, top, color, label) in [
+                (es[0]['t'], t.iti_end, 'red', 'Tiempo entre ensayos'),
+                (t.iti_end, t.fix_end, 'blue', 'Fase de fijación'),
+                (t.fix_end, t.intra_end, 'gray', 'Desaparicion del estímulo'),
+                (t.intra_end, t.response_end, 'green', 'Fase de respuesta'),
+            ]]
+
+            # TODO: Idealmente esto debería usar las estimaciones pre
+            #       interpolación
+            ax.plot(
+                [e['t'] for e in es],
+                pre_n_xs,
+                color='black',
+                alpha=0.4,
+            )
+            ax.scatter(
+                [e['t'] for e in es],
+                [e['pre_normalization_x'] for e in es],
+                color='black',
+                marker="1"
+            )
+            ax.axhline(
+                t.run_center_x,
+                color="black",
+                alpha=0.4,
+                linestyle="--"
+            )
+            ax.set_ylabel('Coordenada horizontal (en píxeles)')
+            ax.set_xlabel('Tiempo (en ms)')
+            plt.legend()
+            self.fig = fig
+
+    # ---
+
     class normalization_effects:
         def __init__(self, run_subsample):
             fig, axes = plt.subplots(nrows=3)
