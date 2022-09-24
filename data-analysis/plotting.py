@@ -150,6 +150,35 @@ class plot:
             plt.legend()
             self.fig = fig
 
+    class sample:
+        class normalization_result:
+            def __init__(self, s):
+                fig, axes = plt.subplots(ncols=2)
+
+                ts = [t for t in s.ts.all() if t.saccade_type == 'anti']
+
+                draw.pre_normalization_trials(axes[0], ts)
+                axes[0].set_title('a) aspecto inicial')
+
+                for t in ts:
+                    axes[1].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[1].set_title('b) aspecto final')
+
+                axes[1].set_ylim(-1.5, 1.5)
+
+                axes[0].set_ylabel('Coordenada x (en píxeles)')
+                axes[0].set_xlabel('Tiempo (en ms)')
+
+                axes[1].set_ylabel('Coordenada x (normalizada)')
+                axes[1].set_xlabel('Tiempo (en ms)')
+
+                self.fig = fig
+
     class single_trial:
         class saccades:
             def __init__(self, t):
@@ -496,6 +525,11 @@ class plot:
                     ax,
                     first_starting_sample.subsample_by_run_id(run_id).ts.all())
                 ax.title.set_text('sujeto {}'.format(run_id))
+
+            if compact:
+                axes[0].set_ylabel('Coordenada x')
+                axes[0].set_xlabel('Tiempo (en ms)')
+                axes[1].set_xlabel('Tiempo (en ms)')
 
             handles, labels = (axes[-1]).get_legend_handles_labels()
             fig.legend(handles, labels, loc='lower center')

@@ -23,6 +23,18 @@ def _save_fig(figure_name, build_path, renderer):
     return output_file_logical_path
 
 class save_figure:
+    class normalization_example:
+        def __init__(_, s):
+            def renderer():
+                fig = plot.sample.normalization_result(s).fig
+                fig.set_size_inches(4.1, 2.2)
+                return fig
+
+            _save_fig(
+                'normalization-example',
+                'data-analysis/defensa/plots',
+                renderer
+            )
     class detected_saccades_example:
         def __init__(_, t):
             def renderer():
@@ -114,3 +126,5 @@ def build_defensa():
     )
     save_figure.skewed_estimations_examples(r.first_instance.starting_sample)
     save_figure.detected_saccades_example(good_looking_trial)
+    save_figure.normalization_example(
+        r.second_instance.starting_sample.subsample_by_run_id(104))

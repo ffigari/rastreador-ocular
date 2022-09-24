@@ -50,7 +50,31 @@
   \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{plots/skewed-estimations-examples.png}
+    \caption{Las estimaciones de algunos sujetos están desviadas de los valores reales}
   \end{figure}
+\end{frame}
+
+\begin{frame}{Limpieza y normalización}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item Ensayos descartados: \begin{itemize}
+          \item frecuencia menor a 15 Hz
+          \item a mano
+          \item si el sujeto se distrajo de la tarea
+        \end{itemize}
+        \item Frecuencia de muestreo: \textit{Upsampling} a 30 Hz usando
+          interpolación lineal
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{plots/normalization-example.png}
+        \caption{Normalizado y espejado}
+      \end{figure}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Detección de sacadas}
@@ -59,11 +83,16 @@
       \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{img/saccades-example.jpg}
+        \caption{Los movimientos oculares muestran qué elementos de una imagen
+        capturan la atención}
       \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
+      \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{plots/detected-saccades-example.png}
+        \caption{Sacadas detectadas sobre las estimaciones de un ensayo}
+      \end{figure}
     \end{column}
   \end{columns}
 \end{frame}
@@ -525,25 +554,6 @@
 \end{frame}
 
 \subsection{Limpieza y normalización}
-
-% No hacer mucho hincapié acá y comentar que en cualquier caso está disponible
-% la implementación
-\begin{frame}{~}
-
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      TODO: Ejemplo de la interpolación de estimaciones \par
-      TODO: Ejemplo de datos descartados
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\linewidth]{img/normalization-looks-example.png}
-      \end{figure}
-    \end{column}
-  \end{columns}
-
-\end{frame}
 
 \subsection{Detección de sacadas}
 
