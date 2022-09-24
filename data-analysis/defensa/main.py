@@ -23,6 +23,22 @@ def _save_fig(figure_name, build_path, renderer):
     return output_file_logical_path
 
 class save_figure:
+    class skewed_estimations_examples:
+        def __init__(_, first_starting_sample):
+            def renderer():
+                fig = plot.skewed_estimations_examples(
+                    first_starting_sample,
+                    compact=True
+                ).fig
+                fig.set_size_inches(5.8, 2.5)
+                return fig
+
+            _save_fig(
+                'skewed-estimations-examples',
+                'data-analysis/defensa/plots',
+                renderer
+            )
+
     class starting:
         class screens_widths:
             def __init__(_, first_sws, second_sws):
@@ -83,3 +99,4 @@ def build_defensa():
         r.first_instance.post_processing_metrics.widths,
         r.second_instance.post_processing_metrics.widths
     )
+    save_figure.skewed_estimations_examples(r.first_instance.starting_sample)

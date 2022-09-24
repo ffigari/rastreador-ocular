@@ -66,18 +66,18 @@ class draw:
                     [e['t'] for e in t.estimations],
                     [e['pre_normalization_x'] for e in t.estimations],
                     color="black",
-                    alpha=0.1
+                    alpha=0.05
                 )
             ax.axhline(
                 ts[0].run_center_x,
                 color="black",
-                label="Coordenada x real del centro de la pantalla"
+                label="Centro real"
             )
             ax.axhline(
                 mean([t.run_estimated_center_mean for t in ts]),
                 linestyle="--",
                 color="red",
-                label="Coordenada promedio estimada durante la fase de fijación"
+                label="Centro estimado"
             )
 
     class trial_over_ax:
@@ -464,16 +464,25 @@ class plot:
             self.fig = fig
 
     class skewed_estimations_examples:
-        def __init__(self, first_starting_sample):
+        def __init__(self, first_starting_sample, compact=False):
+
+
             fig, axes = plt.subplots(nrows=4, ncols=1, sharex=True)
+            if compact:
+                fig, axes = plt.subplots(nrows=1, ncols=2)
+
 
             # primera instancia
-            for run_id, ax in [
+            runs = [
+                (47, axes[0]),
+                (43, axes[1]),
+            ] if compact else [
                 (47, axes[0]),
                 (24, axes[1]),
                 (22, axes[2]),
                 (43, axes[3]),
-            ]:
+            ]
+            for run_id, ax in runs:
                 draw.pre_normalization_trials(
                     ax,
                     first_starting_sample.subsample_by_run_id(run_id).ts.all())
