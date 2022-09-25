@@ -15,8 +15,6 @@
 \setbeamertemplate{frametitle}{
   \insertsectionhead\par
   \vspace*{0.2mm}
-  \insertsubsectionhead\par
-  \vspace*{0.2mm}
   \insertframetitle
 }
 
@@ -84,7 +82,7 @@
       \begin{itemize}
         \item Comunmente resuelto con sistemas comerciales cerrados
         \item Costos altos mientras que el hardware en sí representa una
-          pequeña fracción de estos
+          pequeña fracción
         \item Imposibilidad de auditar la implementación
         \item Necesidad de asistir a un laboratorio
       \end{itemize}
@@ -149,12 +147,13 @@
   \begin{itemize}
     \item[\emoji{thumbs-up}] Posibilidad de reutilizar cámaras web
 
-    \item[\emoji{thumbs-up}] Compatibilidad con otras herramientas web, en
-      particular \texttt{JSPsych}
+    \item[\emoji{thumbs-up}] Compatibilidad con otras herramientas web
 
+    % TODO: Agregar división acá
     \item[\emoji{pinched-fingers}] Necesidad de implementar sobre
       \texttt{JavaScript}
 
+    % TODO: Agregar división acá
     % no sólo las webcams son variables si no que tmb la compu donde corre el 
     % programa
     \item[\emoji{thumbs-down}] Hardware variable de potencialmente bajo rendimiento
@@ -162,13 +161,17 @@
     % deben transmitirse en texto e imagenes sin que puedan hacerse
     % aclaraciones en el momento. esto implica una duración total del
     % experimento potencialmente mayor
-    \item[\emoji{thumbs-down}] Las instrucciones no pueden ser transmitidas en persona
+    \item[\emoji{thumbs-down}] Instrucciones transmitidas de manera
+      asincrónica a través del navegador
 
     % puede variar la luz o la disposición del hardware
     \item[\emoji{thumbs-down}] Ambiente físico no controlado
 
+    % TODO: Agregar división acá
     \item[\emoji{thumbs-down}] Limitados a una pequeña fracción de la
       bibliografía debido a tener una y sólo una cámara
+    \item[\emoji{thumbs-down}] Ausencia de invarianza frente a movimientos de
+      cabeza
   \end{itemize}
 
 \end{frame}
@@ -192,8 +195,6 @@
   \end{columns}
   \begin{itemize}
     \item[\emoji{thumbs-down}] Falta de estándar respecto de cómo calibrar
-    \item[\emoji{thumbs-down}] Ausencia de invarianza frente a movimientos de
-      cabeza
   \end{itemize}
 \end{frame}
 
@@ -223,7 +224,7 @@
           estimación de la mirada
         \item[\emoji{thumbs-down}] Calibración inadecuada
         \item[\emoji{thumbs-down}] Ausencia de notificación de descalibraciones
-        \item[\emoji{party-popper}] Corrregida falla de \texttt{WebGazer} que
+        \item[\emoji{party-popper}] Corregida falla de \texttt{WebGazer} que
           causaba \textit{crashes} del navegador en ciertas notebooks
       \end{itemize}
     \end{column}
@@ -487,75 +488,32 @@
 \begin{frame}{~}
   \begin{itemize}
     \item Campo aún en sus primeros pasos
-    \item Se obtuvo un prototipo de \textit{eye tracker} para navegadores web
+    \item El prototipo obtenido de \textit{eye tracker} para navegadores web
+      permitió replicar resultados generales
+    \item Rendimiento muy por debajo de aquellos
     \item Potencial para realizar análisis clínicos remotos
-    \item Precisión muy por debajo de aquella alcanzable por \textit{eye
-      trackers} profesionales
   \end{itemize}
 \end{frame}
 
-\subsection{Limitaciones}
-
-\begin{frame}{Implementativas}
-  TODO: Las limitaciones y trabajo futuro no ponerlas todas y en cambio referir
-  a la tesis \par
-
-. bajas frecuencias
-. pestañeos
-. estimación del tamaño de la pantalla
-. imprecisión en la duración de cada frame, problemático si se quiere mostrar
-  un estímulo durante una corta duración de tiempo
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.9\linewidth]{img/undetected-saccades-examples.png}
-    \caption{Ejemplos de sacadas no detectadas}
-  \end{figure}
+\begin{frame}{Limitaciones}
+  \begin{itemize}
+    \item[\emoji{cross-mark}] Tasas de correctitud demasiado altas
+    \item[\emoji{eye}] Pestañeos no considerados
+    \item[\emoji{magnifying-glass-tilted-right}] Falta de estudio sobre el
+      rendimiento del sistema
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Experimentales}
-. proporción de datos filtrados demasiado elevada
-. necesidad de revisar la causa de las altas tasas de correctitud obtenidas
-. representatividad de distintos grupos etarios
-\end{frame}
-
-\subsection{Trabajo futuro}
-
-\begin{frame}{Análisis de datos}
-. Investigar e implementar mecanismos estándares de detección de sacadas, lo
-  cual podría basarse en la previa construcción de un dataset etiquetado de
-  sacadas
-. Revisar criterios de exclusión para asegurarse de no estar filtrando datos
-  válidos
-. Realizar nuevas rondas de experimentación, estimando previamente la cantidad
-  de ensayos necesarios para asegurar cantidades suficientes en los grupos
-  incorrectos y en los distintos grupos etarios
-\end{frame}
-
-\begin{frame}{Análisis de sensibilidad}
-. propuesta sobre experimento para recolectar datos y establecer métricas de
-  calidad sobre las estimaciones obtenidas por la herramienta
-TODO: Acá combinar un poco lo que quedó en la tesis y lo que pensé para
-      sensitivity analysis
-\end{frame}
-
-\begin{frame}{Prototipo desarrollado}
-. optimizar frecuencia de muestreo
-. reexplorar detección de descalibraciones y qué significa que el sistema esté
-  descalibrado
-. mejorar la calibración, generalizarla a más puntos de interés
-. detección de pestañeos
-. estimación del tamaño de la pantalla y posibilidad de mostrar estímulos en
-  grados
-. verificación de condiciones iniciales
-TODO: Extender con lo que haya escrito en la tesis
-\end{frame}
-
-\begin{frame}{\textit{Eye tracking} en navegadores \textit{web}}
-. extender bibliografía que aplique a nuestro contexto
-. eye tracking web no podría atacar algunos problemas que sí puede el eye
-  tracking tradicional, pero al ser remoto y de bajo costo es posible que
-  permita atacar nuevos problemas. Deben entonces buscarse tales problemas
+\begin{frame}{Trabajo futuro}
+  \begin{itemize}
+    \item[\emoji{check-mark}] Revisar criterios de filtrado; explorar la
+      definición de correctitud en la tarea de antisacada
+    \item[\emoji{eyes}] Implementar detección de pestañeos; considerarlo
+      durante la calibración y durante los análisis posteriores
+    \item[\emoji{magnifying-glass-tilted-left}] Implementar análisis de
+      sensibilidad para estudiar el rendimiento; en particular buscar comparar
+      contra \textit{eye trackers} profesionales
+  \end{itemize}
 \end{frame}
 
 \end{document}
