@@ -1,6 +1,7 @@
 \documentclass[aspectratio=169]{beamer}
 
 \usepackage{subcaption}
+\usepackage{emoji}
 
 \title{Evaluación y desarrollo de \textit{eye tracking} remoto en navegadores
 \textit{web}}
@@ -28,19 +29,22 @@
 \begin{frame}{\texttt{WebGazer} como punto de partida}
 
   \begin{columns}
-    \begin{column}{.4\textwidth}
+    \begin{column}{.5\textwidth}
       \begin{itemize}
-        \item[+] Extracción de frames a través de la API del navegador
-        \item[+] Modelos de localización de los ojos y de estimación de la
-          mirada
-        \item[--] Calibración inadecuada
-        \item[--] Ausencia de notificación de descalibraciones
+        \item[\emoji{thumbs-up}] Extracción de frames a través de la API del
+          navegador
+        \item[\emoji{thumbs-up}] Modelos de localización de los ojos y de
+          estimación de la mirada
+        \item[\emoji{thumbs-down}] Calibración inadecuada
+        \item[\emoji{thumbs-down}] Ausencia de notificación de descalibraciones
+        \item[\emoji{party-popper}] Corrregida falla de \texttt{WebGazer} que
+          causaba \textit{crashes} del navegador en ciertas notebooks
       \end{itemize}
     \end{column}
 
-    \begin{column}{.6\textwidth}
+    \begin{column}{.5\textwidth}
       \begin{figure}
-        \includegraphics[width=0.6\linewidth]{img/facemesh-kepyoints.jpg}
+        \includegraphics[width=0.75\linewidth]{img/facemesh-kepyoints.jpg}
         \caption{\textit{Output} del modelo de \textit{facemesh} utilizado por
         \texttt{WebGazer} para la localización de los ojos}
       \end{figure}
@@ -58,8 +62,8 @@
     
     \item Validación post calibración implementada de similar manera
 
-    \item Optimización sobre \texttt{WebGazer} en base a estas diferencias en
-      la calibración
+    \item[\emoji{party-popper}] \texttt{WebGazer} adaptado para evitar cómputos
+      ya no necesarios
   \end{itemize}
 \end{frame}
 
@@ -71,6 +75,9 @@
         \item Basada en detectar movimiento
         \item Instanciada luego de cada calibración
         \item Verificación realizada para cada \textit{frame}
+        \item \emoji{party-popper} \texttt{WebGazer} adaptado para exponer los
+          recuadros calculados en cada \textit{frame} por la rutina de
+          localización de ojos
       \end{itemize}
     \end{column}
 
