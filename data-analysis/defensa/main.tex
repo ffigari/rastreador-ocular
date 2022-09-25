@@ -23,6 +23,68 @@
 
 \frame{\titlepage}
 
+\section{Implementación}
+
+\begin{frame}{\texttt{WebGazer} como punto de partida}
+
+  \begin{columns}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+        \item[+] Extracción de frames a través de la API del navegador
+        \item[+] Modelos de localización de los ojos y de estimación de la
+          mirada
+        \item[--] Calibración inadecuada
+        \item[--] Ausencia de notificación de descalibraciones
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{.6\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.6\linewidth]{img/facemesh-kepyoints.jpg}
+        \caption{\textit{Output} del modelo de \textit{facemesh} utilizado por
+        \texttt{WebGazer} para la localización de los ojos}
+      \end{figure}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}{Calibración y validación}
+  \begin{itemize}
+    \item Nuestro caso de uso no garantiza interacciones
+
+    \item Se muestran una serie de puntos, para cada uno de los cuales el
+      usuario tendrá que fijar la mirada y presionar la barra de espacio
+    
+    \item Validación post calibración implementada de similar manera
+
+    \item Optimización sobre \texttt{WebGazer} en base a estas diferencias en
+      la calibración
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Notificación de descalibración}
+
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \begin{itemize}
+        \item Basada en detectar movimiento
+        \item Instanciada luego de cada calibración
+        \item Verificación realizada para cada \textit{frame}
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{img/eyetracker-playground-screenshot.png}
+        \caption{Detección de movimiento en funcionamiento}
+      \end{figure}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
 \section{Experimentación}
 
 \begin{frame}{Caso de estudio: tarea de antisacadas}
@@ -495,95 +557,7 @@
 
 \section{Implementación}
 
-\subsection{\texttt{WebGazer} como punto de partida}
-
-\begin{frame}{~}
-
-  \begin{columns}
-    \begin{column}{.4\textwidth}
-      \begin{itemize}
-        \item[+] Extracción de frames a través de la API del navegador
-        \item[+] Modelos de localización de los ojos y de estimación de la
-          mirada
-        \item[--] Calibración inadecuada
-        \item[--] Ausencia de notificación de descalibraciones
-      \end{itemize}
-    \end{column}
-
-    \begin{column}{.6\textwidth}
-      \begin{figure}
-        \includegraphics[width=0.6\linewidth]{img/facemesh-kepyoints.jpg}
-        \caption{\textit{Output} del modelo de \textit{facemesh} utilizado por
-        \texttt{WebGazer} para la localización de los ojos}
-      \end{figure}
-    \end{column}
-  \end{columns}
-
-\end{frame}
-
-\subsection{Calibración y validación}
-
-\begin{frame}{~}
-  \begin{itemize}
-    % La calibración de WG asume que el usuario va a estar haciendo clicks o 
-    % moviendo el mouse. Siguiendo las líneas de PACE, cuando uno realiza estas
-    % acciones se asume que el sujeto está mirando al puntero, utilizando esto
-    % como nuevos datos de calibración
-    \item Nuestro caso de uso no garantiza interacciones
-
-    \item Se muestran una serie de puntos, para cada uno de los cuales el
-      usuario tendrá que fijar la mirada y presionar la barra de espacio; 
-    
-    \item Validación post calibración implementada de similar manera
-
-    \item Optimización sobre \texttt{WebGazer} en base a estas diferencias en
-      la calibración
-  \end{itemize}
-
-  TODO: un diagrama que muestre las posiciones de los puntos; resaltar que en
-  base a nuestra calibración no va a poder estudiarse el eje vertical
-\end{frame}
-
-\subsection{Descalibración}
-
-\begin{frame}{~}
-
-  \begin{columns}
-    \begin{column}{.5\textwidth}
-      TODO: Pseudocódigo instanciación al finalizar la calibración \par
-      TODO: Pseudocódigo del chequeo en cada frame
-    \end{column}
-
-    \begin{column}{.5\textwidth}
-      TODO: Screenshot del playground de la región válida
-    \end{column}
-  \end{columns}
-
-\end{frame}
-
-\subsection{Interfaces lógicas}
-
-\begin{frame}{~}
-  \begin{columns}
-    \begin{column}{.5\textwidth}
-      \begin{itemize}
-        \item División explícita entre el código propio del \textit{eye
-          tracker} y aquel de la interfaz \texttt{JSPsych}
-
-          % Esto evita acoplamiento del código y facilita el desarrollo
-        \item Un \textit{playground} para cada interfaz
-      \end{itemize}
-    \end{column}
-
-    \begin{column}{.5\textwidth}
-      TODO: Par de screenshots de los playgrounds
-    \end{column}
-  \end{columns}
-
-\end{frame}
-
 \section{Experimentación}
-
 
 \section{Resultados}
 
