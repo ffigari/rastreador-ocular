@@ -17,7 +17,7 @@ def _save_fig(figure_name, build_path, renderer):
     fig = renderer()
     rm_rf(output_file_build_path)
     plt.tight_layout()
-    fig.savefig(output_file_build_path, format=output_format)
+    fig.savefig(output_file_build_path, format=output_format, dpi=500)
     plt.close(fig)  # https://stackoverflow.com/a/9890599/2923526
 
     return output_file_logical_path

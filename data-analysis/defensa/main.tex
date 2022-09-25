@@ -24,6 +24,192 @@
 
 \frame{\titlepage}
 
+\section{Introducción}
+
+\begin{frame}{~}
+
+  \begin{itemize}
+      \item Los ojos son una ventana a los procesos cognitivos y estados
+        emocionales de una persona
+      \item Importante fuente de información que puede ser estudiada de manera
+        no-invasiva
+  \end{itemize}
+
+  \begin{figure}
+    \begin{subfigure}{0.49\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{img/eye-link-eeg.jpg}
+      \caption{\textit{Eye tracking} combinado con electroencefalograma}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{img/reading-fixations-saccades.jpg}
+      \caption{Estimación de la mirada durante una tarea de lectura}
+    \end{subfigure}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}{\textit{Eye tracking} de laboratorio}
+
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Consiste en estimar que posición de una pantalla está mirando el
+          usuario
+        \item Un \textit{stream} de frames de la webcam como \textit{input}
+        \item Implica resolver: \begin{itemize}
+            \item Localización de los ojos
+            \item Estimación de la mirada
+            \item Mecanismos de calibración
+            \item Criterios de recalibración
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/eye-link-chinrest.jpg}
+        \caption{La reestricción de movimiento facilita mantener calibrado el
+        sistema}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{\textit{Eye tracking} de laboratorio}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Comunmente resuelto con sistemas comerciales cerrados
+        \item Costos altos mientras que el hardware en sí representa una
+          pequeña fracción de estos
+        \item Imposibilidad de auditar la implementación
+        \item Necesidad de asistir a un laboratorio
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.8\linewidth]{img/eye-tracker-head-mounted.jpg}
+        \caption{\textit{Eye tracker} montado a la cabeza}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{\textit{Eye tracking} alternativo}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+        \item Interés en proveer software de \textit{eye tracking}
+
+        \item Posibilidad de \textit{crowdsourcing}
+
+          % e.g., detectar pérdidas de atención en clases masivas
+        \item Potencial para nuevas aplicaciones
+      \end{itemize}
+
+    \end{column}
+    \begin{column}{0.6\textwidth}
+
+      \begin{figure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/external-webcam.jpg}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/notebook.jpg}
+        \end{subfigure}
+        \caption{Webcams domésticas ya disponibles}
+      \end{figure}
+
+      \begin{figure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.6\linewidth]{img/basler-camera.jpg}
+        \end{subfigure}
+        \begin{subfigure}{0.49\textwidth}
+          \centering
+          \includegraphics[width=0.8\linewidth]{img/basler-cameras-with-lens.png}
+        \end{subfigure}
+        \caption{Hardware profesional adquirible por una fracción del costo}
+      \end{figure}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Implicancias del contexto remoto de navegador \textit{web}}
+
+  \begin{itemize}
+    \item[\emoji{thumbs-up}] Posibilidad de reutilizar cámaras web
+
+    \item[\emoji{thumbs-up}] Compatibilidad con otras herramientas web, en
+      particular \texttt{JSPsych}
+
+    \item[\emoji{pinched-fingers}] Necesidad de implementar sobre
+      \texttt{JavaScript}
+
+    % no sólo las webcams son variables si no que tmb la compu donde corre el 
+    % programa
+    \item[\emoji{thumbs-down}] Hardware variable de potencialmente bajo rendimiento
+
+    % deben transmitirse en texto e imagenes sin que puedan hacerse
+    % aclaraciones en el momento. esto implica una duración total del
+    % experimento potencialmente mayor
+    \item[\emoji{thumbs-down}] Las instrucciones no pueden ser transmitidas en persona
+
+    % puede variar la luz o la disposición del hardware
+    \item[\emoji{thumbs-down}] Ambiente físico no controlado
+
+    \item[\emoji{thumbs-down}] Limitados a una pequeña fracción de la
+      bibliografía debido a tener una y sólo una cámara
+  \end{itemize}
+
+\end{frame}
+\begin{frame}{Otros trabajos}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.8\linewidth]{img/pupil-ext.png}
+        \includegraphics[width=0.8\linewidth]{img/PACE.png}
+      \end{figure}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{img/webgazer.png}
+        \includegraphics[width=\linewidth]{img/turker-gaze.png}
+      \end{figure}
+    \end{column}
+  \end{columns}
+  \begin{itemize}
+    \item[\emoji{thumbs-down}] Falta de estándar respecto de cómo calibrar
+    \item[\emoji{thumbs-down}] Ausencia de invarianza frente a movimientos de
+      cabeza
+  \end{itemize}
+\end{frame}
+
+\section{Objetivos}
+
+\begin{frame}{~}
+
+  \begin{itemize}
+    \item Evaluar implementaciones recientes con similares motivaciones
+    \item Implementar un prototipo de \textit{eye tracker} que corra en
+      navegadores \textit{web}
+    \item Establecer su capacidad en replicar conclusiones establecidas con
+      \textit{eye trackers} tradicionales de laboratorio
+  \end{itemize}
+\end{frame}
+
 \section{Implementación}
 
 \begin{frame}{\texttt{WebGazer} como punto de partida}
@@ -31,8 +217,8 @@
   \begin{columns}
     \begin{column}{.5\textwidth}
       \begin{itemize}
-        \item[\emoji{thumbs-up}] Extracción de frames a través de la API del
-          navegador
+        \item[\emoji{thumbs-up}] Extracción de \textit{frames} a través de la
+          API del navegador
         \item[\emoji{thumbs-up}] Modelos de localización de los ojos y de
           estimación de la mirada
         \item[\emoji{thumbs-down}] Calibración inadecuada
@@ -75,7 +261,7 @@
         \item Basada en detectar movimiento
         \item Instanciada luego de cada calibración
         \item Verificación realizada para cada \textit{frame}
-        \item \emoji{party-popper} \texttt{WebGazer} adaptado para exponer los
+        \item[\emoji{party-popper}] \texttt{WebGazer} adaptado para exponer los
           recuadros calculados en cada \textit{frame} por la rutina de
           localización de ojos
       \end{itemize}
@@ -253,9 +439,9 @@
     \caption{Segunda instancia}
   \end{table}
 
-  % TODO: Poner marker negativo acá
-  En la bibliografía para la tarea de antisacadas se reportan \textbf{valores
-  de correctitud} más cercanos al rango $[60\%, 75\%]$.
+  \emoji{thumbs-down} En la bibliografía para la tarea de antisacadas se
+  reportan \textbf{valores de correctitud} más cercanos al rango $[60\%,
+  75\%]$.
 \end{frame}
 
 \begin{frame}{Menos datos de lo esperado}
@@ -296,379 +482,13 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{~}
-  fin
-\end{frame}
-
-\section{Motivación}
-
-\begin{frame}{~}
-
-  \begin{itemize}
-      \item Los ojos como entrada a los procesos cognitivos y estados
-        emocionales de una persona
-      \item Frecuentemente estudiados en el contexto de la neuropsicología
-        digital para estimar el comportamiento
-      \item Importante incluso cuando no son el foco del análisis
-        (\textit{e.g.}, detección de caras)
-      % utilizado también en el desarollo HMI, en el estudio de usabilidad de
-      % interfaces, recientemente en el campo de la oftalmología para estimar
-      % el campo visual
-      \item Usos en otras disciplinas
-  \end{itemize}
-
-  \begin{figure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{img/eye-link-eeg.jpg}
-      \caption{\textit{Eye tracking} combinado con electroencefalograma}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{img/reading-fixations-saccades.jpg}
-      \caption{Estimación de la mirada durante una tarea de lectura}
-    \end{subfigure}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}{~}
-
-  \begin{itemize}
-    \item Comunmente resuelto con sistemas comerciales cerrados
-    \item Costos altos (entre 5000 y 40000 euros) mientras que el hardware en
-      sí representa una pequeña fracción de estos (entre 200 y 600 euros)
-
-    % si falta algún dato (e.g., la precisión del diámetro de la pupila) no
-    % se lo puede saber
-    \item Imposibilidad de auditar la implementación
-    \item Necesidad de asistir a un laboratorio
-  \end{itemize}
-
-  \begin{figure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.6\linewidth]{img/eye-link-chinrest.jpg}
-      \caption{La reestricción de movimiento facilita mantener calibrado el
-      sistema}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-      \centering
-      \includegraphics[width=0.5\linewidth]{img/eye-tracker-head-mounted.jpg}
-      \caption{\textit{Eye tracker} montado a la cabeza}
-    \end{subfigure}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}{~}
-
-  \begin{columns}
-    \begin{column}{0.4\textwidth}
-      \begin{itemize}
-        \item Interés en proveer software de \textit{eye tracking}
-
-        \item Posibilidad de \textit{crowdsourcing}
-
-          % e.g., detectar pérdidas de atención en clases masivas
-        \item Potencial para nuevas aplicaciones
-      \end{itemize}
-
-    \end{column}
-    \begin{column}{0.6\textwidth}
-
-      \begin{figure}
-        \begin{subfigure}{0.49\textwidth}
-          \centering
-          \includegraphics[width=0.8\linewidth]{img/external-webcam.jpg}
-        \end{subfigure}
-        \begin{subfigure}{0.49\textwidth}
-          \centering
-          \includegraphics[width=0.8\linewidth]{img/notebook.jpg}
-        \end{subfigure}
-        \caption{Webcams domésticas ya disponibles}
-      \end{figure}
-
-      \begin{figure}
-        \begin{subfigure}{0.49\textwidth}
-          \centering
-          \includegraphics[width=0.6\linewidth]{img/basler-camera.jpg}
-        \end{subfigure}
-        \begin{subfigure}{0.49\textwidth}
-          \centering
-          \includegraphics[width=0.8\linewidth]{img/basler-cameras-with-lens.png}
-        \end{subfigure}
-        \caption{Hardware profesional adquirible por una fracción del costo}
-      \end{figure}
-
-
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\section{Objetivos}
-
-\begin{frame}{~}
-
-  \begin{itemize}
-    \item Evaluar implementaciones recientes con similares motivaciones
-    % - entender el problema
-    % - definir los requerimientos
-    % - establecer qué puede reutilizarse
-
-    \item Implementar un prototipo de \textit{eye tracker} que corra en
-      navegadores \textit{web} y que esté orientado a análisis clínicos
-    % - adaptar lo que pudiera reutilizarse
-    % - implementar los módulos que faltaran
-
-    \item Emular análisis clínicos remotos y recolectar datos utilizando el
-      prototipo implementado
-
-    \item Establecer la capacidad del prototipo en replicar conclusiones
-      establecidas con \textit{eye trackers} profesionales de laboratorio
-
-  \end{itemize}
-
-\end{frame}
-
-\section{Desarmando el problema de \textit{eye tracking} web}
-
-\begin{frame}{~}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \item Estimar qué coordenada de la pantalla está mirando el usuario en
-          un contexto de estudios clínicos
-        \item Un \textit{stream} de frames de la webcam como \textit{input}
-        \item Se divide en \textbf{localizar los ojos} y luego \textbf{estimar
-          la mirada}
-        \item Calibraciones necesarias en cada sesión de uso
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        TODO: Reemplazar esto por un único plot que ejemplifique el output
-        deseado
-        \includegraphics[width=\linewidth]{img/eye-tracking-output-example.png}
-        \caption{Sacadas detectadas sobre serie de tiempo de la coordenada x}
-      \end{figure}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{~}
-    \begin{itemize}
-    \item Resultados consistentes dentro de una misma población
-    % - mayor tasa de correctitud para los casos de prosacada que para aquellos de antisacada
-    % - para los grupos correctos se esperan mayores tiempos de respuesta en las repeticiones de antisacadas que en aquellas de prosacadas
-    % - a mayor edad menor rendimiento en la tarea, tanto en latencia como en correctitud
-
-    \item Búsqueda de establecer resultados para poblaciones de distinta condición neuropsicológica
-    % - ditintos tipos de lesiones cerebrales
-    % - déficit de atención, esquizofrenia, síndrome de Parkinson, síndrome de Tourette
-    % - individuos sanos, efectos de la edad
-
-    \item Comparación dificultosa entre distintos trabajos
-    % - se obtienen valores del mismo orden (RT y correctitud) para pacientes sanos en un estudio que para pacientes con esquizofrenia de otro estudio
-    \end{itemize}
-
-\end{frame}
-
-\section{Alternativas al \textit{eye tracking} tradicional}
-
-\subsection{Trabajos previos}
-
-\begin{frame}{~}
-
-  TODO: Separar esto en varios frames
-  \begin{itemize}
-    \item \texttt{PupilEXT}: software para realizar pupilometría; deben
-      proveerse cámaras profesionales y emisores de luz infrarroja; TODO:
-      imagen pupilometría
-
-    % hay que resaltar la importancia de esto de analizar el momento de mayor
-    % coincidencia
-    \item \texttt{PACE}: aplicación de escritorio basada en webcam; calibran en
-      base a interacciones del usuario; analizar el momento de mayor
-      coincidencia entre la mirada y la posición de la interacción; TODO:
-      alguna imagen del paper
-
-    \item \texttt{TurkerGaze}: aplicación web basada en webcam; generación de
-      mapas de saliencia a través de \textit{crowdsourcing}; TODO: imagen mapas
-      de saliencia
-
-    \item \texttt{WebGazer}: aplicación web basada en webcam; se basan en
-      \texttt{PACE} y \texttt{TurkerGaze}; provisto en forma de paquete; TODO:
-      screenshot del paquete
-
-  \end{itemize}
-
-\end{frame}
-
-\subsection{Implicancias del contexto remoto de navegador \textit{web}}
-
-\begin{frame}{~}
-
-  \begin{itemize}
-    \item[+] Posibilidad de reutilizar cámaras web
-
-    \item[+] Compatibilidad con otras herramientas web, en particular
-      \texttt{JSPsych}
-
-    % no es el fin del mundo pero es un lenguaje bastante odiado e implica
-    % dificultades en cuanto a la precisión. Por ejemplo, la duración de cada
-    % frame va a ser variable, lo que dificulta mostrar estímulos durante
-    % cortas cantidades de tiempo
-    \item Necesidad de implementar sobre JavaScript
-
-    % no sólo las webcams son variables si no que tmb la compu donde corre el 
-    % programa
-    \item[--] Hardware variable de potencialmente bajo rendimiento
-
-    % deben transmitirse en texto e imagenes sin que puedan hacerse
-    % aclaraciones en el momento. esto implica una duración total del
-    % experimento potencialmente mayor
-    \item[--] Las instrucciones no pueden ser transmitidas en persona
-
-    % puede variar la luz o la disposición del hardware
-    \item[--] Ambiente físico no controlado
-  \end{itemize}
-
-  TODO: Screenshots de JSPsych y de Amazon Mechanical Turk
-
-\end{frame}
-
-\subsection{Modelado de la mirada}
-
-\begin{frame}{~}
-  \begin{itemize}
-    % no entrar en detalle con esto pero mencionar brevemente por qué
-    \item Limitados a una pequeña fracción de la bibliografía debido a tener
-      una y sólo una cámara
-    
-    % acuerdo en que hay que mostar una serie de puntos pero no está claro
-    % cuántos, ni cómo, ni qué información rescatar. tmb hay interés en
-    % minimizar la duración del exp
-    \item Falta de estándar respecto de cómo calibrar
-
-    % ante ligeros movimientos de cabeza el sistema va a quedar descalibrado.
-    % hay que tenerlo en cuenta en el flow del experimento. puede recalibrarse
-    % cada un tiempo fijo (TG), agregar data de calibración a medida que avanza
-    % el experimento (WG) o bien implementarse alguna heurística para decidir
-    % cuándo el sistema necesita una recalibración
-    \item Ausencia de invarianza frente a movimientos de cabeza y de
-      reestricción de movimiento
-  \end{itemize}
-\end{frame}
-
-\section{Implementación}
-
-\section{Experimentación}
-
-\section{Resultados}
-
-\subsection{Características de los datos}
-
-\begin{frame}{Frecuencias de muestreo}
-
-  TODO: Acomodar subplots y mostrarlo solo por estimaciones para que sea menos
-  lío
-  \begin{figure}
-    \includegraphics[width=0.7\linewidth]{img/second-sampling-frequencies-distribution.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}{Anchos de pantalla}
-
-  TODO: Acomodar subplots y mostrarlo solo por estimaciones para que sea menos
-  lío
-  \begin{figure}
-    \includegraphics[width=0.7\linewidth]{img/second-widths-distribution.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}{Estimaciones desviadas}
-
-  TODO: Acomodar subplots
-  \begin{figure}
-    \includegraphics[width=0.8\linewidth]{img/skewed-estimations-examples.png}
-  \end{figure}
-
-\end{frame}
-
-\subsection{Limpieza y normalización}
-
-\subsection{Detección de sacadas}
-
-\begin{frame}{~}
-
-  Luego de normalizar, se considerará un intervalo como una sacada si:
-  \begin{enumerate}
-    \item La mirada se mueve en una misma dirección
-    \item El intervalo dura al menos 40 ms
-    \item Se recorre \textit{cierta} distancia mínima durante ese intervalo
-    \item El desplazamiento es lo \textit{suficientemente rápido}
-  \end{enumerate}
-  Implementación \textit{ad hoc} cuya calidad no fue estudiada.
-
-\end{frame}
-
-\subsection{Conclusiones generales replicadas}
-
-\begin{frame}{~}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\linewidth]{img/second-disaggregated-prosaccades.png}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\linewidth]{img/second-disaggregated-antisaccades.png}
-      \end{figure}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\subsection{Grupos etarios no representados}
-
-\begin{frame}{~}
-  TODO: Cambiarlo para que sólo muestre los sujetos y no los ensayos
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-  \begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{img/first-ages-distribution.png}
-    \caption{Primera instancia}
-  \end{figure}
-      
-    \end{column}
-    \begin{column}{0.5\textwidth}
-  \begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{img/second-ages-distribution.png}
-    \caption{Segunda instancia}
-  \end{figure}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\subsection{Menos datos de lo esperado}
-
-
-
 \section{Conclusiones}
 
 \begin{frame}{~}
   \begin{itemize}
+    \item Campo aún en sus primeros pasos
     \item Se obtuvo un prototipo de \textit{eye tracker} para navegadores web
     \item Potencial para realizar análisis clínicos remotos
-    \item Campo aún en sus primeros pasos
     \item Precisión muy por debajo de aquella alcanzable por \textit{eye
       trackers} profesionales
   \end{itemize}
