@@ -308,23 +308,24 @@
 \end{frame}
 
 \begin{frame}{Limpieza y normalización}
+  \begin{itemize}
+    \item Datos de distintas fuentes
+    \item Un formato común simplificaría su uso
+  \end{itemize}
+
   \begin{columns}
-    \begin{column}{0.4\textwidth}
-      \begin{itemize}
-        \item Ensayos descartados: \begin{itemize}
-          \item frecuencia menor a 15 Hz
-          \item a mano
-          \item si el sujeto se distrajo de la tarea
-        \end{itemize}
-        \item Frecuencia de muestreo: \textit{Upsampling} a 30 Hz usando
-          interpolación lineal
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.5\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\linewidth]{plots/normalization-example.png}
-        \caption{Normalizado y espejado}
+        \includegraphics[width=\linewidth]{plots/normalization-example-104.png}
+        \caption{Antisacadas del sujeto 104}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{plots/normalization-example-70.png}
+        \caption{Antisacadas del sujeto 70}
       \end{figure}
     \end{column}
   \end{columns}

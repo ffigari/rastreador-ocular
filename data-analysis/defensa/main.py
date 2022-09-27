@@ -30,8 +30,9 @@ class save_figure:
                 fig.set_size_inches(4.1, 2.2)
                 return fig
 
+            ri = s.ts.all()[0].run_id
             _save_fig(
-                'normalization-example',
+                'normalization-example-{}'.format(ri),
                 'data-analysis/defensa/plots',
                 renderer
             )
@@ -127,4 +128,6 @@ def build_defensa():
     save_figure.skewed_estimations_examples(r.first_instance.starting_sample)
     save_figure.detected_saccades_example(good_looking_trial)
     save_figure.normalization_example(
-        r.second_instance.starting_sample.subsample_by_run_id(104))
+            r.second_instance.starting_sample.subsample_by_run_id(104))
+    save_figure.normalization_example(
+            r.second_instance.starting_sample.subsample_by_run_id(70))
