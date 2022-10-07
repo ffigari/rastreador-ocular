@@ -66,18 +66,18 @@ class draw:
                     [e['t'] for e in t.estimations],
                     [e['pre_normalization_x'] for e in t.estimations],
                     color="black",
-                    alpha=0.1
+                    alpha=0.05
                 )
             ax.axhline(
                 ts[0].run_center_x,
                 color="black",
-                label="Coordenada x real del centro de la pantalla"
+                label="Centro real"
             )
             ax.axhline(
                 mean([t.run_estimated_center_mean for t in ts]),
                 linestyle="--",
                 color="red",
-                label="Coordenada promedio estimada durante la fase de fijación"
+                label="Centro estimado"
             )
 
     class trial_over_ax:
@@ -111,8 +111,128 @@ class draw:
             )
             ax.set_ylim([-1.3, 1.3])
 
-
 class plot:
+    class starting_screens_widths:
+        def __init__(self, first_sws, second_sws):
+            fig, ax = plt.subplots()
+
+            def fn(sws):
+                runs_width = dict()
+                for d in sws:
+                    runs_width[d['run_id']] = d['width']
+                return list(runs_width.values())
+
+            ax.hist(
+                [fn(first_sws), fn(second_sws)],
+                bins=15,
+                ec='black',
+                label=['Primera instancia', 'Segunda instancia']
+            )
+            ax.set_ylabel('Cantidad de sujetos')
+            ax.set_xlabel('Ancho de pantalla (en píxeles)')
+            plt.legend()
+            self.fig = fig
+
+    class starting_sampling_frequencies:
+        def __init__(self, first_sfs, second_sfs):
+            fig, ax = plt.subplots()
+            ax.hist(
+                [
+                    [x['frequency'] for x in first_sfs],
+                    [x['frequency'] for x in second_sfs]
+                ],
+                bins=15,
+                ec='black',
+                label=['Primera instancia', 'Segunda instancia']
+            )
+            ax.set_ylabel('Cantidad de ensayos')
+            ax.set_xlabel('Frecuencia (en Hz)')
+            plt.legend()
+            self.fig = fig
+
+    class sample:
+        class normalization_result:
+            def __init__(self, s):
+                fig, axes = plt.subplots(ncols=2)
+
+                ts = [t for t in s.ts.all() if t.saccade_type == 'anti']
+
+                draw.pre_normalization_trials(axes[0], ts)
+                axes[0].set_title('a) aspecto inicial')
+
+                for t in ts:
+                    axes[1].plot(
+                        [e['t'] for e in t.estimations],
+                        [e['x'] for e in t.estimations],
+                        color="black",
+                        alpha=0.1
+                    )
+                axes[1].set_title('b) aspecto final')
+
+                axes[1].set_ylim(-1.5, 1.5)
+
+                axes[0].set_ylabel('Coordenada x (en píxeles)')
+                axes[0].set_xlabel('Tiempo (en ms)')
+
+                axes[1].set_ylabel('Coordenada x (normalizada)')
+                axes[1].set_xlabel('Tiempo (en ms)')
+
+                self.fig = fig
+
+    class single_trial:
+        class saccades:
+            def __init__(self, t):
+                fig, ax = plt.subplots()
+                draw.trial_over_ax(ax, t)
+                ax.set_ylabel('Coordenada x normalizada')
+                ax.set_xlabel('Tiempo (en ms)')
+                self.fig = fig
+
+        class phases:
+            def __init__(self, t):
+                fig, ax = plt.subplots()
+
+                es = t.estimations
+                pre_n_xs = [e['pre_normalization_x'] for e in es]
+                min_x, max_x = min(pre_n_xs), max(pre_n_xs)
+
+                [ax.add_patch(Rectangle(
+                    (bot, min_x), top - bot, max_x - min_x,
+                    color=color, alpha=0.1, label=label
+                )) for (bot, top, color, label) in [
+                    (es[0]['t'], t.iti_end, 'red', 'Tiempo entre ensayos'),
+                    (t.iti_end, t.fix_end, 'blue', 'Fase de fijación'),
+                    (t.fix_end, t.intra_end, 'gray', 'Desaparicion del estímulo'),
+                    (t.intra_end, t.response_end, 'green', 'Fase de respuesta'),
+                ]]
+
+                # TODO: Idealmente esto debería usar las estimaciones pre
+                #       interpolación
+                ax.plot(
+                    [e['t'] for e in es],
+                    pre_n_xs,
+                    color='black',
+                    alpha=0.4,
+                )
+                ax.scatter(
+                    [e['t'] for e in es],
+                    [e['pre_normalization_x'] for e in es],
+                    color='black',
+                    marker="1"
+                )
+                ax.axhline(
+                    t.run_center_x,
+                    color="black",
+                    alpha=0.4,
+                    linestyle="--"
+                )
+                ax.set_ylabel('Coordenada horizontal (en píxeles)')
+                ax.set_xlabel('Tiempo (en ms)')
+                plt.legend()
+                self.fig = fig
+
+    # ---
+
     class normalization_effects:
         def __init__(self, run_subsample):
             fig, axes = plt.subplots(nrows=3)
@@ -382,20 +502,34 @@ class plot:
             self.fig = fig
 
     class skewed_estimations_examples:
-        def __init__(self, first_starting_sample):
+        def __init__(self, first_starting_sample, compact=False):
+
+
             fig, axes = plt.subplots(nrows=4, ncols=1, sharex=True)
+            if compact:
+                fig, axes = plt.subplots(nrows=1, ncols=2)
+
 
             # primera instancia
-            for run_id, ax in [
+            runs = [
+                (47, axes[0]),
+                (43, axes[1]),
+            ] if compact else [
                 (47, axes[0]),
                 (24, axes[1]),
                 (22, axes[2]),
                 (43, axes[3]),
-            ]:
+            ]
+            for run_id, ax in runs:
                 draw.pre_normalization_trials(
                     ax,
                     first_starting_sample.subsample_by_run_id(run_id).ts.all())
                 ax.title.set_text('sujeto {}'.format(run_id))
+
+            if compact:
+                axes[0].set_ylabel('Coordenada x')
+                axes[0].set_xlabel('Tiempo (en ms)')
+                axes[1].set_xlabel('Tiempo (en ms)')
 
             handles, labels = (axes[-1]).get_legend_handles_labels()
             fig.legend(handles, labels, loc='lower center')

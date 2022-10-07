@@ -8,3 +8,4 @@ www/build
 www/vendor
 data-analysis/data_extraction/raw_data/
 data-analysis/informe/build
+data-analysis/defensa/plots/
