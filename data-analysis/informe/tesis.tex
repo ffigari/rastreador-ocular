@@ -4,8 +4,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage[left=3cm,right=3cm,bottom=3.5cm,top=3.5cm]{geometry}
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{tabularx}
+\usepackage{lscape} 
 
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \usepackage{csquotes}  % https://tex.stackexchange.com/a/229653
 \addbibresource{refs/eye_tracking.bib}
 \addbibresource{refs/neuro_tools.bib}
@@ -91,7 +94,7 @@
 \newcommand{\etal}{\textit{et al.}\xspace}
 \newcommand{\eg}{\textit{e.g.}\xspace}
 \newcommand{\ie}{\textit{i.e.}\xspace}
-
+\vfuzz=2pt
 \begin{document}
 
 \def\tituloTesis{Aplicabilidad de eye tracking web remoto al diagnóstico de
@@ -117,6 +120,8 @@ condiciones neuropsicológicas}
 \pagestyle{headings}
 
 \input{intro/main.tex}
+
+\input{objetivos.tex}
 
 \chapter{Desarrollo}
 
