@@ -67,29 +67,31 @@ const interestRegionsXs = () => [
 ]
 
 let calibrationId = 0
-const calibrateAssistedly = () => {
-  let calibrationPointsCount, calibrationStimulusCoordinates;
-  let mapCoordinateToGaze;
-  return {
-    on_timeline_start() {
-      calibrationPointsCount = 0;
-      calibrationStimulusCoordinates = [
-        new Point(0, - quarterOfVerticalSpace()),
-        new Point(0, quarterOfVerticalSpace()),
-      ];
-      shuffle([
-        0,
-        - quarterOfHorizontalSpace() / 4,
-        quarterOfHorizontalSpace() / 4,
-      ]).forEach((
-        d
-      ) => interestRegionsXs().forEach((
-        x
-      ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
-    },
-    timeline: [{
-      type: jsPsychHtmlButtonResponse,
-      stimulus: `
+const calibrate = {
+  // Display points in the horizontal middle strip of the screen
+  middleStrip: () => {
+    let calibrationPointsCount, calibrationStimulusCoordinates;
+    let mapCoordinateToGaze;
+    return {
+      on_timeline_start() {
+        calibrationPointsCount = 0;
+        calibrationStimulusCoordinates = [
+          new Point(0, - quarterOfVerticalSpace()),
+          new Point(0, quarterOfVerticalSpace()),
+        ];
+        shuffle([
+          0,
+          - quarterOfHorizontalSpace() / 4,
+          quarterOfHorizontalSpace() / 4,
+        ]).forEach((
+          d
+        ) => interestRegionsXs().forEach((
+          x
+        ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
+      },
+      timeline: [{
+        type: jsPsychHtmlButtonResponse,
+        stimulus: `
         <h3>Calibración</h3>
         <p>
           Para cada punto que aparezca
@@ -100,101 +102,100 @@ const calibrateAssistedly = () => {
           <li>presioná la barra de espacio</li>
         </ol>
       `,
-      choices: ["Continuar"],
-      on_finish() {
-        mapCoordinateToGaze = rastoc.startCalibrationPhase("external");
-      },
-    }, {
-      timeline: [{
-        type: jsPsychPsychophysics,
-        background_color: '#d3d3d3',
-        stimuli: [{
-          obj_type: 'circle',
-          origin_center: true,
-          fill_color: 'blue',
-          radius: 20,
-          get startY() {
-            return calibrationStimulusCoordinates[calibrationPointsCount].y;
-          },
-          get startX() {
-            const {
-              x,
-              y,
-            } = calibrationStimulusCoordinates[calibrationPointsCount];
-            // The canvas won't be opened until after this current callback ends
-            setTimeout(() => {
-              let center;
-              try {
-                center = getPsychophysicsCanvasCenter();
-              } catch (e) {
-                console.error(e)
-                throw new Error("Failed to store center coordinate of canvas");
-              }
-              const fn = ({ key }) => {
-                if (key !== ' ') {
-                  return;
+        choices: ["Continuar"],
+        on_finish() {
+          mapCoordinateToGaze = rastoc.startCalibrationPhase("external");
+        },
+      }, {
+        timeline: [{
+          type: jsPsychPsychophysics,
+          background_color: '#d3d3d3',
+          stimuli: [{
+            obj_type: 'circle',
+            origin_center: true,
+            fill_color: 'blue',
+            radius: 20,
+            get startY() {
+              return calibrationStimulusCoordinates[calibrationPointsCount].y;
+            },
+            get startX() {
+              const {
+                x,
+                y,
+              } = calibrationStimulusCoordinates[calibrationPointsCount];
+              // The canvas won't be opened until after this current callback ends
+              setTimeout(() => {
+                let center;
+                try {
+                  center = getPsychophysicsCanvasCenter();
+                } catch (e) {
+                  console.error(e)
+                  throw new Error("Failed to store center coordinate of canvas");
                 }
-                mapCoordinateToGaze(center.add(x, y));
-                document.removeEventListener('keydown', fn);
-              };
-              document.addEventListener('keydown', fn);
-            }, 0)
-            return x;
-          },
-          show_start_time: 50,
-          show_end_time: 550,
-        }, {
-          obj_type: 'circle',
-          origin_center: true,
-          fill_color: 'black',
-          radius: 20,
-          get startY() {
-            return calibrationStimulusCoordinates[calibrationPointsCount].y;
-          },
-          get startX() {
-            return calibrationStimulusCoordinates[calibrationPointsCount].x;
-          },
-          show_start_time: 550,
+                const fn = ({ key }) => {
+                  if (key !== ' ') {
+                    return;
+                  }
+                  mapCoordinateToGaze(center.add(x, y));
+                  document.removeEventListener('keydown', fn);
+                };
+                document.addEventListener('keydown', fn);
+              }, 0)
+              return x;
+            },
+            show_start_time: 50,
+            show_end_time: 550,
+          }, {
+            obj_type: 'circle',
+            origin_center: true,
+            fill_color: 'black',
+            radius: 20,
+            get startY() {
+              return calibrationStimulusCoordinates[calibrationPointsCount].y;
+            },
+            get startX() {
+              return calibrationStimulusCoordinates[calibrationPointsCount].x;
+            },
+            show_start_time: 550,
+          }],
+          response_type: 'key',
+          response_start_time: 550,
+          choices: [' '],
+          on_finish(data) {
+            data["rastoc-type"] = "calibration-stimulus";
+            data["stimulus-coordinate"] = {
+              x: calibrationStimulusCoordinates[calibrationPointsCount].x,
+              y: calibrationStimulusCoordinates[calibrationPointsCount].y,
+            };
+            data["calibration-id"] = calibrationId
+            data["calibration-point-id"] = calibrationPointsCount;
+            data["inner-width"] = window.innerWidth;
+            data["inner-height"] = window.innerHeight;
+            calibrationPointsCount++;
+          }
         }],
-        response_type: 'key',
-        response_start_time: 550,
-        choices: [' '],
-        on_finish(data) {
-          data["rastoc-type"] = "calibration-stimulus";
-          data["stimulus-coordinate"] = {
-            x: calibrationStimulusCoordinates[calibrationPointsCount].x,
-            y: calibrationStimulusCoordinates[calibrationPointsCount].y,
-          };
-          data["calibration-id"] = calibrationId
-          data["calibration-point-id"] = calibrationPointsCount;
-          data["inner-width"] = window.innerWidth;
-          data["inner-height"] = window.innerHeight;
-          calibrationPointsCount++;
-        }
+        loop_function() {
+          const keep_looping =
+            calibrationPointsCount < calibrationStimulusCoordinates.length;
+          if (!keep_looping) {
+            rastoc.endCalibrationPhase("external");
+          }
+          return keep_looping;
+        },
       }],
-      loop_function() {
-        const keep_looping =
-          calibrationPointsCount < calibrationStimulusCoordinates.length;
-        if (!keep_looping) {
-          rastoc.endCalibrationPhase("external");
-        }
-        return keep_looping;
+      on_timeline_finish() {
+        calibrationId++;
       },
-    }],
-    on_timeline_finish() {
-      calibrationId++;
-    },
-  }
-}
-
-// Calibrate system by clicking freely over the screen and until space is
-// pressed.
-const calibrateFreely = () => {
-  return {
-    timeline: [{
-      type: jsPsychHtmlKeyboardResponse,
-      choices: [' '],
-      stimulus: `
+    }
+  },
+  // Calibrate system by clicking freely over the screen and until space is
+  // pressed.
+  freely: () => {
+    return {
+      timeline: [{
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
         <div>
           <h3>Free calibration</h3>
           <p>
@@ -212,22 +213,28 @@ const calibrateFreely = () => {
           </p>
         </div>
         `,
-      on_finish() {
-        rastoc.startCalibrationPhase("click");
+        on_finish() {
+          rastoc.startCalibrationPhase("click");
+        },
+      }, {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: '',
+        on_finish() {
+          rastoc.endCalibrationPhase("click");
+        },
+      }],
+      loop_function() {
+        return !rastoc.isCorrectlyCalibrated;
       },
-    }, {
-      type: jsPsychHtmlKeyboardResponse,
-      choices: [' '],
-      stimulus: '',
-      on_finish() {
-        rastoc.endCalibrationPhase("click");
-      },
-    }],
-    loop_function() {
-      return !rastoc.isCorrectlyCalibrated;
-    },
-  };
-};
+    };
+  },
+  fullscreen: () => {
+    return {
+      timeline: [],
+    }
+  },
+}
 
 // Validates current calibration by checking relative positioning of
 // estimations.
@@ -380,7 +387,7 @@ const validateCalibration = () => {
 // calibrated. Optionally, perform a validation after calibrating.
 const ensureCalibration = (options) => {
   options = options || {};
-  options.calibrationType = options.calibrationType || "assisted";
+  options.calibrationType = options.calibrationType || "middleStrip";
   options.forceCalibration = options.forceCalibration || false;
   options.performValidation = options.performValidation || false;
   options.maxRetries = options.maxRetries || 3;
@@ -399,10 +406,10 @@ const ensureCalibration = (options) => {
       trial_duration: 2000,
     }],
   }];
-  if (options.calibrationType === "assisted") {
-    body.push(calibrateAssistedly());
+  if (options.calibrationType === "middleStrip") {
+    body.push(calibrate.middleStrip());
   } else if (options.calibrationType === "free") {
-    body.push(calibrateFreely());
+    body.push(calibrate.freely());
   } else {
     throw new Error(`Unrecognized calibrationType=${options.calibrationType}`);
   }
@@ -465,8 +472,7 @@ const ensureCalibration = (options) => {
 window.rastocJSPsych = {
   EventsTrackingStart,
   EventsTrackingStop,
-  calibrateAssistedly,
-  calibrateFreely,
+  calibrate,
   ensureCalibration,
 };
 

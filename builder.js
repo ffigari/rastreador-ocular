@@ -6,7 +6,7 @@ const usage = () => {
   console.log(
   `index.js - compile relevant browser javascript files
   - 'node index.js build': build once
-  - 'node index.js watch': start on watch mode to recompile on each change inside './src'`
+  - 'node index.js watch': start on watch mode to recompile on each change`
   );
   process.exit(1);
 }

@@ -9,7 +9,7 @@ const conditionally = {
   showBlankScreen: () => {
     return {
       conditional_function() {
-        return getLastChoice().response === 3;
+        return getLastChoice().response === 4;
       },
       timeline: [{
         on_start() {
@@ -39,30 +39,40 @@ const conditionally = {
       }],
     }
   },
-  calibrateFreely: () => {
-    return {
-      conditional_function() {
-        return getLastChoice().response === 1;
-      },
-      timeline: [rastocJSPsych.calibrateFreely()],
-    }
-  },
-  calibrateAssistedly: () => {
-    return {
-      conditional_function() {
-        return getLastChoice().response === 2;
-      },
-      timeline: [rastocJSPsych.calibrateAssistedly()],
-    }
+  calibrate: {
+    freely: () => {
+      return {
+        conditional_function() {
+          return getLastChoice().response === 1;
+        },
+        timeline: [rastocJSPsych.calibrate.freely()],
+      }
+    },
+    middleStrip: () => {
+      return {
+        conditional_function() {
+          return getLastChoice().response === 2;
+        },
+        timeline: [rastocJSPsych.calibrate.middleStrip()],
+      }
+    },
+    fullscreen: () => {
+      return {
+        conditional_function() {
+          return getLastChoice().response === 3;
+        },
+        timeline: [rastocJSPsych.calibrate.fullscreen()],
+      }
+    },
   },
   showTask: () => {
     return {
       conditional_function() {
-        return getLastChoice().response === 4;
+        return getLastChoice().response === 5;
       },
       timeline: [
         rastocJSPsych.ensureCalibration({
-          calibrationType: "assisted",
+          calibrationType: "middleStrip",
           performValidation: true,
           maxRetries: 3,
         }), {
@@ -115,7 +125,8 @@ jsPsych.run([{
       choices: [
         'finish the experiment',
         'calibrate freely',
-        'calibrate assistedly',
+        'calibrate middle strip',
+        'calibrate fullscreen',
         'show a blank screen',
         'show task while ensuring calibration',
       ],
@@ -123,8 +134,9 @@ jsPsych.run([{
         data["rastoc-type"] = 'chosen-path';
       }
     },
-    conditionally.calibrateFreely(),
-    conditionally.calibrateAssistedly(),
+    conditionally.calibrate.freely(),
+    conditionally.calibrate.middleStrip(),
+    conditionally.calibrate.fullscreen(),
     conditionally.showBlankScreen(),
     conditionally.showTask(),
   ],
