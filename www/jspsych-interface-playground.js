@@ -102,7 +102,17 @@ const conditionally = {
       }],
       repetitions: 10,
     }
-  }
+  },
+  runVirtualChinrest: () => {
+    return {
+      conditional_function() {
+        return getLastChoice().response === 6;
+      },
+      timeline: [{
+        type: jsPsychVirtualChinrest,
+      }],
+    }
+  },
 }
 
 const getLastChoice = () => {
@@ -129,6 +139,7 @@ jsPsych.run([{
         'calibrate fullscreen',
         'show a blank screen',
         'show task while ensuring calibration',
+        'run virtual chinrest',
       ],
       on_finish(data) {
         data["rastoc-type"] = 'chosen-path';
@@ -139,6 +150,7 @@ jsPsych.run([{
     conditionally.calibrate.fullscreen(),
     conditionally.showBlankScreen(),
     conditionally.showTask(),
+    conditionally.runVirtualChinrest(),
   ],
   loop_function() {
     return getLastChoice().response !== 0;
