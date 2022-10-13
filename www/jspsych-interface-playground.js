@@ -53,7 +53,7 @@ const conditionally = {
         conditional_function() {
           return getLastChoice().response === 2;
         },
-        timeline: [rastocJSPsych.calibrate.middleStrip()],
+        timeline: [rastocJSPsych.calibrate.assistedly("middleStrip")],
       }
     },
     fullscreen: () => {
@@ -61,7 +61,7 @@ const conditionally = {
         conditional_function() {
           return getLastChoice().response === 3;
         },
-        timeline: [rastocJSPsych.calibrate.fullscreen()],
+        timeline: [rastocJSPsych.calibrate.assistedly("fullscreen")],
       }
     },
   },

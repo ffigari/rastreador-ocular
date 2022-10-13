@@ -50,44 +50,59 @@ class EventsTrackingStop {
   }
 }
 
+const thirdOfVerticalSpace = () => Math.round((1 / 3) * window.innerHeight);
 const quarterOfVerticalSpace = () => Math.round((1 / 4) * window.innerHeight);
 const sixthOfVerticalSpace = () => Math.round((1 / 6) * window.innerHeight)
 const thirdOfHorizontalSpace = () => Math.round((1 / 3) * window.innerWidth);
 const quarterOfHorizontalSpace = () => Math.round((1 / 4) * window.innerWidth);
 
-// Region of interest is now hardcoded to this 3 xs coordinates below since only
-// horizontal coordinates are relevant for the antisaccades task.
-// Positions of calibration stimulus are specified in pixels. This goes against
-// what's mostly found in the bibliography, where distances are usually defined
-// in degrees.
-const interestRegionsXs = () => [
+const horizontalInterestRegions = () => [
   0,
   - thirdOfHorizontalSpace(),
   thirdOfHorizontalSpace()
 ]
 
+const verticalInterestRegions = () => [
+  0,
+  - thirdOfVerticalSpace(),
+  thirdOfVerticalSpace()
+]
+
 let calibrationId = 0
 const calibrate = {
-  // Display points in the horizontal middle strip of the screen
-  middleStrip: () => {
+  assistedly: (calibrationType) => {
+    if (!["middleStrip", "fullscreen"]) {
+      throw new Error(`Unrecognized
+        calibrationType=${options.calibrationType}`);
+    }
+
     let calibrationPointsCount, calibrationStimulusCoordinates;
     let mapCoordinateToGaze;
     return {
       on_timeline_start() {
         calibrationPointsCount = 0;
-        calibrationStimulusCoordinates = [
-          new Point(0, - quarterOfVerticalSpace()),
-          new Point(0, quarterOfVerticalSpace()),
-        ];
-        shuffle([
-          0,
-          - quarterOfHorizontalSpace() / 4,
-          quarterOfHorizontalSpace() / 4,
-        ]).forEach((
-          d
-        ) => interestRegionsXs().forEach((
-          x
-        ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
+        if (calibrationType === "middleStrip") {
+          calibrationStimulusCoordinates = [
+            new Point(0, - quarterOfVerticalSpace()),
+            new Point(0, quarterOfVerticalSpace()),
+          ];
+          shuffle([
+            0,
+            - quarterOfHorizontalSpace() / 4,
+            quarterOfHorizontalSpace() / 4,
+          ]).forEach((
+            d
+          ) => horizontalInterestRegions().forEach((
+            x
+          ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
+        } else {
+          calibrationStimulusCoordinates = [];
+          horizontalInterestRegions().forEach((
+            x
+          ) => verticalInterestRegions().forEach((
+            y
+          ) => calibrationStimulusCoordinates.push(new Point(x, y))));
+        }
       },
       timeline: [{
         type: jsPsychHtmlButtonResponse,
@@ -252,7 +267,7 @@ const validateCalibration = () => {
         - sixthOfVerticalSpace()
       ].forEach((
         y
-      ) => interestRegionsXs().forEach((
+      ) => horizontalInterestRegions().forEach((
         x
       ) => validationStimulusCoordinates.push(new Point(x, y))));
       document.dispatchEvent(new Event('rastoc:validation-started'));
@@ -406,12 +421,10 @@ const ensureCalibration = (options) => {
       trial_duration: 2000,
     }],
   }];
-  if (options.calibrationType === "middleStrip") {
-    body.push(calibrate.middleStrip());
-  } else if (options.calibrationType === "free") {
+  if (options.calibrationType === "free") {
     body.push(calibrate.freely());
   } else {
-    throw new Error(`Unrecognized calibrationType=${options.calibrationType}`);
+    body.push(calibrate.assistedly(options.calibrationType));
   }
   if (options.performValidation) {
     body.push(validateCalibration());
@@ -475,4 +488,3 @@ window.rastocJSPsych = {
   calibrate,
   ensureCalibration,
 };
-
