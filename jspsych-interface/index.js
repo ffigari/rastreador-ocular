@@ -56,17 +56,30 @@ const sixthOfVerticalSpace = () => Math.round((1 / 6) * window.innerHeight)
 const thirdOfHorizontalSpace = () => Math.round((1 / 3) * window.innerWidth);
 const quarterOfHorizontalSpace = () => Math.round((1 / 4) * window.innerWidth);
 
-const horizontalInterestRegions = () => [
-  0,
-  - thirdOfHorizontalSpace(),
-  thirdOfHorizontalSpace()
-]
-
-const verticalInterestRegions = () => [
-  0,
-  - thirdOfVerticalSpace(),
-  thirdOfVerticalSpace()
-]
+const interestRegions = (dir) => {
+  // If [virtual-chinrest](https://www.jspsych.org/7.0/plugins/virtual-chinrest/)
+  // was run
+  // then
+  //    the pixel values of the interest regions will take degrees of vision
+  //    into account
+  // otherwise
+  //    fractions of the screen will be used
+  const px2degs = jsPsych.data.get().trials
+    .filter(t => typeof t["px2deg"] === "number")
+    .map(t => t["px2deg"])
+  let delta = dir === "horizontal"
+    ? thirdOfHorizontalSpace()
+    : thirdOfVerticalSpace();
+  if (px2degs.length > 0) {
+    delta = Math.round(Math.min(
+      10 * px2degs[px2degs.length - 1],
+      0.75 * window[dir === "horizontal" ? "innerWidth" : "innerHeight"] / 2
+    ));
+  }
+  return [0, - delta, delta];
+}
+const horizontalInterestRegions = () => interestRegions("horizontal");
+const verticalInterestRegions = () => interestRegions("vertical");
 
 let calibrationId = 0
 const calibrate = {
