@@ -81,12 +81,23 @@ const interestRegions = (dir) => {
 const horizontalInterestRegions = () => interestRegions("horizontal");
 const verticalInterestRegions = () => interestRegions("vertical");
 
+const getCalibrationStimulusCoordinates = () => {
+  let l = [];
+  horizontalInterestRegions().forEach((
+    x
+  ) => verticalInterestRegions().forEach((
+    y
+  ) => l.push(new Point(x, y))));
+  return shuffle(l);
+}
+
 let calibrationId = 0
 const calibrate = {
   assistedly: (calibrationType) => {
     if (!["middleStrip", "fullscreen"]) {
-      throw new Error(`Unrecognized
-        calibrationType=${options.calibrationType}`);
+      throw new Error(`Unrecognized calibrationType=${
+        options.calibrationType
+      }`);
     }
 
     let calibrationPointsCount, calibrationStimulusCoordinates;
@@ -109,15 +120,10 @@ const calibrate = {
             x
           ) => calibrationStimulusCoordinates.push(new Point(d + x, 0))));
         } else {
-          calibrationStimulusCoordinates = [];
-          horizontalInterestRegions().forEach((
-            x
-          ) => verticalInterestRegions().forEach((
-            y
-          ) => calibrationStimulusCoordinates.push(new Point(x, y))));
+          calibrationStimulusCoordinates = getCalibrationStimulusCoordinates();
           calibrationStimulusCoordinates = shuffle(
             calibrationStimulusCoordinates
-          ).concat(shuffle(calibrationStimulusCoordinates));
+          ).concat(calibrationStimulusCoordinates);
         }
       },
       timeline: [{
@@ -503,4 +509,5 @@ window.rastocJSPsych = {
   EventsTrackingStop,
   calibrate,
   ensureCalibration,
+  getCalibrationStimulusCoordinates,
 };
