@@ -115,6 +115,9 @@ const calibrate = {
           ) => verticalInterestRegions().forEach((
             y
           ) => calibrationStimulusCoordinates.push(new Point(x, y))));
+          calibrationStimulusCoordinates = shuffle(
+            calibrationStimulusCoordinates
+          ).concat(shuffle(calibrationStimulusCoordinates));
         }
       },
       timeline: [{
