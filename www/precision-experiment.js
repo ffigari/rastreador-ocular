@@ -7,16 +7,70 @@ const jsPsych = initJsPsych({
 
 let validationStimulusCoordinates;
 let idx;
+const instancesPerExperiment = 3; // 10;
+const trialsPerInstance = 3; // 10;
+
 jsPsych.run([{
+  type: jsPsychSurveyHtmlForm,
+  preamble: `
+    <h3> Precision Experiment </p>
+  `,
+  html: `
+    The following experiment will help establish metrics about the quality of
+    our system's gaze estimations and about its degradation over time.
+    <br>
+
+    ${instancesPerExperiment} times you will calibrate the system and perform a
+    simple non-interactive task.
+    <br>
+    <br>
+
+    Please complete the data below:
+    <br>
+
+    <label for="web-browser">Web Browser</label>
+    <input type="text" name="web-browser" id="web-browser-input">
+    <br>
+
+    <label for="operating-system">Operating System</label>
+    <input type="text" name="operating-system" id="operating-system-input">
+    <br>
+
+    <label for="webcam">Webcam</label>
+    <input type="text" name="webcam" id="webcam-input"
+      placeholder="brand, frame rate, resolution, ..."
+    >
+    <br>
+    <br>
+  `,
+}, {
   type: jsPsychWebgazerInitCamera,
 }, {
   type: rastocJSPsych.EventsTrackingStart,
 }, {
   type: jsPsychVirtualChinrest,
 }, {
-  repetitions: 2, //10,
+  repetitions: instancesPerExperiment,
   timeline: [rastocJSPsych.calibrate.assistedly("fullscreen"), {
-    repetitions: 2, //10,
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+      <h4>Experimentation Session</h4>
+
+      ${trialsPerInstance} times you will see a series of stimulus in the same
+      positions in which you just calibrated.
+      Fix your gaze on them as they appear.
+      <br>
+
+      A central cross will appear in between each pair of series.
+      While this cross is present you can rest your gaze and blink.
+      <br>
+
+      Press the space bar to start.
+        `,
+    choices: [' '],
+
+  }, {
+    repetitions: trialsPerInstance,
     timeline: [{
       type: jsPsychPsychophysics,
       background_color: '#d3d3d3',
@@ -33,6 +87,7 @@ jsPsych.run([{
       trial_duration: 2000,
       extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
       on_finish(data) {
+        data["rastoc-type"] = "tracked-stimulus";
         data["trial-tag"] = "fixation-stimulus";
         data["start-x"] = 0;
         data["start-y"] = 0;
@@ -63,6 +118,7 @@ jsPsych.run([{
         trial_duration: 1000,
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
+          data["rastoc-type"] = "tracked-stimulus";
           data["trial-tag"] = "validation-stimulus";
           data["start-x"] = validationStimulusCoordinates[idx].x;
           data["start-y"] = validationStimulusCoordinates[idx].y;

@@ -129,14 +129,15 @@ const calibrate = {
       timeline: [{
         type: jsPsychHtmlButtonResponse,
         stimulus: `
-        <h3>Calibración</h3>
-        <p>
-          Para cada punto que aparezca
-        </p>
+        <h3>Calibration Session</h3>
+
+        From now on try to keep hour head as still as possible.
+        <br> For each point that will appear:
+
         <ol>
-          <li>fijá la mirada en él</li>
-          <li>esperá a que cambie de color, manteniendo fija la mirada</li>
-          <li>presioná la barra de espacio</li>
+          <li>Gaze at it, then keep your gaze <b>fixed on it</b></li>
+          <li>Wait for it to <b>change color</b></li>
+          <li>Once it change, press the <b>space bar</b></li>
         </ol>
       `,
         choices: ["Continuar"],
