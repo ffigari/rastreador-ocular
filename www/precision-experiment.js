@@ -10,8 +10,18 @@ const jsPsych = initJsPsych({
 
 let validationStimulusCoordinates;
 let idx;
-const instancesPerExperiment = 3; // 10;
-const trialsPerInstance = 3; // 10;
+const sessionsPerRun = 3; // 10;
+const validationsPerSession = 3; // 10;
+
+let sessionId = 0;
+let validationId = 0;
+let trackedTrialId = 0;
+const stampIds = (data) => {
+  data["session-id"] = sessionId
+  data["validation-id"] = validationId
+  trackedTrialId += 1
+  data["tracked-trial-id"] = trackedTrialId
+}
 
 jsPsych.run([{
   type: jsPsychSurveyHtmlForm,
@@ -23,7 +33,7 @@ jsPsych.run([{
     our system's gaze estimations and about its degradation over time.
     <br>
 
-    ${instancesPerExperiment} times you will calibrate the system and perform a
+    ${sessionsPerRun} times you will calibrate the system and perform a
     simple non-interactive task.
     <br>
     <br>
@@ -53,13 +63,12 @@ jsPsych.run([{
 }, {
   type: jsPsychVirtualChinrest,
 }, {
-  repetitions: instancesPerExperiment,
+  repetitions: sessionsPerRun,
   timeline: [rastocJSPsych.calibrate.assistedly("fullscreen"), {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <h4>Experimentation Session</h4>
-
-      ${trialsPerInstance} times you will see a series of stimulus in the same
+      ${validationsPerSession} times you will see a series of stimulus in the same
       positions in which you just calibrated.
       Fix your gaze on them as they appear.
       <br>
@@ -71,9 +80,14 @@ jsPsych.run([{
       Press the space bar to start.
         `,
     choices: [' '],
-
+    on_finish() {
+      sessionId += 1;
+    }
   }, {
-    repetitions: trialsPerInstance,
+    repetitions: validationsPerSession,
+    on_timeline_start() {
+      validationId += 1;
+    },
     timeline: [{
       type: jsPsychPsychophysics,
       background_color: '#d3d3d3',
@@ -90,6 +104,7 @@ jsPsych.run([{
       trial_duration: 2000,
       extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
       on_finish(data) {
+        stampIds(data)
         data["rastoc-type"] = "tracked-stimulus";
         data["trial-tag"] = "fixation-stimulus";
         data["start-x"] = 0;
@@ -121,6 +136,7 @@ jsPsych.run([{
         trial_duration: 1000,
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
+          stampIds(data)
           data["rastoc-type"] = "tracked-stimulus";
           data["trial-tag"] = "validation-stimulus";
           data["start-x"] = validationStimulusCoordinates[idx].x;

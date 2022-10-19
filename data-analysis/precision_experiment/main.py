@@ -24,12 +24,23 @@ class load_data():
 
         self.sessions = []
         class Session():
-            def __init__(self, session_id, run_id):
-                self.id = session_id
+            def __init__(self, run_id, session_id):
                 self.run_id = run_id
+                self.id = session_id
 
-        session_id = 1
+        self.validations = []
+        class Validation():
+            def __init__(self, run_id, session_id, validation_id, position):
+                self.run_id = run_id
+                self.session_id = session_id
+                self.id = validation_id
+
+                # number indicating the position of the validation with respect
+                # to the other validations of the same session
+                self.position = position
+
         run_id = 1
+        session_id = 1
         for fp in files_paths:
             run_sessions = []
             with open(os.path.join(
@@ -38,23 +49,21 @@ class load_data():
                 csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
                 headers = next(csv_rows_iterator, None)
 
+                run_inner_session_id = None
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
-                    if rastoc_type == "calibration-stimulus":
-                        # inside a calibration
-                        if int(row[headers.index("calibration-point-id")]) == 17:
-                            # calibration finished
-
-                            # TODO: The session should be created after the 
-                            # validation session, ie, once both its calibration
-                            # and validation sessions have been read
-                            self.sessions.append(Session(
-                                session_id,
-                                run_id,
-                            ))
-                            session_id += 1
-
+                    raw_session_id = row[headers.index("session-id")]
+                    print(run_id, trial_index, raw_session_id)
+                    if run_inner_session_id is None and raw_session_id != '':
+                        run_inner_session_id = int(raw_session_id)
+                    elif run_inner_session_id is not None and raw_session_id == '':
+                        run_sessions.append(Session(
+                            run_id,
+                            session_id,
+                        ))
+                        session_id += 1
+                        run_inner_session_id = None
 
             self.runs.append(Run(
                 run_id,
@@ -96,10 +105,23 @@ class querier_for():
             "sessions": get_by_run_id(r.id)
         } for r in self.D.runs]
 
+    def maximum_amount_of_sessions(self):
+        return max([
+            len(e["sessions"]) for e in self.sessions_per_run])
+
+    def validations_grouped_by_position(self):
+        for i in range(self.maximum_amount_of_sessions()):
+            yield [v for v in self.D.validations if v.position == i]
+
+
 def analyze_precision_experiment():
     q = querier_for(load_data())
 
-    print("maximum amount of sessions in one run?", max([
-        len(e["sessions"])
-        for e in q.sessions_per_run
-    ]))
+    print(
+        "maximum amount of sessions in one run?",
+        q.maximum_amount_of_sessions())
+
+    #print("average estimation during fixation marks")
+    #print("run_position\taverage_fixation_error")
+    #[handle_list_of_the_ith_validations(ith_vs)
+    #    for ith_vs in q.validations_grouped_by_position()]
