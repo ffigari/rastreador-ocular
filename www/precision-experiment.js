@@ -1,6 +1,9 @@
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('csv', 'precision-experiment.csv');
+    jsPsych.data.get().localSave(
+      'csv',
+      `precision-experiment-${(new Date).toISOString()}.csv`
+    );
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
