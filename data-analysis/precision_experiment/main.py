@@ -13,11 +13,10 @@ class load_data():
         class Run():
             def __init__(
                 self,
-                run_id, sessions_ids,
+                run_id,
                 #operating_system, web_browser, web_cam
             ):
                 self.id = run_id
-                self.sessions_ids = sessions_ids
                 #self.operating_system = operating_system
                 #self.web_browser = web_browser
                 #self.web_cam = web_cam
@@ -39,8 +38,11 @@ class load_data():
                 # to the other validations of the same session
                 self.position = position
 
-        run_id = 1
-        session_id = 1
+        ids = {
+            "run": 1,
+            "session": 1,
+            "validation": 1,
+        }
         for fp in files_paths:
             run_sessions = []
             with open(os.path.join(
@@ -49,31 +51,51 @@ class load_data():
                 csv_rows_iterator = csv.reader(f, delimiter=",", quotechar='"')
                 headers = next(csv_rows_iterator, None)
 
-                run_inner_session_id = None
+                session_reading_in_progress = False
+                def finish_reading_session():
+                    self.sessions.append(Session(ids["run"], ids["session"]))
+                    ids["session"] += 1
+                    s = None
+
+                def finish_reading_validation():
+                    if not session_reading_in_progress:
+                        raise Exception('no session reading in progress')
+
+                    
+                    # TODO: Compute position of validation in this session
+                    self.validations.append(Validation(
+                        ids["run"], ids["session"], ids["validation"],
+                        42))
+                    ids["validation"] += 1
+
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
+
                     raw_session_id = row[headers.index("session-id")]
-                    print(run_id, trial_index, raw_session_id)
-                    if run_inner_session_id is None and raw_session_id != '':
-                        run_inner_session_id = int(raw_session_id)
-                    elif run_inner_session_id is not None and raw_session_id == '':
-                        run_sessions.append(Session(
-                            run_id,
-                            session_id,
-                        ))
-                        session_id += 1
-                        run_inner_session_id = None
+                    if not session_reading_in_progress and raw_session_id != '':
+                        # first validation's start of each session
+                        session_reading_in_progress = True
+                        print("session start", trial_index)
+                        assert(row[
+                            headers.index('trial-tag')] == "fixation-stimulus")
+                    elif session_reading_in_progress and raw_session_id == '':
+                        print('session end', trial_index)
+                        # last validation's end of each session
+                        finish_reading_validation()
+                        finish_reading_session()
+                        session_reading_in_progress = False
+                    # TODO: Identificar los momentos en los cuales termina una
+                    #       validación pero que no sea la ultima
+
 
             self.runs.append(Run(
-                run_id,
-                [s.run_id for s in run_sessions],
+                ids["run"],
                 #operating_system,
                 #web_browser,
                 #web_cam,
             ))
-            run_id += 1
-            self.sessions.extend(run_sessions)
+            ids["run"] += 1
 
         print("v------------------v")
         print("| loading finished |")
@@ -86,6 +108,11 @@ class load_data():
         [
             print("     [ id: {}, run_id: {} ]".format(s.id, s.run_id))
             for s in self.sessions]
+        print(" - {} validations".format(len(self.validations)))
+        [
+            print("     [ id: {}, session_id: {}, run_id: {} ]".format(
+                v.id, v.session_id, v.run_id
+            )) for v in self.validations]
         print("--------------------")
 
 
@@ -93,8 +120,7 @@ class querier_for():
     def __init__(self, D):
         self.D = D
 
-    @property
-    def sessions_per_run(self):
+    def per_run(self):
         get_by_run_id = lambda r_id: [
             s for s in self.D.sessions
             if s.run_id == r_id
@@ -105,9 +131,24 @@ class querier_for():
             "sessions": get_by_run_id(r.id)
         } for r in self.D.runs]
 
+    def per_session(self):
+        get_by_session_id = lambda s_id: [
+            v for v in self.D.validations
+            if v.session_id == s_id
+        ]
+        return [{
+            "session": s,
+            "validations": get_by_session_id(s.id),
+        } for s in self.D.sessions]
+
     def maximum_amount_of_sessions(self):
         return max([
-            len(e["sessions"]) for e in self.sessions_per_run])
+            len(e["sessions"]) for e in self.per_run()])
+
+    def max_amount_of_validations_in_one_session(self):
+        return max([
+            len(e["validations"])
+            for e in self.per_session()])
 
     def validations_grouped_by_position(self):
         for i in range(self.maximum_amount_of_sessions()):
@@ -121,7 +162,13 @@ def analyze_precision_experiment():
         "maximum amount of sessions in one run?",
         q.maximum_amount_of_sessions())
 
-    #print("average estimation during fixation marks")
-    #print("run_position\taverage_fixation_error")
-    #[handle_list_of_the_ith_validations(ith_vs)
-    #    for ith_vs in q.validations_grouped_by_position()]
+    max_validations = q.max_amount_of_validations_in_one_session()
+    print(
+        "maximum amount of validations in one session",
+        max_validations
+    )
+
+    print("per position of validation in session:".format(max_validations))
+    print("validation-position\tfixation-phase-pxs-to-center")
+    for i in range(max_validations):
+        print("{}\t{}".format(i, 42))
