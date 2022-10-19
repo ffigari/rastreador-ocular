@@ -45,7 +45,7 @@ class load_data():
                         # inside a calibration
                         if int(row[headers.index("calibration-point-id")]) == 17:
                             # calibration finished
-                            print("calibration finished")
+
                             # TODO: The session should be created after the 
                             # validation session, ie, once both its calibration
                             # and validation sessions have been read
@@ -66,15 +66,18 @@ class load_data():
             run_id += 1
             self.sessions.extend(run_sessions)
 
-        print("loading finished")
-        print("  {} runs".format(len(self.runs)))
+        print("v------------------v")
+        print("| loading finished |")
+        print("+------------------+")
+        print(" - {} runs".format(len(self.runs)))
         [
-            print(" [ id: {} ]".format(r.id))
+            print("     [ id: {} ]".format(r.id))
             for r in self.runs]
-        print("  {} sessions".format(len(self.sessions)))
+        print(" - {} sessions".format(len(self.sessions)))
         [
-            print(" [ id: {}, run_id: {} ]".format(s.id, s.run_id))
+            print("     [ id: {}, run_id: {} ]".format(s.id, s.run_id))
             for s in self.sessions]
+        print("--------------------")
 
 
 class querier_for():
@@ -96,7 +99,7 @@ class querier_for():
 def analyze_precision_experiment():
     q = querier_for(load_data())
 
-    for e in q.sessions_per_run:
-        print(e["run"].id, len(e["sessions"]))
-
-    qwe
+    print("maximum amount of sessions in one run?", max([
+        len(e["sessions"])
+        for e in q.sessions_per_run
+    ]))
