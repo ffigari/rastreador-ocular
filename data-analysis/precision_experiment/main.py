@@ -1,6 +1,16 @@
 import os, csv, json
 from statistics import mean, stdev
 
+class Coord():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class RawEstimation:
+    def __init__(self, t, p):
+        self.t = t
+        self.p = p
+
 class Run():
     def __init__(self,
             run_id,
@@ -31,23 +41,37 @@ class Validation():
         # to the other validations of the same session
         self.validation_position = validation_position
 
-        print(fixation_marker.center)
-        print(fixation_marker.tracked_marker.raw_estimations)
-
-        asd
-        # TODO: Compute this based of fixation_marker raw estimations
-        self.fixation_phase_pxs_to_center = 42 + validation_position
+        self.fixation_phase_mean_pxs_to_center = \
+            fixation_marker.tracked_marker.mean_pxs_to_center()
 
 class TrackedMarker():
-    def __init__(self, r_id, s_id, v_id, tm_id):
+    def __init__(self, r_id, s_id, v_id, tm_id, center, raw_es):
         self.run_id = r_id
         self.session_id = s_id
         self.validation_id = v_id
         self.id = tm_id
+        self.center = center
+        self.raw_estimations = raw_es
+
+    def mean_pxs_to_center(self):
+        MINIMUM_EXPECTED_MS_FOR_SACCADE = 250
+        mean_x = mean([
+            r_e.p.x
+            for r_e
+            in self.raw_estimations
+            if r_e.t > MINIMUM_EXPECTED_MS_FOR_SACCADE])
+        mean_y = mean([
+            r_e.p.y
+            for r_e
+            in self.raw_estimations
+            if r_e.t > MINIMUM_EXPECTED_MS_FOR_SACCADE])
+
+        return Coord(
+            abs(self.center.x - mean_x),
+            abs(self.center.y - mean_y))
 
 class FixationMarker():
-    def __init__(self, center, tracked_marker):
-        self.center = center
+    def __init__(self, tracked_marker):
         self.tracked_marker = tracked_marker
 
 class load_data():
@@ -104,16 +128,13 @@ class load_data():
                     collected_data["validation-position"] += 1
                     ids["validation"] += 1
 
-                def finish_reading_fixation_marker(center, tm):
-                    collected_data["fixation-marker"] = FixationMarker(
-                        center,
-                        tm)
+                def finish_reading_fixation_marker(tm):
+                    collected_data["fixation-marker"] = FixationMarker(tm)
 
                 def finish_reading_validation_marker(tm):
-                    collected_data["validation-markers"].append(tracked_marker)
+                    collected_data["validation-markers"].append(tm)
 
                 tracked_marker = None
-                center = None
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
@@ -123,13 +144,18 @@ class load_data():
                     if is_tracked_marker:
                         tracked_marker = TrackedMarker(
                             ids["run"], ids["session"],
-                            ids["validation"], ids["tracked-marker"])
+                            ids["validation"], ids["tracked-marker"],
+                            Coord(
+                                json.loads(row[headers.index("center_x")]),
+                                json.loads(row[headers.index("center_y")]),
+                            ),
+                            [
+                                RawEstimation(e["t"], Coord(e["x"], e["y"]))
+                                for e in
+                                json.loads(row[headers.index('webgazer_data')])
+                            ])
                         self.tracked_markers.append(tracked_marker)
                         ids["tracked-marker"] += 1
-                        center = {
-                            "x": json.loads(row[headers.index("center_x")]),
-                            "y": json.loads(row[headers.index("center_y")]),
-                        }
 
                     is_fixation_marker = \
                         row[headers.index('trial-tag')] == "fixation-stimulus"
@@ -141,10 +167,10 @@ class load_data():
                         session_reading_in_progress = True
 
                         assert(is_fixation_marker)
-                        finish_reading_fixation_marker(center, tracked_marker)
+                        finish_reading_fixation_marker(tracked_marker)
                     elif session_reading_in_progress and is_fixation_marker:
                         finish_reading_validation()
-                        finish_reading_fixation_marker(center, tracked_marker)
+                        finish_reading_fixation_marker(tracked_marker)
                     elif session_reading_in_progress and is_validation_marker:
                         finish_reading_validation_marker(tracked_marker)
                     elif session_reading_in_progress and raw_session_id == '':
@@ -236,9 +262,13 @@ def analyze_precision_experiment():
     )
 
     print("per position of validation in session:")
-    print("validation-position\tfixation-phase-pxs-to-center")
+    print("validation-position\tfixation-phase-pxs-to-center\t")
+    print("\tx\ty")
     for i in range(max_validations):
-        print("{}\t{}".format(i, mean([
-            v.fixation_phase_pxs_to_center
+        pxs_to_centers = [
+            v.fixation_phase_mean_pxs_to_center
             for v in q.ith_validations(i)
-        ])))
+        ]
+        print("{}\t{}\t{}".format(i,
+            mean([d.x for d in pxs_to_centers]),
+            mean([d.y for d in pxs_to_centers])))
