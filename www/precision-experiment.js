@@ -10,8 +10,8 @@ const jsPsych = initJsPsych({
 
 let validationStimulusCoordinates;
 let idx;
-const sessionsPerRun = 3; // 10;
-const validationsPerSession = 3; // 10;
+const sessionsPerRun = 10;
+const validationsPerSession = 10;
 
 let sessionId = 0;
 let validationId = 0;
@@ -25,10 +25,10 @@ const stampIds = (data) => {
 
 jsPsych.run([{
   type: jsPsychSurveyHtmlForm,
-  preamble: `
-    <h3> Precision Experiment </p>
-  `,
+  preamble: ``,
   html: `
+    <h2> Precision Experiment </h2>
+
     The following experiment will help establish metrics about the quality of
     our system's gaze estimations and about its degradation over time.
     <br>
@@ -67,7 +67,7 @@ jsPsych.run([{
   timeline: [rastocJSPsych.calibrate.assistedly("fullscreen"), {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
-      <h4>Experimentation Session</h4>
+      <h3>Experimentation Session (${sessionId + 1} / ${sessionsPerRun})</h3>
       ${validationsPerSession} times you will see a series of stimulus in the same
       positions in which you just calibrated.
       Fix your gaze on them as they appear.

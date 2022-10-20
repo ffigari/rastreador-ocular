@@ -131,16 +131,21 @@ const calibrate = {
         stimulus: `
         <h3>Calibration Session</h3>
 
-        From now on try to keep hour head as still as possible.
-        <br> For each point that will appear:
+        Sit comfortably, from now on try to keep your head as still as
+        possible.
+        <br>
+        <br>
+        
+        Next you will see a <b>series of markers</b> in the screen.
+        <br>
 
-        <ol>
-          <li>Gaze at it, then keep your gaze <b>fixed on it</b></li>
-          <li>Wait for it to <b>change color</b></li>
-          <li>Once it change, press the <b>space bar</b></li>
-        </ol>
+        As they appear <b>fix your gaze</b> on them.
+        <br>
+
+        Once they turn orange, press the <b>space bar</b>.
+        <br>
       `,
-        choices: ["Continuar"],
+        choices: ["Continue"],
         on_finish() {
           mapCoordinateToGaze = rastoc.startCalibrationPhase("external");
         },
@@ -186,7 +191,7 @@ const calibrate = {
           }, {
             obj_type: 'circle',
             origin_center: true,
-            fill_color: 'black',
+            fill_color: 'orange',
             radius: 20,
             get startY() {
               return calibrationStimulusCoordinates[calibrationPointsCount].y;
