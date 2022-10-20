@@ -29,7 +29,12 @@ class load_data():
 
         self.validations = []
         class Validation():
-            def __init__(self, run_id, session_id, validation_id, position):
+            def __init__(
+                    self,
+                    run_id, session_id, validation_id,
+                    position,
+                    fixation_marker,
+                    validation_markers):
                 self.run_id = run_id
                 self.session_id = session_id
                 self.id = validation_id
@@ -38,10 +43,23 @@ class load_data():
                 # to the other validations of the same session
                 self.position = position
 
+        self.tracked_markers = []
+        class TrackedMarker():
+            def __init__(self, r_id, s_id, v_id, tm_id):
+                self.run_id = r_id
+                self.session_id = s_id
+                self.validation_id = v_id
+                self.id = tm_id
+
         ids = {
             "run": 1,
             "session": 1,
             "validation": 1,
+            "tracked-marker": 1,
+        }
+        collected_data = {
+            "fixation-marker": None,
+            "validation-markers": [],
         }
         for fp in files_paths:
             run_sessions = []
@@ -61,36 +79,51 @@ class load_data():
                     if not session_reading_in_progress:
                         raise Exception('no session reading in progress')
 
-                    
-                    # TODO: Compute position of validation in this session
                     self.validations.append(Validation(
                         ids["run"], ids["session"], ids["validation"],
-                        42))
+                        42,  # TODO: Compute position of validation in this session,
+                        collected_data["fixation-marker"],
+                        collected_data["validation-markers"]))
+
+                    collected_data["fixation-marker"] = None
                     ids["validation"] += 1
 
+                tracked_marker = None
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
 
-                    raw_session_id = row[headers.index("session-id")]
+                    is_tracked_marker = \
+                        row[headers.index('rastoc-type')] == "tracked-stimulus"
+                    if is_tracked_marker:
+                        tracked_marker = TrackedMarker(
+                            ids["run"], ids["session"],
+                            ids["validation"], ids["tracked-marker"])
+                        self.tracked_markers.append(tracked_marker)
+                        ids["tracked-marker"] += 1
+
                     is_fixation_stimulus = \
                         row[headers.index('trial-tag')] == "fixation-stimulus"
+                    is_validation_stimulus = \
+                        row[headers.index('trial-tag')] == "validation-stimulus"
+                    if is_fixation_stimulus:
+                        collected_data["fixation-marker"] = tracked_marker
+                    elif is_validation_stimulus:
+                        collected_data[
+                            "validation-markers"].append(tracked_marker)
+
+                    raw_session_id = row[headers.index("session-id")]
                     if not session_reading_in_progress and raw_session_id != '':
                         # first validation's start of each session
                         session_reading_in_progress = True
-                        print("session start", trial_index)
                         assert(is_fixation_stimulus)
                     elif session_reading_in_progress and is_fixation_stimulus:
                         finish_reading_validation()
                     elif session_reading_in_progress and raw_session_id == '':
-                        print('session end', trial_index)
                         # last validation's end of each session
                         finish_reading_validation()
                         finish_reading_session()
                         session_reading_in_progress = False
-                    # TODO: Identificar los momentos en los cuales termina una
-                    #       validación pero que no sea la ultima
-
 
             self.runs.append(Run(
                 ids["run"],
@@ -115,7 +148,12 @@ class load_data():
         [
             print("     [ id: {}, session_id: {}, run_id: {} ]".format(
                 v.id, v.session_id, v.run_id
-            )) for v in self.validations]
+            )) for v in self.validations[:3]]
+        print(" - {} tracked markers".format(len(self.tracked_markers)))
+        [
+                print("     [ id: {}, session_id: {}, run_id: {}: validation_id: {} ]".format(
+                v.id, v.session_id, v.run_id, v.validation_id
+            )) for v in self.tracked_markers[:3]]
         print("--------------------")
 
 
