@@ -33,7 +33,7 @@ class load_data():
             def __init__(
                     self,
                     run_id, session_id, validation_id,
-                    position,
+                    validation_position,
                     fixation_marker,
                     validation_markers):
                 self.run_id = run_id
@@ -42,7 +42,10 @@ class load_data():
 
                 # number indicating the position of the validation with respect
                 # to the other validations of the same session
-                self.position = position
+                self.validation_position = validation_position
+
+                # TODO: Compute this based of fixation_marker raw estimations
+                self.fixation_phase_pxs_to_center = 42
 
         self.tracked_markers = []
         class TrackedMarker():
@@ -152,8 +155,8 @@ class load_data():
             for s in self.sessions]
         print(" - {} validations".format(len(self.validations)))
         [
-                print("     [ id: {}, session_id: {}, run_id: {}, position: {} ]".format(
-                v.id, v.session_id, v.run_id, v.position
+                print("     [ id: {}, session_id: {}, run_id: {}, validation_position: {} ]".format(
+                v.id, v.session_id, v.run_id, v.validation_position
             )) for v in self.validations[:7]]
         print(" - {} tracked markers".format(len(self.tracked_markers)))
         [
@@ -197,10 +200,8 @@ class querier_for():
             len(e["validations"])
             for e in self.per_session()])
 
-    def validations_grouped_by_position(self):
-        for i in range(self.maximum_amount_of_sessions()):
-            yield [v for v in self.D.validations if v.position == i]
-
+    def ith_validations(self, i):
+        return [v for v in self.D.validations if v.validation_position == i]
 
 def analyze_precision_experiment():
     q = querier_for(load_data())
@@ -219,6 +220,6 @@ def analyze_precision_experiment():
     print("validation-position\tfixation-phase-pxs-to-center")
     for i in range(max_validations):
         print("{}\t{}".format(i, mean([
-            v.fixationPhasePxsToCenter
-            for v in ithValidations(i)
+            v.fixation_phase_pxs_to_center
+            for v in q.ith_validations(i)
         ])))
