@@ -129,17 +129,23 @@ const calibrate = {
       timeline: [{
         type: jsPsychHtmlButtonResponse,
         stimulus: `
-        <h3>Calibración</h3>
-        <p>
-          Para cada punto que aparezca
-        </p>
-        <ol>
-          <li>fijá la mirada en él</li>
-          <li>esperá a que cambie de color, manteniendo fija la mirada</li>
-          <li>presioná la barra de espacio</li>
-        </ol>
+        <h3>Calibration Session</h3>
+
+        Sit comfortably, from now on try to keep your head as still as
+        possible.
+        <br>
+        <br>
+        
+        Next you will see a <b>series of markers</b> in the screen.
+        <br>
+
+        As they appear <b>fix your gaze</b> on them.
+        <br>
+
+        Once they turn orange, press the <b>space bar</b>.
+        <br>
       `,
-        choices: ["Continuar"],
+        choices: ["Continue"],
         on_finish() {
           mapCoordinateToGaze = rastoc.startCalibrationPhase("external");
         },
@@ -185,7 +191,7 @@ const calibrate = {
           }, {
             obj_type: 'circle',
             origin_center: true,
-            fill_color: 'black',
+            fill_color: 'orange',
             radius: 20,
             get startY() {
               return calibrationStimulusCoordinates[calibrationPointsCount].y;

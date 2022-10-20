@@ -1,22 +1,93 @@
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.get().localSave('csv', 'precision-experiment.csv');
+    jsPsych.data.get().localSave(
+      'csv',
+      `precision-experiment-${(new Date).toISOString()}.csv`
+    );
   },
   extensions: [{ type: jsPsychExtensionWebgazer }],
 });
 
 let validationStimulusCoordinates;
 let idx;
+const sessionsPerRun = 10;
+const validationsPerSession = 10;
+
+let sessionId = 0;
+let validationId = 0;
+let trackedTrialId = 0;
+const stampIds = (data) => {
+  data["session-id"] = sessionId
+  data["validation-id"] = validationId
+  trackedTrialId += 1
+  data["tracked-trial-id"] = trackedTrialId
+}
+
 jsPsych.run([{
+  type: jsPsychSurveyHtmlForm,
+  preamble: ``,
+  html: `
+    <h2> Precision Experiment </h2>
+
+    The following experiment will help establish metrics about the quality of
+    our system's gaze estimations and about its degradation over time.
+    <br>
+
+    ${sessionsPerRun} times you will calibrate the system and perform a
+    simple non-interactive task.
+    <br>
+    <br>
+
+    Please complete the data below:
+    <br>
+
+    <label for="web-browser">Web Browser</label>
+    <input type="text" name="web-browser" id="web-browser-input">
+    <br>
+
+    <label for="operating-system">Operating System</label>
+    <input type="text" name="operating-system" id="operating-system-input">
+    <br>
+
+    <label for="webcam">Webcam</label>
+    <input type="text" name="webcam" id="webcam-input"
+      placeholder="brand, frame rate, resolution, ..."
+    >
+    <br>
+    <br>
+  `,
+}, {
   type: jsPsychWebgazerInitCamera,
 }, {
   type: rastocJSPsych.EventsTrackingStart,
 }, {
   type: jsPsychVirtualChinrest,
 }, {
-  repetitions: 2, //10,
+  repetitions: sessionsPerRun,
   timeline: [rastocJSPsych.calibrate.assistedly("fullscreen"), {
-    repetitions: 2, //10,
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+      <h3>Experimentation Session (${sessionId + 1} / ${sessionsPerRun})</h3>
+      ${validationsPerSession} times you will see a series of stimulus in the same
+      positions in which you just calibrated.
+      Fix your gaze on them as they appear.
+      <br>
+
+      A central cross will appear in between each pair of series.
+      While this cross is present you can rest your gaze and blink.
+      <br>
+
+      Press the space bar to start.
+        `,
+    choices: [' '],
+    on_finish() {
+      sessionId += 1;
+    }
+  }, {
+    repetitions: validationsPerSession,
+    on_timeline_start() {
+      validationId += 1;
+    },
     timeline: [{
       type: jsPsychPsychophysics,
       background_color: '#d3d3d3',
@@ -33,6 +104,8 @@ jsPsych.run([{
       trial_duration: 2000,
       extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
       on_finish(data) {
+        stampIds(data)
+        data["rastoc-type"] = "tracked-stimulus";
         data["trial-tag"] = "fixation-stimulus";
         data["start-x"] = 0;
         data["start-y"] = 0;
@@ -63,6 +136,8 @@ jsPsych.run([{
         trial_duration: 1000,
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_finish(data) {
+          stampIds(data)
+          data["rastoc-type"] = "tracked-stimulus";
           data["trial-tag"] = "validation-stimulus";
           data["start-x"] = validationStimulusCoordinates[idx].x;
           data["start-y"] = validationStimulusCoordinates[idx].y;

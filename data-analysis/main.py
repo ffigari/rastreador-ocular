@@ -2,6 +2,7 @@ import sys
 
 from informe.main import build_informe
 from defensa.main import build_defensa
+from precision_experiment.main import analyze_precision_experiment
 from display import display
 
 if __name__ == "__main__":
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "build":
         if len(sys.argv) < 3:
             print(
-                "An object from [`informe`, `defensa`] has to be built"
+                "Provide one of [`informe`, `defensa`, `precision-experiment`] a second argument."
             )
             sys.exit(-1)
         
@@ -25,6 +26,10 @@ if __name__ == "__main__":
         elif sys.argv[2] == 'defensa':
             build_defensa()
             sys.exit(0)
+        elif sys.argv[2] == 'precision-experiment':
+            analyze_precision_experiment()
+            sys.exit(0)
+
 
         print(
             "Invalid object to build, choose one from [`informe`, `defensa`]",
@@ -48,9 +53,6 @@ if __name__ == "__main__":
             run_id = int(sys.argv[3])
             trial_id = int(sys.argv[4])
             display.single_trial_saccades_detection(run_id, trial_id)
-            sys.exit(0)
-        elif sys.argv[2] == 'sensibility-analysis':
-            display.experiment_eye_tracking_summary()
             sys.exit(0)
 
         print(
