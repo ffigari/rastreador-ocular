@@ -1,5 +1,54 @@
-import os, csv
+import os, csv, json
 from statistics import mean, stdev
+
+class Run():
+    def __init__(self,
+            run_id,
+            #operating_system, web_browser, web_cam
+    ):
+        self.id = run_id
+        #self.operating_system = operating_system
+        #self.web_browser = web_browser
+        #self.web_cam = web_cam
+
+class Session():
+    def __init__(self, run_id, session_id):
+        self.run_id = run_id
+        self.id = session_id
+
+class Validation():
+    def __init__(
+            self,
+            run_id, session_id, validation_id,
+            validation_position,
+            fixation_marker,
+            validation_markers):
+        self.run_id = run_id
+        self.session_id = session_id
+        self.id = validation_id
+
+        # number indicating the position of the validation with respect
+        # to the other validations of the same session
+        self.validation_position = validation_position
+
+        print(fixation_marker.center)
+        print(fixation_marker.tracked_marker.raw_estimations)
+
+        asd
+        # TODO: Compute this based of fixation_marker raw estimations
+        self.fixation_phase_pxs_to_center = 42 + validation_position
+
+class TrackedMarker():
+    def __init__(self, r_id, s_id, v_id, tm_id):
+        self.run_id = r_id
+        self.session_id = s_id
+        self.validation_id = v_id
+        self.id = tm_id
+
+class FixationMarker():
+    def __init__(self, center, tracked_marker):
+        self.center = center
+        self.tracked_marker = tracked_marker
 
 class load_data():
     def __init__(self):
@@ -11,50 +60,9 @@ class load_data():
             raise Exception('no runs were found')
 
         self.runs = []
-        class Run():
-            def __init__(
-                self,
-                run_id,
-                #operating_system, web_browser, web_cam
-            ):
-                self.id = run_id
-                #self.operating_system = operating_system
-                #self.web_browser = web_browser
-                #self.web_cam = web_cam
-
         self.sessions = []
-        class Session():
-            def __init__(self, run_id, session_id):
-                self.run_id = run_id
-                self.id = session_id
-
         self.validations = []
-        class Validation():
-            def __init__(
-                    self,
-                    run_id, session_id, validation_id,
-                    validation_position,
-                    fixation_marker,
-                    validation_markers):
-                self.run_id = run_id
-                self.session_id = session_id
-                self.id = validation_id
-
-                # number indicating the position of the validation with respect
-                # to the other validations of the same session
-                self.validation_position = validation_position
-
-                # TODO: Compute this based of fixation_marker raw estimations
-                self.fixation_phase_pxs_to_center = 42
-
         self.tracked_markers = []
-        class TrackedMarker():
-            def __init__(self, r_id, s_id, v_id, tm_id):
-                self.run_id = r_id
-                self.session_id = s_id
-                self.validation_id = v_id
-                self.id = tm_id
-
         ids = {
             "run": 1,
             "session": 1,
@@ -76,8 +84,6 @@ class load_data():
 
                 session_reading_in_progress = False
                 def finish_reading_session():
-                    finish_reading_validation()
-
                     self.sessions.append(Session(ids["run"], ids["session"]))
                     ids["session"] += 1
                     s = None
@@ -98,7 +104,16 @@ class load_data():
                     collected_data["validation-position"] += 1
                     ids["validation"] += 1
 
+                def finish_reading_fixation_marker(center, tm):
+                    collected_data["fixation-marker"] = FixationMarker(
+                        center,
+                        tm)
+
+                def finish_reading_validation_marker(tm):
+                    collected_data["validation-markers"].append(tracked_marker)
+
                 tracked_marker = None
+                center = None
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
@@ -111,27 +126,31 @@ class load_data():
                             ids["validation"], ids["tracked-marker"])
                         self.tracked_markers.append(tracked_marker)
                         ids["tracked-marker"] += 1
+                        center = {
+                            "x": json.loads(row[headers.index("center_x")]),
+                            "y": json.loads(row[headers.index("center_y")]),
+                        }
 
-                    is_fixation_stimulus = \
+                    is_fixation_marker = \
                         row[headers.index('trial-tag')] == "fixation-stimulus"
-                    is_validation_stimulus = \
+                    is_validation_marker = \
                         row[headers.index('trial-tag')] == "validation-stimulus"
-                    if is_fixation_stimulus:
-                        collected_data["fixation-marker"] = tracked_marker
-                    elif is_validation_stimulus:
-                        collected_data[
-                            "validation-markers"].append(tracked_marker)
 
                     raw_session_id = row[headers.index("session-id")]
                     if not session_reading_in_progress and raw_session_id != '':
-                        # first validation's start of each session
                         session_reading_in_progress = True
-                        assert(is_fixation_stimulus)
-                    elif session_reading_in_progress and is_fixation_stimulus:
+
+                        assert(is_fixation_marker)
+                        finish_reading_fixation_marker(center, tracked_marker)
+                    elif session_reading_in_progress and is_fixation_marker:
                         finish_reading_validation()
+                        finish_reading_fixation_marker(center, tracked_marker)
+                    elif session_reading_in_progress and is_validation_marker:
+                        finish_reading_validation_marker(tracked_marker)
                     elif session_reading_in_progress and raw_session_id == '':
-                        # last validation's end of each session
+                        finish_reading_validation()
                         finish_reading_session()
+
                         session_reading_in_progress = False
 
             self.runs.append(Run(
@@ -160,7 +179,7 @@ class load_data():
             )) for v in self.validations[:7]]
         print(" - {} tracked markers".format(len(self.tracked_markers)))
         [
-                print("     [ id: {}, session_id: {}, run_id: {}: validation_id: {} ]".format(
+                print("     [ id: {}, validation_id: {}, session_id: {}, run_id: {} ]".format(
                 v.id, v.session_id, v.run_id, v.validation_id
             )) for v in self.tracked_markers[:3]]
         print("--------------------")
