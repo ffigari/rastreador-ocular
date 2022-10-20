@@ -73,12 +73,15 @@ class load_data():
                     rastoc_type = row[headers.index('rastoc-type')]
 
                     raw_session_id = row[headers.index("session-id")]
+                    is_fixation_stimulus = \
+                        row[headers.index('trial-tag')] == "fixation-stimulus"
                     if not session_reading_in_progress and raw_session_id != '':
                         # first validation's start of each session
                         session_reading_in_progress = True
                         print("session start", trial_index)
-                        assert(row[
-                            headers.index('trial-tag')] == "fixation-stimulus")
+                        assert(is_fixation_stimulus)
+                    elif session_reading_in_progress and is_fixation_stimulus:
+                        finish_reading_validation()
                     elif session_reading_in_progress and raw_session_id == '':
                         print('session end', trial_index)
                         # last validation's end of each session
@@ -168,7 +171,8 @@ def analyze_precision_experiment():
         max_validations
     )
 
-    print("per position of validation in session:".format(max_validations))
+    print("per position of validation in session:")
     print("validation-position\tfixation-phase-pxs-to-center")
     for i in range(max_validations):
+        # TODO: calcular métrica
         print("{}\t{}".format(i, 42))
