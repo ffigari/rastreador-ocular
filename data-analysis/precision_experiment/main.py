@@ -1,4 +1,5 @@
 import os, csv
+from statistics import mean, stdev
 
 class load_data():
     def __init__(self):
@@ -60,6 +61,7 @@ class load_data():
         collected_data = {
             "fixation-marker": None,
             "validation-markers": [],
+            "validation-position": 0,
         }
         for fp in files_paths:
             run_sessions = []
@@ -71,9 +73,12 @@ class load_data():
 
                 session_reading_in_progress = False
                 def finish_reading_session():
+                    finish_reading_validation()
+
                     self.sessions.append(Session(ids["run"], ids["session"]))
                     ids["session"] += 1
                     s = None
+                    collected_data["validation-position"] = 0
 
                 def finish_reading_validation():
                     if not session_reading_in_progress:
@@ -81,11 +86,13 @@ class load_data():
 
                     self.validations.append(Validation(
                         ids["run"], ids["session"], ids["validation"],
-                        42,  # TODO: Compute position of validation in this session,
+                        collected_data["validation-position"],
                         collected_data["fixation-marker"],
                         collected_data["validation-markers"]))
 
                     collected_data["fixation-marker"] = None
+                    collected_data["validation-markers"] = []
+                    collected_data["validation-position"] += 1
                     ids["validation"] += 1
 
                 tracked_marker = None
@@ -121,7 +128,6 @@ class load_data():
                         finish_reading_validation()
                     elif session_reading_in_progress and raw_session_id == '':
                         # last validation's end of each session
-                        finish_reading_validation()
                         finish_reading_session()
                         session_reading_in_progress = False
 
@@ -146,9 +152,9 @@ class load_data():
             for s in self.sessions]
         print(" - {} validations".format(len(self.validations)))
         [
-            print("     [ id: {}, session_id: {}, run_id: {} ]".format(
-                v.id, v.session_id, v.run_id
-            )) for v in self.validations[:3]]
+                print("     [ id: {}, session_id: {}, run_id: {}, position: {} ]".format(
+                v.id, v.session_id, v.run_id, v.position
+            )) for v in self.validations[:7]]
         print(" - {} tracked markers".format(len(self.tracked_markers)))
         [
                 print("     [ id: {}, session_id: {}, run_id: {}: validation_id: {} ]".format(
@@ -212,5 +218,7 @@ def analyze_precision_experiment():
     print("per position of validation in session:")
     print("validation-position\tfixation-phase-pxs-to-center")
     for i in range(max_validations):
-        # TODO: calcular métrica
-        print("{}\t{}".format(i, 42))
+        print("{}\t{}".format(i, mean([
+            v.fixationPhasePxsToCenter
+            for v in ithValidations(i)
+        ])))
