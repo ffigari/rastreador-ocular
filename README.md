@@ -81,7 +81,7 @@ The data itself is not available.
 Node 14 is recommended.
 You can set it up manually or use [`nvm`](https://github.com/nvm-sh/nvm) since
 a `.nvmrc` file is provided.
-Then run `./install.sh` to install dependencies.  
+Run `./install.sh` to install dependencies.  
 Use `node builder.js build` to build the client side js, or use
 `node builder.js watch` to build on each change.
 

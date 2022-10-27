@@ -1,6 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
+if ! command -v node &> /dev/null
+then
+    echo node was not found, please install node v14
+    exit
+fi
+
+if ! node --version | grep -q "v14"; then
+  echo version $(node --version) was found, please install node v14
+fi
+
+npm i
+
 DIST_PATH=www/vendor
 INSTALL_PATH=eye-tracker/webgazer
 rm -rf $DIST_PATH
