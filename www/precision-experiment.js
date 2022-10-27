@@ -75,7 +75,7 @@ jsPsych.run([{
   repetitions: sessionsPerRun,
   timeline: [rastocJSPsych.calibrate.assistedly("fullscreen"), {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `
+    stimulus: () => `
       <h3>Experimentation Session (${sessionId + 1} / ${sessionsPerRun})</h3>
       ${validationsPerSession} times you will see a series of stimulus in the same
       positions in which you just calibrated.
