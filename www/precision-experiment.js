@@ -170,4 +170,13 @@ jsPsych.run([{
   }],
 }, {
   type: rastocJSPsych.EventsTrackingStop,
+}, {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: `
+    Done!
+    <br>
+    To finish the experiment click on "Finish" and download the csv with the
+    data.
+  `,
+  choices: ["Finish"],
 }])
