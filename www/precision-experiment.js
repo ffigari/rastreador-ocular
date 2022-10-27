@@ -38,22 +38,31 @@ jsPsych.run([{
     <br>
     <br>
 
-    Please complete the data below:
+    Retrieve the ids of your computer and your webcam from <a
+    href="https://docs.google.com/spreadsheets/d/1il1rCGHjaK3SnQk07awIZq2zVa5_H30TJPjoGr197jo/edit#gid=0"
+    >this spreadsheet</a>.
+    If necessary, add new rows.
+    <br>
+
+    Once you have that, please complete the information below.
+    <br>
+
+    <label for="webcam">Webcam id</label>
+    <input required type="number" name="webcam-id" id="webcam-input">
+    <br>
+
+    <label for="computer">Computer id</label>
+    <input required type="number" name="computer-id" id="computer-input">
     <br>
 
     <label for="web-browser">Web Browser</label>
-    <input type="text" name="web-browser" id="web-browser-input">
+    <input required type="text" name="web-browser" id="web-browser-input">
     <br>
 
     <label for="operating-system">Operating System</label>
-    <input type="text" name="operating-system" id="operating-system-input">
+    <input required type="text" name="operating-system" id="operating-system-input">
     <br>
 
-    <label for="webcam">Webcam</label>
-    <input type="text" name="webcam" id="webcam-input"
-      placeholder="brand, frame rate, resolution, ..."
-    >
-    <br>
     <br>
   `,
 }, {

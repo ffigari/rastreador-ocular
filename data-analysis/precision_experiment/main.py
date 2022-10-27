@@ -12,14 +12,17 @@ class RawEstimation:
         self.p = p
 
 class Run():
-    def __init__(self,
-            run_id,
-            #operating_system, web_browser, web_cam
-    ):
+    def __init__(self, run_id, computer_id, webcam_id, web_browser):
         self.id = run_id
-        #self.operating_system = operating_system
-        #self.web_browser = web_browser
-        #self.web_cam = web_cam
+        if computer_id is None:
+            raise Exception("computer id not provided")
+        self.computer_id = computer_id
+        if webcam_id is None:
+            raise Exception("webcam id not provided")
+        self.webcam_id = webcam_id
+        if web_browser is None:
+            raise Exception("web browser not provided")
+        self.web_browser = web_browser
 
 class Session():
     def __init__(self, run_id, session_id):
@@ -100,6 +103,9 @@ class load_data():
         }
         for fp in files_paths:
             run_sessions = []
+            computer_id = None
+            webcam_id = None
+            web_browser = None
             with open(os.path.join(
                 "data-analysis/precision_experiment/raw_data", fp
             ), "r") as f:
@@ -139,15 +145,22 @@ class load_data():
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
 
+                    if row[headers.index('trial_type')] == 'survey-html-form':
+                        d = json.loads(row[headers.index('response')])
+                        computer_id = int(d['computer-id'])
+                        webcam_id = int(d['webcam-id'])
+                        web_browser = d['web-browser']
+
                     is_tracked_marker = \
                         row[headers.index('rastoc-type')] == "tracked-stimulus"
                     if is_tracked_marker:
+                        str2float = lambda s: float(s.replace(",", "."))
                         tracked_marker = TrackedMarker(
                             ids["run"], ids["session"],
                             ids["validation"], ids["tracked-marker"],
                             Coord(
-                                json.loads(row[headers.index("center_x")]),
-                                json.loads(row[headers.index("center_y")]),
+                                str2float(row[headers.index("center_x")]),
+                                str2float(row[headers.index("center_y")]),
                             ),
                             [
                                 RawEstimation(e["t"], Coord(e["x"], e["y"]))
@@ -181,9 +194,9 @@ class load_data():
 
             self.runs.append(Run(
                 ids["run"],
-                #operating_system,
-                #web_browser,
-                #web_cam,
+                computer_id,
+                webcam_id,
+                web_browser
             ))
             ids["run"] += 1
 
@@ -209,7 +222,6 @@ class load_data():
                 v.id, v.session_id, v.run_id, v.validation_id
             )) for v in self.tracked_markers[:3]]
         print("--------------------")
-
 
 class querier_for():
     def __init__(self, D):
