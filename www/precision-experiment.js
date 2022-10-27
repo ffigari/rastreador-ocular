@@ -68,6 +68,8 @@ jsPsych.run([{
 }, {
   type: jsPsychWebgazerInitCamera,
 }, {
+  type: jsPsychFullscreen
+}, {
   type: rastocJSPsych.EventsTrackingStart,
 }, {
   type: jsPsychVirtualChinrest,
