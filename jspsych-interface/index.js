@@ -204,7 +204,11 @@ const calibrate = {
           response_type: 'key',
           response_start_time: 550,
           choices: [' '],
+          on_start() {
+            document.body.style.cursor = "none";
+          },
           on_finish(data) {
+            document.body.style.cursor = "auto";
             data["rastoc-type"] = "calibration-stimulus";
             data["stimulus-coordinate"] = {
               x: calibrationStimulusCoordinates[calibrationPointsCount].x,

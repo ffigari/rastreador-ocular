@@ -114,7 +114,11 @@ jsPsych.run([{
       response_ends_trial: false,
       trial_duration: 2000,
       extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
+      on_start() {
+        document.body.style.cursor = "none";
+      },
       on_finish(data) {
+        document.body.style.cursor = "auto";
         stampIds(data)
         data["rastoc-type"] = "tracked-stimulus";
         data["trial-tag"] = "fixation-stimulus";
@@ -146,7 +150,11 @@ jsPsych.run([{
         response_ends_trial: false,
         trial_duration: 1000,
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
+        on_start() {
+          document.body.style.cursor = "none";
+        },
         on_finish(data) {
+          document.body.style.cursor = "auto";
           stampIds(data)
           data["rastoc-type"] = "tracked-stimulus";
           data["trial-tag"] = "validation-stimulus";
