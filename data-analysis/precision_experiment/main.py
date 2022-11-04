@@ -35,7 +35,8 @@ class Validation():
             run_id, session_id, validation_id,
             validation_position,
             fixation_marker,
-            validation_markers):
+            validation_markers,
+            pxs2deg):
         self.run_id = run_id
         self.session_id = session_id
         self.id = validation_id
@@ -46,6 +47,8 @@ class Validation():
 
         self.fixation_phase_mean_pxs_to_center = \
             fixation_marker.tracked_marker.mean_pxs_to_center()
+        self.fixation_phase_mean_degrees_to_center = \
+            fixation_marker.tracked_marker.mean_degrees_to_center(pxs2deg)
 
 class TrackedMarker():
     def __init__(self, r_id, s_id, v_id, tm_id, center, raw_es):
@@ -72,6 +75,10 @@ class TrackedMarker():
         return Coord(
             abs(self.center.x - mean_x),
             abs(self.center.y - mean_y))
+
+    def mean_degrees_to_center(self, pxs2deg):
+        c = self.mean_pxs_to_center()
+        return Coord(c.x / pxs2deg, c.y / pxs2deg)
 
 class FixationMarker():
     def __init__(self, tracked_marker):
@@ -100,6 +107,7 @@ class load_data():
             "fixation-marker": None,
             "validation-markers": [],
             "validation-position": 0,
+            "pxs2deg": None,
         }
         for fp in files_paths:
             run_sessions = []
@@ -127,7 +135,8 @@ class load_data():
                         ids["run"], ids["session"], ids["validation"],
                         collected_data["validation-position"],
                         collected_data["fixation-marker"],
-                        collected_data["validation-markers"]))
+                        collected_data["validation-markers"],
+                        collected_data["pxs2deg"]))
 
                     collected_data["fixation-marker"] = None
                     collected_data["validation-markers"] = []
@@ -140,21 +149,28 @@ class load_data():
                 def finish_reading_validation_marker(tm):
                     collected_data["validation-markers"].append(tm)
 
+                str2float = lambda s: float(s.replace(",", "."))
+
                 tracked_marker = None
                 for row in csv_rows_iterator:
                     trial_index = row[headers.index('trial_index')]
                     rastoc_type = row[headers.index('rastoc-type')]
+
+                    if row[headers.index('trial_type')] == 'virtual-chinrest':
+                        print(row[headers.index('px2deg')])
+                        collected_data["pxs2deg"] = str2float(row[headers.index('px2deg')])
+                        continue
 
                     if row[headers.index('trial_type')] == 'survey-html-form':
                         d = json.loads(row[headers.index('response')])
                         computer_id = int(d['computer-id'])
                         webcam_id = int(d['webcam-id'])
                         web_browser = d['web-browser']
+                        continue
 
                     is_tracked_marker = \
                         row[headers.index('rastoc-type')] == "tracked-stimulus"
                     if is_tracked_marker:
-                        str2float = lambda s: float(s.replace(",", "."))
                         tracked_marker = TrackedMarker(
                             ids["run"], ids["session"],
                             ids["validation"], ids["tracked-marker"],
@@ -274,13 +290,20 @@ def analyze_precision_experiment():
     )
 
     print("per position of validation in session:")
-    print("validation-position\tfixation-phase-pxs-to-center\t")
-    print("\tx\ty")
+    print("validation-position\tfixation-phase-pxs-to-center\t\tfixation-phase-degrees-to-center\t")
+    print("\tx\ty\tx\ty")
     for i in range(max_validations):
+        ith_vs = q.ith_validations(i)
         pxs_to_centers = [
             v.fixation_phase_mean_pxs_to_center
-            for v in q.ith_validations(i)
+            for v in ith_vs
         ]
-        print("{}\t{}\t{}".format(i,
+        degrees_to_centers = [
+            v.fixation_phase_mean_degrees_to_center
+            for v in ith_vs
+        ]
+        print("{}\t{:.2f}\t{:.2f}\t{:.2f}\t{:.2f}".format(i,
             mean([d.x for d in pxs_to_centers]),
-            mean([d.y for d in pxs_to_centers])))
+            mean([d.y for d in pxs_to_centers]),
+            mean([d.x for d in degrees_to_centers]),
+            mean([d.y for d in degrees_to_centers])))
