@@ -10,8 +10,8 @@ const jsPsych = initJsPsych({
 
 let validationStimulusCoordinates;
 let idx;
-const sessionsPerRun = 10;
-const validationsPerSession = 10;
+const sessionsPerRun = 8;
+const validationsPerSession = 8;
 
 let sessionId = 0;
 let validationId = 0;
@@ -142,13 +142,13 @@ jsPsych.run([{
             return validationStimulusCoordinates[idx].y
           },
           show_start_time: 0,
-          show_end_time: 1000,
+          show_end_time: 500,
           radius: 20,
           line_color: 'black',
           fill_color: 'black',
         }],
         response_ends_trial: false,
-        trial_duration: 1000,
+        trial_duration: 600,
         extensions: [{ type: jsPsychExtensionWebgazer, params: { targets: [] } }],
         on_start() {
           document.body.style.cursor = "none";
