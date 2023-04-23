@@ -91,6 +91,23 @@ the jspsych interface.
 There _might_ be some events' timing issues which prevent the eye tracker's
 playground from starting up some times.
 
+### Modifying the gaze estimation algorithms
+
+Gaze estimation and eyes localization are made inside [webgazer's
+fork](https://github.com/ffigari/WebGazer).
+Gaze estimation is provided through a custom algorithm and eyes localization is
+done by using the face landmarks detection v1.0.2 (also called facemesh) of
+tfjs.
+The documentation of the latter is found
+[here](https://github.com/tensorflow/tfjs-models/blob/master/face-landmarks-detection/README.md#how-to-run-it).
+
+After running the `./install.sh` script the repo will have been cloned at 
+`./eye-tracker/webgazer/`.
+If you want to experiment with it you will need to recompile it.
+To achieve that, go to that directory, run `npm run build` to recompile and
+then run `cp dist/webgazer.js ../../www/vendor` to copy the result to the place
+needed by rastoc.
+
 ### Experimentation / Report
 
 Python env setup:

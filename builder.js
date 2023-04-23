@@ -4,9 +4,9 @@ import webpack from 'webpack'
 
 const usage = () => {
   console.log(
-  `index.js - compile relevant browser javascript files
-  - 'node index.js build': build once
-  - 'node index.js watch': start on watch mode to recompile on each change`
+  `builder.js - compile relevant browser javascript files
+  - 'node builder.js build': build once
+  - 'node builder.js watch': start on watch mode to recompile on each change`
   );
   process.exit(1);
 }
